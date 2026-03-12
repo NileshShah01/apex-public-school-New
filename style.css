@@ -71,8 +71,9 @@ gap:12px;
 
 .logo
 {
-width:55px;
-height:55px;
+width: auto;
+max-width: 80px;
+height: 60px;
 object-fit:contain;
 }
 
@@ -116,6 +117,10 @@ gap:22px;
     font-size: 0.9375rem;
     position: relative;
     padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .menu a::after {
@@ -158,13 +163,14 @@ gap:22px;
         position: fixed;
         top: 0;
         left: -100%;
-        width: 300px;
+        width: 60vw;
+        min-width: 260px;
         height: 100vh;
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         flex-direction: column;
-        padding: 6rem 2rem;
+        padding: 5rem 1.5rem;
         transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         box-shadow: 20px 0 60px rgba(0, 0, 0, 0.1);
         z-index: 1000;
@@ -176,16 +182,17 @@ gap:22px;
     }
 
     .menu a { 
-        font-size: 1.25rem; 
+        font-size: 1rem; 
         border: none;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
         width: 100%; 
-        padding: 1rem;
+        padding: 0.75rem 1rem;
         border-radius: 0.75rem;
         background: rgba(30, 58, 138, 0.03);
         display: flex;
+        flex-direction: row;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
         transition: all 0.3s ease;
     }
 
@@ -588,16 +595,35 @@ margin-bottom:12px;
 .btn-portal-nav {
     background: var(--primary) !important;
     color: var(--white) !important;
-    padding: 0.6rem 1.25rem !important;
+    padding: 0.6rem 1rem !important;
     border-radius: 0.5rem !important;
     font-weight: 700 !important;
     transition: all 0.3s ease !important;
+    flex-direction: row !important; /* Force row for buttons */
+    gap: 0.5rem !important;
+    font-size: 0.85rem !important;
+}
+
+.admin-btn {
+    background: var(--accent) !important;
+}
+
+.admin-btn:hover {
+    background: #d97706 !important;
 }
 
 .btn-portal-nav:hover {
     background: var(--primary-light) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+@media (max-width: 768px) {
+    .header-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+    }
 }
 
 
