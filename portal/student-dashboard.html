@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Apex Public School</title>
+    <link rel="stylesheet" href="../css/portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 1rem; color: #666; font-weight: 600;">Loading Apex Portal...</p>
+    </div>
+
+    <!-- Main Container -->
+    <div style="width: 100%; display: flex; flex-direction: column;">
+        <!-- Top Navigation -->
+        <header style="background: var(--white); border-bottom: 1px solid var(--border); padding: 1rem 2.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 500;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-school" style="color: var(--primary); font-size: 1.5rem;"></i>
+                <h2 style="font-size: 1.25rem; color: var(--secondary);">Apex Student Portal</h2>
+            </div>
+            <button onclick="logoutStudent()" class="btn-portal btn-ghost">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </header>
+
+        <main class="main-content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+            <!-- Profile Overview -->
+            <div class="card" style="display: flex; align-items: center; gap: 2.5rem; padding: 2rem;">
+                <div style="position: relative;">
+                    <div id="studentPhoto" style="width: 120px; height: 120px; background: #e2e8f0; border-radius: 1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid var(--white); box-shadow: var(--shadow);">
+                        <i class="fas fa-user-graduate" style="font-size: 3rem; color: #94a3b8;"></i>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <h1 id="disp_student_name" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--secondary);">Loading...</h1>
+                    <div style="display: flex; gap: 1.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                        <span><i class="fas fa-id-card"></i> Student ID: <b id="disp_student_id" style="color: var(--text-main);">...</b></span>
+                        <span><i class="fas fa-graduation-cap"></i> Class: <b id="disp_class" style="color: var(--text-main);">-</b></span>
+                        <span><i class="fas fa-door-open"></i> Section: <b id="disp_section" style="color: var(--text-main);">-</b></span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">Results History</p>
+                    <select id="academicYear" style="padding: 0.5rem 1rem; background: var(--bg-gray); border: 1px solid var(--border); border-radius: 0.5rem; font-weight: 600;">
+                        <option value="2026">Year 2026</option>
+                        <option value="2027">Year 2027</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1rem;">
+                
+                <!-- Left Column: Actions & Results -->
+                <div>
+                    <div id="resultCard" class="card" style="padding: 2.5rem; text-align: center; border-bottom: 6px solid var(--primary-light);">
+                        <div style="width: 80px; height: 80px; background: #eff6ff; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Examination Report Card</h3>
+                        <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto 2rem;">Manage your official academic performance report here. Results are updated annually by the school administration.</p>
+                        
+                        <div id="resultStatusArea">
+                            <!-- Populated by JS -->
+                            <span class="badge" style="background: #f1f5f9; color: #64748b;">Checking result availability...</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 1rem;"><i class="fas fa-question-circle" style="color: var(--accent);"></i> Need Help?</h3>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">If you are unable to download your report card or notice any errors in your profile details, please contact the school coordinator immediately at <b>+91 (School Contact Number)</b> or visit the administration office during school hours.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Notice Board -->
+                <div>
+                    <div class="card" style="min-height: 480px; background: #ffffff; position: relative; overflow: hidden;">
+                        <div style="background: var(--secondary); color: var(--white); padding: 1rem 1.5rem; margin: -1.5rem -1.5rem 1.5rem;">
+                            <h3 style="display: flex; align-items: center; gap: 0.75rem; font-size: 1rem;">
+                                <i class="fas fa-bullhorn" style="color: var(--accent);"></i>
+                                School Notice Board
+                            </h3>
+                        </div>
+                        <div id="noticesContainer">
+                            <p style="color: var(--text-muted); font-size: 0.875rem; text-align: center; margin-top: 3rem;">Loading announcements...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer style="margin-top: auto; padding: 2rem 0; border-top: 1px solid var(--border); text-align: center; background: white;">
+            <p style="color: var(--text-muted); font-size: 0.875rem;">© 2026 Apex Public School. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/student-auth.js"></script>
+    <script src="../js/student-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gallery | Apex Public School</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* BACKGROUND */
+
+body
+{
+background-image:url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b");
+background-size:cover;
+background-attachment:fixed;
+background-position:center;
+}
+
+
+/* PAGE HEADER */
+
+.page-header
+{
+text-align:center;
+padding:50px 20px;
+background:rgba(255,255,255,0.92);
+}
+
+.page-header h1
+{
+color:#1E40AF;
+}
+
+
+/* FILTER BUTTONS */
+
+.filter-buttons
+{
+text-align:center;
+padding:20px;
+background:white;
+}
+
+.filter-buttons button
+{
+padding:10px 18px;
+margin:5px;
+border:none;
+background:#1E40AF;
+color:white;
+cursor:pointer;
+border-radius:4px;
+}
+
+.filter-buttons button:hover
+{
+background:#2563EB;
+}
+
+
+/* GALLERY SECTION */
+
+.gallery-section
+{
+max-width:1200px;
+margin:auto;
+padding:40px 20px;
+background:rgba(255,255,255,0.95);
+border-radius:6px;
+}
+
+
+/* GRID */
+
+.gallery-grid
+{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:18px;
+}
+
+
+/* CARD */
+
+.gallery-card
+{
+overflow:hidden;
+border-radius:6px;
+position:relative;
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gallery-card img
+{
+width:100%;
+height:220px;
+object-fit:cover;
+transition:0.4s;
+cursor:pointer;
+}
+
+.gallery-card:hover img
+{
+transform:scale(1.1);
+}
+
+
+/* LIGHTBOX */
+
+#lightbox
+{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:2000;
+}
+
+#lightbox img
+{
+max-width:90%;
+max-height:70%;
+border-radius:6px;
+margin-bottom:20px;
+}
+
+.lightbox-buttons button
+{
+padding:10px 20px;
+margin:10px;
+border:none;
+background:#1E40AF;
+color:white;
+cursor:pointer;
+border-radius:4px;
+}
+
+.close-btn
+{
+position:absolute;
+top:20px;
+right:30px;
+font-size:40px;
+color:white;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="header"></div>
+
+
+<section class="page-header">
+
+<h1>School Gallery</h1>
+
+<p>Memories from school events and activities</p>
+
+</section>
+
+
+<div class="filter-buttons">
+
+<button onclick="filterGallery(event,'all')">All</button>
+<button onclick="filterGallery(event,'events')">School Events</button>
+<button onclick="filterGallery(event,'Museum')">Bihar Museum tour</button>
+<button onclick="filterGallery(event,'sports')">Sports</button>
+<button onclick="filterGallery(event,'republic')">Republic Day</button>
+<button onclick="filterGallery(event,'Facilities')">School Facilities</button>
+<button onclick="filterGallery(event,'Science')">Science Center Tour</button>
+<button onclick="filterGallery(event,'Vaishali')">Vaishali School Trip</button>
+</div>
+
+
+<section class="gallery-section">
+
+<div class="gallery-grid">
+
+<div class="gallery-card Facilities">
+<img src="images/Facilities-Slide-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Facilities">
+<img src="images/Computer Lap.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Facilities">
+<img src="images/Facilities-Slide-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card  Facilities">
+<img src="images/Facilities-Slide-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card  Facilities">
+<img src="images/Facilities-Slide-img4.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card  Facilities">
+<img src="images/Classroom-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img4.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img5.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img6.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img7.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img8.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Museum">
+<img src="images/Bihar-Museum-img10.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+  
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+
+<div class="gallery-card republic">
+<img src="images/Republic-Day-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card republic">
+<img src="images/Republic-Day-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card republic">
+<img src="images/Republic-Day-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+
+
+<div class="gallery-card sports">
+<img src="images/Sports-Event-Prize-Distribution-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card sports">
+<img src="images/Sports-Event-Prize-Distribution-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+
+<div class="gallery-card Vaishali">
+<img src="images/Vaisali-School-Trip-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Vaishali">
+<img src="images/Vaisali-School-Trip-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Vaishali">
+<img src="images/Vaisali-School-Trip-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img1.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img2.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img4.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img5.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img6.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img7.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img8.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img9.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img10.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img11.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img12.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img13.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+  <div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img14.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img15.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+    <div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img16.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+<div class="gallery-card Science">
+<img src="images/Science-centre-Patna-img35.jpeg" loading="lazy" onclick="openLightbox(this)">
+</div>
+</div>
+
+</section>
+
+
+<div id="lightbox">
+
+<span class="close-btn" onclick="closeLightbox()">×</span>
+
+<img id="lightbox-img">
+
+<div class="lightbox-buttons">
+
+<button onclick="downloadImage()">Download</button>
+
+<button onclick="closeLightbox()">Close</button>
+
+</div>
+
+</div>
+
+
+<div id="footer"></div>
+<!-- NEW FLOATING BUTTONS CONTAINER -->
+<div id="floating-button"></div>
+
+<script src="script.js"></script>
+
+<script>
+
+let currentImage = ""
+
+function openLightbox(img)
+{
+currentImage = img.src
+document.getElementById("lightbox-img").src = currentImage
+document.getElementById("lightbox").style.display = "flex"
+}
+
+function closeLightbox()
+{
+document.getElementById("lightbox").style.display = "none"
+}
+
+function downloadImage()
+{
+let link = document.createElement("a")
+link.href = currentImage
+link.download = "apex-public-school-photo"
+link.click()
+}
+
+
+/* FILTER */
+
+function filterGallery(e, category)
+{
+let cards = document.querySelectorAll(".gallery-card")
+let buttons = document.querySelectorAll(".filter-buttons button")
+
+buttons.forEach(btn => btn.classList.remove("active"))
+e.target.classList.add("active")
+
+cards.forEach(card =>
+{
+if(category === "all" || card.classList.contains(category))
+{
+card.style.display = "block"
+}
+else
+{
+card.style.display = "none"
+}
+})
+}
+
+
+</script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+

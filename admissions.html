@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admissions | Apex Public School</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+/* PLANET BACKGROUND */
+
+body
+{
+background-image:url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564");
+background-size:cover;
+background-attachment:fixed;
+background-position:center;
+cursor:default;
+}
+
+
+/* PAGE HEADER */
+
+.page-header
+{
+text-align:center;
+padding:60px 20px;
+background:rgba(255,255,255,0.9);
+}
+
+.page-header h1
+{
+font-size:38px;
+color:#1E40AF;
+}
+
+
+/* SECTION */
+
+.section
+{
+max-width:1100px;
+margin:auto;
+padding:50px 20px;
+background:rgba(255,255,255,0.95);
+border-radius:6px;
+margin-bottom:30px;
+}
+
+.card
+{
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover
+{
+transform:translateY(-8px);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+/* ADMISSION BANNER */
+
+.ad-banner
+{
+width:100%;
+max-width:400px;
+display:block;
+margin:auto;
+border-radius:6px;
+margin-bottom:30px;
+}
+/* GRID */
+
+.grid
+{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+
+/* CARD */
+
+.card
+{
+background:white;
+padding:25px;
+text-align:center;
+border-radius:6px;
+box-shadow:0 6px 14px rgba(0,0,0,0.12);
+transition:0.3s;
+}
+
+.card:hover
+{
+transform:translateY(-8px);
+}
+
+.card i
+{
+font-size:35px;
+color:#1E40AF;
+margin-bottom:10px;
+}
+
+
+/* FEE TABLE */
+
+.fee-table
+{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+.fee-table th
+{
+background:#1E40AF;
+color:white;
+padding:10px;
+}
+
+.fee-table td
+{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+
+/* FAQ */
+
+.faq
+{
+max-width:800px;
+margin:auto;
+}
+
+.faq-item
+{
+margin:10px 0;
+border:1px solid #ddd;
+border-radius:4px;
+}
+
+.faq-question
+{
+padding:12px;
+background:#1E40AF;
+color:white;
+cursor:pointer;
+}
+
+.faq-answer
+{
+display:none;
+padding:12px;
+background:white;
+}
+
+.cta
+{
+text-align:center;
+padding:50px 20px;
+background:#1E40AF;
+color:white;
+}
+
+.cta button
+{
+padding:12px 22px;
+background:white;
+border:none;
+cursor:pointer;
+border-radius:4px;
+font-weight:bold;
+margin-top:15px;
+}
+
+.cta button:hover
+{
+background:#facc15;
+}
+.ad-banner-row
+{
+display:flex;
+gap:20px;
+justify-content:center;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.ad-banner
+{
+width:100%;
+max-width:350px;
+border-radius:6px;
+}
+@media(max-width:768px)
+{
+.ad-banner-row
+{
+flex-direction:column;
+}
+
+.ad-banner
+{
+max-width:300px;
+}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<section class="page-header">
+
+<h1>Admissions Open 2026-2027</h1>
+
+<p>Play Group to Class 8</p>
+
+</section>
+
+
+<section class="section"> <div class="ad-banner-row"> <img src="images/Admission Banner 1.png" class="ad-banner"> <img src="images/Admission Banner.png" class="ad-banner"> </div> </section>
+
+<section class="section">
+
+<h2>Admission Process</h2>
+
+<div class="grid">
+
+<a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card"> <i class="fa-solid fa-school"></i> <h3>Visit School</h3> <p>Visit Apex Public School office for enquiry<br>Open location in Google Maps</p></a>
+
+</div>
+
+    <div class="admission-card">
+        <i class="fa-solid fa-file"></i>
+        <h3>Fill Form</h3>
+        <p>Fill the admission form with student details</p>
+    </div>
+
+    <div class="admission-card">
+        <i class="fa-solid fa-folder-open"></i>
+        <h3>Submit Documents</h3>
+        <p>Provide required admission documents</p>
+    </div>
+
+    <div class="admission-card">
+        <i class="fa-solid fa-money-bill"></i>
+        <h3>Pay Fees</h3>
+        <p>Pay admission and registration fees</p>
+    </div>
+</div>
+
+</section>
+
+
+<section class="section">
+
+<h2>Required Documents</h2>
+
+<div class="grid">
+
+<div class="card">Aadhar Card</div>
+
+<div class="card">Birth Certificate</div>
+
+<div class="card">Passport Size Photos</div>
+
+<div class="card">Transfer Certificate</div>
+
+</div>
+
+</section>
+
+
+<section class="section">
+
+<h2>Fee Structure</h2>
+
+<table class="fee-table">
+
+<tr>
+
+<th>Fee Type</th>
+
+<th>Amount</th>
+
+</tr>
+
+<tr>
+
+<td>Registration Fees</td>
+
+<td>₹500</td>
+
+</tr>
+
+<tr>
+
+<td>School Dress</td>
+
+<td>₹1200</td>
+
+</tr>
+
+<tr>
+
+<td>Books</td>
+
+<td>₹1500</td>
+
+</tr>
+
+<tr>
+
+<td>Tuition Fees</td>
+
+<td>₹500 Monthly</td>
+
+</tr>
+
+<tr>
+
+<td>Transport</td>
+
+<td>₹300 Monthly</td>
+
+</tr>
+
+</table>
+
+</section>
+
+
+<section class="section">
+
+<h2>Facilities for Students</h2>
+
+<div class="grid">
+
+<div class="card">Smart Classrooms</div>
+
+<div class="card">Computer Lab</div>
+
+<div class="card">Sports Ground</div>
+
+<div class="card">Playground</div>
+
+<div class="card">CCTV Security</div>
+
+<div class="card">Transport Facility</div>
+
+</div>
+
+</section>
+
+
+<section class="section faq">
+
+<h2>Admission FAQ</h2>
+
+<div class="faq-item">
+
+<div class="faq-question">When does admission start?</div>
+
+<div class="faq-answer">Admissions start from late March for the new academic session.</div>
+
+</div>
+
+<div class="faq-item">
+
+<div class="faq-question">Which classes are available?</div>
+
+<div class="faq-answer">Play Group to Class 8.</div>
+
+</div>
+
+<div class="faq-item">
+
+<div class="faq-question">Is transport available?</div>
+
+<div class="faq-answer">Yes transport facility is available for students.</div>
+
+</div>
+
+
+
+</section>
+<section class="cta">
+
+<h2>Admission Open 2026 to 2027</h2>
+
+<p>Join Apex Public School for quality education</p>
+
+<button onclick="location.href='contact.html'">Admission Inquiry</button>
+
+</section>
+
+
+
+<div id="footer"></div>
+<!-- NEW FLOATING BUTTONS CONTAINER -->
+  <div id="floating-button"></div>
+
+<script src="script.js"></script>
+
+<script>
+
+/* FAQ */
+
+document.querySelectorAll(".faq-question").forEach(q => {
+
+q.addEventListener("click", () => {
+
+let ans = q.nextElementSibling
+
+if(ans.style.display === "block")
+{
+ans.style.display = "none"
+}
+else
+{
+ans.style.display = "block"
+}
+
+})
+
+})
+/* MOUSE PARALLAX BACKGROUND */
+
+document.addEventListener("mousemove", e => {
+
+let x = e.clientX / window.innerWidth
+
+let y = e.clientY / window.innerHeight
+
+document.body.style.backgroundPosition = `${x*40}px ${y*40}px`
+
+})
+
+</script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

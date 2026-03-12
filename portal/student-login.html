@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | Apex Public School</title>
+    <link rel="stylesheet" href="../css/portal.css">
+</head>
+<body>
+    <div class="portal-container">
+        <div class="portal-logo">
+            <h2>Student Portal</h2>
+            <p>Apex Public School</p>
+        </div>
+        <form id="studentLoginForm">
+            <div class="form-group">
+                <label for="student_id">Student ID</label>
+                <input type="text" id="student_id" placeholder="Enter your ID" required>
+            </div>
+            <div class="form-group">
+                <label for="student_name">Full Name</label>
+                <input type="text" id="student_name" placeholder="Enter your name" required>
+            </div>
+            <button type="submit" class="btn-portal">Login</button>
+            <div id="loginError" style="color: #EF4444; margin-top: 1rem; text-align: center; font-size: 0.875rem; display: none;"></div>
+        </form>
+        <div class="portal-footer">
+            <a href="../index.html">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/student-auth.js"></script>
+</body>
+</html>
