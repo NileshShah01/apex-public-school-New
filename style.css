@@ -188,30 +188,46 @@ gap:22px;
 
     .mobile-menu-header {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        padding-bottom: 0.75rem;
-        margin-bottom: 0.6rem;
-        border-bottom: 1px solid rgba(0,0,0,0.08);
+        justify-content: center;
+        padding: 1.25rem 1rem 1rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(30, 58, 138, 0.1);
+        position: relative;
+        text-align: center;
+        background: rgba(30, 58, 138, 0.03);
+        border-radius: 0.75rem;
     }
 
-    .mobile-menu-header img {
-        height: 38px;
+    .mobile-logo {
+        height: 70px;
         width: auto;
+        margin-bottom: 0.4rem;
+    }
+
+    .mobile-school-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
     }
 
     .close-menu {
-        font-size: 1.25rem;
+        font-size: 1rem;
         color: var(--primary);
         cursor: pointer;
         background: rgba(30, 58, 138, 0.08);
-        width: 36px;
-        height: 36px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         transition: all 0.2s;
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
     }
     
     .close-menu:hover {
@@ -222,9 +238,9 @@ gap:22px;
     .menu > a { 
         font-size: 0.875rem; 
         border: none;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0;
         width: 100%; 
-        padding: 0.45rem 0.75rem;
+        padding: 0.55rem 0.75rem;
         border-radius: 0.6rem;
         background: rgba(30, 58, 138, 0.04);
         display: flex;
