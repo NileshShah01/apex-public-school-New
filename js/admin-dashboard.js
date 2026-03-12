@@ -300,8 +300,10 @@ async function deleteNotice(id) {
 function exportStudentData() {
     if (allStudents.length === 0) return;
     
-    const headers = "student_id,name,class,section\n";
-    const data = allStudents.map(s => `${s.student_id},${s.name},${s.class},${s.section}`).join('\n');
+    const headers = "student_id,name,class,section,roll_no,reg_no,gender,dob,father_name,mother_name,phone,address\n";
+    const data = allStudents.map(s => 
+        `${s.student_id},${s.name},${s.class},${s.section || ''},${s.roll_no || ''},${s.reg_no || ''},${s.gender || ''},${s.dob || ''},${s.father_name || ''},${s.mother_name || ''},${s.phone || ''},"${(s.address || '').replace(/"/g, '""')}"`
+    ).join('\n');
     const blob = new Blob([headers + data], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -313,18 +315,26 @@ function exportStudentData() {
 // Student Management Core
 async function handleStudentSubmit(e) {
     e.preventDefault();
-    const sid = document.getElementById('student_id').value;
-    const name = document.getElementById('student_name').value;
-    const sclass = document.getElementById('student_class').value;
-    const sect = document.getElementById('student_section').value;
+    const sid = document.getElementById('student_id').value.trim();
+    const name = document.getElementById('student_name').value.trim();
+    const sclass = document.getElementById('student_class').value.trim();
+    const sect = document.getElementById('student_section').value.trim();
+    const roll_no = document.getElementById('student_roll_no').value.trim();
+    const reg_no = document.getElementById('student_reg_no').value.trim();
+    const gender = document.getElementById('student_gender').value;
+    const dob = document.getElementById('student_dob').value.trim();
+    const phone = document.getElementById('student_phone').value.trim();
+    const father = document.getElementById('student_father').value.trim();
+    const mother = document.getElementById('student_mother').value.trim();
+    const address = document.getElementById('student_address').value.trim();
 
     setLoading(true);
     try {
         await db.collection('students').doc(sid).set({
             student_id: sid,
-            name: name,
-            class: sclass,
-            section: sect
+            name, class: sclass, section: sect,
+            roll_no, reg_no, gender, dob, phone,
+            father_name: father, mother_name: mother, address
         }, { merge: true });
         showToast("Student data saved");
         showSection('studentList');
@@ -393,7 +403,15 @@ function editStudent(id) {
     document.getElementById('student_id').disabled = true;
     document.getElementById('student_name').value = s.name;
     document.getElementById('student_class').value = s.class;
-    document.getElementById('student_section').value = s.section;
+    document.getElementById('student_section').value = s.section || '';
+    document.getElementById('student_roll_no').value = s.roll_no || '';
+    document.getElementById('student_reg_no').value = s.reg_no || '';
+    document.getElementById('student_gender').value = s.gender || '';
+    document.getElementById('student_dob').value = s.dob || '';
+    document.getElementById('student_phone').value = s.phone || '';
+    document.getElementById('student_father').value = s.father_name || '';
+    document.getElementById('student_mother').value = s.mother_name || '';
+    document.getElementById('student_address').value = s.address || '';
 }
 
 // Bulk Import
@@ -432,7 +450,7 @@ async function handleBulkImport(e) {
 }
 
 function downloadCSVTemplate() {
-    const data = "student_id,name,class,section\n1001,Rahul Kumar,6,A\n1002,Priya Singh,7,B";
+    const data = "student_id,name,class,section,roll_no,reg_no,gender,dob,father_name,mother_name,phone,address\n1001,Rahul Kumar,6,A,12,B101,Male,01.01.2015,Suresh Kumar,Meena Devi,9999999999,At- Village Name Dist- Saran";
     const blob = new Blob([data], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

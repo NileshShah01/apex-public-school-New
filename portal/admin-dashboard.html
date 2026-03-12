@@ -182,7 +182,8 @@
             <section id="addStudentSection" class="dashboard-section card" style="display: none;">
                 <h3 id="formTitle">Add New Student</h3>
                 <form id="studentForm" style="margin-top: 2rem;">
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Basic Information</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
                         <div class="form-group">
                             <label>Student ID</label>
                             <input type="text" id="student_id" required>
@@ -192,15 +193,55 @@
                             <input type="text" id="student_name" required>
                         </div>
                         <div class="form-group">
+                            <label>Reg No</label>
+                            <input type="text" id="student_reg_no">
+                        </div>
+                        <div class="form-group">
                             <label>Class</label>
                             <input type="text" id="student_class" required>
                         </div>
                         <div class="form-group">
                             <label>Section</label>
-                            <input type="text" id="student_section" required>
+                            <input type="text" id="student_section">
+                        </div>
+                        <div class="form-group">
+                            <label>Roll No</label>
+                            <input type="text" id="student_roll_no">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="student_gender">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="text" id="student_dob" placeholder="e.g. 01.01.2015">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" id="student_phone">
                         </div>
                     </div>
-                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Parent / Guardian</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Father's Name</label>
+                            <input type="text" id="student_father">
+                        </div>
+                        <div class="form-group">
+                            <label>Mother's Name</label>
+                            <input type="text" id="student_mother">
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Address</p>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Address</label>
+                        <textarea id="student_address" rows="2" style="width:100%; padding:0.625rem; border:1px solid var(--border); border-radius:0.5rem; font-size:0.875rem;"></textarea>
+                    </div>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
                         <button type="submit" class="btn-portal btn-primary" id="saveBtn">Save Student</button>
                         <button type="button" class="btn-portal btn-ghost" onclick="showSection('studentList')">Cancel</button>
                     </div>
