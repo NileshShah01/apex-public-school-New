@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchInput')?.addEventListener('input', () => { currentPage = 1; filterAndDisplayStudents(); });
     document.getElementById('classFilter')?.addEventListener('change', () => { currentPage = 1; filterAndDisplayStudents(); });
     document.getElementById('selectAll')?.addEventListener('change', handleSelectAll);
+    document.getElementById('websiteSettingsForm')?.addEventListener('submit', handleWebsiteSettingsSave);
 
     // Set admin email in header
     auth.onAuthStateChanged((user) => {
@@ -116,7 +117,8 @@ function showSection(sectionId) {
         'addStudent': 'Add/Edit Student',
         'bulkImport': 'Bulk Import Students',
         'notices': 'School Notice Board',
-        'promotions': 'Class Promotions'
+        'promotions': 'Class Promotions',
+        'websiteSettings': 'Frontend Website Settings'
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
     
@@ -125,6 +127,7 @@ function showSection(sectionId) {
 
     if (sectionId === 'resultsStatus') populateResultsStatus();
     if (sectionId === 'studentList') loadInitialData();
+    if (sectionId === 'websiteSettings') loadWebsiteSettings();
 }
 
 async function filterAndDisplayStudents() {
@@ -362,6 +365,42 @@ async function deleteNotice(id) {
     if (confirm("Delete this notice?")) {
         await db.collection('notices').doc(id).delete();
         loadNoticeHistory();
+    }
+}
+
+// Website Settings / CMS
+async function loadWebsiteSettings() {
+    try {
+        const doc = await db.collection('settings').doc('general').get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('set_marquee').value = data.marquee || '';
+            document.getElementById('set_phone').value = data.phone || '';
+            document.getElementById('set_email').value = data.email || '';
+            document.getElementById('set_address').value = data.address || '';
+        }
+    } catch (e) {
+        console.error("Error loading settings:", e);
+    }
+}
+
+async function handleWebsiteSettingsSave(e) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+        const payload = {
+            marquee: document.getElementById('set_marquee').value.trim(),
+            phone: document.getElementById('set_phone').value.trim(),
+            email: document.getElementById('set_email').value.trim(),
+            address: document.getElementById('set_address').value.trim(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('settings').doc('general').set(payload, { merge: true });
+        showToast("Website Settings updated live globally!");
+    } catch (e) {
+        showToast("Error updating settings: " + e.message, "error");
+    } finally {
+        setLoading(false);
     }
 }
 

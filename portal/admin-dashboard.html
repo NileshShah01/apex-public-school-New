@@ -60,6 +60,12 @@
                     </a>
                 </div>
                 <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('websiteSettings')">
+                        <i class="fas fa-cogs"></i>
+                        <span>Website Settings</span>
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a href="#" class="nav-link" onclick="exportStudentData()">
                         <i class="fas fa-file-export"></i>
                         <span>Export Data</span>
@@ -357,6 +363,37 @@
                         <button class="btn-portal btn-primary" onclick="handlePromotion()">Execute Promotion</button>
                     </div>
                 </div>
+            </section>
+
+            <!-- Website Settings Section -->
+            <section id="websiteSettingsSection" class="dashboard-section card" style="display: none;">
+                <h3>Frontend Website Settings</h3>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">Update the public-facing text, marquees, and contact info directly from here.</p>
+                
+                <form id="websiteSettingsForm">
+                    <div class="form-group">
+                        <label>Top Scrolling Marquee Announcement</label>
+                        <textarea id="set_marquee" rows="3" placeholder="Admission Open for Academic Session 2026-2027..."></textarea>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Contact Phone Number</label>
+                            <input type="text" id="set_phone" placeholder="e.g. +91 8084243031">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Email Address</label>
+                            <input type="email" id="set_email" placeholder="e.g. admin@apex.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label>School Address Display</label>
+                        <textarea id="set_address" rows="2" placeholder="Anjani Bazar, ..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-portal btn-primary"><i class="fas fa-save"></i> Save Global Settings</button>
+                </form>
             </section>
 
         </main>
