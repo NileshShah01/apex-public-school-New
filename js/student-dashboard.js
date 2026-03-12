@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const sessionData = JSON.parse(session);
-    currentStudentID = sessionData.student_id;
+    currentStudentID = sessionData.student_phone || sessionData.student_id;
 
     if (!currentStudentID) {
         window.location.href = 'student-login.html';
@@ -38,13 +38,17 @@ async function fetchStudentData() {
         if (doc.exists) {
             const data = doc.data();
             document.getElementById('disp_student_name').textContent = data.name;
-            document.getElementById('disp_student_id').textContent = data.student_id;
-            document.getElementById('disp_class').textContent = data.class;
-            document.getElementById('disp_section').textContent = data.section;
+            document.getElementById('disp_student_id').textContent = data.student_id || currentStudentID;
+            if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = data.class || 'N/A';
+            if (document.getElementById('disp_section')) document.getElementById('disp_section').textContent = data.section || 'N/A';
             
             // Try loading student photo
-            const photoUrl = `${GITHUB_BASE}/images/students/${data.student_id}.jpg`;
-            checkPhotoExists(photoUrl);
+            if (data.photo_url) {
+                checkPhotoExists(data.photo_url);
+            } else if (data.student_id) {
+                const photoUrl = `${GITHUB_BASE}/images/students/${data.student_id}.jpg`;
+                checkPhotoExists(photoUrl);
+            }
 
             // Initial Result Check
             updateResultLink();

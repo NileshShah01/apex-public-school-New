@@ -4,6 +4,18 @@ let allStudents = [];
 let selectedStudents = new Set();
 let currentPage = 1;
 const itemsPerPage = 20;
+let editingDocId = null; // tracks which doc is being edited
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    document.getElementById('photoFileName').textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
@@ -315,33 +327,54 @@ function exportStudentData() {
 // Student Management Core
 async function handleStudentSubmit(e) {
     e.preventDefault();
-    const sid = document.getElementById('student_id').value.trim();
-    const name = document.getElementById('student_name').value.trim();
-    const sclass = document.getElementById('student_class').value.trim();
-    const sect = document.getElementById('student_section').value.trim();
+    const name    = document.getElementById('student_name').value.trim();
+    const father  = document.getElementById('student_father').value.trim();
+    const phone   = document.getElementById('student_phone').value.trim();
+    // Optional fields
+    const sid     = document.getElementById('student_id').value.trim() || phone;
+    const sclass  = document.getElementById('student_class').value.trim();
+    const sect    = document.getElementById('student_section').value.trim();
     const roll_no = document.getElementById('student_roll_no').value.trim();
-    const reg_no = document.getElementById('student_reg_no').value.trim();
-    const gender = document.getElementById('student_gender').value;
-    const dob = document.getElementById('student_dob').value.trim();
-    const phone = document.getElementById('student_phone').value.trim();
-    const father = document.getElementById('student_father').value.trim();
-    const mother = document.getElementById('student_mother').value.trim();
+    const reg_no  = document.getElementById('student_reg_no').value.trim();
+    const gender  = document.getElementById('student_gender').value;
+    const dob     = document.getElementById('student_dob').value.trim();
+    const mother  = document.getElementById('student_mother').value.trim();
     const address = document.getElementById('student_address').value.trim();
+    const photoFile = document.getElementById('student_photo').files[0];
+
+    // Use editingDocId if editing, otherwise use phone as doc ID
+    const docId = editingDocId || phone;
 
     setLoading(true);
     try {
-        await db.collection('students').doc(sid).set({
-            student_id: sid,
-            name, class: sclass, section: sect,
-            roll_no, reg_no, gender, dob, phone,
-            father_name: father, mother_name: mother, address
-        }, { merge: true });
-        showToast("Student data saved");
+        let photoUrl = '';
+
+        // Upload photo if selected
+        if (photoFile && storage) {
+            document.getElementById('uploadProgress').style.display = 'block';
+            const storageRef = storage.ref(`student_photos/${docId}`);
+            await storageRef.put(photoFile);
+            photoUrl = await storageRef.getDownloadURL();
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+
+        const studentData = {
+            student_id: sid, name, father_name: father,
+            phone, class: sclass, section: sect,
+            roll_no, reg_no, gender, dob,
+            mother_name: mother, address
+        };
+        if (photoUrl) studentData.photo_url = photoUrl;
+
+        await db.collection('students').doc(docId).set(studentData, { merge: true });
+        showToast('Student saved successfully!');
+        editingDocId = null;
         showSection('studentList');
-    } catch (e) {
-        showToast(e.message, "error");
+    } catch (err) {
+        showToast(err.message, 'error');
     } finally {
         setLoading(false);
+        document.getElementById('uploadProgress').style.display = 'none';
     }
 }
 
@@ -397,21 +430,29 @@ async function deleteStudent(id) {
 function editStudent(id) {
     const s = allStudents.find(x => x.id === id);
     if (!s) return;
+    editingDocId = id; // remember doc ID for saving
     showSection('addStudent');
-    document.getElementById('formTitle').textContent = "Edit Student Profile";
-    document.getElementById('student_id').value = s.student_id;
-    document.getElementById('student_id').disabled = true;
-    document.getElementById('student_name').value = s.name;
-    document.getElementById('student_class').value = s.class;
+    document.getElementById('formTitle').textContent = 'Edit Student Profile';
+    document.getElementById('student_id').value = s.student_id || '';
+    document.getElementById('student_id').disabled = false;
+    document.getElementById('student_name').value = s.name || '';
+    document.getElementById('student_father').value = s.father_name || '';
+    document.getElementById('student_phone').value = s.phone || '';
+    document.getElementById('student_class').value = s.class || '';
     document.getElementById('student_section').value = s.section || '';
     document.getElementById('student_roll_no').value = s.roll_no || '';
     document.getElementById('student_reg_no').value = s.reg_no || '';
     document.getElementById('student_gender').value = s.gender || '';
     document.getElementById('student_dob').value = s.dob || '';
-    document.getElementById('student_phone').value = s.phone || '';
-    document.getElementById('student_father').value = s.father_name || '';
     document.getElementById('student_mother').value = s.mother_name || '';
     document.getElementById('student_address').value = s.address || '';
+    // Show existing photo
+    const photoDiv = document.getElementById('photoPreview');
+    if (s.photo_url) {
+        photoDiv.innerHTML = `<img src="${s.photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+        photoDiv.innerHTML = '<i class="fas fa-user" style="font-size:2.5rem;color:#94a3b8;"></i>';
+    }
 }
 
 // Bulk Import

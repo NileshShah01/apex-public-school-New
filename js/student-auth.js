@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const studentId = document.getElementById('student_id').value.trim();
+            const studentPhone = document.getElementById('student_phone').value.trim();
             const studentName = document.getElementById('student_name').value.trim();
 
             loginError.style.display = 'none';
@@ -20,22 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Check Firestore for matching student_id and name
-                const docRef = db.collection('students').doc(studentId);
+                // Check Firestore for matching phone and name
+                const docRef = db.collection('students').doc(studentPhone);
                 const doc = await docRef.get();
 
                 if (!doc.exists) {
-                    throw new Error('Student ID not found. Please check your ID.');
+                    throw new Error('Mobile Number not found. Please check your number.');
                 }
 
                 const data = doc.data();
-                if (data.name.toLowerCase() !== studentName.toLowerCase()) {
+                if (data.name.trim().toLowerCase() !== studentName.trim().toLowerCase()) {
                     throw new Error('Name does not match. Please enter the exact name as registered.');
                 }
 
                 // Success - store session and redirect
                 localStorage.setItem('student_session', JSON.stringify({
-                    student_id: studentId,
+                    student_phone: studentPhone,
                     name: data.name
                 }));
                 window.location.href = 'student-dashboard.html';
