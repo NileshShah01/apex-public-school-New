@@ -9,7 +9,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const storage = firebase.storage();
-const auth = firebase.auth();
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
+const storage = typeof firebase.storage === 'function' ? firebase.storage() : null;
+const auth = typeof firebase.auth === 'function' ? firebase.auth() : null;

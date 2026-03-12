@@ -5,27 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | Apex Public School</title>
     <link rel="stylesheet" href="../css/portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div class="portal-container">
-        <div class="portal-logo">
-            <h2>Admin Portal</h2>
-            <p>Apex Public School</p>
+<body class="auth-page">
+    <div class="auth-card">
+        <div class="portal-logo" style="text-align: center; margin-bottom: 2rem;">
+            <i class="fas fa-user-shield" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+            <h2 style="font-size: 1.75rem; color: var(--secondary); font-weight: 800;">Admin Portal</h2>
+            <p style="color: var(--text-muted);">Secure access for school administrators</p>
         </div>
         <form id="adminLoginForm">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="admin@example.com" required>
+                <div style="position: relative;">
+                    <i class="fas fa-envelope" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="email" id="email" placeholder="admin@example.com" required style="padding-left: 2.5rem;">
+                </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <div style="position: relative;">
+                    <i class="fas fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="password" id="password" placeholder="••••••••" required style="padding-left: 2.5rem;">
+                </div>
             </div>
-            <button type="submit" class="btn-portal">Login as Admin</button>
-            <div id="loginError" style="color: #EF4444; margin-top: 1rem; text-align: center; font-size: 0.875rem; display: none;"></div>
+            <button type="submit" class="btn-portal btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.875rem; font-size: 1rem; background-color: var(--accent);">
+                <i class="fas fa-sign-in-alt"></i> Login to Admin
+            </button>
+            <div id="loginError" style="color: #EF4444; margin-top: 1rem; text-align: center; font-size: 0.875rem; display: none; background: #fee2e2; padding: 0.5rem; border-radius: 0.5rem;"></div>
         </form>
-        <div class="portal-footer">
-            <a href="../index.html">Back to Home</a>
+        <div class="portal-footer" style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <a href="../index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i> Back to Primary Site
+            </a>
         </div>
     </div>
 
