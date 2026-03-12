@@ -20,22 +20,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Check Firestore for matching phone and name
-                const docRef = db.collection('students').doc(studentPhone);
-                const doc = await docRef.get();
+                // Check Firestore for matching phone
+                const snapshot = await db.collection('students').where('phone', '==', studentPhone).get();
 
-                if (!doc.exists) {
+                if (snapshot.empty) {
                     throw new Error('Mobile Number not found. Please check your number.');
                 }
 
-                const data = doc.data();
-                if (data.name.trim().toLowerCase() !== studentName.trim().toLowerCase()) {
+                let matchedDoc = null;
+                for (let i = 0; i < snapshot.docs.length; i++) {
+                    const doc = snapshot.docs[i];
+                    if (doc.data().name.trim().toLowerCase() === studentName.trim().toLowerCase()) {
+                        matchedDoc = doc;
+                        break;
+                    }
+                }
+
+                if (!matchedDoc) {
                     throw new Error('Name does not match. Please enter the exact name as registered.');
                 }
+
+                const data = matchedDoc.data();
 
                 // Success - store session and redirect
                 localStorage.setItem('student_session', JSON.stringify({
                     student_phone: studentPhone,
+                    student_id: data.student_id || matchedDoc.id,
                     name: data.name
                 }));
                 window.location.href = 'student-dashboard.html';
