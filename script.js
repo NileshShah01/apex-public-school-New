@@ -21,6 +21,7 @@ function initMenu()
 const toggle = document.getElementById("menuToggle");
 const menu = document.getElementById("menu");
 const overlay = document.getElementById("menuOverlay");
+const closeBtn = document.getElementById("closeMenuBtn");
 
 if(!toggle || !menu || !overlay) return;
 
@@ -30,11 +31,16 @@ menu.classList.toggle("active");
 overlay.classList.toggle("active");
 };
 
-overlay.onclick = function()
-{
+const closeMenu = function() {
 menu.classList.remove("active");
 overlay.classList.remove("active");
 };
+
+overlay.onclick = closeMenu;
+
+if(closeBtn) {
+    closeBtn.onclick = closeMenu;
+}
 }
 
 /* TESTIMONIAL SLIDER */
