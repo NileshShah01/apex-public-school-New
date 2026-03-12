@@ -13,6 +13,6 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-const db = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
-const storage = typeof firebase.storage === 'function' ? firebase.storage() : null;
-const auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
+var db = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
+var storage = typeof firebase.storage === 'function' ? firebase.storage() : null;
+var auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
