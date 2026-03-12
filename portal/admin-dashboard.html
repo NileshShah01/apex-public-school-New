@@ -127,8 +127,11 @@
                         </select>
                     </div>
                     <div style="display: flex; gap: 0.75rem;">
-                        <button class="btn-portal btn-danger hidden" id="bulkDeleteBtn" onclick="handleBulkDelete()">
+                        <button class="btn-portal btn-ghost hidden" id="bulkDeleteBtn" onclick="handleBulkDelete()">
                             <i class="fas fa-trash"></i> Delete (<span id="selectedCount">0</span>)
+                        </button>
+                        <button class="btn-portal btn-secondary" onclick="exportStudentData()">
+                            <i class="fas fa-file-excel"></i> Export Excel
                         </button>
                         <button class="btn-portal btn-primary" onclick="showSection('addStudent')">
                             <i class="fas fa-plus"></i> Add Student
@@ -145,6 +148,7 @@
                                 <th>Name</th>
                                 <th>Class</th>
                                 <th>Section</th>
+                                <th>Mobile Number</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -158,8 +162,19 @@
 
             <!-- Results Status Section -->
             <section id="resultsStatusSection" class="dashboard-section card" style="display: none;">
-                <h3>Result Verification Panel</h3>
-                <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">Verification of result files in /pdf/results/</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <div>
+                        <h3 style="margin-bottom: 0.25rem;">Result Verification Panel</h3>
+                        <p style="color: var(--text-muted); font-size: 0.875rem;">Verification and Upload of Result Reports via Firebase Storage.</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 0.875rem; font-weight: 600;">Academic Year:</span>
+                        <select id="resultsYearFilter" onchange="populateResultsStatus()" style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem;">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -168,7 +183,7 @@
                                 <th>Name</th>
                                 <th>Class</th>
                                 <th>Result Availability</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="resultsStatusTableBody">
@@ -352,6 +367,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <!-- Include SheetJS for actual Excel parsing/export if needed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/admin-auth.js"></script>
     <script src="../js/admin-dashboard.js"></script>

@@ -149,8 +149,9 @@ async function filterAndDisplayStudents() {
             <td><input type="checkbox" class="student-checkbox" value="${student.id}" onchange="toggleSelect('${student.id}')" ${selectedStudents.has(student.id) ? 'checked' : ''}></td>
             <td>${student.student_id}</td>
             <td><b>${student.name}</b></td>
-            <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class}</span></td>
-            <td>${student.section}</td>
+            <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class || '-'}</span></td>
+            <td>${student.section || '-'}</td>
+            <td>${student.phone || '-'}</td>
             <td>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn-portal btn-ghost btn-sm" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i></button>
@@ -186,37 +187,69 @@ function changePage(delta) {
 // Result Verification
 async function populateResultsStatus() {
     const tbody = document.getElementById('resultsStatusTableBody');
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Scanning repository for PDF files...</td></tr>';
+    const yearSelect = document.getElementById('resultsYearFilter');
+    const year = yearSelect ? yearSelect.value : '2026';
+    
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Checking Firebase Storage...</td></tr>';
     
     let resultsCount = 0;
     tbody.innerHTML = '';
     
     for (const student of allStudents) {
+        const docId = student.id; // Matches how they are queried in student dashboard
         const tr = document.createElement('tr');
-        const url = `${SITE_URL}/pdf/results/${student.student_id}.pdf`;
         
         tr.innerHTML = `
-            <td>${student.student_id}</td>
+            <td>${student.student_id || docId}</td>
             <td>${student.name}</td>
-            <td>Class ${student.class}</td>
-            <td id="status-row-${student.student_id}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;">Checking...</span></td>
-            <td><button class="btn-portal btn-ghost btn-sm" onclick="window.open('${url}', '_blank')"><i class="fas fa-external-link-alt"></i> Preview</button></td>
+            <td>Class ${student.class || '-'}</td>
+            <td id="status-row-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Checking...</span></td>
+            <td>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <input type="file" id="upload-pdf-${docId}" accept="application/pdf" style="display:none;" onchange="uploadResult(event, '${docId}', '${year}')">
+                    <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-pdf-${docId}').click()">
+                        <i class="fas fa-upload"></i> Upload
+                    </button>
+                    <a id="preview-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden">
+                        <i class="fas fa-external-link-alt"></i> View
+                    </a>
+                </div>
+            </td>
         `;
         tbody.appendChild(tr);
         
-        // Async check
-        fetch(url, { method: 'HEAD' }).then(res => {
-            const cell = document.getElementById(`status-row-${student.student_id}`);
-            if (res.ok) {
-                cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Available</span>';
-                resultsCount++;
-                document.getElementById('statTotalResults').textContent = resultsCount;
-            } else {
-                cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Missing</span>';
+        // Async check Firebase Storage
+        storage.ref(`results/${year}/${docId}.pdf`).getDownloadURL().then(url => {
+            const cell = document.getElementById(`status-row-${docId}`);
+            if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Available</span>';
+            const btn = document.getElementById(`preview-btn-${docId}`);
+            if(btn) {
+                btn.href = url;
+                btn.classList.remove('hidden');
             }
+            resultsCount++;
+            document.getElementById('statTotalResults').textContent = resultsCount;
         }).catch(() => {
-            document.getElementById(`status-row-${student.student_id}`).innerHTML = '<span class="badge badge-danger">Error</span>';
+            const cell = document.getElementById(`status-row-${docId}`);
+            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Missing</span>';
         });
+    }
+}
+
+async function uploadResult(event, docId, year) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    try {
+        const storageRef = storage.ref(`results/${year}/${docId}.pdf`);
+        await storageRef.put(file);
+        showToast('Result PDF uploaded successfully!');
+        populateResultsStatus(); // Refresh row statuses
+    } catch (e) {
+        showToast('Error uploading PDF: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
     }
 }
 
@@ -312,16 +345,30 @@ async function deleteNotice(id) {
 function exportStudentData() {
     if (allStudents.length === 0) return;
     
-    const headers = "student_id,name,class,section,roll_no,reg_no,gender,dob,father_name,mother_name,phone,address\n";
-    const data = allStudents.map(s => 
-        `${s.student_id},${s.name},${s.class},${s.section || ''},${s.roll_no || ''},${s.reg_no || ''},${s.gender || ''},${s.dob || ''},${s.father_name || ''},${s.mother_name || ''},${s.phone || ''},"${(s.address || '').replace(/"/g, '""')}"`
-    ).join('\n');
-    const blob = new Blob([headers + data], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `apex_students_backup_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
+    try {
+        const formattedData = allStudents.map(s => ({
+            "Student ID": s.student_id || '',
+            "Name": s.name || '',
+            "Mobile/Phone": s.phone || '',
+            "Class": s.class || '',
+            "Section": s.section || '',
+            "Roll No": s.roll_no || '',
+            "Reg No": s.reg_no || '',
+            "Gender": s.gender || '',
+            "DOB": s.dob || '',
+            "Father's Name": s.father_name || '',
+            "Mother's Name": s.mother_name || '',
+            "Address": s.address || ''
+        }));
+        
+        const ws = XLSX.utils.json_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Students Data");
+        XLSX.writeFile(wb, `apex_students_data_${new Date().toISOString().split('T')[0]}.xlsx`);
+        showToast("Excel Export Successful!");
+    } catch (e) {
+        showToast("Error generating Excel file: " + e.message, "error");
+    }
 }
 
 // Student Management Core
