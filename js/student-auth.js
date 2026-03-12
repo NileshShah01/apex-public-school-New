@@ -7,26 +7,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const studentId = document.getElementById('student_id').value;
-            const studentName = document.getElementById('student_name').value;
+            const studentId = document.getElementById('student_id').value.trim();
+            const studentName = document.getElementById('student_name').value.trim();
 
             loginError.style.display = 'none';
+
+            // Guard: check db is available
+            if (!db) {
+                loginError.textContent = 'Database not connected. Please refresh and try again.';
+                loginError.style.display = 'block';
+                return;
+            }
 
             try {
                 // Check Firestore for matching student_id and name
                 const docRef = db.collection('students').doc(studentId);
                 const doc = await docRef.get();
 
-                if (doc.exists && doc.data().name.toLowerCase() === studentName.toLowerCase()) {
-                    // Success, store session and redirect
-                    localStorage.setItem('student_session', JSON.stringify({
-                        student_id: studentId,
-                        name: doc.data().name
-                    }));
-                    window.location.href = 'student-dashboard.html';
-                } else {
-                    throw new Error('Invalid Student ID or Name');
+                if (!doc.exists) {
+                    throw new Error('Student ID not found. Please check your ID.');
                 }
+
+                const data = doc.data();
+                if (data.name.toLowerCase() !== studentName.toLowerCase()) {
+                    throw new Error('Name does not match. Please enter the exact name as registered.');
+                }
+
+                // Success - store session and redirect
+                localStorage.setItem('student_session', JSON.stringify({
+                    student_id: studentId,
+                    name: data.name
+                }));
+                window.location.href = 'student-dashboard.html';
+
             } catch (error) {
                 loginError.textContent = error.message;
                 loginError.style.display = 'block';
