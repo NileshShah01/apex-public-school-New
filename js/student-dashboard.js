@@ -34,8 +34,26 @@ function setLoading(show) {
 async function fetchStudentData() {
     setLoading(true);
     try {
-        const doc = await db.collection('students').doc(currentStudentID).get();
-        if (doc.exists) {
+        const sessionData = JSON.parse(localStorage.getItem('student_session'));
+        let doc = null;
+
+        // Ensure we retrieve the correct Document ID by querying the phone number if available
+        if (sessionData.student_phone) {
+            const snap = await db.collection('students').where('phone', '==', sessionData.student_phone).get();
+            if (!snap.empty) {
+                // Find matching name or just first match
+                doc = snap.docs.find(d => d.data().name.trim().toLowerCase() === sessionData.name.trim().toLowerCase()) || snap.docs[0];
+                currentStudentID = doc.id; // CRITICAL: Updates currentStudentID to true doc ID for reports!
+            }
+        }
+
+        // Fallback to direct doc fetch if query failed or phone wasn't in session
+        if (!doc && currentStudentID) {
+            const fallbackDoc = await db.collection('students').doc(currentStudentID).get();
+            if (fallbackDoc.exists) doc = fallbackDoc;
+        }
+
+        if (doc) {
             const data = doc.data();
             document.getElementById('disp_student_name').textContent = data.name;
             document.getElementById('disp_student_id').textContent = data.student_id || currentStudentID;
