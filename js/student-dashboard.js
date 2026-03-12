@@ -79,18 +79,20 @@ async function updateResultLink() {
     const year = document.getElementById('academicYear').value;
     const statusArea = document.getElementById('resultStatusArea');
     
-    // Result check from Firebase Storage
-    const storagePath = `results/${year}/${currentStudentID}.pdf`;
-    
     statusArea.innerHTML = '<span class="badge" style="background:#f1f5f9; color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Checking availability...</span>';
 
     try {
-        const downloadUrl = await storage.ref(storagePath).getDownloadURL();
-        statusArea.innerHTML = `
-            <a href="${downloadUrl}" target="_blank" class="btn-portal btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">
-                <i class="fas fa-download"></i> Download Report Card (${year})
-            </a>
-        `;
+        const docRef = await db.collection('reports').doc(`${currentStudentID}_${year}`).get();
+        if (docRef.exists) {
+            const pdfData = docRef.data().fileData;
+            statusArea.innerHTML = `
+                <a href="${pdfData}" download="ReportCard_${year}.pdf" class="btn-portal btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">
+                    <i class="fas fa-download"></i> Download Report Card (${year})
+                </a>
+            `;
+        } else {
+            throw new Error("Not Found");
+        }
     } catch (e) {
         statusArea.innerHTML = `
             <div style="padding: 1rem; background: #fff1f2; border-radius: 0.5rem; color: #be123c; display: flex; align-items: center; gap: 0.75rem; justify-content: center;">

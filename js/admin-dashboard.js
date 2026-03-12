@@ -218,17 +218,27 @@ async function populateResultsStatus() {
         `;
         tbody.appendChild(tr);
         
-        // Async check Firebase Storage
-        storage.ref(`results/${year}/${docId}.pdf`).getDownloadURL().then(url => {
+        // Async check Free Firestore Database instead of Firebase Storage
+        db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
             const cell = document.getElementById(`status-row-${docId}`);
-            if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Available</span>';
-            const btn = document.getElementById(`preview-btn-${docId}`);
-            if(btn) {
-                btn.href = url;
-                btn.classList.remove('hidden');
+            if(docRef.exists) {
+                if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Available</span>';
+                const btn = document.getElementById(`preview-btn-${docId}`);
+                if(btn) {
+                    // Open in new window via data url
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        const pdfData = docRef.data().fileData;
+                        const w = window.open();
+                        w.document.write(`<iframe src="${pdfData}" width="100%" height="100%" style="border:none;"></iframe>`);
+                    };
+                    btn.classList.remove('hidden');
+                }
+                resultsCount++;
+                document.getElementById('statTotalResults').textContent = resultsCount;
+            } else {
+                throw new Error("Missing");
             }
-            resultsCount++;
-            document.getElementById('statTotalResults').textContent = resultsCount;
         }).catch(() => {
             const cell = document.getElementById(`status-row-${docId}`);
             if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Missing</span>';
@@ -240,11 +250,25 @@ async function uploadResult(event, docId, year) {
     const file = event.target.files[0];
     if (!file) return;
 
+    if (file.size > 900 * 1024) {
+        showToast('File too large! Max 900KB for free database storage.', 'error');
+        return;
+    }
+
     setLoading(true);
     try {
-        const storageRef = storage.ref(`results/${year}/${docId}.pdf`);
-        await storageRef.put(file);
-        showToast('Result PDF uploaded successfully!');
+        const base64 = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+        
+        // Save string directly to free Firestore DB
+        await db.collection('reports').doc(`${docId}_${year}`).set({
+            fileData: base64,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Result PDF saved to free Database!');
         populateResultsStatus(); // Refresh row statuses
     } catch (e) {
         showToast('Error uploading PDF: ' + e.message, 'error');
@@ -396,12 +420,26 @@ async function handleStudentSubmit(e) {
     try {
         let photoUrl = '';
 
-        // Upload photo if selected
-        if (photoFile && storage) {
+        // Upload photo string if selected (bypassing Storage)
+        if (photoFile) {
             document.getElementById('uploadProgress').style.display = 'block';
-            const storageRef = storage.ref(`student_photos/${docId}`);
-            await storageRef.put(photoFile);
-            photoUrl = await storageRef.getDownloadURL();
+            photoUrl = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX = 300;
+                        let w = img.width, h = img.height;
+                        if (w > MAX) { h *= MAX/w; w = MAX; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(photoFile);
+            });
             document.getElementById('uploadProgress').style.display = 'none';
         }
 
