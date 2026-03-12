@@ -3,8 +3,16 @@ const GITHUB_BASE = 'https://nileshshah01.github.io/Apex-public-school-test-01';
 let currentStudentID = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    currentStudentID = localStorage.getItem('student_id');
+    const session = localStorage.getItem('student_session');
     
+    if (!session) {
+        window.location.href = 'student-login.html';
+        return;
+    }
+
+    const sessionData = JSON.parse(session);
+    currentStudentID = sessionData.student_id;
+
     if (!currentStudentID) {
         window.location.href = 'student-login.html';
         return;
@@ -124,7 +132,6 @@ async function fetchNotices() {
 }
 
 function logoutStudent() {
-    localStorage.removeItem('student_id');
-    localStorage.removeItem('student_name');
+    localStorage.removeItem('student_session');
     window.location.href = 'student-login.html';
 }
