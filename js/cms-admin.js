@@ -12,7 +12,8 @@ const CMS_SECTIONS = {
     'cmsStaff': { load: () => loadCmsList('staff', 'staffListAdmin', renderStaffItem) },
     'cmsTimetable': { load: loadTimetableSection },
     'cmsFees': { load: loadFeeStructure },
-    'cmsHero': { load: loadHeroSlider }
+    'cmsHero': { load: loadHeroSlider },
+    'cmsStudentDashboard': { load: loadCmsStudentDashboard }
 };
 
 // Hook into existing showSection 
@@ -62,7 +63,61 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Hero slider images updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
+
+    document.getElementById('cmsStudentDashboardForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const heading = document.getElementById('cms_examHeading').value.trim();
+        const notice = document.getElementById('cms_examNotice').value.trim();
+        try {
+            await db.collection('settings').doc('dashboardConfig').set({ examHeading: heading, examNotice: notice }, { merge: true });
+            showToast('Student Dashboard updated and published live!');
+            // Update preview
+            document.getElementById('previewTitle').textContent = heading || '(No Heading Set)';
+            document.getElementById('previewNotice').textContent = notice;
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
+
+    // Live preview sync
+    document.getElementById('cms_examHeading')?.addEventListener('input', function() {
+        document.getElementById('previewTitle').textContent = this.value || 'Final Examination March, 2026';
+    });
+    document.getElementById('cms_examNotice')?.addEventListener('input', function() {
+        document.getElementById('previewNotice').textContent = this.value;
+    });
+
+    // Sidebar collapse state restore
+    if (localStorage.getItem('adminSidebarCollapsed') === 'true') {
+        document.getElementById('adminSidebar')?.classList.add('collapsed');
+        const icon = document.getElementById('toggleIcon');
+        if (icon) { icon.className = 'fas fa-chevron-right'; }
+    }
 });
+
+// ===================== STUDENT DASHBOARD CMS =====================
+async function loadCmsStudentDashboard() {
+    try {
+        const doc = await db.collection('settings').doc('dashboardConfig').get();
+        if (doc.exists) {
+            const d = doc.data();
+            const headingEl = document.getElementById('cms_examHeading');
+            const noticeEl = document.getElementById('cms_examNotice');
+            if (headingEl) headingEl.value = d.examHeading || '';
+            if (noticeEl) noticeEl.value = d.examNotice || '';
+            // Update Preview
+            if (document.getElementById('previewTitle')) document.getElementById('previewTitle').textContent = d.examHeading || 'Final Examination March, 2026';
+            if (document.getElementById('previewNotice')) document.getElementById('previewNotice').textContent = d.examNotice || 'Exams begin on March 23rd. Please carry your Admit Card.';
+        }
+    } catch(e) { console.error('loadCmsStudentDashboard error:', e); }
+}
+
+// ===================== COLLAPSIBLE SIDEBAR =====================
+function toggleSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const icon = document.getElementById('toggleIcon');
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    if (icon) icon.className = isCollapsed ? 'fas fa-chevron-right' : 'fas fa-bars';
+    localStorage.setItem('adminSidebarCollapsed', isCollapsed ? 'true' : 'false');
+}
 
 // ===================== GENERIC COLLECTION LIST LOADER =====================
 async function loadCmsList(collection, containerId, renderFn) {

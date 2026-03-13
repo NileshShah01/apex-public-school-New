@@ -22,10 +22,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI
     fetchStudentData();
     fetchNotices();
+    loadDashboardConfig(); // Load exam heading & notice
 
     // Event Listeners
     document.getElementById('academicYear')?.addEventListener('change', updateResultLink);
 });
+
+// ===================== LOAD EXAM HEADING FROM CMS =====================
+async function loadDashboardConfig() {
+    try {
+        const doc = await db.collection('settings').doc('dashboardConfig').get();
+        if (!doc.exists) return;
+        const d = doc.data();
+        if (d.examHeading) {
+            document.getElementById('examAnnouncementTitle').textContent = d.examHeading;
+            document.getElementById('examAnnouncementNotice').textContent = d.examNotice || '';
+            document.getElementById('examAnnouncementBanner').style.display = 'block';
+        }
+    } catch(e) {
+        console.warn('Dashboard config load failed:', e.message);
+    }
+}
 
 function setLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
