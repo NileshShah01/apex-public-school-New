@@ -907,11 +907,14 @@ function findIdKey(row) {
 }
 
 function findKey(row, searchTerms) {
+    if (!row) return null;
     const keys = Object.keys(row);
     for (const term of searchTerms) {
         // Exact match first
         const exact = keys.find(k => k.trim().toLowerCase() === term.toLowerCase());
         if (exact) return exact;
+    }
+    for (const term of searchTerms) {
         // Fuzzy match
         const fuzzy = keys.find(k => k.toLowerCase().includes(term.toLowerCase()));
         if (fuzzy) return fuzzy;
@@ -947,8 +950,33 @@ function readExcelFile(file) {
                 const workbook = XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                resolve(XLSX.utils.sheet_to_json(worksheet));
-            } catch (err) { reject(err); }
+                
+                // First pass: find headers by scanning rows
+                const fullAOA = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                console.log("Full AOA head:", fullAOA.slice(0, 5));
+                
+                let headerRowIndex = 0;
+                for (let i = 0; i < fullAOA.length; i++) {
+                    const row = fullAOA[i];
+                    if (!row) continue;
+                    // Look for common headers
+                    const hasId = row.some(cell => String(cell || '').toLowerCase().includes('student id') || String(cell || '').toLowerCase().includes('admission no'));
+                    const hasName = row.some(cell => String(cell || '').toLowerCase().includes('name'));
+                    if (hasId || hasName) {
+                        headerRowIndex = i;
+                        console.log("Found header at row", i + 1, row);
+                        break;
+                    }
+                }
+                
+                // Now parse using the headerRowIndex
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
+                console.log("Final JSON Data sample:", jsonData.slice(0, 2));
+                resolve(jsonData);
+            } catch (err) { 
+                console.error("Excel Parse error:", err);
+                reject(err); 
+            }
         };
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
@@ -970,11 +998,19 @@ async function processFeeData() {
         const rawDuesData = await readExcelFile(duesFile);
         const rawPaidData = await readExcelFile(paidFile);
 
+        if (!rawDuesData.length || !rawPaidData.length) {
+            showToast("One of the files seems empty or invalid.", "error");
+            return;
+        }
+
         const duesIdKey = findIdKey(rawDuesData[0]);
         const paidIdKey = findIdKey(rawPaidData[0]);
 
+        console.log("Dues ID Key:", duesIdKey);
+        console.log("Paid ID Key:", paidIdKey);
+
         if (!duesIdKey || !paidIdKey) {
-            showToast("Could not find 'Student id' column in one or both files.", "error");
+            showToast("Could not find 'Student id' column. Check Excel headers.", "error");
             return;
         }
 

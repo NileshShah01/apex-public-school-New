@@ -145,6 +145,7 @@ body {
     background: rgba(0,0,0,0.1);
     margin: 0 0.5rem;
     border-radius: 0 0 0.5rem 0.5rem;
+    width: auto; /* Ensure it doesn't push width */
 }
 
 .cat-submenu.open {
@@ -292,7 +293,7 @@ body {
 
 @media (min-width: 1025px) {
     .main-content {
-        min-width: 800px; /* Ensure content doesn't squeeze too much on large narrow viewports */
+        /* min-width: 800px; REMOVED to prevent horizontal scroll on narrower desktops */
     }
 }
 
