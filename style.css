@@ -1123,6 +1123,14 @@ align-items:center;
 margin:10px 0;
 }
 
+.stat p 
+{
+font-size: 18px;
+font-weight: 700;
+color: #333;
+margin-top: 5px;
+}
+
 .cta
 {
 padding:35px 15px;
@@ -1313,7 +1321,7 @@ font-size:24px;
     text-align: center;
     color: white;
     z-index: 2;
-    text-shadow: 0 3px 10px rgba(0,0,0,0.7);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 .hero-content h1 {
     font-size: 48px;

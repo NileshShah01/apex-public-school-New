@@ -187,7 +187,7 @@ function changePage(delta) {
     filterAndDisplayStudents();
 }
 
-// Result Verification
+// Result and Admit Card Verification
 async function populateResultsStatus() {
     const tbody = document.getElementById('resultsStatusTableBody');
     const yearSelect = document.getElementById('resultsYearFilter');
@@ -199,52 +199,78 @@ async function populateResultsStatus() {
     tbody.innerHTML = '';
     
     for (const student of allStudents) {
-        const docId = student.id; // Matches how they are queried in student dashboard
+        const docId = student.id; 
         const tr = document.createElement('tr');
         
         tr.innerHTML = `
             <td>${student.student_id || docId}</td>
             <td>${student.name}</td>
             <td>Class ${student.class || '-'}</td>
-            <td id="status-row-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Checking...</span></td>
             <td>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <input type="file" id="upload-pdf-${docId}" accept="application/pdf" style="display:none;" onchange="uploadResult(event, '${docId}', '${year}')">
-                    <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-pdf-${docId}').click()">
-                        <i class="fas fa-upload"></i> Upload
-                    </button>
-                    <a id="preview-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden">
-                        <i class="fas fa-external-link-alt"></i> View
-                    </a>
+                <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                    <div id="status-report-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Rep: Checking...</span></div>
+                    <div id="status-admit-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Adm: Checking...</span></div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <!-- Report Card Row -->
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="file" id="upload-pdf-${docId}" accept="application/pdf" style="display:none;" onchange="uploadResult(event, '${docId}', '${year}')">
+                        <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-pdf-${docId}').click()" style="font-size:0.75rem;">
+                            <i class="fas fa-upload"></i> Report
+                        </button>
+                        <a id="preview-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden" style="font-size:0.75rem;">
+                            <i class="fas fa-external-link-alt"></i> View
+                        </a>
+                    </div>
+                    <!-- Admit Card Row -->
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="file" id="upload-admit-${docId}" accept="application/pdf" style="display:none;" onchange="uploadAdmitCard(event, '${docId}', '${year}')">
+                        <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-admit-${docId}').click()" style="font-size:0.75rem; color:#d97706;">
+                            <i class="fas fa-upload"></i> Admit
+                        </button>
+                        <a id="preview-admit-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden" style="font-size:0.75rem;">
+                            <i class="fas fa-external-link-alt"></i> View
+                        </a>
+                    </div>
                 </div>
             </td>
         `;
         tbody.appendChild(tr);
         
-        // Async check Free Firestore Database instead of Firebase Storage
+        // 1. Check Report Card 
         db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
-            const cell = document.getElementById(`status-row-${docId}`);
+            const cell = document.getElementById(`status-report-${docId}`);
             if(docRef.exists) {
-                if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Available</span>';
+                if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>';
                 const btn = document.getElementById(`preview-btn-${docId}`);
                 if(btn) {
-                    // Open in new window via data url
-                    btn.onclick = (e) => {
-                        e.preventDefault();
-                        const pdfData = docRef.data().fileData;
-                        const w = window.open();
-                        w.document.write(`<iframe src="${pdfData}" width="100%" height="100%" style="border:none;"></iframe>`);
-                    };
+                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
                     btn.classList.remove('hidden');
                 }
                 resultsCount++;
                 document.getElementById('statTotalResults').textContent = resultsCount;
-            } else {
-                throw new Error("Missing");
-            }
+            } else { throw new Error("Missing"); }
         }).catch(() => {
-            const cell = document.getElementById(`status-row-${docId}`);
-            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Missing</span>';
+            const cell = document.getElementById(`status-report-${docId}`);
+            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rep: Missing</span>';
+        });
+
+        // 2. Check Admit Card
+        db.collection('admitcards').doc(`${docId}_${year}`).get().then(docRef => {
+            const cell = document.getElementById(`status-admit-${docId}`);
+            if(docRef.exists) {
+                if(cell) cell.innerHTML = '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
+                const btn = document.getElementById(`preview-admit-btn-${docId}`);
+                if(btn) {
+                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
+                    btn.classList.remove('hidden');
+                }
+            } else { throw new Error("Missing"); }
+        }).catch(() => {
+            const cell = document.getElementById(`status-admit-${docId}`);
+            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Adm: Missing</span>';
         });
     }
 }
@@ -275,6 +301,36 @@ async function uploadResult(event, docId, year) {
         populateResultsStatus(); // Refresh row statuses
     } catch (e) {
         showToast('Error uploading PDF: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function uploadAdmitCard(event, docId, year) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 900 * 1024) {
+        showToast('File too large! Max 900KB for free DB storage.', 'error');
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const base64 = await new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+        
+        await db.collection('admitcards').doc(`${docId}_${year}`).set({
+            fileData: base64,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Admit Card saved to Database!');
+        populateResultsStatus(); 
+    } catch (e) {
+        showToast('Error uploading Admit Card: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }

@@ -95,30 +95,49 @@ function checkPhotoExists(url) {
 
 async function updateResultLink() {
     const year = document.getElementById('academicYear').value;
-    const statusArea = document.getElementById('resultStatusArea');
+    const resultArea = document.getElementById('resultStatusArea');
+    const admitArea = document.getElementById('admitCardStatusArea');
     
-    statusArea.innerHTML = '<span class="badge" style="background:#f1f5f9; color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Checking availability...</span>';
+    resultArea.innerHTML = '<span class="badge" style="background:#f1f5f9; color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
+    admitArea.innerHTML = '<span class="badge" style="background:#fef3c7; color:#92400e;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
 
-    try {
-        const docRef = await db.collection('reports').doc(`${currentStudentID}_${year}`).get();
+    // Check Result Card
+    db.collection('reports').doc(`${currentStudentID}_${year}`).get().then(docRef => {
         if (docRef.exists) {
             const pdfData = docRef.data().fileData;
-            statusArea.innerHTML = `
-                <a href="${pdfData}" download="ReportCard_${year}.pdf" class="btn-portal btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">
-                    <i class="fas fa-download"></i> Download Report Card (${year})
+            resultArea.innerHTML = `
+                <a href="${pdfData}" download="ReportCard_${year}.pdf" class="btn-portal btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; width: 100%;">
+                    <i class="fas fa-download"></i> Download Report Card
                 </a>
             `;
-        } else {
-            throw new Error("Not Found");
-        }
-    } catch (e) {
-        statusArea.innerHTML = `
-            <div style="padding: 1rem; background: #fff1f2; border-radius: 0.5rem; color: #be123c; display: flex; align-items: center; gap: 0.75rem; justify-content: center;">
+        } else { throw new Error("Not Found"); }
+    }).catch(e => {
+        resultArea.innerHTML = `
+            <div style="padding: 0.75rem; background: #fff1f2; border-radius: 0.5rem; color: #be123c; display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-size: 0.9rem;">
                 <i class="fas fa-exclamation-triangle"></i>
-                <span style="font-weight: 600;">Result for ${year} is not available yet.</span>
+                <span style="font-weight: 600;">Not available yet.</span>
             </div>
         `;
-    }
+    });
+
+    // Check Admit Card
+    db.collection('admitcards').doc(`${currentStudentID}_${year}`).get().then(docRef => {
+        if (docRef.exists) {
+            const pdfData = docRef.data().fileData;
+            admitArea.innerHTML = `
+                <a href="${pdfData}" download="AdmitCard_${year}.pdf" class="btn-portal" style="background: #d97706; color: white; padding: 0.75rem 1.5rem; font-size: 0.95rem; width: 100%; display: inline-block;">
+                    <i class="fas fa-download"></i> Download Admit Card
+                </a>
+            `;
+        } else { throw new Error("Not Found"); }
+    }).catch(e => {
+        admitArea.innerHTML = `
+            <div style="padding: 0.75rem; background: #fef2f2; border-radius: 0.5rem; color: #991b1b; display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span style="font-weight: 600;">Not available yet.</span>
+            </div>
+        `;
+    });
 }
 
 async function fetchNotices() {
