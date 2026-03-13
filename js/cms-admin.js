@@ -901,43 +901,54 @@ function updateFileName(inputId, statusId) {
     }
 }
 
-function findIdKey(row) {
-    if (!row) return null;
-    return findKey(row, ['student id', 'id', 'admission no', 'roll no', 'sid', 'id no']);
-}
+const SEARCH_TERMS = {
+    "Student Id": ['student id', 'id', 'admission no', 'adm no', 'id_no', 'student_id', 'scholar no', 'reg no', 'roll no', 'sid', 'id no'],
+    "Student Name": ['student name', 'name', 'student_name', 'candidate name', 'full name'],
+    "Father Name": ['father name', 'father_name', 'father', 'guardian name', 'guardian'],
+    "Phone": ['phone', 'mobile', 'contact', 'mobile number', 'phone number', 'whatsapp'],
+    "Session": ['session', 'year', 'academic year'],
+    "Class": ['class', 'cls', 'grade', 'standard'],
+    "Due Amount": ['due amount', 'balance', 'pending', 'dues', 'total due', 'amount due', 'due']
+};
 
-function findKey(row, searchTerms) {
+function findKey(row, keyName) {
     if (!row) return null;
+    const searchTerms = SEARCH_TERMS[keyName] || [keyName.toLowerCase()];
     const keys = Object.keys(row);
+    
+    // Exact match first
     for (const term of searchTerms) {
-        // Exact match first
         const exact = keys.find(k => k.trim().toLowerCase() === term.toLowerCase());
         if (exact) return exact;
     }
+    
+    // Fuzzy match second
     for (const term of searchTerms) {
-        // Fuzzy match
         const fuzzy = keys.find(k => k.toLowerCase().includes(term.toLowerCase()));
         if (fuzzy) return fuzzy;
     }
     return null;
 }
 
-function mapFeeRow(row, idKey) {
-    const nameKey = findKey(row, ['student name', 'name', 'full name']);
-    const fatherKey = findKey(row, ['father name', 'father', 'guardian']);
-    const phoneKey = findKey(row, ['phone', 'mobile', 'contact']);
-    const sessionKey = findKey(row, ['session', 'academic year', 'year']);
-    const classKey = findKey(row, ['class', 'standard', 'grade']);
-    const dueKey = findKey(row, ['due amount', 'due', 'balance', 'pending']);
+function mapFeeRow(row) {
+    const idKey = findKey(row, "Student Id");
+    const nameKey = findKey(row, "Student Name");
+    const fatherKey = findKey(row, "Father Name");
+    const phoneKey = findKey(row, "Phone");
+    const sessionKey = findKey(row, "Session");
+    const classKey = findKey(row, "Class");
+    const dueKey = findKey(row, "Due Amount");
+
+    if (!idKey) console.warn("Missing Student Id mapping in row:", row);
 
     return {
-        "Student Id": String(row[idKey] || '').trim(),
-        "Student Name": String(row[nameKey] || '').trim(),
-        "Father Name": String(row[fatherKey] || '').trim(),
-        "Phone": String(row[phoneKey] || '').trim(),
-        "Session": String(row[sessionKey] || '').trim(),
-        "Class": String(row[classKey] || '').trim(),
-        "Due Amount": Number(row[dueKey] || 0)
+        "Student Id": idKey ? String(row[idKey] || '').trim() : '',
+        "Student Name": nameKey ? String(row[nameKey] || '').trim() : '',
+        "Father Name": fatherKey ? String(row[fatherKey] || '').trim() : '',
+        "Phone": phoneKey ? String(row[phoneKey] || '').trim() : '',
+        "Session": sessionKey ? String(row[sessionKey] || '').trim() : '',
+        "Class": classKey ? String(row[classKey] || '').trim() : '',
+        "Due Amount": dueKey ? Number(row[dueKey] || 0) : 0
     };
 }
 
@@ -1003,28 +1014,33 @@ async function processFeeData() {
             return;
         }
 
-        const duesIdKey = findIdKey(rawDuesData[0]);
-        const paidIdKey = findIdKey(rawPaidData[0]);
+        // Discovery of ID keys for matching
+        const duesIdKey = findKey(rawDuesData[0], "Student Id");
+        const paidIdKey = findKey(rawPaidData[0], "Student Id");
 
-        console.log("Dues ID Key:", duesIdKey);
-        console.log("Paid ID Key:", paidIdKey);
+        console.log("[FeeTool] Dues ID Key found:", duesIdKey);
+        console.log("[FeeTool] Paid ID Key found:", paidIdKey);
 
         if (!duesIdKey || !paidIdKey) {
-            showToast("Could not find 'Student id' column. Check Excel headers.", "error");
+            const missing = !duesIdKey ? "Dues File" : "Paid File";
+            showToast(`Could not find 'Student id' column in ${missing}. Check headers.`, "error");
             return;
         }
 
         // Get paid IDs set
         const paidIds = new Set(rawPaidData.map(row => String(row[paidIdKey] || '').trim()).filter(id => id !== ''));
+        console.log(`[FeeTool] Found ${paidIds.size} unique paid student IDs.`);
 
         // Identify non-paying students and map them
         const nonPaying = [];
-        rawDuesData.forEach(row => {
+        rawDuesData.forEach((row, idx) => {
             const id = String(row[duesIdKey] || '').trim();
             if (id !== '' && !paidIds.has(id)) {
-                nonPaying.push(mapFeeRow(row, duesIdKey));
+                nonPaying.push(mapFeeRow(row));
             }
         });
+
+        console.log(`[FeeTool] Identified ${nonPaying.length} students who have not paid.`);
 
         if (nonPaying.length === 0) {
             showToast("Great news! All students have paid.", "success");
