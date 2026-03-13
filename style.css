@@ -188,6 +188,25 @@ body {
 }
 
 @media (max-width: 768px) {
+    .school-location, .school-udise {
+        display: none !important;
+    }
+
+    .school-info h1 {
+        font-size: 1.1rem !important;
+        white-space: nowrap;
+    }
+
+    .header-container {
+        padding: 8px 12px;
+        min-height: 60px;
+    }
+
+    .logo {
+        height: 45px;
+        max-width: 50px;
+    }
+
     .menu-toggle {
         display: block;
         transition: transform 0.3s ease;
@@ -201,19 +220,18 @@ body {
         position: fixed;
         top: 0;
         left: -100%;
-        width: 65vw;
-        min-width: 260px;
+        width: 75vw;
+        min-width: 280px;
         height: 100vh;
-        background: #f8fafc;
-        /* Lighter background for better contrast with dark blue */
+        background: rgba(248, 250, 252, 0.95);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         flex-direction: column;
-        padding: 1rem;
-        transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        box-shadow: 20px 0 60px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem 1rem;
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 20px 0 60px rgba(0, 0, 0, 0.15);
         z-index: 1000;
-        border-right: 1px solid rgba(30, 58, 138, 0.2);
+        border-right: 1px solid rgba(30, 58, 138, 0.1);
         overflow-y: auto;
     }
 
@@ -271,73 +289,58 @@ body {
     }
 
     .menu>a {
-        font-size: 0.85rem;
-        border: 1px solid rgba(30, 58, 138, 0.3);
-        margin-bottom: 0.10rem;
-        /* Reduced from 0.2rem */
+        font-size: 0.95rem;
+        background: rgba(30, 58, 138, 0.03);
+        border: 1px solid rgba(30, 58, 138, 0.08);
+        margin-bottom: 0.5rem;
         width: 100%;
-        padding: 0.20rem 0.6rem;
-        /* Reduced from 0.35rem 0.6rem */
-        border-radius: 0.4rem;
-        background: var(--white);
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.20rem;
-        /* Reduced from 0.4rem to bring icon closer */
-        color: var(--primary);
-        font-weight: 600;
+        gap: 0.75rem;
+        color: var(--secondary);
+        font-weight: 500;
         transition: all 0.3s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .menu>a::after {
-        display: none;
     }
 
     .menu>a:hover,
     .menu>a.active {
         background: var(--primary);
         color: var(--white);
+        border-color: var(--primary);
+        transform: translateX(5px);
     }
 
     /* Restyle portal buttons inside mobile menu */
     .menu .header-buttons {
-        padding-top: 0.3rem;
-        /* Reduced */
-        margin-top: 0.15rem;
-        /* Reduced */
+        padding-top: 1rem;
+        margin-top: 1rem;
         border-top: 1px solid rgba(0, 0, 0, 0.08);
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
-        /* Reduced */
+        gap: 0.75rem;
         width: 100%;
         padding-bottom: 2rem;
     }
 
     .menu .btn-portal-nav {
-        border-bottom: none;
-        border-radius: 0.4rem;
-        padding: 0.4rem 0.8rem !important;
-        /* Reduced */
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem !important;
         width: 100%;
         justify-content: flex-start;
-        font-size: 0.85rem !important;
-        /* Slightly smaller */
-        border: 1px solid rgba(30, 58, 138, 0.3);
-        background: #eef2ff;
-        color: var(--primary);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        /* Reduced */
-    }
-
-    .menu .btn-portal-nav:hover {
+        font-size: 0.9rem !important;
         background: var(--primary);
         color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: none;
+    }
+
+    .menu .admin-btn {
+        background: var(--secondary);
     }
 }
 
