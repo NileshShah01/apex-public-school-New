@@ -210,13 +210,26 @@ Monday – Saturday
 <h2>Send Inquiry</h2>
 
 <div class="form-box">
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdBNze-zGc4b8n-iWuE0Iovxoz6ZTXc8mEIZyq120pNseQ3cA/viewform?embedded=true" height="1660">
-
-Loading…
-
-</iframe>
-
+<form id="contactForm" style="display:grid; gap:18px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Name <span style="color:red">*</span></label>
+            <input type="text" id="con_name" required placeholder="Your name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+        </div>
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Mobile Number <span style="color:red">*</span></label>
+            <input type="tel" id="con_mobile" required placeholder="10-digit number" maxlength="10" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+        </div>
+    </div>
+    <div>
+        <label style="font-weight:600; display:block; margin-bottom:6px;">Message / Inquiry <span style="color:red">*</span></label>
+        <textarea id="con_message" required rows="4" placeholder="How can we help you?" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; resize:vertical;"></textarea>
+    </div>
+    <div id="con_status" style="display:none; padding:14px; border-radius:8px; font-weight:600; text-align:center;"></div>
+    <button type="submit" style="background:#1E40AF; color:white; padding:14px 30px; border:none; border-radius:8px; font-size:16px; font-weight:700; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='#2563EB'" onmouseout="this.style.background='#1E40AF'">
+        <i class="fa-solid fa-paper-plane"></i> Send Message
+    </button>
+</form>
 </div>
 
 </section>
@@ -245,11 +258,59 @@ Loading…
 
 
 <!-- NEW FLOATING BUTTONS CONTAINER -->
-<div id="floating-button"></div>
-
-
-
 <script src="script.js"></script>
+
+<!-- Firebase SDK for Inquiry Sync -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    const status = document.getElementById('con_status');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.style.display = 'none';
+
+    const mobile = document.getElementById('con_mobile').value.trim();
+    if (mobile.length !== 10 || isNaN(mobile)) {
+        status.style.display = 'block';
+        status.style.background = '#fff1f2';
+        status.style.color = '#be123c';
+        status.textContent = 'Please enter a valid 10-digit mobile number.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+        return;
+    }
+
+    try {
+        await db.collection('inquiries').add({
+            parent: document.getElementById('con_name').value.trim(),
+            student: 'N/A (General Contact)',
+            mobile: mobile,
+            class: 'N/A',
+            village: 'N/A',
+            message: document.getElementById('con_message').value.trim(),
+            status: 'New',
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        status.style.display = 'block';
+        status.style.background = '#ecfdf5';
+        status.style.color = '#065f46';
+        status.textContent = '✅ Message sent successfully! We will contact you soon.';
+        this.reset();
+    } catch(err) {
+        status.style.display = 'block';
+        status.style.background = '#fff1f2';
+        status.style.color = '#be123c';
+        status.textContent = 'Failed to send message. Please try calling us instead.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+    }
+});
+</script>
 
 
 <script>

@@ -821,3 +821,84 @@ async function handleBulkUpload(event, collection) {
     showToast(`Bulk upload complete: ${success} success, ${failed} failed`);
     event.target.value = ''; // Reset file input
 }
+
+// ===================== CSV EXPORT =====================
+async function exportToCSV(collection) {
+    try {
+        setLoading(true);
+        const snap = await db.collection(collection).get();
+        if (snap.empty) {
+            showToast('No data to export', 'error');
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        let headers = [];
+        let rows = [];
+
+        snap.forEach(doc => {
+            const data = doc.data();
+            const row = {};
+            
+            // Format specific based on collection
+            if (collection === 'students') {
+                row['Student ID'] = data.student_id;
+                row['Name'] = data.name;
+                row['Class'] = data.class;
+                row['Section'] = data.section;
+                row['DOB'] = data.dob;
+                row['Mobile'] = data.phone;
+                row['Father Name'] = data.father_name;
+                row['Village/Address'] = data.village;
+            } else if (collection === 'staff') {
+                row['Name'] = data.name;
+                row['Subject/Role'] = data.subject || data.role;
+                row['Qualifications'] = data.qualifications || '';
+            } else if (collection === 'inquiries') {
+                row['Date'] = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleDateString() : '';
+                row['Parent Name'] = data.parent;
+                row['Student Name'] = data.student;
+                row['Mobile'] = data.mobile;
+                row['Class'] = data.class;
+                row['Village'] = data.village;
+                row['Status'] = data.status;
+                row['Message'] = data.message;
+            }
+
+            rows.push(row);
+        });
+
+        // Extract headers from first row
+        if (rows.length > 0) {
+            headers = Object.keys(rows[0]);
+            csvContent += headers.map(h => `"${h}"`).join(",") + "\r\n";
+            
+            rows.forEach(row => {
+                const values = headers.map(header => {
+                    let val = row[header] === undefined ? '' : row[header];
+                    // Escape quotes
+                    if (typeof val === 'string') {
+                        val = val.replace(/"/g, '""');
+                        if (val.search(/("|,|\n)/g) >= 0) val = `"${val}"`;
+                    }
+                    return val;
+                });
+                csvContent += values.join(",") + "\r\n";
+            });
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${collection}_export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast(`Exported ${rows.length} records!`);
+    } catch(e) {
+        showToast('Error exporting: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}

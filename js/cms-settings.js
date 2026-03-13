@@ -138,18 +138,52 @@
     // ===================== GALLERY PAGE =====================
     function loadGalleryPage() {
         const container = document.getElementById('galleryDynamicGrid');
+        const filters = document.getElementById('galleryFilters');
         if (!container) return;
+        
+        let allImages = [];
+
         db.collection('gallery').orderBy('createdAt','asc').get().then(snap => {
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:3rem;">No gallery images added yet.</p>'; return; }
+            if (snap.empty) { container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No gallery images added yet.</p>'; return; }
+            
+            snap.forEach(doc => allImages.push(doc.data()));
+            renderGallery('all');
+
+            if (filters) {
+                filters.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        document.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.style.background = 'transparent';
+                            btn.style.color = '#475569';
+                        });
+                        e.target.style.background = '#1E40AF';
+                        e.target.style.color = 'white';
+                        renderGallery(e.target.getAttribute('data-filter'));
+                    }
+                });
+            }
+        }).catch(() => {});
+
+        function renderGallery(filter) {
             container.innerHTML = '';
-            snap.forEach(doc => {
-                const d = doc.data();
+            const filteredImages = filter === 'all' 
+                ? allImages 
+                : allImages.filter(img => (img.category || 'Others') === filter);
+            
+            if (filteredImages.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No images found in this category.</p>`;
+                return;
+            }
+
+            filteredImages.forEach(d => {
+                const catBadge = d.category ? `<span style="position:absolute; top:0.5rem; right:0.5rem; background:#1E40AF; color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; font-weight:bold;">${d.category}</span>` : '';
                 container.innerHTML += `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
                     <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy" style="width:100%; height:220px; object-fit:cover; display:block;">
+                    ${catBadge}
                     ${d.caption ? `<div style="padding:0.5rem 0.75rem; font-size:0.85rem; color:#475569; text-align:center;">${d.caption}</div>` : ''}
                 </div>`;
             });
-        }).catch(() => {});
+        }
     }
 
     // ===================== STAFF (about.html) =====================

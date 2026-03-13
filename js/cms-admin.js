@@ -113,8 +113,10 @@ function renderHolidayItem(id, d) {
 
 function renderGalleryItem(id, d) {
     const url = d.url || d.imageUrl || '';
+    const catBadge = d.category ? `<span style="position:absolute; top:0.4rem; left:0.4rem; background:#1E40AF; color:white; font-size:0.65rem; padding:0.2rem 0.4rem; border-radius:4px; font-weight:bold;">${d.category}</span>` : '';
     return `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
         <img src="${url}" style="width:100%; height:140px; object-fit:cover; display:block;" onerror="this.src='https://via.placeholder.com/180x140?text=Invalid+URL'">
+        ${catBadge}
         <div style="padding:0.4rem 0.6rem; font-size:0.75rem; color:#64748b;">${d.caption || ''}</div>
         <button onclick="deleteCmsItem('gallery','${id}',loadCmsList.bind(null,'gallery','galleryListAdmin',renderGalleryItem))" style="position:absolute;top:0.4rem;right:0.4rem; background:rgba(239,68,68,0.9); border:none; color:white; border-radius:50%; width:26px; height:26px; cursor:pointer;"><i class="fas fa-times"></i></button>
     </div>`;
@@ -179,9 +181,10 @@ const MODAL_CONFIGS = {
         title: 'Add Gallery Image',
         fields: [
             { id: 'cms_url', label: 'Image URL *', type: 'url', required: true, placeholder: 'https://...' },
+            { id: 'cms_category', label: 'Category *', type: 'select', options: ['Sports', 'Events', 'Functions', 'Awards', 'Others'], required: true },
             { id: 'cms_caption', label: 'Caption (optional)', type: 'text' }
         ],
-        save: async (data) => { await db.collection('gallery').add({ url: data.cms_url, caption: data.cms_caption, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem); }
+        save: async (data) => { await db.collection('gallery').add({ url: data.cms_url, category: data.cms_category, caption: data.cms_caption, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem); }
     },
     staff: {
         title: 'Add Staff / Teacher',
@@ -201,12 +204,19 @@ function openCmsModal(type) {
     let html = '';
     config.fields.forEach(f => {
         html += `<div class="form-group" style="margin-bottom:1rem;">
-            <label style="font-weight:600; display:block; margin-bottom:0.4rem;">${f.label}</label>
-            ${f.type === 'textarea'
-                ? `<textarea id="${f.id}" ${f.required ? 'required' : ''} rows="3" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;"></textarea>`
-                : `<input type="${f.type}" id="${f.id}" ${f.required ? 'required' : ''} placeholder="${f.placeholder || ''}" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;">`
-            }
-        </div>`;
+            <label style="font-weight:600; display:block; margin-bottom:0.4rem;">${f.label}</label>`;
+            
+        if (f.type === 'textarea') {
+            html += `<textarea id="${f.id}" ${f.required ? 'required' : ''} rows="3" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;"></textarea>`;
+        } else if (f.type === 'select') {
+            html += `<select id="${f.id}" ${f.required ? 'required' : ''} style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem; background:white;">`;
+            f.options.forEach(opt => html += `<option value="${opt}">${opt}</option>`);
+            html += `</select>`;
+        } else {
+            html += `<input type="${f.type}" id="${f.id}" ${f.required ? 'required' : ''} placeholder="${f.placeholder || ''}" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;">`;
+        }
+        
+        html += `</div>`;
     });
     html += `<button class="btn-portal btn-primary" onclick="saveCmsModal('${type}')" style="width:100%;"><i class="fas fa-plus"></i> Add</button>`;
     document.getElementById('cmsModalBody').innerHTML = html;

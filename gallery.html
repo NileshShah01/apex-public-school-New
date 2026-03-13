@@ -169,11 +169,27 @@ cursor:pointer;
 
 
 <section class="page-header">
+    <h1>School Gallery</h1>
+    <p>Memories from school events and activities</p>
+</section>
 
-<h1>School Gallery</h1>
+<section class="section">
+    <h2>Photo Gallery</h2>
+    
+    <!-- Dynamic Category Filters -->
+    <div id="galleryFilters" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;">
+        <button class="filter-btn active" data-filter="all" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:#1E40AF; color:white; cursor:pointer; font-weight:600;">All</button>
+        <button class="filter-btn" data-filter="Sports" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Sports</button>
+        <button class="filter-btn" data-filter="Events" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Events</button>
+        <button class="filter-btn" data-filter="Functions" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Functions</button>
+        <button class="filter-btn" data-filter="Awards" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Awards</button>
+        <button class="filter-btn" data-filter="Others" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Others</button>
+    </div>
 
-<p>Memories from school events and activities</p>
-
+    <div class="grid" id="galleryDynamicGrid">
+        <!-- Loaded automatically by CMS -->
+        <p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">Loading school gallery...</p>
+    </div>
 </section>
 
 

@@ -484,7 +484,10 @@
                         <h3 style="margin-bottom:0.25rem;"><i class="fas fa-inbox"></i> Admission Inquiries</h3>
                         <p style="color:var(--text-muted); font-size:0.875rem;">Public inquiries submitted from the website inquiry form.</p>
                     </div>
-                    <button class="btn-portal btn-ghost" onclick="loadInquiries()"><i class="fas fa-sync"></i> Refresh</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-portal" style="background:#10b981; color:white;" onclick="exportToCSV('inquiries')"><i class="fas fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-portal btn-ghost" onclick="loadInquiries()"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
                 </div>
                 <div class="table-container">
                     <table>
@@ -635,13 +638,17 @@
                 <div id="galleryListAdmin" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem;"></div>
             </section>
 
-            <!-- CMS: Staff -->
-            <section id="cmsStaffSection" class="dashboard-section card" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <h3><i class="fas fa-chalkboard-teacher"></i> Staff & Teachers</h3>
-                    <button class="btn-portal btn-primary" onclick="openCmsModal('staff')"><i class="fas fa-plus"></i> Add Staff</button>
+            <!-- STAFF SECTION -->
+            <section id="cmsStaffSection" class="dashboard-section card" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                    <h3><i class="fas fa-chalkboard-teacher" style="color:#1e3a8a;"></i> Manage Teachers & Staff</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-portal" style="background:#10b981; color:white;" onclick="exportToCSV('staff')"><i class="fas fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-portal btn-primary" onclick="openCmsModal('staff')"><i class="fas fa-plus"></i> Add Staff Member</button>
+                    </div>
                 </div>
-                <div id="staffListAdmin" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem;"></div>
+                <!-- List -->
+                <div id="staffListAdmin" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1.5rem;"></div>
             </section>
 
             <!-- CMS: Timetables -->
