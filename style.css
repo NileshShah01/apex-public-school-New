@@ -445,7 +445,7 @@ font-weight:700;
 position:relative;
 height:500px;
 overflow:hidden;
-background: #0a2a66;
+background: var(--white);
 }
 
 .slider
@@ -491,7 +491,7 @@ padding: 0 20px;
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--gradient-hero);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
     z-index: 5;
 }
 
@@ -614,14 +614,24 @@ margin-bottom:6px;
 
 /* ================= STATS & CTA ================= */
 .stats {
-    background: var(--gradient-cta);
+    background: var(--white);
     border-radius: 2rem;
     padding: 5rem 2rem;
     margin: 6rem auto;
-    color: var(--white);
+    color: var(--text-main);
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.stats h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 3rem;
+    text-align: center;
 }
 
 .stats::before {
@@ -631,7 +641,7 @@ margin-bottom:6px;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(30, 58, 138, 0.03) 0%, transparent 60%);
     animation: rotate 20s linear infinite;
 }
 
@@ -652,14 +662,13 @@ margin-bottom:6px;
 .stat h3 {
     font-size: 4rem;
     font-weight: 800;
-    color: var(--white);
+    color: var(--primary);
     margin-bottom: 0.5rem;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.stat span {
+.stat span, .stat p {
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 1rem;
@@ -1427,14 +1436,28 @@ font-size:24px;
 /* ==================== ABOUT PAGE STYLES ==================== */
 .about-hero {
     height: 380px;
-    background: linear-gradient(rgba(10,42,102,0.75), rgba(30,77,183,0.65)), url('images/School-Building.jpeg');
+    background: url('images/School-Building.jpeg');
     background-size: cover;
     background-position: center;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     text-align: center;
+}
+
+.about-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+    z-index: 1;
+}
+
+.about-hero > * {
+    position: relative;
+    z-index: 2;
 }
 
 .mission-vision-grid {
