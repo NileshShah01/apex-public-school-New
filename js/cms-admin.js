@@ -30,7 +30,8 @@ const CMS_SECTIONS = {
     'cmsTextFacilities': { load: () => loadPageTextAdmin('facilities') },
     'cmsTextGallery': { load: () => loadPageTextAdmin('gallery') },
     'cmsTextContact': { load: () => loadPageTextAdmin('contact') },
-    'cmsTextInquiry': { load: () => loadPageTextAdmin('inquiry') }
+    'cmsTextInquiry': { load: () => loadPageTextAdmin('inquiry') },
+    'cmsFeeTools': { load: () => { window.feeResultData = null; document.getElementById('fee_resultsArea').style.display='none'; } }
 };
 
 // Hook into existing showSection 
@@ -888,4 +889,166 @@ async function loadHeroSlider() {
             document.getElementById('hero_4').value = d.hero_4 || '';
         }
     } catch(e) { console.error(e); }
+}
+
+// ===================== FEE TOOLS: PARENTS WHO NOT PAID =====================
+let feeResultData = null;
+
+function updateFileName(inputId, statusId) {
+    const file = document.getElementById(inputId).files[0];
+    if (file) {
+        document.getElementById(statusId).textContent = "✓ " + file.name;
+    }
+}
+
+async function processFeeData() {
+    const duesFile = document.getElementById('fee_duesFile').files[0];
+    const paidFile = document.getElementById('fee_paidFile').files[0];
+
+    if (!duesFile || !paidFile) {
+        showToast("Please upload both Excel files first.", "error");
+        return;
+    }
+
+    try {
+        showToast("Analysing data, please wait...", "info");
+        
+        const duesData = await readExcelFile(duesFile);
+        const paidData = await readExcelFile(paidFile);
+
+        const duesIdKey = findIdKey(duesData[0]);
+        const paidIdKey = findIdKey(paidData[0]);
+
+        if (!duesIdKey || !paidIdKey) {
+            showToast("Could not find 'Student id' column in one or both files.", "error");
+            return;
+        }
+
+        // Get paid IDs set
+        const paidIds = new Set(paidData.map(row => String(row[paidIdKey] || '').trim()).filter(id => id !== ''));
+
+        // Identify non-paying students
+        const nonPaying = duesData.filter(row => {
+            const id = String(row[duesIdKey] || '').trim();
+            return id !== '' && !paidIds.has(id);
+        });
+
+        if (nonPaying.length === 0) {
+            showToast("Great news! All students on the list have paid.", "success");
+            return;
+        }
+
+        // Group by Class
+        const classKey = findKey(duesData[0], ['class', 'standard', 'grade']);
+        const grouped = {};
+        nonPaying.forEach(row => {
+            const cls = String(row[classKey] || 'Unclassified').trim();
+            if (!grouped[cls]) grouped[cls] = [];
+            grouped[cls].push(row);
+        });
+
+        feeResultData = grouped;
+        
+        // Show Results Area
+        document.getElementById('fee_resultsArea').style.display = 'block';
+        document.getElementById('fee_summaryText').textContent = `Found ${nonPaying.length} students who have not paid this month, across ${Object.keys(grouped).length} classes.`;
+        showToast("Analysis complete!", "success");
+
+    } catch (e) {
+        console.error(e);
+        showToast("Error processing files: " + e.message, "error");
+    }
+}
+
+function readExcelFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            resolve(XLSX.utils.sheet_to_json(worksheet));
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+function findIdKey(row) {
+    if (!row) return null;
+    return findKey(row, ['student id', 'id', 'admission no', 'roll no', 'sid']);
+}
+
+function findKey(row, searchTerms) {
+    const keys = Object.keys(row);
+    for (const term of searchTerms) {
+        const match = keys.find(k => k.toLowerCase().includes(term));
+        if (match) return match;
+    }
+    return keys[0]; // Fallback to first column
+}
+
+function downloadFeeExcel() {
+    if (!feeResultData) return;
+    
+    const wb = XLSX.utils.book_new();
+    // Sort keys to have Class 1, Class 2 etc in order
+    const classes = Object.keys(feeResultData).sort();
+    
+    classes.forEach(cls => {
+        const ws = XLSX.utils.json_to_sheet(feeResultData[cls]);
+        XLSX.utils.book_append_sheet(wb, ws, cls.substring(0, 31)); // Max 31 chars
+    });
+
+    XLSX.writeFile(wb, "Non_Paying_Students_Report.xlsx");
+}
+
+function downloadFeePdf() {
+    if (!feeResultData) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    let yPos = 20;
+    doc.setFontSize(18);
+    doc.text("Non-Paying Students Report", 105, yPos, { align: 'center' });
+    yPos += 10;
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, yPos, { align: 'center' });
+    yPos += 15;
+
+    const classes = Object.keys(feeResultData).sort();
+    
+    classes.forEach((cls, index) => {
+        if (index > 0) doc.addPage();
+        
+        doc.setFontSize(14);
+        doc.text(`Class: ${cls}`, 14, 20);
+        
+        const data = feeResultData[cls];
+        const headers = Object.keys(data[0]);
+        const body = data.map(row => headers.map(h => row[h]));
+
+        doc.autoTable({
+            head: [headers],
+            body: body,
+            startY: 25,
+            theme: 'striped',
+            headStyles: { fillColor: [30, 64, 175] }, // var(--primary)
+            styles: { fontSize: 8, cellPadding: 2 },
+            margin: { top: 25 }
+        });
+    });
+
+    doc.save("Non_Paying_Students_Report.pdf");
+}
+
+function resetFeeTool() {
+    feeResultData = null;
+    document.getElementById('fee_duesFile').value = '';
+    document.getElementById('fee_paidFile').value = '';
+    document.getElementById('fee_duesStatus').textContent = '';
+    document.getElementById('fee_paidStatus').textContent = '';
+    document.getElementById('fee_resultsArea').style.display = 'none';
+    showToast("Data erased from memory.");
 }

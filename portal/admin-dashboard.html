@@ -177,6 +177,18 @@
                     </div>
                 </div>
 
+                <!-- TOOLS -->
+                <div class="nav-category" onclick="toggleCategory('catTools')">
+                    <div class="cat-header">
+                        <i class="fas fa-tools"></i>
+                        <span>Tools (ERP)</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catTools">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFeeTools')">Parents Who Not Paid</a>
+                    </div>
+                </div>
+
                 <!-- UTILITIES -->
                 <div class="nav-category" onclick="toggleCategory('catUtils')">
                     <div class="cat-header">
@@ -1217,7 +1229,68 @@
                     <button type="submit" class="btn-portal btn-primary" style="padding: 1rem 2rem; font-size: 1rem;">
                         <i class="fas fa-save"></i> Save & Apply Theme Globally
                     </button>
-                </form>
+            </section>
+
+            <!-- FEE TOOLS: PARENTS WHO NOT PAID -->
+            <section id="cmsFeeToolsSection" class="dashboard-section" style="display:none;">
+                <div class="card" style="padding: 2.5rem; border: 2px solid var(--primary-light);">
+                    <div style="text-align:center; margin-bottom:2.5rem;">
+                        <h2 style="color:var(--secondary); font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-file-invoice-dollar" style="color:var(--primary);"></i> Parents Who Not Paid</h2>
+                        <p style="color:var(--text-muted);">Compare total dues with monthly collections to identify pending payments.</p>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:2.5rem;">
+                        <!-- BOX 1: TOTAL DUES -->
+                        <div style="padding:2rem; background:#f8fafc; border:2px dashed var(--border); border-radius:1rem; text-align:center;">
+                            <i class="fas fa-file-excel" style="font-size:3rem; color:#10b981; margin-bottom:1rem;"></i>
+                            <h4 style="margin-bottom:1rem;">1. Total Students Dues Data</h4>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Upload the Excel containing all students and their total due amounts.</p>
+                            <input type="file" id="fee_duesFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="updateFileName('fee_duesFile', 'fee_duesStatus')">
+                            <label for="fee_duesFile" class="btn-portal" style="background:var(--white); border:1px solid var(--primary); color:var(--primary); cursor:pointer;">
+                                <i class="fas fa-upload"></i> Choose File
+                            </label>
+                            <div id="fee_duesStatus" style="margin-top:1rem; font-size:0.85rem; font-weight:600; color:#059669;"></div>
+                        </div>
+
+                        <!-- BOX 2: MONTHLY PAYMENTS -->
+                        <div style="padding:2rem; background:#f8fafc; border:2px dashed var(--border); border-radius:1rem; text-align:center;">
+                            <i class="fas fa-receipt" style="font-size:3rem; color:#6366f1; margin-bottom:1rem;"></i>
+                            <h4 style="margin-bottom:1rem;">2. Monthly Payment Received</h4>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Upload the Excel containing payment records for this specific month.</p>
+                            <input type="file" id="fee_paidFile" accept=".xlsx, .xls, .csv" style="display:none;" onchange="updateFileName('fee_paidFile', 'fee_paidStatus')">
+                            <label for="fee_paidFile" class="btn-portal" style="background:var(--white); border:1px solid var(--primary); color:var(--primary); cursor:pointer;">
+                                <i class="fas fa-upload"></i> Choose File
+                            </label>
+                            <div id="fee_paidStatus" style="margin-top:1rem; font-size:0.85rem; font-weight:600; color:#4f46e5;"></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; padding-top:1rem; border-top:1px solid var(--border);">
+                        <button onclick="processFeeData()" class="btn-portal btn-primary" style="padding:1rem 3rem; font-size:1.1rem;">
+                            <i class="fas fa-sync-alt"></i> Process & Generate Report
+                        </button>
+                    </div>
+
+                    <!-- RESULTS AREA -->
+                    <div id="fee_resultsArea" style="display:none; margin-top:2.5rem; padding:2rem; background:rgba(16,185,129,0.05); border-radius:1rem; border:1px solid rgba(16,185,129,0.2);">
+                        <h3 style="margin-bottom:1.5rem; color:#059669; display:flex; align-items:center; gap:0.75rem;">
+                            <i class="fas fa-check-circle"></i> Analysis Complete
+                        </h3>
+                        <p id="fee_summaryText" style="margin-bottom:2rem; font-weight:500;"></p>
+                        
+                        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                            <button onclick="downloadFeeExcel()" class="btn-portal" style="background:#10b981; color:white;">
+                                <i class="fas fa-file-excel"></i> Download Class-wise Excel
+                            </button>
+                            <button onclick="downloadFeePdf()" class="btn-portal" style="background:#ef4444; color:white;">
+                                <i class="fas fa-file-pdf"></i> Download A4 PDF Report
+                            </button>
+                            <button onclick="resetFeeTool()" class="btn-portal" style="background:var(--text-muted); color:white; margin-left:auto;">
+                                <i class="fas fa-trash-alt"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- CMS Modal (shared) -->
@@ -1234,11 +1307,12 @@
 
 
     <!-- Scripts -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- Include SheetJS for actual Excel parsing/export if needed -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/admin-auth.js"></script>
     <script src="../js/admin-dashboard.js"></script>
