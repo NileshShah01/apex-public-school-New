@@ -24,10 +24,17 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-body {
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scroll on the whole page */
     background-color: var(--bg-gray);
     color: var(--text-main);
     min-height: 100vh;
+}
+
+body {
     display: flex;
 }
 
@@ -50,7 +57,7 @@ body {
 /* Dashboard Layout */
 .dashboard-layout {
     display: grid;
-    grid-template-columns: 240px 1fr; /* Reduced from 280px to see more content */
+    grid-template-columns: 240px minmax(0, 1fr); /* minmax(0, 1fr) is key to prevent overflow */
     width: 100%;
     min-height: 100vh;
     transition: grid-template-columns 0.3s ease;
@@ -255,22 +262,26 @@ body {
     background: #f1f5f9;
     padding: 2rem;
     overflow-y: auto;
+    overflow-x: auto; /* Contain any widening content here with its own scrollbar */
     min-width: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* This will center all direct children */
+    align-items: center; /* Center all direct children */
 }
 
 /* SPECIFIC CENTERING FOR CMS SECTIONS */
 .dashboard-section {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto 2rem auto;
-    width: 100%;
+    width: 95%; /* Leave some breathing room */
 }
 
 .dashboard-section .card {
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100%;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Special handling for Website Customise tabs if needed */
@@ -286,12 +297,13 @@ body {
 }
 
 .header {
-    width: 100%;
+    width: 95%;
     max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2.5rem;
+    padding: 0 1rem;
 }
 
 .header h1 {
@@ -311,7 +323,7 @@ body {
 }
 
 .stats-grid {
-    width: 100%;
+    width: 95%;
     max-width: 1200px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
