@@ -4,6 +4,11 @@
 (function applyCMSSettings() {
     function tryApply() {
         if (typeof db === 'undefined' || !db) { setTimeout(tryApply, 200); return; }
+        
+        const page = window.location.pathname.split('/').pop() || 'index.html';
+        const pageKey = page.replace('.html', '') || 'index';
+        applyPageText(pageKey === 'index' ? 'home' : pageKey);
+
         loadGeneralSettings();
         loadBirthdays();
         loadEvents();
@@ -98,6 +103,23 @@
                 }
             }
         } catch(e) { console.error('Error loading global stats:', e); }
+    }
+
+    // ===================== PAGE TEXT CUSTOMIZATION =====================
+    async function applyPageText(pageKey) {
+        try {
+            const doc = await db.collection('pageText').doc(pageKey).get();
+            if (doc.exists) {
+                const data = doc.data();
+                for (const [id, value] of Object.entries(data)) {
+                    const el = document.getElementById(id);
+                    if (el && value) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = value;
+                        else el.innerText = value;
+                    }
+                }
+            }
+        } catch(e) { console.error(`Error applying text for ${pageKey}:`, e); }
     }
     // ===================== HOME PAGE HERO SLIDER =====================
     async function loadHeroSlider() {
@@ -576,6 +598,12 @@
             container.innerHTML = html;
         }).catch(() => {});
     }
+
+    // Global Fallback for Lightbox (if not defined in page)
+    window.openLightbox = window.openLightbox || function(img) {
+        const src = img.src || img;
+        window.open(src, '_blank');
+    };
 
     if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', tryApply); }
     else { tryApply(); }

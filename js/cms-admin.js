@@ -22,7 +22,15 @@ const CMS_SECTIONS = {
     'cmsImgHomeHero': { load: loadImgHomeHero },
     'cmsImgAboutHero': { load: loadImgAboutHero },
     'cmsImgFacilities': { load: loadImgFacilities },
-    'cmsGlobalStats': { load: loadGlobalStatsAdmin }
+    'cmsGlobalStats': { load: loadGlobalStatsAdmin },
+    'cmsTextHome': { load: () => loadPageTextAdmin('home') },
+    'cmsTextAbout': { load: () => loadPageTextAdmin('about') },
+    'cmsTextAcademics': { load: () => loadPageTextAdmin('academics') },
+    'cmsTextAdmissions': { load: () => loadPageTextAdmin('admissions') },
+    'cmsTextFacilities': { load: () => loadPageTextAdmin('facilities') },
+    'cmsTextGallery': { load: () => loadPageTextAdmin('gallery') },
+    'cmsTextContact': { load: () => loadPageTextAdmin('contact') },
+    'cmsTextInquiry': { load: () => loadPageTextAdmin('inquiry') }
 };
 
 // Hook into existing showSection 
@@ -387,6 +395,53 @@ async function loadGlobalStatsAdmin() {
         }
     } catch(e) { console.error('loadGlobalStatsAdmin error:', e); }
 }
+
+// ===================== WEBSITE TEXT CMS (GENERIC) =====================
+async function loadPageTextAdmin(pageKey) {
+    try {
+        const doc = await db.collection('pageText').doc(pageKey).get();
+        if (doc.exists) {
+            const data = doc.data();
+            for (const [id, value] of Object.entries(data)) {
+                const input = document.getElementById(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}${id.replace(pageKey, '')}`);
+                // Special case mapper might be needed if IDs don't match pattern, but for now:
+                const directInput = document.querySelectorAll(`[id$="${id.charAt(0).toUpperCase() + id.slice(1)}"]`)[0];
+                // Simplified: search for input by property name suffix
+                const allInputs = document.querySelectorAll(`#cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form [id]`);
+                allInputs.forEach(input => {
+                    const key = input.id.replace(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`, '');
+                    const dbKey = key.charAt(0).toLowerCase() + key.slice(1);
+                    if (data[dbKey]) input.value = data[dbKey];
+                    // Also try direct match
+                    if (data[input.id]) input.value = data[input.id];
+                });
+            }
+        }
+    } catch(e) { console.error(`loadPageTextAdmin error for ${pageKey}:`, e); }
+}
+
+function setupTextForm(pageKey) {
+    const form = document.getElementById(`cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form`);
+    if (!form) return;
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = { updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+        const inputs = form.querySelectorAll('[id]');
+        inputs.forEach(input => {
+            const key = input.id.replace(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`, '');
+            const dbKey = key.charAt(0).toLowerCase() + key.slice(1);
+            data[dbKey] = input.value.trim();
+        });
+
+        try {
+            await db.collection('pageText').doc(pageKey).set(data, { merge: true });
+            showToast(`${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)} Page text updated!`);
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
+}
+
+// Initialize all forms
+['home', 'about', 'academics', 'admissions', 'facilities', 'gallery', 'contact', 'inquiry'].forEach(setupTextForm);
 
 // ===================== STUDENT DASHBOARD CMS =====================
 async function loadCmsStudentDashboard() {

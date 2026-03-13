@@ -169,8 +169,8 @@ cursor:pointer;
 
 
 <section class="page-header">
-    <h1>School Gallery</h1>
-    <p>Memories from school events and activities</p>
+    <h1 id="galleryHeaderTitle">School Gallery</h1>
+    <p id="galleryHeaderSubtitle">Memories from school events and activities</p>
 </section>
 
 <!-- TOP 10 LATEST PHOTOS SLIDESHOW -->
@@ -206,17 +206,7 @@ cursor:pointer;
 </section>
 
 
-<div class="filter-buttons">
-
-<button onclick="filterGallery(event,'all')">All</button>
-<button onclick="filterGallery(event,'events')">School Events</button>
-<button onclick="filterGallery(event,'Museum')">Bihar Museum tour</button>
-<button onclick="filterGallery(event,'sports')">Sports</button>
-<button onclick="filterGallery(event,'republic')">Republic Day</button>
-<button onclick="filterGallery(event,'Facilities')">School Facilities</button>
-<button onclick="filterGallery(event,'Science')">Science Center Tour</button>
-<button onclick="filterGallery(event,'Vaishali')">Vaishali School Trip</button>
-</div>
+<!-- Static filter buttons removed in favor of dynamic CMS filters above -->
 
 
 <section class="gallery-section">
@@ -393,24 +383,54 @@ cursor:pointer;
 
 let currentImage = ""
 
-function openLightbox(img)
-{
-currentImage = img.src
-document.getElementById("lightbox-img").src = currentImage
-document.getElementById("lightbox").style.display = "flex"
+function openLightbox(img) {
+    // Handle both HTML element and object {src: '...'}
+    currentImage = img.src || img;
+    const lightboxImg = document.getElementById("lightbox-img");
+    if (!lightboxImg) return;
+    
+    lightboxImg.src = currentImage;
+    const lightbox = document.getElementById("lightbox");
+    if (lightbox) {
+        lightbox.style.display = "flex";
+        document.body.style.overflow = "hidden"; // Prevent scroll
+    }
 }
 
-function closeLightbox()
-{
-document.getElementById("lightbox").style.display = "none"
+function closeLightbox() {
+    const lightbox = document.getElementById("lightbox");
+    if (lightbox) {
+        lightbox.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
 }
 
-function downloadImage()
-{
-let link = document.createElement("a")
-link.href = currentImage
-link.download = "apex-public-school-photo"
-link.click()
+async function downloadImage() {
+    if (!currentImage) return;
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "Downloading...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(currentImage);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "apex-gallery-" + Date.now() + ".jpg";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+    } catch (e) {
+        console.error("Download failed:", e);
+        // Fallback: open in new tab
+        window.open(currentImage, '_blank');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
 
 

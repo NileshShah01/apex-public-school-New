@@ -121,6 +121,25 @@
                     </div>
                 </div>
 
+                <!-- WEBSITE TEXT CUSTOMIZATION -->
+                <div class="nav-category" onclick="toggleCategory('catWebText')">
+                    <div class="cat-header">
+                        <i class="fas fa-edit"></i>
+                        <span>Website Customise</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catWebText">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextHome')">Home Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAbout')">About Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAcademics')">Academics Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAdmissions')">Admissions Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextFacilities')">Facilities Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextGallery')">Gallery Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextContact')">Contact Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextInquiry')">Inquiry Page Text</a>
+                    </div>
+                </div>
+
                 <!-- STUDENT PORTAL CMS -->
                 <div class="nav-category" onclick="toggleCategory('catPortal')">
                     <div class="cat-header">
@@ -875,6 +894,132 @@
                             </div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save All Facilities Images</button>
+                    </form>
+                </div>
+            </section>
+
+                </div>
+            </section>
+
+            <!-- WEBSITE TEXT: HOME PAGE -->
+            <section id="cmsTextHomeSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-home"></i> Home Page Text Customization</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update headings and descriptions on the Home page.</p>
+                    <form id="cmsTextHomeForm">
+                        <div class="form-group">
+                            <label>Hero Title</label>
+                            <input type="text" id="textHomeHeroTitle" placeholder="Welcome to Apex Public School" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Subtitle</label>
+                            <textarea id="textHomeHeroSubtitle" rows="2" placeholder="Quality Education • Discipline • Character Building" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Intro Section Title</label>
+                            <input type="text" id="textHomeIntroTitle" placeholder="About Apex Public School" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                        </div>
+                        <div class="form-group">
+                            <label>Intro Section Main Text</label>
+                            <textarea id="textHomeIntroText" rows="3" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Intro Section Subtext</label>
+                            <textarea id="textHomeIntroSubtext" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Home Page Text</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE TEXT: ABOUT PAGE -->
+            <section id="cmsTextAboutSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-info-circle"></i> About Page Text Customization</h3>
+                    <form id="cmsTextAboutForm">
+                        <div class="form-group"><label>Vision Statement</label><textarea id="textAboutVision" rows="3" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Mission Statement</label><textarea id="textAboutMission" rows="3" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Principal's Message Content (HTML allowed)</label><textarea id="textAboutPrincipalContent" rows="5" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Principal's Name</label><input type="text" id="textAboutPrincipalName" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save About Page Text</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Placeholder sections for other pages to avoid huge file edit at once... -->
+            <section id="cmsTextAcademicsSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-graduation-cap"></i> Academics Page Text Customization</h3>
+                    <form id="cmsTextAcademicsForm">
+                        <div class="form-group"><label>Header Subtitle</label><input type="text" id="textAcademicsHeaderSubtitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Focus: Play Group</label><input type="text" id="textAcademicsFocusPlay" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Focus: Primary Classes</label><input type="text" id="textAcademicsFocusPrimary" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Focus: Middle Classes</label><input type="text" id="textAcademicsFocusMiddle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Academics Page Text</button>
+                    </form>
+                </div>
+            </section>
+            <section id="cmsTextAdmissionsSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-user-plus"></i> Admissions Page Text Customization</h3>
+                    <form id="cmsTextAdmissionsForm">
+                        <div class="form-group"><label>Header Title</label><input type="text" id="textAdmissionsHeaderTitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Header Subtitle</label><input type="text" id="textAdmissionsHeaderSubtitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Visit School Text</label><textarea id="textAdmissionsVisitText" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group">
+                            <label>Required Documents</label>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                                <input type="text" id="textAdmissionsDoc1" placeholder="Doc 1">
+                                <input type="text" id="textAdmissionsDoc2" placeholder="Doc 2">
+                                <input type="text" id="textAdmissionsDoc3" placeholder="Doc 3">
+                                <input type="text" id="textAdmissionsDoc4" placeholder="Doc 4">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Admissions Page Text</button>
+                    </form>
+                </div>
+            </section>
+            <section id="cmsTextFacilitiesSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-building"></i> Facilities Page Text Customization</h3>
+                    <form id="cmsTextFacilitiesForm">
+                        <div class="form-group"><label>Hero Subtitle</label><input type="text" id="textFacilitiesHeroSubtitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Smart Classrooms Desc</label><textarea id="textFacilitiesDescSmart" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Computer Lab Desc</label><textarea id="textFacilitiesDescComputer" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Sports Ground Desc</label><textarea id="textFacilitiesDescSports" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>CCTV Security Desc</label><textarea id="textFacilitiesDescSecurity" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>School Transport Desc</label><textarea id="textFacilitiesDescTransport" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <div class="form-group"><label>Playground Desc</label><textarea id="textFacilitiesDescPlayground" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Facilities Page Text</button>
+                    </form>
+                </div>
+            </section>
+            <section id="cmsTextGallerySection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-images"></i> Gallery Page Text Customization</h3>
+                    <form id="cmsTextGalleryForm">
+                        <div class="form-group"><label>Header Title</label><input type="text" id="textGalleryHeaderTitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Header Subtitle</label><textarea id="textGalleryHeaderSubtitle" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Gallery Page Text</button>
+                    </form>
+                </div>
+            </section>
+            <section id="cmsTextContactSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-phone-alt"></i> Contact Page Text Customization</h3>
+                    <form id="cmsTextContactForm">
+                        <div class="form-group"><label>School Address</label><textarea id="textContactAddress" rows="4" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Contact Page Text</button>
+                    </form>
+                </div>
+            </section>
+            <section id="cmsTextInquirySection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-question-circle"></i> Inquiry Page Text Customization</h3>
+                    <form id="cmsTextInquiryForm">
+                        <div class="form-group"><label>Header Title</label><input type="text" id="textInquiryHeaderTitle" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></div>
+                        <div class="form-group"><label>Header Subtitle</label><textarea id="textInquiryHeaderSubtitle" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;"></textarea></div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Inquiry Page Text</button>
                     </form>
                 </div>
             </section>
