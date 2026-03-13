@@ -166,7 +166,18 @@ body {
 
 .sidebar.collapsed .cat-header {
     justify-content: center;
-    padding: 1rem;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+.sidebar.collapsed .cat-header i {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+    padding-left: 0;
 }
 
 
@@ -238,11 +249,17 @@ body {
     color: var(--white);
 }
 
-/* Main Content Layout Fix */
 .main-content {
     background: #f1f5f9;
     padding: 2rem;
     overflow-y: auto;
+    min-width: 0; /* Allow shrinking */
+}
+
+@media (min-width: 1025px) {
+    .main-content {
+        min-width: 800px; /* Ensure content doesn't squeeze too much on large narrow viewports */
+    }
 }
 
 .header {
@@ -455,14 +472,14 @@ tr:hover {
 
     .sidebar {
         position: fixed;
-        left: -280px;
+        left: -300px; /* Slightly more off-screen */
         top: 0;
         bottom: 0;
         width: 280px;
         z-index: 1000;
-        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex !important; /* Overriding previous display:none */
-        box-shadow: 10px 0 20px rgba(0,0,0,0.2);
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex !important;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.3);
     }
 
     .sidebar.mobile-open {

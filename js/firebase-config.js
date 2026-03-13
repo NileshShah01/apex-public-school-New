@@ -16,3 +16,29 @@ if (!firebase.apps.length) {
 var db = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
 var storage = typeof firebase.storage === 'function' ? firebase.storage() : null;
 var auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
+
+// ===================== GLOBAL THEME CONTROL =====================
+async function applyGlobalTheme() {
+    if (!db) return;
+    try {
+        const doc = await db.collection('settings').doc('theme').get();
+        if (doc.exists) {
+            const theme = doc.data();
+            const root = document.documentElement;
+            
+            if (theme.primaryColor) {
+                root.style.setProperty('--primary', theme.primaryColor);
+                // Also update related variables for main site
+                root.style.setProperty('--primary-light', theme.primaryColor + 'cc'); // 80% opacity for light variant
+            }
+            if (theme.sidebarColor) {
+                root.style.setProperty('--secondary', theme.sidebarColor);
+            }
+        }
+    } catch(e) {
+        console.warn('Theme apply failed:', e.message);
+    }
+}
+
+// Auto-apply on load
+if (db) applyGlobalTheme();

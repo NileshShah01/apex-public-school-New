@@ -13,6 +13,7 @@ const CMS_SECTIONS = {
     'cmsTimetable': { load: loadTimetableSection },
     'cmsFees': { load: loadFeeStructure },
     'cmsHero': { load: loadHeroSlider },
+    'cmsTheme': { load: loadCmsTheme },
     'cmsStudentDashboard': { load: loadCmsStudentDashboard }
 };
 
@@ -102,6 +103,36 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('previewNotice').textContent = this.value;
     });
 
+    // Theme Form Submission
+    document.getElementById('cmsThemeForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const primary = document.getElementById('theme_primary').value;
+        const secondary = document.getElementById('theme_secondary').value;
+        
+        try {
+            await db.collection('settings').doc('theme').set({
+                primaryColor: primary,
+                sidebarColor: secondary,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            
+            showToast('Global theme updated and applied live!');
+            applyGlobalTheme(); // Immediately apply in admin panel
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
+
+    // Theme Picker Sync
+    ['primary', 'secondary'].forEach(type => {
+        const picker = document.getElementById(`theme_${type}`);
+        const text = document.getElementById(`theme_${type}_text`);
+        if (picker && text) {
+            picker.addEventListener('input', () => text.value = picker.value);
+            text.addEventListener('input', () => {
+                if (/^#[0-9A-F]{6}$/i.test(text.value)) picker.value = text.value;
+            });
+        }
+    });
+
     // Sidebar collapse state restore
     if (localStorage.getItem('adminSidebarCollapsed') === 'true') {
         document.getElementById('adminSidebar')?.classList.add('collapsed');
@@ -132,6 +163,24 @@ async function loadCmsStudentDashboard() {
             if (document.getElementById('previewNotice')) document.getElementById('previewNotice').textContent = d.examNotice || 'Exams begin on March 23rd. Please carry your Admit Card.';
         }
     } catch(e) { console.error('loadCmsStudentDashboard error:', e); }
+}
+
+// ===================== THEME CMS =====================
+async function loadCmsTheme() {
+    try {
+        const doc = await db.collection('settings').doc('theme').get();
+        if (doc.exists) {
+            const d = doc.data();
+            if (d.primaryColor) {
+                document.getElementById('theme_primary').value = d.primaryColor;
+                document.getElementById('theme_primary_text').value = d.primaryColor;
+            }
+            if (d.sidebarColor) {
+                document.getElementById('theme_secondary').value = d.sidebarColor;
+                document.getElementById('theme_secondary_text').value = d.sidebarColor;
+            }
+        }
+    } catch(e) { console.error('loadCmsTheme error:', e); }
 }
 
 async function updateStudentAttendance() {

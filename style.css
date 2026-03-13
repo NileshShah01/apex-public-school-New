@@ -16,7 +16,8 @@
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     --shadow-hover: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
-    --gradient-hero: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(30, 58, 138, 0.7));
+    --gradient-hero: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(30, 58, 138, 0.7)); /* Fallback */
+    --gradient-hero: linear-gradient(to right, var(--secondary), var(--primary)); 
     --gradient-cta: linear-gradient(135deg, var(--primary), var(--primary-light));
     --glass-bg: rgba(255, 255, 255, 0.85);
 }
