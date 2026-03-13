@@ -435,16 +435,58 @@
         const filters = document.getElementById('galleryFilters');
         if (!container) return;
         
-        let allImages = [];
+        // LEGACY IMAGES INTEGRATION
+        const legacyImages = [
+            { url: 'images/Facilities-Slide-img1.jpeg', category: 'Facilities' },
+            { url: 'images/Computer Lap.jpeg', category: 'Facilities' },
+            { url: 'images/Facilities-Slide-img2.jpeg', category: 'Facilities' },
+            { url: 'images/Facilities-Slide-img3.jpeg', category: 'Facilities' },
+            { url: 'images/Facilities-Slide-img4.jpeg', category: 'Facilities' },
+            { url: 'images/Classroom-img1.jpeg', category: 'Facilities' },
+            { url: 'images/Bihar-Museum-img1.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img2.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img3.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img4.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img5.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img6.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img7.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img8.jpeg', category: 'Events' },
+            { url: 'images/Bihar-Museum-img10.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img3.jpeg', category: 'Events' },
+            { url: 'images/Republic-Day-img1.jpeg', category: 'Events' },
+            { url: 'images/Republic-Day-img2.jpeg', category: 'Events' },
+            { url: 'images/Republic-Day-img3.jpeg', category: 'Events' },
+            { url: 'images/Sports-Event-Prize-Distribution-img1.jpeg', category: 'Sports' },
+            { url: 'images/Sports-Event-Prize-Distribution-img2.jpeg', category: 'Sports' },
+            { url: 'images/Vaisali-School-Trip-img1.jpeg', category: 'Events' },
+            { url: 'images/Vaisali-School-Trip-img2.jpeg', category: 'Events' },
+            { url: 'images/Vaisali-School-Trip-img3.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img1.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img2.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img4.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img5.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img6.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img7.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img8.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img9.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img10.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img11.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img12.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img13.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img14.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img15.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img16.jpeg', category: 'Events' },
+            { url: 'images/Science-centre-Patna-img35.jpeg', category: 'Events' }
+        ];
+
+        let allImages = [...legacyImages];
 
         db.collection('gallery').orderBy('createdAt','desc').get().then(snap => {
-            if (snap.empty) { 
-                container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No gallery images added yet.</p>'; 
-                return; 
-            }
-            
             snap.forEach(doc => allImages.push(doc.data()));
-            renderGallery('all');
+            
+            // Default to the first active category if available
+            const defaultFilter = filters ? filters.querySelector('.active').getAttribute('data-filter') : 'Sports';
+            renderGallery(defaultFilter);
 
             if (filters) {
                 filters.addEventListener('click', (e) => {
@@ -452,20 +494,24 @@
                         document.querySelectorAll('.filter-btn').forEach(btn => {
                             btn.style.background = 'transparent';
                             btn.style.color = '#475569';
+                            btn.classList.remove('active');
                         });
                         e.target.style.background = '#1E40AF';
                         e.target.style.color = 'white';
+                        e.target.classList.add('active');
                         renderGallery(e.target.getAttribute('data-filter'));
                     }
                 });
             }
-        }).catch(() => {});
+        }).catch(() => {
+            // If firebase fails, still render legacy images
+            renderGallery('Sports');
+        });
 
         function renderGallery(filter) {
             container.innerHTML = '';
-            const filteredImages = filter === 'all' 
-                ? allImages 
-                : allImages.filter(img => (img.category || 'Others') === filter);
+            // We NO LONGER support 'all' filter as requested
+            const filteredImages = allImages.filter(img => (img.category || 'Others') === filter);
             
             if (filteredImages.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No images found in this category.</p>`;
