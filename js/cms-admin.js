@@ -1121,7 +1121,7 @@ function downloadFeeExcel() {
 function downloadFeePdf() {
     if (!feeResultData) return;
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4'); 
+    const doc = new jsPDF('p', 'mm', 'a4'); // Portrait A4
     
     const sortedClasses = Object.keys(feeResultData).sort();
     const dateRange = `(01 Dec, 2023-${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
@@ -1136,24 +1136,24 @@ function downloadFeePdf() {
         doc.autoTable({
             head: headers,
             body: body,
-            startY: 40,
+            startY: 28,
             theme: 'grid',
             headStyles: { fillColor: [30, 64, 175], textColor: 255, fontStyle: 'bold' },
-            styles: { fontSize: 9, cellPadding: 3, halign: 'left' },
+            styles: { fontSize: 8, cellPadding: 2, halign: 'left' }, // Slightly smaller for portrait
             alternateRowStyles: { fillColor: [245, 247, 250] },
-            margin: { top: 35 },
+            margin: { top: 25, bottom: 15 }, // Tighter margins
             columnStyles: {
                 6: { halign: 'right' } // Due Amount
             },
             didDrawPage: function (data) {
                 // Header on every page
-                doc.setFontSize(16);
+                doc.setFontSize(14);
                 doc.setTextColor(30, 64, 175);
-                doc.text(`ED | Download Due Payment | ${dateRange}`, 148.5, 15, { align: 'center' });
+                doc.text(`ED | Download Due Payment | ${dateRange}`, 105, 12, { align: 'center' }); // 105 is center of Portrait A4
                 
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.setTextColor(100);
-                doc.text(`Class: ${cls} | Page ${data.pageNumber}`, 14, 25);
+                doc.text(`Class: ${cls} | Page ${data.pageNumber}`, 14, 20);
             }
         });
     });
