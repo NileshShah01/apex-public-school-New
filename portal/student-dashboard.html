@@ -67,6 +67,37 @@
                 </div>
             </div>
 
+            <!-- Quick Actions -->
+            <div id="quickActionsSection" class="card" style="padding: 1.5rem; margin-top: 1rem; display: none;">
+                <h3 style="margin-bottom: 1.25rem; font-size: 1rem;"><i class="fas fa-bolt" style="color: var(--accent);"></i> Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem;">
+                    <a href="../fees.html" class="quick-action-item" style="text-align: center; text-decoration: none; color: var(--text-main);">
+                        <div style="width: 50px; height: 50px; background: #ecfdf5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-size: 1.25rem;">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; font-weight: 600;">Fees</span>
+                    </a>
+                    <a href="../holidays.html" class="quick-action-item" style="text-align: center; text-decoration: none; color: var(--text-main);">
+                        <div style="width: 50px; height: 50px; background: #fff7ed; color: #ea580c; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-size: 1.25rem;">
+                            <i class="fas fa-umbrella-beach"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; font-weight: 600;">Holidays</span>
+                    </a>
+                    <a href="../staff.html" class="quick-action-item" style="text-align: center; text-decoration: none; color: var(--text-main);">
+                        <div style="width: 50px; height: 50px; background: #eff6ff; color: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-size: 1.25rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; font-weight: 600;">Staff</span>
+                    </a>
+                    <a href="../contact.html" class="quick-action-item" style="text-align: center; text-decoration: none; color: var(--text-main);">
+                        <div style="width: 50px; height: 50px; background: #fdf2f8; color: #db2777; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; font-size: 1.25rem;">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <span style="font-size: 0.75rem; font-weight: 600;">Feedback</span>
+                    </a>
+                </div>
+            </div>
+
             <!-- Dashboard Grid -->
             <div class="dashboard-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 1rem;">
                 
@@ -106,15 +137,34 @@
                         </div>
                     </div>
 
+                    <!-- Attendance Widget -->
+                    <div id="attendanceWidget" class="card" style="padding: 2rem; display: none; margin-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-check-circle" style="color: var(--success);"></i> Attendance Overview</h3>
+                        <div style="display: flex; align-items: center; gap: 2rem;">
+                            <div style="position: relative; width: 100px; height: 100px;">
+                                <svg viewBox="0 0 36 36" style="width: 100%; height: 100%;">
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e2e8f0" stroke-width="3" />
+                                    <path id="attendanceCircle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--success)" stroke-width="3" stroke-dasharray="0, 100" />
+                                </svg>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                    <span id="attendancePercent" style="font-size: 1.5rem; font-weight: 800; color: var(--secondary);">0%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.25rem;">Current Attendance</p>
+                                <p style="font-size: 0.875rem; color: var(--text-muted);" id="attendanceStatusText">Loading records...</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <h3 style="margin-bottom: 1rem;"><i class="fas fa-question-circle" style="color: var(--accent);"></i> Need Help?</h3>
                         <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">If you are unable to download your report card or notice any errors in your profile details, please contact the school coordinator immediately at <b>+91 (School Contact Number)</b> or visit the administration office during school hours.</p>
                     </div>
                 </div>
 
-                <!-- Right Column: Notice Board -->
-                <div>
-                    <div class="card" style="min-height: 480px; background: #ffffff; position: relative; overflow: hidden;">
+                    <!-- Notice Board -->
+                    <div class="card" style="min-height: 400px; background: #ffffff; position: relative; overflow: hidden; margin-bottom: 1.5rem;">
                         <div style="background: var(--secondary); color: var(--white); padding: 1rem 1.5rem; margin: -1.5rem -1.5rem 1.5rem;">
                             <h3 style="display: flex; align-items: center; gap: 0.75rem; font-size: 1rem;">
                                 <i class="fas fa-bullhorn" style="color: var(--accent);"></i>
@@ -125,7 +175,24 @@
                             <p style="color: var(--text-muted); font-size: 0.875rem; text-align: center; margin-top: 3rem;">Loading announcements...</p>
                         </div>
                     </div>
-                </div>
+
+                    <!-- School Timings Widget -->
+                    <div id="timingsWidget" class="card" style="padding: 1.5rem; border-left: 4px solid var(--accent); display: none; margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-clock"></i> School Timings</h4>
+                        <div style="font-size: 0.9rem; color: var(--text-main);" id="schoolTimingsArea text-center">
+                            <p id="timingText" style="font-weight: 600;">8:30 AM - 2:30 PM</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">Standard Operating Hours</p>
+                        </div>
+                    </div>
+
+                    <!-- Principal's Message Widget -->
+                    <div id="principalMessageWidget" class="card" style="padding: 1.5rem; position: relative; display: none;">
+                        <i class="fas fa-quote-right" style="position: absolute; top: 1rem; right: 1rem; font-size: 2rem; color: #f1f5f9;"></i>
+                        <h4 style="margin-bottom: 1rem; color: var(--secondary);"><i class="fas fa-user-tie"></i> From the Principal</h4>
+                        <p id="principalMessageText" style="font-size: 0.875rem; color: var(--text-main); font-style: italic; line-height: 1.6; position: relative; z-index: 1;">
+                            "Welcome to the portal! We are excited to see you here. Stay focused on your studies."
+                        </p>
+                    </div>
 
             </div>
         </main>

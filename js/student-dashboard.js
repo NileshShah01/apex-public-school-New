@@ -28,19 +28,74 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('academicYear')?.addEventListener('change', updateResultLink);
 });
 
-// ===================== LOAD EXAM HEADING FROM CMS =====================
+// ===================== LOAD DASHBOARD CONFIG FROM CMS =====================
 async function loadDashboardConfig() {
     try {
         const doc = await db.collection('settings').doc('dashboardConfig').get();
         if (!doc.exists) return;
         const d = doc.data();
+        
+        // 1. Exam Banner
         if (d.examHeading) {
             document.getElementById('examAnnouncementTitle').textContent = d.examHeading;
             document.getElementById('examAnnouncementNotice').textContent = d.examNotice || '';
             document.getElementById('examAnnouncementBanner').style.display = 'block';
         }
+
+        // 2. Widget Toggles & Content
+        if (d.showQuickActions) document.getElementById('quickActionsSection').style.display = 'block';
+        
+        if (d.showAttendance) {
+            document.getElementById('attendanceWidget').style.display = 'block';
+            fetchAttendance();
+        }
+
+        if (d.showTimings) {
+            document.getElementById('timingsWidget').style.display = 'block';
+            if (d.schoolTimings) document.getElementById('timingText').textContent = d.schoolTimings;
+        }
+
+        if (d.showPrincipalMessage) {
+            document.getElementById('principalMessageWidget').style.display = 'block';
+            if (d.principalMessage) document.getElementById('principalMessageText').textContent = `"${d.principalMessage}"`;
+        }
+
     } catch(e) {
         console.warn('Dashboard config load failed:', e.message);
+    }
+}
+
+async function fetchAttendance() {
+    if (!currentStudentID) return;
+    try {
+        // Attendance documents are expected to be named as studentID_month (e.g., student123_2026-03)
+        // For simplicity, we'll try to get the latest record from an 'attendance' collection
+        const snap = await db.collection('attendance').where('studentId', '==', currentStudentID).orderBy('date', 'desc').limit(1).get();
+        
+        const percentEl = document.getElementById('attendancePercent');
+        const statusEl = document.getElementById('attendanceStatusText');
+        const circle = document.getElementById('attendanceCircle');
+
+        if (!snap.empty) {
+            const data = snap.docs[0].data();
+            const percent = data.percentage || 0;
+            percentEl.textContent = `${percent}%`;
+            statusEl.textContent = `As of ${data.month || 'this month'}`;
+            
+            // Update SVG circle
+            const dashArray = `${percent}, 100`;
+            circle.setAttribute('stroke-dasharray', dashArray);
+            
+            // Set color based on percentage
+            if (percent < 75) circle.setAttribute('stroke', 'var(--danger)');
+            else if (percent < 85) circle.setAttribute('stroke', 'var(--warning)');
+            else circle.setAttribute('stroke', 'var(--success)');
+
+        } else {
+            statusEl.textContent = "No recent records found.";
+        }
+    } catch(e) {
+        console.warn('Attendance fetch failed:', e.message);
     }
 }
 

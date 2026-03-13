@@ -66,14 +66,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('cmsStudentDashboardForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const heading = document.getElementById('cms_examHeading').value.trim();
-        const notice = document.getElementById('cms_examNotice').value.trim();
+        const config = {
+            examHeading: document.getElementById('cms_examHeading').value.trim(),
+            examNotice: document.getElementById('cms_examNotice').value.trim(),
+            showQuickActions: document.getElementById('cms_showQuickActions').checked,
+            showAttendance: document.getElementById('cms_showAttendance').checked,
+            showTimings: document.getElementById('cms_showTimings').checked,
+            showPrincipalMessage: document.getElementById('cms_showPrincipalMessage').checked,
+            schoolTimings: document.getElementById('cms_schoolTimings').value.trim(),
+            principalMessage: document.getElementById('cms_principalMessage').value.trim()
+        };
+
         try {
-            await db.collection('settings').doc('dashboardConfig').set({ examHeading: heading, examNotice: notice }, { merge: true });
-            showToast('Student Dashboard updated and published live!');
-            // Update preview
-            document.getElementById('previewTitle').textContent = heading || '(No Heading Set)';
-            document.getElementById('previewNotice').textContent = notice;
+            await db.collection('settings').doc('dashboardConfig').set(config, { merge: true });
+            showToast('Student Dashboard configuration updated live!');
+            // Update preview for banner
+            const previewTitle = document.getElementById('previewTitle');
+            const previewNotice = document.getElementById('previewNotice');
+            if (previewTitle) previewTitle.textContent = config.examHeading || '(No Heading Set)';
+            if (previewNotice) previewNotice.textContent = config.examNotice;
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
 
@@ -99,15 +110,51 @@ async function loadCmsStudentDashboard() {
         const doc = await db.collection('settings').doc('dashboardConfig').get();
         if (doc.exists) {
             const d = doc.data();
-            const headingEl = document.getElementById('cms_examHeading');
-            const noticeEl = document.getElementById('cms_examNotice');
-            if (headingEl) headingEl.value = d.examHeading || '';
-            if (noticeEl) noticeEl.value = d.examNotice || '';
+            if (document.getElementById('cms_examHeading')) document.getElementById('cms_examHeading').value = d.examHeading || '';
+            if (document.getElementById('cms_examNotice')) document.getElementById('cms_examNotice').value = d.examNotice || '';
+            
+            if (document.getElementById('cms_showQuickActions')) document.getElementById('cms_showQuickActions').checked = !!d.showQuickActions;
+            if (document.getElementById('cms_showAttendance')) document.getElementById('cms_showAttendance').checked = !!d.showAttendance;
+            if (document.getElementById('cms_showTimings')) document.getElementById('cms_showTimings').checked = !!d.showTimings;
+            if (document.getElementById('cms_showPrincipalMessage')) document.getElementById('cms_showPrincipalMessage').checked = !!d.showPrincipalMessage;
+            
+            if (document.getElementById('cms_schoolTimings')) document.getElementById('cms_schoolTimings').value = d.schoolTimings || '';
+            if (document.getElementById('cms_principalMessage')) document.getElementById('cms_principalMessage').value = d.principalMessage || '';
+
             // Update Preview
             if (document.getElementById('previewTitle')) document.getElementById('previewTitle').textContent = d.examHeading || 'Final Examination March, 2026';
             if (document.getElementById('previewNotice')) document.getElementById('previewNotice').textContent = d.examNotice || 'Exams begin on March 23rd. Please carry your Admit Card.';
         }
     } catch(e) { console.error('loadCmsStudentDashboard error:', e); }
+}
+
+async function updateStudentAttendance() {
+    const studentId = document.getElementById('att_studentId').value.trim();
+    const month = document.getElementById('att_month').value;
+    const percentage = parseInt(document.getElementById('att_percent').value);
+
+    if (!studentId || !month || isNaN(percentage)) {
+        showToast('Please fill all attendance fields correctly.', 'error');
+        return;
+    }
+
+    try {
+        const attId = `${studentId}_${month}`;
+        await db.collection('attendance').doc(attId).set({
+            studentId,
+            month,
+            percentage,
+            date: new Date()
+        }, { merge: true });
+        
+        showToast(`Attendance updated for ${studentId} (${month})`);
+        
+        // Clear inputs except month
+        document.getElementById('att_studentId').value = '';
+        document.getElementById('att_percent').value = '';
+    } catch(e) {
+        showToast('Error updating attendance: ' + e.message, 'error');
+    }
 }
 
 // ===================== COLLAPSIBLE SIDEBAR =====================
