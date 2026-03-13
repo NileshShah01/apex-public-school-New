@@ -5,6 +5,7 @@
     function tryApply() {
         if (typeof db === 'undefined' || !db) { setTimeout(tryApply, 200); return; }
         loadGeneralSettings();
+        loadBirthdays();
         loadEvents();
         loadAchievements();
         loadTestimonials();
@@ -66,6 +67,56 @@
             if (btn && d.admissionSession) btn.textContent = 'Admission Open ' + d.admissionSession;
 
         }).catch(e => console.warn('CMS settings:', e.message));
+    }
+
+    // ===================== BIRTHDAYS =====================
+    function loadBirthdays() {
+        const section = document.getElementById('birthdaySection');
+        const container = document.getElementById('birthdayContainer');
+        if (!container || !section) return;
+
+        // Get today's MM-DD to match against dob strings like "YYYY-MM-DD"
+        const today = new Date();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm_dd = `${mm}-${dd}`;
+
+        const colors = ['#ff6b6b', '#4dabf7', '#51cf66', '#fcc419', '#cc5de8'];
+        
+        db.collection('students').get().then(snap => {
+            if (snap.empty) return;
+            
+            let birthdayStudents = [];
+            
+            snap.forEach(doc => {
+                const s = doc.data();
+                if (s.dob && s.dob.endsWith(mm_dd)) {
+                    birthdayStudents.push(s);
+                }
+            });
+
+            if (birthdayStudents.length > 0) {
+                section.style.display = 'block'; // Show the section if there are birthdays
+                container.innerHTML = ''; // clear loading state
+                
+                birthdayStudents.forEach((d, i) => {
+                    const c = colors[i % colors.length];
+                    let iconHtml = `<i class="fas fa-cake-candles" style="color: ${c}; font-size: 2.5rem; background: ${c}22; width: 80px; height: 80px; line-height: 80px; border-radius: 50%;"></i>`;
+                    
+                    if (d.photo_url) {
+                        iconHtml = `<img src="${d.photo_url}" alt="${d.name}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 3px solid ${c}; box-shadow: 0 4px 10px ${c}40;">`;
+                    }
+                    
+                    container.innerHTML += `<div class="premium-card">
+                        ${iconHtml}
+                        <h3>${d.name}</h3>
+                        <p>Class ${d.class || '-'}</p>
+                    </div>`;
+                });
+            } else {
+                section.style.display = 'none'; // hide if no birthdays
+            }
+        }).catch(e => console.warn("Birthdays error:", e));
     }
 
     // ===================== EVENTS =====================

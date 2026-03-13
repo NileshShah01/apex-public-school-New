@@ -174,15 +174,15 @@ gap:22px;
         width: 65vw;
         min-width: 260px;
         height: 100vh;
-        background: rgba(255, 255, 255, 0.95);
+        background: #f8fafc; /* Lighter background for better contrast with dark blue */
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         flex-direction: column;
-        padding: 1.25rem 1rem;
+        padding: 1rem;
         transition: left 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         box-shadow: 20px 0 60px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-        border-right: 1px solid rgba(255, 255, 255, 0.3);
+        border-right: 1px solid rgba(30, 58, 138, 0.2);
         overflow-y: auto;
     }
 
@@ -195,19 +195,19 @@ gap:22px;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 1.25rem 1rem 1rem;
+        padding: 1rem;
         margin-bottom: 0.5rem;
         border-bottom: 2px solid rgba(30, 58, 138, 0.1);
         position: relative;
         text-align: center;
-        background: rgba(30, 58, 138, 0.03);
-        border-radius: 0.75rem;
+        background: rgba(30, 58, 138, 0.05);
+        border-radius: 0.5rem;
     }
 
     .mobile-logo {
-        height: 70px;
+        height: 60px;
         width: auto;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.2rem;
     }
 
     .mobile-school-name {
@@ -221,7 +221,7 @@ gap:22px;
         font-size: 1rem;
         color: var(--primary);
         cursor: pointer;
-        background: rgba(30, 58, 138, 0.08);
+        background: rgba(30, 58, 138, 0.1);
         width: 30px;
         height: 30px;
         display: flex;
@@ -230,8 +230,8 @@ gap:22px;
         border-radius: 50%;
         transition: all 0.2s;
         position: absolute;
-        top: 0.75rem;
-        right: 0.75rem;
+        top: 0.5rem;
+        right: 0.5rem;
     }
     
     .close-menu:hover {
@@ -240,21 +240,21 @@ gap:22px;
     }
 
     .menu > a { 
-        font-size: 0.95rem; 
-        border: 1px solid var(--primary);
-        margin-bottom: 0.6rem;
+        font-size: 0.9rem; 
+        border: 1px solid rgba(30, 58, 138, 0.3);
+        margin-bottom: 0.4rem;
         width: 100%; 
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.4rem;
         background: var(--white);
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.8rem;
+        gap: 0.6rem;
         color: var(--primary);
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .menu > a::after {
@@ -268,29 +268,30 @@ gap:22px;
 
     /* Restyle portal buttons inside mobile menu */
     .menu .header-buttons {
-        padding-top: 0.5rem;
-        margin-top: 0.3rem;
+        padding-top: 0.4rem;
+        margin-top: 0.2rem;
         border-top: 1px solid rgba(0,0,0,0.08);
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
+        gap: 0.4rem;
         width: 100%;
+        padding-bottom: 2rem; /* Give space at the bottom so it's not hidden */
     }
 
     .menu .btn-portal-nav {
         border-bottom: none;
-        border-radius: 0.5rem;
-        padding: 0.75rem 1rem !important;
+        border-radius: 0.4rem;
+        padding: 0.5rem 0.8rem !important;
         width: 100%;
         justify-content: flex-start;
-        font-size: 0.95rem !important;
-        border: 1px solid var(--primary);
-        background: var(--white);
+        font-size: 0.9rem !important;
+        border: 1px solid rgba(30, 58, 138, 0.3);
+        background: #eef2ff; /* Very light blue for student/admin differentiation */
         color: var(--primary);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: 0.6rem;
     }
 
     .menu .btn-portal-nav:hover {
@@ -634,14 +635,16 @@ margin-bottom:6px;
 .stats {
     background: var(--white);
     border-radius: 2rem;
-    padding: 5rem 2rem;
-    margin: 6rem auto;
+    padding: 3rem 2rem;
+    margin: 4rem auto;
     color: var(--text-main);
-    box-shadow: var(--shadow-lg);
+    box-shadow: none;
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 3px solid var(--primary);
     text-align: center;
+    border-radius: 50%; /* Make it rounded like the sketch */
+    max-width: 900px;
 }
 
 .stats h2 {
@@ -669,12 +672,13 @@ margin-bottom:6px;
 }
 
 .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    justify-content: center;
     gap: 3rem;
     text-align: center;
     position: relative;
     z-index: 2;
+    flex-wrap: wrap;
 }
 
 .stat h3 {
@@ -1218,14 +1222,21 @@ font-size:14px;
 @media(max-width:768px)
 {
 
-.stats-bar
-{
-gap:25px;
+.stats {
+padding: 2rem 1rem;
+border-radius: 2rem; /* Restore normal border radius on mobile so it fits screen width */
+border-width: 2px;
+margin: 2rem 1rem;
 }
 
-.stat h3
+.stats-bar
 {
-font-size:24px;
+gap:15px;
+}
+
+.stat h3, .stat h2
+{
+font-size:32px;
 }
 
 }
