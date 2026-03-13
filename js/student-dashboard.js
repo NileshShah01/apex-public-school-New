@@ -133,6 +133,7 @@ async function fetchStudentData() {
             currentStudentClass = data.class || '';
             if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = currentStudentClass || 'N/A';
             if (document.getElementById('disp_section')) document.getElementById('disp_section').textContent = data.section || 'N/A';
+            if (document.getElementById('disp_father_name')) document.getElementById('disp_father_name').textContent = data.father_name || 'N/A';
             
             // Try loading student photo
             if (data.photo_url) {
