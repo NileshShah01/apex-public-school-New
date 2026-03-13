@@ -190,6 +190,8 @@
                 <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
                 <img src="images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
                 <img src="images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
+                <img src="images/Science-centre-Patna-img1.jpeg" onclick="openLightbox(this)">
+                <img src="images/Republic-Day-img2.jpeg" onclick="openLightbox(this)">
             `;
         } catch(e) { console.error('Error loading home memories:', e); }
     }

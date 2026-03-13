@@ -253,9 +253,27 @@ body {
 
 .main-content {
     background: #f1f5f9;
-    padding: 1.25rem; /* Reduced from 2rem */
+    padding: 2rem;
     overflow-y: auto;
-    min-width: 0; /* Allow shrinking */
+    min-width: 0;
+}
+
+/* SPECIFIC CENTERING FOR CMS SECTIONS */
+.dashboard-section {
+    max-width: 1000px !important;
+    margin: 0 auto 2rem auto !important;
+    width: 100%;
+}
+
+.dashboard-section .card {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Special handling for Website Customise tabs if needed */
+.cms-text-section {
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 @media (min-width: 1025px) {

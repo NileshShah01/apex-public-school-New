@@ -355,13 +355,13 @@ async function loadImgFacilities() {
     const featureBox = document.getElementById('facFeatureInputs');
     const galleryBox = document.getElementById('facGalleryInputs');
 
-    if (!sliderBox.innerHTML) {
+    if (sliderBox && sliderBox.innerHTML.trim() === '') {
         for (let i = 1; i <= 8; i++) sliderBox.innerHTML += `<input type="url" class="fac-slider-url" placeholder="Slider Image ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
     }
-    if (!featureBox.innerHTML) {
+    if (featureBox && featureBox.innerHTML.trim() === '') {
         for (let i = 1; i <= 6; i++) featureBox.innerHTML += `<input type="url" class="fac-feature-url" placeholder="Feature ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
     }
-    if (!galleryBox.innerHTML) {
+    if (galleryBox && galleryBox.innerHTML.trim() === '') {
         for (let i = 1; i <= 6; i++) galleryBox.innerHTML += `<input type="url" class="fac-gallery-url" placeholder="Gallery ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
     }
 
