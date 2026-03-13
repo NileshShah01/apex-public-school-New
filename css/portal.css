@@ -256,12 +256,15 @@ body {
     padding: 2rem;
     overflow-y: auto;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This will center all direct children */
 }
 
 /* SPECIFIC CENTERING FOR CMS SECTIONS */
 .dashboard-section {
-    max-width: 1000px !important;
-    margin: 0 auto 2rem auto !important;
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
     width: 100%;
 }
 
@@ -283,6 +286,8 @@ body {
 }
 
 .header {
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -306,6 +311,8 @@ body {
 }
 
 .stats-grid {
+    width: 100%;
+    max-width: 1200px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
