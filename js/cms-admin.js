@@ -159,104 +159,177 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('cmsFacilityImagesForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const data = {
-            smart_class_urls: [document.getElementById('f_smart_1').value.trim(), document.getElementById('f_smart_2').value.trim()].filter(u => u),
-            computer_lab_urls: [document.getElementById('f_computer_1').value.trim(), document.getElementById('f_computer_2').value.trim()].filter(u => u),
-            sports_urls: [document.getElementById('f_sports_1').value.trim(), document.getElementById('f_sports_2').value.trim()].filter(u => u),
-            security_urls: [document.getElementById('f_security_1').value.trim(), document.getElementById('f_security_2').value.trim()].filter(u => u),
-            transport_urls: [document.getElementById('f_transport_1').value.trim(), document.getElementById('f_transport_2').value.trim()].filter(u => u),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        const saveBtn = document.getElementById('cmsAdmissionsImgSaveBtn');
+        const loading = document.getElementById('cmsAdmissionsImgLoading');
+        if (saveBtn) saveBtn.disabled = true;
+        if (loading) loading.style.display = 'block';
 
         try {
+            const current = (await db.collection('settings').doc('admissions').get()).data() || {};
+            const processGroup = async (prefix, count, currentUrls) => {
+                const urls = [...(currentUrls || [])];
+                for (let i = 1; i <= count; i++) {
+                    const file = document.getElementById(`${prefix}_${i}`).files[0];
+                    if (file) urls[i-1] = await processCmsImage(file);
+                }
+                return urls.filter(u => u);
+            };
+
+            const data = {
+                smart_class_urls: await processGroup('f_smart', 2, current.smart_class_urls),
+                computer_lab_urls: await processGroup('f_computer', 2, current.computer_lab_urls),
+                sports_urls: await processGroup('f_sports', 2, current.sports_urls),
+                security_urls: await processGroup('f_security', 2, current.security_urls),
+                transport_urls: await processGroup('f_transport', 2, current.transport_urls),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
             await db.collection('settings').doc('admissions').set(data, { merge: true });
-            showToast('Admissions media updated live!');
+            showToast('Admissions media updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally {
+            if (saveBtn) saveBtn.disabled = false;
+            if (loading) loading.style.display = 'none';
+        }
     });
 
     document.getElementById('cmsHomeFacilitiesForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const items = document.querySelectorAll('.facility-cms-item');
-        const facilities = [];
-        items.forEach(item => {
-            const name = item.querySelector('.f-name').value.trim();
-            const url = item.querySelector('.f-url').value.trim();
-            if (name && url) {
-                facilities.push({ name, url });
-            }
-        });
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        if (saveBtn) saveBtn.disabled = true;
 
         try {
+            const current = (await db.collection('settings').doc('homeFacilities').get()).data() || {};
+            const facilities = [...(current.facilities || [])];
+            const items = document.querySelectorAll('.facility-cms-item');
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const name = item.querySelector('.f-name').value.trim();
+                const file = item.querySelector('.f-file').files[0];
+                
+                if (name) {
+                    if (!facilities[i]) facilities[i] = { name: '', url: '' };
+                    facilities[i].name = name;
+                    if (file) facilities[i].url = await processCmsImage(file);
+                }
+            }
+
             await db.collection('settings').doc('homeFacilities').set({
-                facilities,
+                facilities: facilities.filter(f => f.name),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            showToast('Home page facilities updated live!');
+            showToast('Home page facilities updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally { if (saveBtn) saveBtn.disabled = false; }
     });
 
     document.getElementById('cmsHomeMemoriesForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const urls = Array.from(document.querySelectorAll('#cmsHomeMemoriesForm .mem-url'))
-                          .map(input => input.value.trim())
-                          .filter(url => url !== '');
-        
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        if (saveBtn) saveBtn.disabled = true;
+
         try {
+            const current = (await db.collection('settings').doc('homeMemories').get()).data() || {};
+            const urls = [...(current.urls || [])];
+            const files = e.target.querySelectorAll('.mem-file');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i].files[0];
+                if (file) urls[i] = await processCmsImage(file);
+            }
+            
             await db.collection('settings').doc('homeMemories').set({
-                urls,
+                urls: urls.filter(u => u),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            showToast('School Memories updated live!');
+            showToast('School Memories updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally { if (saveBtn) saveBtn.disabled = false; }
     });
 
     document.getElementById('cmsHomeHeroForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const urls = Array.from(document.querySelectorAll('#cmsHomeHeroForm .hero-url'))
-                          .map(input => input.value.trim())
-                          .filter(url => url !== '');
-        
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        if (saveBtn) saveBtn.disabled = true;
+
         try {
+            const current = (await db.collection('settings').doc('homeHero').get()).data() || {};
+            const urls = [...(current.urls || [])];
+            const files = e.target.querySelectorAll('.hero-file');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i].files[0];
+                if (file) urls[i] = await processCmsImage(file);
+            }
+            
             await db.collection('settings').doc('homeHero').set({
-                urls,
+                urls: urls.filter(u => u),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            showToast('Home Hero Slider updated live!');
+            showToast('Home Hero Slider updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally { if (saveBtn) saveBtn.disabled = false; }
     });
 
     document.getElementById('cmsAboutHeroForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const heroUrl = document.getElementById('aboutHeroUrl').value.trim();
-        if (!heroUrl) return showToast('Please provide a URL', 'error');
-
+        const file = document.getElementById('aboutHeroUrl').files[0];
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        
         try {
+            let heroUrl = (await db.collection('settings').doc('aboutPage').get()).data()?.heroUrl || '';
+            if (file) {
+                if (saveBtn) saveBtn.disabled = true;
+                heroUrl = await processCmsImage(file);
+            }
+
             await db.collection('settings').doc('aboutPage').set({
                 heroUrl,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
-            showToast('About page banner updated live!');
+            showToast('About page banner updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally { if (saveBtn) saveBtn.disabled = false; }
     });
 
     document.getElementById('cmsFacilitiesForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const data = {
-            heroUrl: document.getElementById('facHeroUrl').value.trim(),
-            sliderUrls: [],
-            featureUrls: [],
-            galleryUrls: [],
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        document.querySelectorAll('.fac-slider-url').forEach(input => { if(input.value.trim()) data.sliderUrls.push(input.value.trim()); });
-        document.querySelectorAll('.fac-feature-url').forEach(input => { if(input.value.trim()) data.featureUrls.push(input.value.trim()); });
-        document.querySelectorAll('.fac-gallery-url').forEach(input => { if(input.value.trim()) data.galleryUrls.push(input.value.trim()); });
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        if (saveBtn) saveBtn.disabled = true;
 
         try {
+            const current = (await db.collection('settings').doc('facilitiesPage').get()).data() || {};
+            const data = {
+                heroUrl: current.heroUrl || '',
+                sliderUrls: current.sliderUrls || [],
+                featureUrls: current.featureUrls || [],
+                galleryUrls: current.galleryUrls || [],
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const heroFile = document.getElementById('facHeroUrl').files[0];
+            if (heroFile) data.heroUrl = await processCmsImage(heroFile);
+
+            // Special case: these lists are shared by class, need careful mapping but since they are dynamic inputs now:
+            const processList = async (selector, list) => {
+                const newList = [...list];
+                const inputs = document.querySelectorAll(selector);
+                for (let i = 0; i < inputs.length; i++) {
+                    const file = inputs[i].files[0];
+                    if (file) newList[i] = await processCmsImage(file);
+                }
+                return newList.filter(u => u);
+            };
+
+            data.sliderUrls = await processList('.fac-slider-file', data.sliderUrls);
+            data.featureUrls = await processList('.fac-feature-file', data.featureUrls);
+            data.galleryUrls = await processList('.fac-gallery-file', data.galleryUrls);
+
             await db.collection('settings').doc('facilitiesPage').set(data);
             showToast('Facilities Page imagery updated!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        finally { if (saveBtn) saveBtn.disabled = false; }
     });
 
     document.getElementById('cmsGlobalStatsForm')?.addEventListener('submit', async function(e) {
@@ -282,20 +355,14 @@ async function loadImgAdmissions() {
         const doc = await db.collection('settings').doc('admissions').get();
         if (doc.exists) {
             const d = doc.data();
-            if (document.getElementById('f_smart_1')) document.getElementById('f_smart_1').value = (d.smart_class_urls || [])[0] || '';
-            if (document.getElementById('f_smart_2')) document.getElementById('f_smart_2').value = (d.smart_class_urls || [])[1] || '';
-            
-            if (document.getElementById('f_computer_1')) document.getElementById('f_computer_1').value = (d.computer_lab_urls || [])[0] || '';
-            if (document.getElementById('f_computer_2')) document.getElementById('f_computer_2').value = (d.computer_lab_urls || [])[1] || '';
-            
-            if (document.getElementById('f_sports_1')) document.getElementById('f_sports_1').value = (d.sports_urls || [])[0] || '';
-            if (document.getElementById('f_sports_2')) document.getElementById('f_sports_2').value = (d.sports_urls || [])[1] || '';
-            
-            if (document.getElementById('f_security_1')) document.getElementById('f_security_1').value = (d.security_urls || [])[0] || '';
-            if (document.getElementById('f_security_2')) document.getElementById('f_security_2').value = (d.security_urls || [])[1] || '';
-            
-            if (document.getElementById('f_transport_1')) document.getElementById('f_transport_1').value = (d.transport_urls || [])[0] || '';
-            if (document.getElementById('f_transport_2')) document.getElementById('f_transport_2').value = (d.transport_urls || [])[1] || '';
+            const setG = (p, urls) => {
+                (urls || []).forEach((u, i) => setMiniPreview(`${p}_${i+1}_preview`, u));
+            };
+            setG('f_smart', d.smart_class_urls);
+            setG('f_computer', d.computer_lab_urls);
+            setG('f_sports', d.sports_urls);
+            setG('f_security', d.security_urls);
+            setG('f_transport', d.transport_urls);
         }
     } catch(e) { console.error('loadImgAdmissions error:', e); }
 }
@@ -309,7 +376,7 @@ async function loadImgHomeFacilities() {
             items.forEach((item, i) => {
                 if (facilities[i]) {
                     item.querySelector('.f-name').value = facilities[i].name || '';
-                    item.querySelector('.f-url').value = facilities[i].url || '';
+                    setMiniPreview(`f_home_${i+1}_preview`, facilities[i].url);
                 }
             });
         }
@@ -321,10 +388,7 @@ async function loadImgHomeMemories() {
         const doc = await db.collection('settings').doc('homeMemories').get();
         if (doc.exists) {
             const urls = doc.data().urls || [];
-            const inputs = document.querySelectorAll('#cmsHomeMemoriesForm .mem-url');
-            inputs.forEach((input, i) => {
-                if (urls[i]) input.value = urls[i];
-            });
+            urls.forEach((url, i) => setMiniPreview(`mem_${i+1}_preview`, url));
         }
     } catch(e) { console.error('loadImgHomeMemories error:', e); }
 }
@@ -334,10 +398,7 @@ async function loadImgHomeHero() {
         const doc = await db.collection('settings').doc('homeHero').get();
         if (doc.exists) {
             const urls = doc.data().urls || [];
-            const inputs = document.querySelectorAll('#cmsHomeHeroForm .hero-url');
-            inputs.forEach((input, i) => {
-                if (urls[i]) input.value = urls[i];
-            });
+            urls.forEach((url, i) => setMiniPreview(`hero_img_${i+1}_preview`, url));
         }
     } catch(e) { console.error('loadImgHomeHero error:', e); }
 }
@@ -346,40 +407,23 @@ async function loadImgAboutHero() {
     try {
         const doc = await db.collection('settings').doc('aboutPage').get();
         if (doc.exists && doc.data().heroUrl) {
-            document.getElementById('aboutHeroUrl').value = doc.data().heroUrl;
+            setMiniPreview('aboutHero_preview', doc.data().heroUrl);
         }
     } catch(e) { console.error('loadImgAboutHero error:', e); }
 }
 
 async function loadImgFacilities() {
-    const sliderBox = document.getElementById('facSliderInputs');
-    const featureBox = document.getElementById('facFeatureInputs');
-    const galleryBox = document.getElementById('facGalleryInputs');
-
-    if (sliderBox && sliderBox.innerHTML.trim() === '') {
-        for (let i = 1; i <= 8; i++) sliderBox.innerHTML += `<input type="url" class="fac-slider-url" placeholder="Slider Image ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
-    }
-    if (featureBox && featureBox.innerHTML.trim() === '') {
-        for (let i = 1; i <= 6; i++) featureBox.innerHTML += `<input type="url" class="fac-feature-url" placeholder="Feature ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
-    }
-    if (galleryBox && galleryBox.innerHTML.trim() === '') {
-        for (let i = 1; i <= 6; i++) galleryBox.innerHTML += `<input type="url" class="fac-gallery-url" placeholder="Gallery ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
-    }
-
     try {
         const doc = await db.collection('settings').doc('facilitiesPage').get();
         if (doc.exists) {
             const data = doc.data();
-            if (data.heroUrl) document.getElementById('facHeroUrl').value = data.heroUrl;
+            if (data.heroUrl) setMiniPreview('facHero_preview', data.heroUrl);
             
-            const sInputs = document.querySelectorAll('.fac-slider-url');
-            if(data.sliderUrls) data.sliderUrls.forEach((url, i) => { if(sInputs[i]) sInputs[i].value = url; });
-
-            const fInputs = document.querySelectorAll('.fac-feature-url');
-            if(data.featureUrls) data.featureUrls.forEach((url, i) => { if(fInputs[i]) fInputs[i].value = url; });
-
-            const gInputs = document.querySelectorAll('.fac-gallery-url');
-            if(data.galleryUrls) data.galleryUrls.forEach((url, i) => { if(gInputs[i]) gInputs[i].value = url; });
+            // Populate slider/feature/gallery previews if containers exist
+            // This assumes the inputs are already there (they are static in admin-dashboard.html)
+            (data.sliderUrls || []).forEach((u, i) => setMiniPreview(`fac_s_${i+1}_preview`, u));
+            (data.featureUrls || []).forEach((u, i) => setMiniPreview(`fac_f_${i+1}_preview`, u));
+            (data.galleryUrls || []).forEach((u, i) => setMiniPreview(`fac_g_${i+1}_preview`, u));
         }
     } catch(e) { console.error('loadImgFacilities error:', e); }
 }
@@ -691,18 +735,18 @@ const MODAL_CONFIGS = {
     gallery: {
         title: 'Add Gallery Image',
         fields: [
-            { id: 'cms_url', label: 'Image URL *', type: 'url', required: true, placeholder: 'https://...' },
+            { id: 'cms_photo', label: 'Choose Image *', type: 'file', required: true },
             { id: 'cms_category', label: 'Category *', type: 'select', options: ['Sports', 'Events', 'Functions', 'Awards', 'Others'], required: true },
             { id: 'cms_caption', label: 'Caption (optional)', type: 'text' }
         ],
-        save: async (data) => { await db.collection('gallery').add({ url: data.cms_url, category: data.cms_category, caption: data.cms_caption, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem); }
+        save: async (data) => { await db.collection('gallery').add({ url: data.cms_photo, category: data.cms_category, caption: data.cms_caption, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem); }
     },
     staff: {
         title: 'Add Staff / Teacher',
         fields: [
             { id: 'cms_name', label: 'Full Name *', type: 'text', required: true },
             { id: 'cms_subject', label: 'Subject / Designation', type: 'text' },
-            { id: 'cms_photo', label: 'Photo URL (optional)', type: 'url', placeholder: 'https://...' }
+            { id: 'cms_photo', label: 'Choose Photo (optional)', type: 'file' }
         ],
         save: async (data) => { await db.collection('staff').add({ name: data.cms_name, subject: data.cms_subject, photo: data.cms_photo, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('staff', 'staffListAdmin', renderStaffItem); }
     }
@@ -723,13 +767,20 @@ function openCmsModal(type) {
             html += `<select id="${f.id}" ${f.required ? 'required' : ''} style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem; background:white;">`;
             f.options.forEach(opt => html += `<option value="${opt}">${opt}</option>`);
             html += `</select>`;
+        } else if (f.type === 'file') {
+            html += `
+                <input type="file" id="${f.id}" accept="image/*" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;" onchange="previewCmsImage(event, '${f.id}_preview')">
+                <div id="${f.id}_preview" style="margin-top:1rem; display:none;">
+                    <img src="" style="width:100%; max-height:200px; object-fit:contain; border-radius:0.5rem; border:1px solid var(--border);">
+                </div>`;
         } else {
             html += `<input type="${f.type}" id="${f.id}" ${f.required ? 'required' : ''} placeholder="${f.placeholder || ''}" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;">`;
         }
         
         html += `</div>`;
     });
-    html += `<button class="btn-portal btn-primary" onclick="saveCmsModal('${type}')" style="width:100%;"><i class="fas fa-plus"></i> Add</button>`;
+    html += `<div id="cmsModalLoading" style="display:none; text-align:center; padding:1rem; color:var(--primary);"><i class="fas fa-spinner fa-spin"></i> Processing Image...</div>`;
+    html += `<button class="btn-portal btn-primary" id="cmsSaveBtn" onclick="saveCmsModal('${type}')" style="width:100%;"><i class="fas fa-plus"></i> Add</button>`;
     document.getElementById('cmsModalBody').innerHTML = html;
     document.getElementById('cmsModal').style.display = 'block';
 }
@@ -738,19 +789,122 @@ function closeCmsModal() {
     document.getElementById('cmsModal').style.display = 'none';
 }
 
+// Helper to set previews during load
+function setMiniPreview(containerId, url) {
+    const container = document.getElementById(containerId);
+    if (container && url) {
+        container.innerHTML = `<img src="${url}" style="width:100%; border-radius:0.5rem; margin-top:0.5rem; border:1px solid #ddd;">`;
+        container.style.display = 'block';
+    } else if (container) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+    }
+}
+
+function previewCmsImage(event, previewId) {
+    const file = event.target.files[0];
+    const previewContainer = document.getElementById(previewId);
+    if (!file || !previewContainer) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        previewContainer.innerHTML = `<img src="${e.target.result}" style="width:100%; border-radius:0.5rem; margin-top:0.5rem; border:1px solid #ddd;">`;
+        previewContainer.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
 async function saveCmsModal(type) {
     const config = MODAL_CONFIGS[type];
     const data = {};
+    const saveBtn = document.getElementById('cmsSaveBtn');
+    const loading = document.getElementById('cmsModalLoading');
+
     for (const f of config.fields) {
         const el = document.getElementById(f.id);
-        if (f.required && !el.value.trim()) { showToast('Please fill required fields!', 'error'); return; }
-        data[f.id] = el.value.trim();
+        
+        if (f.type === 'file') {
+            const file = el.files[0];
+            if (f.required && !file) { showToast('Please select an image!', 'error'); return; }
+            if (file) {
+                if (saveBtn) saveBtn.disabled = true;
+                if (loading) loading.style.display = 'block';
+                
+                try {
+                    data[f.id] = await processCmsImage(file);
+                } catch(e) {
+                    showToast('Error processing image: ' + e.message, 'error');
+                    if (saveBtn) saveBtn.disabled = false;
+                    if (loading) loading.style.display = 'none';
+                    return;
+                }
+            } else {
+                data[f.id] = '';
+            }
+        } else {
+            if (f.required && !el.value.trim()) { showToast('Please fill required fields!', 'error'); return; }
+            data[f.id] = el.value.trim();
+        }
     }
+
     try {
         await config.save(data);
         closeCmsModal();
         showToast('Added successfully!');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    } catch(e) { 
+        showToast('Error: ' + e.message, 'error'); 
+    } finally {
+        if (saveBtn) saveBtn.disabled = false;
+        if (loading) loading.style.display = 'none';
+    }
+}
+
+async function processCmsImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                const MAX_HEIGHT = 1000;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Compress to stay under 900KB. 0.7 quality usually does the trick for 1000px.
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                
+                // Check size (base64 is ~1.37x file size)
+                const approximateSizeInBytes = (dataUrl.length * (3/4));
+                if (approximateSizeInBytes > 900 * 1024) {
+                    reject(new Error("Image is too large even after compression. Please use a smaller image."));
+                } else {
+                    resolve(dataUrl);
+                }
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 // ===================== ADMISSION STATUS =====================

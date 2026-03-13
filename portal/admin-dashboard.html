@@ -702,11 +702,28 @@
                 <h3><i class="fas fa-image"></i> Hero Slider Images</h3>
                 <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Enter URLs for the 4 homepage slideshow images. Use Google Photos, Imgur, or any direct image link.</p>
                 <form id="cmsHeroForm" style="display:grid; gap:1.25rem;">
-                    <div class="form-group"><label>Slide 1 Image URL</label><input type="url" id="hero_1" placeholder="https://..."></div>
-                    <div class="form-group"><label>Slide 2 Image URL</label><input type="url" id="hero_2" placeholder="https://..."></div>
-                    <div class="form-group"><label>Slide 3 Image URL</label><input type="url" id="hero_3" placeholder="https://..."></div>
-                    <div class="form-group"><label>Slide 4 Image URL</label><input type="url" id="hero_4" placeholder="https://..."></div>
-                    <button type="submit" class="btn-portal btn-primary"><i class="fas fa-save"></i> Save Slider Images</button>
+                    <div class="form-group">
+                        <label>Slide 1 Image</label>
+                        <input type="file" id="hero_1" accept="image/*" onchange="previewCmsImage(event, 'hero_1_preview')">
+                        <div id="hero_1_preview" class="image-preview-mini"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Slide 2 Image</label>
+                        <input type="file" id="hero_2" accept="image/*" onchange="previewCmsImage(event, 'hero_2_preview')">
+                        <div id="hero_2_preview" class="image-preview-mini"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Slide 3 Image</label>
+                        <input type="file" id="hero_3" accept="image/*" onchange="previewCmsImage(event, 'hero_3_preview')">
+                        <div id="hero_3_preview" class="image-preview-mini"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Slide 4 Image</label>
+                        <input type="file" id="hero_4" accept="image/*" onchange="previewCmsImage(event, 'hero_4_preview')">
+                        <div id="hero_4_preview" class="image-preview-mini"></div>
+                    </div>
+                    <div id="cmsHeroLoading" style="display:none; text-align:center; color:var(--primary);"><i class="fas fa-spinner fa-spin"></i> Processing...</div>
+                    <button type="submit" id="cmsHeroSaveBtn" class="btn-portal btn-primary"><i class="fas fa-save"></i> Save Slider Images</button>
                 </form>
             </section>
 
@@ -724,7 +741,7 @@
             </section>
 
             <!-- WEBSITE IMAGES: ADMISSIONS PAGE -->
-            <section id="cmsImgAdmissionsSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgAdmissionsSection" class="dashboard-section card" style="display:none;">
                 <div class="card" style="margin-bottom:1.5rem;">
                     <h3><i class="fas fa-school"></i> Admissions Page Facilities Photos</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Manage the images that appear when clicking facility cards on the admissions page.</p>
@@ -732,38 +749,54 @@
                     <form id="cmsFacilityImagesForm">
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
                             <div class="form-group">
-                                <label>Smart Classrooms (URL 1)</label>
-                                <input type="url" id="f_smart_1" placeholder="https://...">
-                                <input type="url" id="f_smart_2" placeholder="https://..." style="margin-top:0.5rem;">
+                                <label>Smart Classrooms (Photo 1)</label>
+                                <input type="file" id="f_smart_1" accept="image/*" onchange="previewCmsImage(event, 'f_smart_1_preview')">
+                                <div id="f_smart_1_preview" class="image-preview-mini"></div>
+                                <label style="margin-top:0.5rem;">(Photo 2)</label>
+                                <input type="file" id="f_smart_2" accept="image/*" onchange="previewCmsImage(event, 'f_smart_2_preview')">
+                                <div id="f_smart_2_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="form-group">
-                                <label>Computer Lab (URL 1)</label>
-                                <input type="url" id="f_computer_1" placeholder="https://...">
-                                <input type="url" id="f_computer_2" placeholder="https://..." style="margin-top:0.5rem;">
+                                <label>Computer Lab (Photo 1)</label>
+                                <input type="file" id="f_computer_1" accept="image/*" onchange="previewCmsImage(event, 'f_computer_1_preview')">
+                                <div id="f_computer_1_preview" class="image-preview-mini"></div>
+                                <label style="margin-top:0.5rem;">(Photo 2)</label>
+                                <input type="file" id="f_computer_2" accept="image/*" onchange="previewCmsImage(event, 'f_computer_2_preview')">
+                                <div id="f_computer_2_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="form-group">
-                                <label>Sports & Playground (URL 1)</label>
-                                <input type="url" id="f_sports_1" placeholder="https://...">
-                                <input type="url" id="f_sports_2" placeholder="https://..." style="margin-top:0.5rem;">
+                                <label>Sports & Playground (Photo 1)</label>
+                                <input type="file" id="f_sports_1" accept="image/*" onchange="previewCmsImage(event, 'f_sports_1_preview')">
+                                <div id="f_sports_1_preview" class="image-preview-mini"></div>
+                                <label style="margin-top:0.5rem;">(Photo 2)</label>
+                                <input type="file" id="f_sports_2" accept="image/*" onchange="previewCmsImage(event, 'f_sports_2_preview')">
+                                <div id="f_sports_2_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="form-group">
-                                <label>CCTV Security (URL 1)</label>
-                                <input type="url" id="f_security_1" placeholder="https://...">
-                                <input type="url" id="f_security_2" placeholder="https://..." style="margin-top:0.5rem;">
+                                <label>CCTV Security (Photo 1)</label>
+                                <input type="file" id="f_security_1" accept="image/*" onchange="previewCmsImage(event, 'f_security_1_preview')">
+                                <div id="f_security_1_preview" class="image-preview-mini"></div>
+                                <label style="margin-top:0.5rem;">(Photo 2)</label>
+                                <input type="file" id="f_security_2" accept="image/*" onchange="previewCmsImage(event, 'f_security_2_preview')">
+                                <div id="f_security_2_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="form-group">
-                                <label>Transport Facility (URL 1)</label>
-                                <input type="url" id="f_transport_1" placeholder="https://...">
-                                <input type="url" id="f_transport_2" placeholder="https://..." style="margin-top:0.5rem;">
+                                <label>Transport Facility (Photo 1)</label>
+                                <input type="file" id="f_transport_1" accept="image/*" onchange="previewCmsImage(event, 'f_transport_1_preview')">
+                                <div id="f_transport_1_preview" class="image-preview-mini"></div>
+                                <label style="margin-top:0.5rem;">(Photo 2)</label>
+                                <input type="file" id="f_transport_2" accept="image/*" onchange="previewCmsImage(event, 'f_transport_2_preview')">
+                                <div id="f_transport_2_preview" class="image-preview-mini"></div>
                             </div>
                         </div>
-                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1rem;"><i class="fas fa-save"></i> Save Admissions Media</button>
+                        <div id="cmsAdmissionsImgLoading" style="display:none; text-align:center; color:var(--primary); margin-top:1rem;"><i class="fas fa-spinner fa-spin"></i> Processing Images...</div>
+                        <button type="submit" id="cmsAdmissionsImgSaveBtn" class="btn-portal btn-primary" style="margin-top:1rem;"><i class="fas fa-save"></i> Save Admissions Media</button>
                     </form>
                 </div>
             </section>
 
             <!-- WEBSITE IMAGES: HOME PAGE FACILITIES -->
-            <section id="cmsImgHomeFacilitiesSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgHomeFacilitiesSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-home"></i> Home Page "Our Modern Facilities"</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Edit the 8 facilities shown in the rotating slider on the home page.</p>
@@ -774,42 +807,50 @@
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 1</label>
                                 <input type="text" class="f-name" placeholder="Name (e.g. Smart Classrooms)" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" placeholder="Image URL" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_1" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_1_preview')">
+                                <div id="f_home_1_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 2</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_2" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_2_preview')">
+                                <div id="f_home_2_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 3</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_3" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_3_preview')">
+                                <div id="f_home_3_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 4</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_4" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_4_preview')">
+                                <div id="f_home_4_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 5</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_5" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_5_preview')">
+                                <div id="f_home_5_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 6</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_6" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_6_preview')">
+                                <div id="f_home_6_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 7</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_7" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_7_preview')">
+                                <div id="f_home_7_preview" class="image-preview-mini"></div>
                             </div>
                             <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
                                 <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 8</label>
                                 <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
-                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="file" id="f_home_8" class="f-file" accept="image/*" style="width:100%;" onchange="previewCmsImage(event, 'f_home_8_preview')">
+                                <div id="f_home_8_preview" class="image-preview-mini"></div>
                             </div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Home Facilities</button>
@@ -818,21 +859,21 @@
             </section>
 
             <!-- WEBSITE IMAGES: HOME SCHOOL MEMORIES -->
-            <section id="cmsImgHomeMemoriesSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgHomeMemoriesSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-images"></i> Home Page "School Memories"</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the 8 images shown in the School Memories grid on the home page.</p>
 
                     <form id="cmsHomeMemoriesForm">
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
-                            <div class="form-group"><label>Memory 1 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 2 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 3 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 4 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 5 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 6 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 7 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Memory 8 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 1</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_1_preview')"><div id="mem_1_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 2</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_2_preview')"><div id="mem_2_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 3</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_3_preview')"><div id="mem_3_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 4</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_4_preview')"><div id="mem_4_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 5</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_5_preview')"><div id="mem_5_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 6</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_6_preview')"><div id="mem_6_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 7</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_7_preview')"><div id="mem_7_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Memory 8</label><input type="file" class="mem-file" accept="image/*" onchange="previewCmsImage(event, 'mem_8_preview')"><div id="mem_8_preview" class="image-preview-mini"></div></div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save School Memories</button>
                     </form>
@@ -840,17 +881,17 @@
             </section>
 
             <!-- WEBSITE IMAGES: HOME HERO SLIDER -->
-            <section id="cmsImgHomeHeroSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgHomeHeroSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-header"></i> Home Page Hero Slider</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Edit the 4 large sliding images at the top of the home page.</p>
 
                     <form id="cmsHomeHeroForm">
                         <div style="display:grid; grid-template-columns:1fr; gap:1.2rem;">
-                            <div class="form-group"><label>Hero Image 1 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Hero Image 2 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Hero Image 3 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
-                            <div class="form-group"><label>Hero Image 4 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Hero Image 1</label><input type="file" class="hero-file" accept="image/*" onchange="previewCmsImage(event, 'hero_img_1_preview')"><div id="hero_img_1_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Hero Image 2</label><input type="file" class="hero-file" accept="image/*" onchange="previewCmsImage(event, 'hero_img_2_preview')"><div id="hero_img_2_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Hero Image 3</label><input type="file" class="hero-file" accept="image/*" onchange="previewCmsImage(event, 'hero_img_3_preview')"><div id="hero_img_3_preview" class="image-preview-mini"></div></div>
+                            <div class="form-group"><label>Hero Image 4</label><input type="file" class="hero-file" accept="image/*" onchange="previewCmsImage(event, 'hero_img_4_preview')"><div id="hero_img_4_preview" class="image-preview-mini"></div></div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Hero Slider Images</button>
                     </form>
@@ -858,15 +899,16 @@
             </section>
 
             <!-- WEBSITE IMAGES: ABOUT PAGE HERO -->
-            <section id="cmsImgAboutHeroSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgAboutHeroSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-image"></i> About Page Hero Banner</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the main banner image at the top of the About Us page.</p>
 
                     <form id="cmsAboutHeroForm">
                         <div class="form-group">
-                            <label>Banner Image URL</label>
-                            <input type="url" id="aboutHeroUrl" placeholder="https://..." style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            <label>Banner Image</label>
+                            <input type="file" id="aboutHeroUrl" accept="image/*" onchange="previewCmsImage(event, 'aboutHero_preview')" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            <div id="aboutHero_preview" class="image-preview-mini"></div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save About Page Hero</button>
                     </form>
@@ -874,7 +916,7 @@
             </section>
 
             <!-- WEBSITE IMAGES: FACILITIES PAGE IMAGES -->
-            <section id="cmsImgFacilitiesSection" class="dashboard-section" style="display:none;">
+            <section id="cmsImgFacilitiesSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-image"></i> Facilities Page Images</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update all imagery on the Facilities page (Hero, Slider, Features, and Gallery).</p>
@@ -882,23 +924,47 @@
                     <form id="cmsFacilitiesForm">
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <label style="font-weight:700;">Hero Banner URL</label>
-                                <input type="url" id="facHeroUrl" placeholder="https://..." style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                                <label style="font-weight:700;">Hero Banner</label>
+                                <input type="file" id="facHeroUrl" accept="image/*" onchange="previewCmsImage(event, 'facHero_preview')" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                                <div id="facHero_preview" class="image-preview-mini"></div>
                             </div>
 
                             <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
                                 <label style="font-weight:700;">Scrolling Slider (8 Images)</label>
-                                <div id="facSliderInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;"></div>
+                                <div id="facSliderInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_1_preview')"><div id="fac_s_1_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_2_preview')"><div id="fac_s_2_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_3_preview')"><div id="fac_s_3_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_4_preview')"><div id="fac_s_4_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_5_preview')"><div id="fac_s_5_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_6_preview')"><div id="fac_s_6_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_7_preview')"><div id="fac_s_7_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-slider-file" accept="image/*" onchange="previewCmsImage(event, 'fac_s_8_preview')"><div id="fac_s_8_preview" class="image-preview-mini"></div></div>
+                                </div>
                             </div>
 
                             <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
                                 <label style="font-weight:700;">Interactive Feature Cards (6 Images)</label>
-                                <div id="facFeatureInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;"></div>
+                                <div id="facFeatureInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_1_preview')"><div id="fac_f_1_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_2_preview')"><div id="fac_f_2_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_3_preview')"><div id="fac_f_3_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_4_preview')"><div id="fac_f_4_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_5_preview')"><div id="fac_f_5_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-feature-file" accept="image/*" onchange="previewCmsImage(event, 'fac_f_6_preview')"><div id="fac_f_6_preview" class="image-preview-mini"></div></div>
+                                </div>
                             </div>
 
                             <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
                                 <label style="font-weight:700;">Facilities Gallery (6 Images)</label>
-                                <div id="facGalleryInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;"></div>
+                                <div id="facGalleryInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_1_preview')"><div id="fac_g_1_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_2_preview')"><div id="fac_g_2_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_3_preview')"><div id="fac_g_3_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_4_preview')"><div id="fac_g_4_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_5_preview')"><div id="fac_g_5_preview" class="image-preview-mini"></div></div>
+                                    <div class="form-group"><input type="file" class="fac-gallery-file" accept="image/*" onchange="previewCmsImage(event, 'fac_g_6_preview')"><div id="fac_g_6_preview" class="image-preview-mini"></div></div>
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save All Facilities Images</button>
@@ -910,7 +976,7 @@
             </section>
 
             <!-- WEBSITE TEXT: HOME PAGE -->
-            <section id="cmsTextHomeSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextHomeSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-home"></i> Home Page Text Customization</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update headings and descriptions on the Home page.</p>
@@ -941,7 +1007,7 @@
             </section>
 
             <!-- WEBSITE TEXT: ABOUT PAGE -->
-            <section id="cmsTextAboutSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextAboutSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-info-circle"></i> About Page Text Customization</h3>
                     <form id="cmsTextAboutForm">
@@ -955,7 +1021,7 @@
             </section>
 
             <!-- Placeholder sections for other pages to avoid huge file edit at once... -->
-            <section id="cmsTextAcademicsSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextAcademicsSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-graduation-cap"></i> Academics Page Text Customization</h3>
                     <form id="cmsTextAcademicsForm">
@@ -967,7 +1033,7 @@
                     </form>
                 </div>
             </section>
-            <section id="cmsTextAdmissionsSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextAdmissionsSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-user-plus"></i> Admissions Page Text Customization</h3>
                     <form id="cmsTextAdmissionsForm">
@@ -987,7 +1053,7 @@
                     </form>
                 </div>
             </section>
-            <section id="cmsTextFacilitiesSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextFacilitiesSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-building"></i> Facilities Page Text Customization</h3>
                     <form id="cmsTextFacilitiesForm">
@@ -1002,7 +1068,7 @@
                     </form>
                 </div>
             </section>
-            <section id="cmsTextGallerySection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextGallerySection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-images"></i> Gallery Page Text Customization</h3>
                     <form id="cmsTextGalleryForm">
@@ -1012,7 +1078,7 @@
                     </form>
                 </div>
             </section>
-            <section id="cmsTextContactSection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextContactSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-phone-alt"></i> Contact Page Text Customization</h3>
                     <form id="cmsTextContactForm">
@@ -1021,7 +1087,7 @@
                     </form>
                 </div>
             </section>
-            <section id="cmsTextInquirySection" class="dashboard-section" style="display:none;">
+            <section id="cmsTextInquirySection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-question-circle"></i> Inquiry Page Text Customization</h3>
                     <form id="cmsTextInquiryForm">
@@ -1033,7 +1099,7 @@
             </section>
 
             <!-- GENERAL CMS: GLOBAL SCHOOL STATS -->
-            <section id="cmsGlobalStatsSection" class="dashboard-section" style="display:none;">
+            <section id="cmsGlobalStatsSection" class="dashboard-section card" style="display:none;">
                 <div class="card">
                     <h3><i class="fas fa-chart-bar"></i> Global School Statistics</h3>
                     <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the statistics (Students, Teachers, etc.) that appear on Home, Academics, and Facilities pages.</p>
@@ -1063,7 +1129,7 @@
             </section>
 
             <!-- STUDENT DASHBOARD CONTROL SECTION -->
-            <section id="cmsStudentDashboardSection" class="dashboard-section" style="display:none;">
+            <section id="cmsStudentDashboardSection" class="dashboard-section card" style="display:none;">
                 <div style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color: white; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem;">
                     <i class="fas fa-chalkboard" style="font-size: 2.5rem; opacity: 0.9;"></i>
                     <div>
@@ -1207,8 +1273,7 @@
             </section>
 
             <!-- FEE TOOLS: PARENTS WHO NOT PAID -->
-            <section id="cmsFeeToolsSection" class="dashboard-section" style="display:none;">
-                <div class="card" style="padding: 2.5rem; border: 2px solid var(--primary-light);">
+            <section id="cmsFeeToolsSection" class="dashboard-section card" style="display:none; padding: 2.5rem; border: 2px solid var(--primary-light);">
                     <div style="text-align:center; margin-bottom:2.5rem;">
                         <h2 style="color:var(--secondary); font-size:1.8rem; margin-bottom:0.5rem;"><i class="fas fa-file-invoice-dollar" style="color:var(--primary);"></i> Parents Who Not Paid</h2>
                         <p style="color:var(--text-muted);">Compare total dues with monthly collections to identify pending payments.</p>
