@@ -14,6 +14,80 @@
         loadHolidays();
         loadAdmissionFacilities();
         loadHomeFacilities();
+        loadHomeMemories();
+        loadHeroSlider();
+    }
+    // ===================== HOME PAGE HERO SLIDER =====================
+    async function loadHeroSlider() {
+        const slider = document.getElementById('heroSlider');
+        const dotsContainer = document.getElementById('heroSliderDots');
+        if (!slider || !dotsContainer) return;
+
+        try {
+            const doc = await db.collection('settings').doc('homeHero').get();
+            let urls = [];
+            if (doc.exists) {
+                urls = doc.data().urls || [];
+            }
+
+            if (urls.length === 0) {
+                // Fallback defaults
+                urls = [
+                    "images/School-Building.jpeg",
+                    "images/Bihar-Museum-img4.jpeg",
+                    "images/Science-centre-Patna-img15.jpeg",
+                    "images/Republic-Day-img1.jpeg"
+                ];
+            }
+
+            slider.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            urls.forEach((url, i) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = i === 0 ? 'slide active' : 'slide';
+                img.id = `slide_${i + 1}`;
+                slider.appendChild(img);
+
+                const dot = document.createElement('span');
+                dot.className = i === 0 ? 'dot active' : 'dot';
+                dotsContainer.appendChild(dot);
+            });
+
+            // Re-init slider logic from script.js
+            if (typeof initHeroSlider === 'function') {
+                initHeroSlider();
+            }
+        } catch(e) { console.error('Error loading hero slider:', e); }
+    }
+
+    // ===================== HOME PAGE MEMORIES =====================
+    async function loadHomeMemories() {
+        const grid = document.getElementById('homeMemoriesGrid');
+        if (!grid) return;
+
+        try {
+            const doc = await db.collection('settings').doc('homeMemories').get();
+            if (doc.exists) {
+                const urls = doc.data().urls || [];
+                if (urls.length > 0) {
+                    grid.innerHTML = '';
+                    urls.forEach(url => {
+                        grid.innerHTML += `<img src="${url}" loading="lazy" onclick="openLightbox(this)" style="cursor:pointer;">`;
+                    });
+                    return;
+                }
+            }
+            // Fallback to static defaults
+            grid.innerHTML = `
+                <img src="images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
+                <img src="images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
+                <img src="images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
+                <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
+                <img src="images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
+                <img src="images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
+            `;
+        } catch(e) { console.error('Error loading home memories:', e); }
     }
 
     // ===================== HOME PAGE FACILITIES =====================

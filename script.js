@@ -58,42 +58,48 @@ function initTestimonials() {
 
 document.addEventListener("DOMContentLoaded", initTestimonials);
 /* HERO SLIDER */
+let heroInterval;
+function initHeroSlider() {
+    let slides = document.querySelectorAll(".slide");
+    let dots = document.querySelectorAll(".dot");
+    let currentSlide = 0;
 
-let slides = document.querySelectorAll(".slide");
-let dots = document.querySelectorAll(".dot");
-let currentSlide = 0;
+    if (slides.length === 0) return;
 
-function showSlide(index)
-{
-    slides.forEach(slide => slide.classList.remove("active"));
-    dots.forEach(dot => dot.classList.remove("active"));
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove("active"));
+        dots.forEach(dot => dot.classList.remove("active"));
+        
+        slides[index].classList.add("active");
+        if(dots[index]) dots[index].classList.add("active");
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+            showSlide(index);
+            clearInterval(heroInterval);
+            heroInterval = setInterval(nextSlide, 3000);
+        });
+    });
+
+    if (heroInterval) clearInterval(heroInterval);
+    heroInterval = setInterval(nextSlide, 3000);
     
-    slides[index].classList.add("active");
-    if(dots[index]) dots[index].classList.add("active");
-    currentSlide = index;
+    // Show first slide immediately
+    showSlide(0);
 }
 
-function nextSlide()
-{
-    currentSlide++;
-    if(currentSlide >= slides.length) currentSlide = 0;
-    showSlide(currentSlide);
-}
-
-function prevSlide()
-{
-    currentSlide--;
-    if(currentSlide < 0) currentSlide = slides.length - 1;
-    showSlide(currentSlide);
-}
-
-dots.forEach((dot, index) => {
-    dot.addEventListener("click", () => showSlide(index));
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.querySelectorAll(".slide").length > 0) {
+        initHeroSlider();
+    }
 });
-
-/* AUTO SLIDER */
-
-setInterval(nextSlide,3000);
 
 
 /* COUNTER ANIMATION – FIXED VERSION */

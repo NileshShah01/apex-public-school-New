@@ -68,10 +68,8 @@ color:#1E40AF;
 <!-- 1. HERO BANNER -->
 <section class="homepage-hero">
     <div class="slider" id="heroSlider">
-        <img id="slide_1" src="images/School-Building.jpeg" class="slide active">
-        <img id="slide_2" src="images/Bihar-Museum-img4.jpeg" class="slide">
-        <img id="slide_3" src="images/Science-centre-Patna-img15.jpeg" class="slide">
-        <img id="slide_4" src="images/Republic-Day-img1.jpeg" class="slide">
+        <!-- Dynamically loaded from loadHeroSlider in cms-settings.js -->
+        <p style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; z-index:10;">Loading...</p>
     </div>
     <div class="hero-content">
         <h1>Welcome to Apex Public School</h1>
@@ -82,11 +80,8 @@ color:#1E40AF;
             <a href="inquiry.html" class="btn-secondary">Inquiry Now</a>
         </div>
     </div>
-    <div class="slider-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+    <div class="slider-dots" id="heroSliderDots">
+        <!-- Dynamically generated -->
     </div>
 </section>
 
@@ -252,14 +247,9 @@ color:#1E40AF;
     <!-- 6. GALLERY PREVIEW -->
 <section class="home-gallery reveal">
     <h2>School Memories</h2>
-    <div class="gallery-grid">
-        <img src="images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
-        <img src="images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
-        <img src="images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
-        <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
-        <img src="images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
-        <img src="images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
-
+    <div class="gallery-grid" id="homeMemoriesGrid">
+        <!-- Dynamically loaded from Firestore (loadHomeMemories in cms-settings.js) -->
+        <p style="text-align:center; width:100%; color:var(--text-muted); padding:2rem;">Loading memories...</p>
     </div>
     <a href="gallery.html" class="btn-secondary">View Full Gallery</a>
 </section>

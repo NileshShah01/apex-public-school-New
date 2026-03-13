@@ -17,7 +17,9 @@ const CMS_SECTIONS = {
     'cmsStudentDashboard': { load: loadCmsStudentDashboard },
     'cmsImgGallery': { load: () => {} },
     'cmsImgAdmissions': { load: loadImgAdmissions },
-    'cmsImgHomeFacilities': { load: loadImgHomeFacilities }
+    'cmsImgHomeFacilities': { load: loadImgHomeFacilities },
+    'cmsImgHomeMemories': { load: loadImgHomeMemories },
+    'cmsImgHomeHero': { load: loadImgHomeHero }
 };
 
 // Hook into existing showSection 
@@ -180,6 +182,36 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Home page facilities updated live!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
+
+    document.getElementById('cmsHomeMemoriesForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const urls = Array.from(document.querySelectorAll('#cmsHomeMemoriesForm .mem-url'))
+                          .map(input => input.value.trim())
+                          .filter(url => url !== '');
+        
+        try {
+            await db.collection('settings').doc('homeMemories').set({
+                urls,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('School Memories updated live!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
+
+    document.getElementById('cmsHomeHeroForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const urls = Array.from(document.querySelectorAll('#cmsHomeHeroForm .hero-url'))
+                          .map(input => input.value.trim())
+                          .filter(url => url !== '');
+        
+        try {
+            await db.collection('settings').doc('homeHero').set({
+                urls,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Home Hero Slider updated live!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
 });
 
 // ===================== WEBSITE IMAGES CMS =====================
@@ -220,6 +252,32 @@ async function loadImgHomeFacilities() {
             });
         }
     } catch(e) { console.error('loadImgHomeFacilities error:', e); }
+}
+
+async function loadImgHomeMemories() {
+    try {
+        const doc = await db.collection('settings').doc('homeMemories').get();
+        if (doc.exists) {
+            const urls = doc.data().urls || [];
+            const inputs = document.querySelectorAll('#cmsHomeMemoriesForm .mem-url');
+            inputs.forEach((input, i) => {
+                if (urls[i]) input.value = urls[i];
+            });
+        }
+    } catch(e) { console.error('loadImgHomeMemories error:', e); }
+}
+
+async function loadImgHomeHero() {
+    try {
+        const doc = await db.collection('settings').doc('homeHero').get();
+        if (doc.exists) {
+            const urls = doc.data().urls || [];
+            const inputs = document.querySelectorAll('#cmsHomeHeroForm .hero-url');
+            inputs.forEach((input, i) => {
+                if (urls[i]) input.value = urls[i];
+            });
+        }
+    } catch(e) { console.error('loadImgHomeHero error:', e); }
 }
 
 // ===================== STUDENT DASHBOARD CMS =====================

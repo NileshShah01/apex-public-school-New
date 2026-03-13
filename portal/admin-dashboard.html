@@ -114,6 +114,8 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgGallery')">Gallery Page Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Page</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Page Facilities</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home School Memories</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeHero')">Home Hero Slider</a>
                     </div>
                 </div>
 
@@ -775,6 +777,46 @@
                             </div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Home Facilities</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: HOME SCHOOL MEMORIES -->
+            <section id="cmsImgHomeMemoriesSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-images"></i> Home Page "School Memories"</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the 8 images shown in the School Memories grid on the home page.</p>
+
+                    <form id="cmsHomeMemoriesForm">
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+                            <div class="form-group"><label>Memory 1 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 2 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 3 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 4 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 5 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 6 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 7 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Memory 8 URL</label><input type="url" class="mem-url" placeholder="https://..."></div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save School Memories</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: HOME HERO SLIDER -->
+            <section id="cmsImgHomeHeroSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-header"></i> Home Page Hero Slider</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Edit the 4 large sliding images at the top of the home page.</p>
+
+                    <form id="cmsHomeHeroForm">
+                        <div style="display:grid; grid-template-columns:1fr; gap:1.2rem;">
+                            <div class="form-group"><label>Hero Image 1 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Hero Image 2 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Hero Image 3 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
+                            <div class="form-group"><label>Hero Image 4 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Hero Slider Images</button>
                     </form>
                 </div>
             </section>
