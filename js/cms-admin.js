@@ -1031,12 +1031,17 @@ async function processFeeData() {
             return;
         }
 
-        // Group by Class
+        // Group by Class and sort by Due Amount Desc
         const grouped = {};
         nonPaying.forEach(std => {
             const cls = std.Class || 'Unclassified';
             if (!grouped[cls]) grouped[cls] = [];
             grouped[cls].push(std);
+        });
+
+        // Sort each class by Due Amount Descending
+        Object.keys(grouped).forEach(cls => {
+            grouped[cls].sort((a, b) => (b["Due Amount"] || 0) - (a["Due Amount"] || 0));
         });
 
         feeResultData = grouped;
@@ -1057,7 +1062,6 @@ function downloadFeeExcel() {
     const wb = XLSX.utils.book_new();
     const sortedClasses = Object.keys(feeResultData).sort();
     
-    // Header setup based on screenshot
     const dateRange = `(01 Dec, 2023-${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
     const title = [`ED | Download Due Payment | ${dateRange}`];
     const headers = ["Student Id", "Student Name", "Father Name", "Phone", "Session", "Class", "Due Amount"];
@@ -1072,10 +1076,38 @@ function downloadFeeExcel() {
 
         const ws = XLSX.utils.aoa_to_sheet(sheetData);
 
-        // Styling: Merging top row
-        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
+        // Styling: Full border for all data cells
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        const borderStyle = {
+            top: { style: "thin" },
+            bottom: { style: "thin" },
+            left: { style: "thin" },
+            right: { style: "thin" }
+        };
 
-        // Column widths
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cell_address = { c: C, r: R };
+                const cell_ref = XLSX.utils.encode_cell(cell_address);
+                if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' }; // Ensure cell exists
+                
+                ws[cell_ref].s = ws[cell_ref].s || {};
+                ws[cell_ref].s.border = borderStyle;
+                
+                // Extra styling for headers
+                if (R === 1) { // Headers
+                    ws[cell_ref].s.font = { bold: true };
+                    ws[cell_ref].s.fill = { fgColor: { rgb: "F1F5F9" } };
+                    ws[cell_ref].s.alignment = { horizontal: "center" };
+                }
+                if (R === 0) { // Title row
+                    ws[cell_ref].s.font = { bold: true, sz: 14 };
+                    ws[cell_ref].s.alignment = { horizontal: "center" };
+                }
+            }
+        }
+
+        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
         ws['!cols'] = [
             { wch: 12 }, { wch: 20 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 12 }
         ];
