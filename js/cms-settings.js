@@ -26,7 +26,7 @@
             // Phone
             if (d.phone) {
                 document.querySelectorAll('.dyn-phone, #dyn-phone, [data-cms="phone"]').forEach(el => el.textContent = d.phone);
-                document.querySelectorAll('.whatsapp-float').forEach(el => el.href = 'https://wa.me/' + d.phone.replace(/[^0-9]/g, ''));
+                document.querySelectorAll('.float-whatsapp').forEach(el => el.href = 'https://wa.me/' + d.phone.replace(/[^0-9]/g, ''));
             }
 
             // Email
