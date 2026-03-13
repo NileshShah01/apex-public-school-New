@@ -195,8 +195,8 @@ gap:22px;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        margin-bottom: 0.2rem;
         border-bottom: 2px solid rgba(30, 58, 138, 0.1);
         position: relative;
         text-align: center;
@@ -205,13 +205,13 @@ gap:22px;
     }
 
     .mobile-logo {
-        height: 60px;
+        height: 45px;
         width: auto;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.1rem;
     }
 
     .mobile-school-name {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: var(--primary);
         margin: 0;
@@ -240,17 +240,17 @@ gap:22px;
     }
 
     .menu > a { 
-        font-size: 0.9rem; 
+        font-size: 0.85rem; 
         border: 1px solid rgba(30, 58, 138, 0.3);
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.2rem;
         width: 100%; 
-        padding: 0.5rem 0.8rem;
+        padding: 0.35rem 0.6rem;
         border-radius: 0.4rem;
         background: var(--white);
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.4rem;
         color: var(--primary);
         font-weight: 600;
         transition: all 0.3s ease;
@@ -1237,6 +1237,21 @@ gap:15px;
 .stat h3, .stat h2
 {
 font-size:32px;
+}
+
+/* Floating Buttons Mobile (Icons only) */
+.float-btn span {
+    display: none;
+}
+.float-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+}
+.float-btn i {
+    font-size: 1.5rem;
 }
 
 }
