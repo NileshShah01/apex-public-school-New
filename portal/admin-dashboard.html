@@ -116,6 +116,7 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Page Facilities</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home School Memories</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeHero')">Home Hero Slider</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAboutHero')">About Page Hero</a>
                     </div>
                 </div>
 
@@ -817,6 +818,22 @@
                             <div class="form-group"><label>Hero Image 4 URL</label><input type="url" class="hero-url" placeholder="https://..."></div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Hero Slider Images</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: ABOUT PAGE HERO -->
+            <section id="cmsImgAboutHeroSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-image"></i> About Page Hero Banner</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the main banner image at the top of the About Us page.</p>
+
+                    <form id="cmsAboutHeroForm">
+                        <div class="form-group">
+                            <label>Banner Image URL</label>
+                            <input type="url" id="aboutHeroUrl" placeholder="https://..." style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save About Page Hero</button>
                     </form>
                 </div>
             </section>

@@ -19,7 +19,8 @@ const CMS_SECTIONS = {
     'cmsImgAdmissions': { load: loadImgAdmissions },
     'cmsImgHomeFacilities': { load: loadImgHomeFacilities },
     'cmsImgHomeMemories': { load: loadImgHomeMemories },
-    'cmsImgHomeHero': { load: loadImgHomeHero }
+    'cmsImgHomeHero': { load: loadImgHomeHero },
+    'cmsImgAboutHero': { load: loadImgAboutHero }
 };
 
 // Hook into existing showSection 
@@ -212,6 +213,20 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Home Hero Slider updated live!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
+
+    document.getElementById('cmsAboutHeroForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const heroUrl = document.getElementById('aboutHeroUrl').value.trim();
+        if (!heroUrl) return showToast('Please provide a URL', 'error');
+
+        try {
+            await db.collection('settings').doc('aboutPage').set({
+                heroUrl,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            showToast('About page banner updated live!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
 });
 
 // ===================== WEBSITE IMAGES CMS =====================
@@ -278,6 +293,15 @@ async function loadImgHomeHero() {
             });
         }
     } catch(e) { console.error('loadImgHomeHero error:', e); }
+}
+
+async function loadImgAboutHero() {
+    try {
+        const doc = await db.collection('settings').doc('aboutPage').get();
+        if (doc.exists && doc.data().heroUrl) {
+            document.getElementById('aboutHeroUrl').value = doc.data().heroUrl;
+        }
+    } catch(e) { console.error('loadImgAboutHero error:', e); }
 }
 
 // ===================== STUDENT DASHBOARD CMS =====================

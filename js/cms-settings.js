@@ -16,6 +16,19 @@
         loadHomeFacilities();
         loadHomeMemories();
         loadHeroSlider();
+        loadAboutHero();
+    }
+    // ===================== ABOUT PAGE HERO =====================
+    async function loadAboutHero() {
+        const hero = document.getElementById('aboutHeroSection');
+        if (!hero) return;
+
+        try {
+            const doc = await db.collection('settings').doc('aboutPage').get();
+            if (doc.exists && doc.data().heroUrl) {
+                hero.style.backgroundImage = `url("${doc.data().heroUrl}")`;
+            }
+        } catch(e) { console.error('Error loading about hero:', e); }
     }
     // ===================== HOME PAGE HERO SLIDER =====================
     async function loadHeroSlider() {
