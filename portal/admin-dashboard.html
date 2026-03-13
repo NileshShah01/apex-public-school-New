@@ -113,6 +113,7 @@
                     <div class="cat-submenu" id="catWebImages">
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgGallery')">Gallery Page Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Page</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Page Facilities</a>
                     </div>
                 </div>
 
@@ -719,6 +720,61 @@
                             </div>
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:1rem;"><i class="fas fa-save"></i> Save Admissions Media</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: HOME PAGE FACILITIES -->
+            <section id="cmsImgHomeFacilitiesSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-home"></i> Home Page "Our Modern Facilities"</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Edit the 8 facilities shown in the rotating slider on the home page.</p>
+
+                    <form id="cmsHomeFacilitiesForm">
+                        <div id="homeFacilitiesList" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                            <!-- Generate inputs for 8 facilities -->
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 1</label>
+                                <input type="text" class="f-name" placeholder="Name (e.g. Smart Classrooms)" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" placeholder="Image URL" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 2</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 3</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 4</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 5</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 6</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 7</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                            <div class="facility-cms-item" style="background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                                <label style="font-weight:700; display:block; margin-bottom:0.5rem;">Facility 8</label>
+                                <input type="text" class="f-name" style="width:100%; margin-bottom:0.5rem; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                                <input type="url" class="f-url" style="width:100%; padding:0.5rem; border-radius:0.4rem; border:1px solid var(--border);">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save Home Facilities</button>
                     </form>
                 </div>
             </section>

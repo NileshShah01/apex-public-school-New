@@ -16,7 +16,8 @@ const CMS_SECTIONS = {
     'cmsTheme': { load: loadCmsTheme },
     'cmsStudentDashboard': { load: loadCmsStudentDashboard },
     'cmsImgGallery': { load: () => {} },
-    'cmsImgAdmissions': { load: loadImgAdmissions }
+    'cmsImgAdmissions': { load: loadImgAdmissions },
+    'cmsImgHomeFacilities': { load: loadImgHomeFacilities }
 };
 
 // Hook into existing showSection 
@@ -158,6 +159,27 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Admissions media updated live!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
+
+    document.getElementById('cmsHomeFacilitiesForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const items = document.querySelectorAll('.facility-cms-item');
+        const facilities = [];
+        items.forEach(item => {
+            const name = item.querySelector('.f-name').value.trim();
+            const url = item.querySelector('.f-url').value.trim();
+            if (name && url) {
+                facilities.push({ name, url });
+            }
+        });
+
+        try {
+            await db.collection('settings').doc('homeFacilities').set({
+                facilities,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast('Home page facilities updated live!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
 });
 
 // ===================== WEBSITE IMAGES CMS =====================
@@ -182,6 +204,22 @@ async function loadImgAdmissions() {
             if (document.getElementById('f_transport_2')) document.getElementById('f_transport_2').value = (d.transport_urls || [])[1] || '';
         }
     } catch(e) { console.error('loadImgAdmissions error:', e); }
+}
+
+async function loadImgHomeFacilities() {
+    try {
+        const doc = await db.collection('settings').doc('homeFacilities').get();
+        if (doc.exists) {
+            const facilities = doc.data().facilities || [];
+            const items = document.querySelectorAll('.facility-cms-item');
+            items.forEach((item, i) => {
+                if (facilities[i]) {
+                    item.querySelector('.f-name').value = facilities[i].name || '';
+                    item.querySelector('.f-url').value = facilities[i].url || '';
+                }
+            });
+        }
+    } catch(e) { console.error('loadImgHomeFacilities error:', e); }
 }
 
 // ===================== STUDENT DASHBOARD CMS =====================

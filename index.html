@@ -197,11 +197,9 @@ color:#1E40AF;
 <section class="reveal">
     <h2 class="section-title">Our Modern Facilities</h2>
     <div class="facilities-slider">
-        <div class="slider-track">
-            <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
-            <div class="facility-slide"><img src="images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
-            <div class="facility-slide"><img src="images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
-            <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
+        <div class="slider-track" id="homeFacilitiesTrack">
+            <!-- Dynamically loaded from Firestore (loadHomeFacilities in cms-settings.js) -->
+            <p style="text-align:center; width:100%; color:var(--text-muted);">Loading facilities...</p>
         </div>
     </div>
     <div style="text-align: center; margin-top: 2rem;">

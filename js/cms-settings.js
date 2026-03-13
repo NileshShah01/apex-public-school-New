@@ -13,6 +13,38 @@
         loadStaff();
         loadHolidays();
         loadAdmissionFacilities();
+        loadHomeFacilities();
+    }
+
+    // ===================== HOME PAGE FACILITIES =====================
+    async function loadHomeFacilities() {
+        const track = document.getElementById('homeFacilitiesTrack');
+        if (!track) return;
+
+        try {
+            const doc = await db.collection('settings').doc('homeFacilities').get();
+            if (doc.exists) {
+                const data = doc.data().facilities || [];
+                if (data.length > 0) {
+                    track.innerHTML = '';
+                    data.forEach(item => {
+                        track.innerHTML += `
+                            <div class="facility-slide">
+                                <img src="${item.url}" loading="lazy">
+                                <div class="facility-name">${item.name}</div>
+                            </div>`;
+                    });
+                    return;
+                }
+            }
+            // Fallback to defaults if no data in DB
+            track.innerHTML = `
+                <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
+                <div class="facility-slide"><img src="images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
+                <div class="facility-slide"><img src="images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
+                <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
+            `;
+        } catch(e) { console.error('Error loading home facilities:', e); }
     }
 
     // ===================== ADMISSION FACILITIES (admissions.html) =====================
