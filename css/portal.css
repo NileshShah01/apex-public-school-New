@@ -279,41 +279,38 @@ body {
     overflow-x: hidden;
     min-width: 0;
     flex: 1;
-    display: block; /* Switch to block to use auto-margins for reliable centering */
+    display: flex; /* Robust centering */
+    flex-direction: column;
+    align-items: center;
 }
 
 /* SPECIFIC CENTERING FOR CMS SECTIONS */
 .dashboard-section {
-    display: block;
     width: 100%;
     max-width: 1100px;
-    margin: 0 auto 2rem auto !important;
+    margin-bottom: 2rem !important;
 }
 
 .dashboard-section .card {
     width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: border-box; /* Ensure padding doesn't push width */
+    box-sizing: border-box;
 }
 
 /* Special handling for Website Customise tabs if needed */
 .cms-text-section {
     max-width: 800px;
-    margin: 0 auto;
+    width: 100%;
 }
-
-
 
 .header {
     width: 100%;
-    max-width: 1100px; /* Standardized with content */
+    max-width: 1100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 1.5rem;
-    margin: 0 auto 2rem auto !important;
+    margin-bottom: 2rem !important;
     padding: 0 1rem;
 }
 
@@ -346,11 +343,11 @@ body {
 
 .stats-grid {
     width: 100%;
-    max-width: 1100px; /* Standardized */
+    max-width: 1100px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
-    margin: 0 auto 2rem auto !important;
+    margin-bottom: 2rem !important;
 }
 
 .stat-card {
