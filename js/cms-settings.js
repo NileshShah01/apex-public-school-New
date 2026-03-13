@@ -473,11 +473,11 @@
             }
 
             filteredImages.forEach(d => {
-                const catBadge = d.category ? `<span style="position:absolute; top:0.5rem; right:0.5rem; background:#1E40AF; color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; font-weight:bold;">${d.category}</span>` : '';
-                container.innerHTML += `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;" onclick="openLightbox({src:'${d.url}'})">
-                    <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy" style="width:100%; height:220px; object-fit:cover; display:block;">
+                const catBadge = d.category ? `<span style="position:absolute; top:0.5rem; right:0.5rem; background:#1E40AF; color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; font-weight:bold; z-index:10;">${d.category}</span>` : '';
+                container.innerHTML += `<div class="gallery-card" onclick="openLightbox({src:'${d.url}'})" style="cursor:pointer; position:relative;">
+                    <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy">
                     ${catBadge}
-                    ${d.caption ? `<div style="padding:0.5rem 0.75rem; font-size:0.85rem; color:#475569; text-align:center;">${d.caption}</div>` : ''}
+                    ${d.caption ? `<div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; padding:0.5rem; font-size:0.8rem; text-align:center; transform:translateY(100%); transition:transform 0.3s ease;" class="card-caption">${d.caption}</div>` : ''}
                 </div>`;
             });
         }
