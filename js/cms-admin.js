@@ -20,7 +20,9 @@ const CMS_SECTIONS = {
     'cmsImgHomeFacilities': { load: loadImgHomeFacilities },
     'cmsImgHomeMemories': { load: loadImgHomeMemories },
     'cmsImgHomeHero': { load: loadImgHomeHero },
-    'cmsImgAboutHero': { load: loadImgAboutHero }
+    'cmsImgAboutHero': { load: loadImgAboutHero },
+    'cmsImgFacilities': { load: loadImgFacilities },
+    'cmsGlobalStats': { load: loadGlobalStatsAdmin }
 };
 
 // Hook into existing showSection 
@@ -227,6 +229,42 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('About page banner updated live!');
         } catch(e) { showToast('Error: ' + e.message, 'error'); }
     });
+
+    document.getElementById('cmsFacilitiesForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            heroUrl: document.getElementById('facHeroUrl').value.trim(),
+            sliderUrls: [],
+            featureUrls: [],
+            galleryUrls: [],
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        document.querySelectorAll('.fac-slider-url').forEach(input => { if(input.value.trim()) data.sliderUrls.push(input.value.trim()); });
+        document.querySelectorAll('.fac-feature-url').forEach(input => { if(input.value.trim()) data.featureUrls.push(input.value.trim()); });
+        document.querySelectorAll('.fac-gallery-url').forEach(input => { if(input.value.trim()) data.galleryUrls.push(input.value.trim()); });
+
+        try {
+            await db.collection('settings').doc('facilitiesPage').set(data);
+            showToast('Facilities Page imagery updated!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
+
+    document.getElementById('cmsGlobalStatsForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            students: parseInt(document.getElementById('statsStudents').value) || 0,
+            teachers: parseInt(document.getElementById('statsTeachers').value) || 0,
+            classrooms: parseInt(document.getElementById('statsClassrooms').value) || 0,
+            years: parseInt(document.getElementById('statsYears').value) || 0,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            await db.collection('settings').doc('globalStats').set(data);
+            showToast('Global Statistics updated across all pages!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
 });
 
 // ===================== WEBSITE IMAGES CMS =====================
@@ -302,6 +340,52 @@ async function loadImgAboutHero() {
             document.getElementById('aboutHeroUrl').value = doc.data().heroUrl;
         }
     } catch(e) { console.error('loadImgAboutHero error:', e); }
+}
+
+async function loadImgFacilities() {
+    const sliderBox = document.getElementById('facSliderInputs');
+    const featureBox = document.getElementById('facFeatureInputs');
+    const galleryBox = document.getElementById('facGalleryInputs');
+
+    if (!sliderBox.innerHTML) {
+        for (let i = 1; i <= 8; i++) sliderBox.innerHTML += `<input type="url" class="fac-slider-url" placeholder="Slider Image ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
+    }
+    if (!featureBox.innerHTML) {
+        for (let i = 1; i <= 6; i++) featureBox.innerHTML += `<input type="url" class="fac-feature-url" placeholder="Feature ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
+    }
+    if (!galleryBox.innerHTML) {
+        for (let i = 1; i <= 6; i++) galleryBox.innerHTML += `<input type="url" class="fac-gallery-url" placeholder="Gallery ${i} URL" style="width:100%; padding:0.4rem; border:1px solid var(--border); border-radius:0.3rem;">`;
+    }
+
+    try {
+        const doc = await db.collection('settings').doc('facilitiesPage').get();
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.heroUrl) document.getElementById('facHeroUrl').value = data.heroUrl;
+            
+            const sInputs = document.querySelectorAll('.fac-slider-url');
+            if(data.sliderUrls) data.sliderUrls.forEach((url, i) => { if(sInputs[i]) sInputs[i].value = url; });
+
+            const fInputs = document.querySelectorAll('.fac-feature-url');
+            if(data.featureUrls) data.featureUrls.forEach((url, i) => { if(fInputs[i]) fInputs[i].value = url; });
+
+            const gInputs = document.querySelectorAll('.fac-gallery-url');
+            if(data.galleryUrls) data.galleryUrls.forEach((url, i) => { if(gInputs[i]) gInputs[i].value = url; });
+        }
+    } catch(e) { console.error('loadImgFacilities error:', e); }
+}
+
+async function loadGlobalStatsAdmin() {
+    try {
+        const doc = await db.collection('settings').doc('globalStats').get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('statsStudents').value = data.students || '';
+            document.getElementById('statsTeachers').value = data.teachers || '';
+            document.getElementById('statsClassrooms').value = data.classrooms || '';
+            document.getElementById('statsYears').value = data.years || '';
+        }
+    } catch(e) { console.error('loadGlobalStatsAdmin error:', e); }
 }
 
 // ===================== STUDENT DASHBOARD CMS =====================

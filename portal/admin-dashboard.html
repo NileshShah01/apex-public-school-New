@@ -117,6 +117,7 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home School Memories</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeHero')">Home Hero Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAboutHero')">About Page Hero</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgFacilities')">Facilities Page Images</a>
                     </div>
                 </div>
 
@@ -141,6 +142,7 @@
                     </div>
                     <div class="cat-submenu" id="catUtils">
                         <a href="#" class="nav-link sub-link" onclick="showSection('inquiries')">Inquiries</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsGlobalStats')">School Statistics</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('websiteSettings')">Site Settings</a>
                     </div>
                 </div>
@@ -834,6 +836,75 @@
                             <input type="url" id="aboutHeroUrl" placeholder="https://..." style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
                         </div>
                         <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save About Page Hero</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: FACILITIES PAGE IMAGES -->
+            <section id="cmsImgFacilitiesSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-image"></i> Facilities Page Images</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update all imagery on the Facilities page (Hero, Slider, Features, and Gallery).</p>
+
+                    <form id="cmsFacilitiesForm">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label style="font-weight:700;">Hero Banner URL</label>
+                                <input type="url" id="facHeroUrl" placeholder="https://..." style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            </div>
+
+                            <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
+                                <label style="font-weight:700;">Scrolling Slider (8 Images)</label>
+                                <div id="facSliderInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
+                                <label style="font-weight:700;">Interactive Feature Cards (6 Images)</label>
+                                <div id="facFeatureInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="grid-column: 1 / -1; margin-top:1rem;">
+                                <label style="font-weight:700;">Facilities Gallery (6 Images)</label>
+                                <div id="facGalleryInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:2rem;"><i class="fas fa-save"></i> Save All Facilities Images</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- GENERAL CMS: GLOBAL SCHOOL STATS -->
+            <section id="cmsGlobalStatsSection" class="dashboard-section" style="display:none;">
+                <div class="card">
+                    <h3><i class="fas fa-chart-bar"></i> Global School Statistics</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Update the statistics (Students, Teachers, etc.) that appear on Home, Academics, and Facilities pages.</p>
+
+                    <form id="cmsGlobalStatsForm">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <div class="form-group">
+                                <label>Total Students</label>
+                                <input type="number" id="statsStudents" placeholder="e.g. 300" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Expert Teachers</label>
+                                <input type="number" id="statsTeachers" placeholder="e.g. 15" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Smart Classrooms</label>
+                                <input type="number" id="statsClassrooms" placeholder="e.g. 12" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Years of Excellence</label>
+                                <input type="number" id="statsYears" placeholder="e.g. 10" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.4rem;">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Global Statistics</button>
                     </form>
                 </div>
             </section>

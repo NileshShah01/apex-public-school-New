@@ -17,6 +17,8 @@
         loadHomeMemories();
         loadHeroSlider();
         loadAboutHero();
+        loadFacilitiesPageData();
+        loadGlobalStats();
     }
     // ===================== ABOUT PAGE HERO =====================
     async function loadAboutHero() {
@@ -29,6 +31,73 @@
                 hero.style.backgroundImage = `url("${doc.data().heroUrl}")`;
             }
         } catch(e) { console.error('Error loading about hero:', e); }
+    }
+
+    // ===================== FACILITIES PAGE =====================
+    async function loadFacilitiesPageData() {
+        const hero = document.getElementById('facilitiesHero');
+        const sliderTrack = document.getElementById('facilitiesSliderTrack');
+        const hoverGrid = document.getElementById('facilitiesHoverGrid');
+        const galleryGrid = document.getElementById('facilitiesGalleryGrid');
+
+        if (!hero && !sliderTrack && !hoverGrid && !galleryGrid) return;
+
+        try {
+            const doc = await db.collection('settings').doc('facilitiesPage').get();
+            if (!doc.exists) return;
+            const data = doc.data();
+
+            // 1. Hero
+            if (hero && data.heroUrl) hero.style.backgroundImage = `url("${data.heroUrl}")`;
+
+            // 2. Slider
+            if (sliderTrack && data.sliderUrls && data.sliderUrls.length > 0) {
+                sliderTrack.innerHTML = data.sliderUrls.map(url => `<img src="${url}" alt="Campus">`).join('');
+                // Duplicate images for infinite scroll if necessary, but CSS animation slide 35s might handle it if track is wide
+                if (data.sliderUrls.length < 10) {
+                   sliderTrack.innerHTML += data.sliderUrls.map(url => `<img src="${url}" alt="Campus">`).join('');
+                }
+            }
+
+            // 3. Hover Features
+            if (hoverGrid && data.featureUrls && data.featureUrls.length > 0) {
+                const featureImages = hoverGrid.querySelectorAll('.facility-panel img');
+                data.featureUrls.forEach((url, i) => {
+                    if (featureImages[i] && url) featureImages[i].src = url;
+                });
+            }
+
+            // 4. Gallery
+            if (galleryGrid && data.galleryUrls && data.galleryUrls.length > 0) {
+                galleryGrid.innerHTML = data.galleryUrls.map(url => `<img src="${url}" loading="lazy" alt="Facility Photo">`).join('');
+            }
+
+        } catch(e) { console.error('Error loading facilities page data:', e); }
+    }
+
+    // ===================== GLOBAL STATS =====================
+    async function loadGlobalStats() {
+        try {
+            const doc = await db.collection('settings').doc('globalStats').get();
+            if (doc.exists) {
+                const data = doc.data();
+                const map = {
+                    'stat_students': data.students,
+                    'stat_teachers': data.teachers,
+                    'stat_classrooms': data.classrooms,
+                    'stat_years': data.years
+                };
+
+                for (const [id, val] of Object.entries(map)) {
+                    const el = document.getElementById(id);
+                    if (el && val !== undefined) {
+                        el.setAttribute('data-target', val);
+                        // If counter already finished, update it immediately
+                        if (el.innerText !== '0') el.innerText = val;
+                    }
+                }
+            }
+        } catch(e) { console.error('Error loading global stats:', e); }
     }
     // ===================== HOME PAGE HERO SLIDER =====================
     async function loadHeroSlider() {
