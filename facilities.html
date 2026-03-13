@@ -319,22 +319,10 @@ color: #1e3a8a;
 
 
 <section class="facility-stats">
-
-<div class="stat">
-<h2 class="counter" data-target="300">0</h2>
-<p>Students</p>
-</div>
-
-<div class="stat">
-<h2 class="counter" data-target="15">0</h2>
-<p>Teachers</p>
-</div>
-
-<div class="stat">
-<h2 class="counter" data-target="12">0</h2>
-<p>Classrooms</p>
-</div>
-
+<div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
+<div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
+<div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
+<div class="stat"><h2 class="counter" id="stat_years" data-target="10">0</h2><p>Years of Excellence</p></div>
 </section>
 
 
@@ -388,51 +376,24 @@ Students participate in sports, cultural activities, educational trips and event
 <script src="script.js"></script>
   
 <script>
-
-
-// COUNTER ANIMATION - IMPROVED
-const counters = document.querySelectorAll(".counter");
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      counters.forEach(counter => {
-        counter.innerText = "0";
-        const target = parseInt(counter.getAttribute("data-target")) || 0;
-        if (target === 0) {
-          counter.innerText = "0";
-          return;
+document.querySelectorAll(".counter").forEach(counter => {
+    counter.innerText = "0"
+    const update = () => {
+        const target = +counter.getAttribute("data-target")
+        const count = +counter.innerText
+        const inc = target / 80
+        if(count < target) {
+            counter.innerText = Math.ceil(count + inc)
+            setTimeout(update, 20)
+        } else {
+            counter.innerText = target
         }
-
-        let count = 0;
-        const duration = 1800;          // ms
-        const stepTime = 20;
-        const increment = target / (duration / stepTime);
-
-        const update = () => {
-          count += increment;
-          counter.innerText = Math.ceil(count);
-          if (count < target) {
-            setTimeout(update, stepTime);
-          } else {
-            counter.innerText = target + "+";   // optional: add + for "300+"
-          }
-        };
-        update();
-      });
-      observer.unobserve(entry.target);
     }
-  });
-}, { threshold: 0.1 });
-
-// Observe the stats section
-document.querySelector(".facility-stats")?.forEach(el => observer.observe(el));
+    update()
+})
 </script>
 
 </body>
-</html>
-
-
 
 
 

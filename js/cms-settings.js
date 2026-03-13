@@ -9,6 +9,9 @@
         loadAchievements();
         loadTestimonials();
         loadGalleryPage();
+        loadStaff();
+        loadHolidays();
+        loadFees();
     }
 
     // ===================== GENERAL SETTINGS =====================
@@ -146,6 +149,87 @@
                     ${d.caption ? `<div style="padding:0.5rem 0.75rem; font-size:0.85rem; color:#475569; text-align:center;">${d.caption}</div>` : ''}
                 </div>`;
             });
+        }).catch(() => {});
+    }
+
+    // ===================== STAFF (about.html) =====================
+    function loadStaff() {
+        const section = document.getElementById('staffSection');
+        const container = document.getElementById('staffListAdmin');
+        if (!container || !section) return;
+        db.collection('staff').orderBy('createdAt','asc').get().then(snap => {
+            if (snap.empty) return;
+            section.style.display = 'block';
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                container.innerHTML += `<div class="premium-card" style="padding:1.5rem; text-align:center;">
+                    <img src="${d.photoUrl || 'images/default-avatar.png'}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:3px solid var(--primary-light);">
+                    <h3 style="font-size:1.1rem; margin-bottom:0.25rem;">${d.name}</h3>
+                    <p style="color:var(--primary); font-weight:600; font-size:0.9rem;">${d.role}</p>
+                    ${d.qualifications ? `<p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">${d.qualifications}</p>` : ''}
+                </div>`;
+            });
+        }).catch(() => {});
+    }
+
+    // ===================== HOLIDAYS (academics.html) =====================
+    function loadHolidays() {
+        const section = document.getElementById('holidaysSection');
+        const container = document.getElementById('holidaysListAdmin');
+        if (!container || !section) return;
+        db.collection('holidays').orderBy('dateStr','asc').get().then(snap => {
+            if (snap.empty) return;
+            section.style.display = 'block';
+            container.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                // Format date manually if needed, or use dateStr directly
+                container.innerHTML += `<div class="premium-card" style="display:flex; align-items:center; gap:1rem; padding:1.25rem; text-align:left;">
+                    <div style="background:var(--primary-light); color:var(--primary); width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
+                        <i class="fas fa-umbrella-beach"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size:1rem;">${d.name}</h3>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">${d.dateStr}</p>
+                    </div>
+                </div>`;
+            });
+        }).catch(() => {});
+    }
+
+    // ===================== FEE STRUCTURE (admissions.html) =====================
+    function loadFees() {
+        const container = document.getElementById('feesListAdmin');
+        if (!container) return;
+        db.collection('fees').get().then(snap => {
+            if (snap.empty) return;
+            let html = `<table class="fee-table">
+                <tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee / Misc (₹)</th></tr>`;
+            
+            // Re-order by standard class parsing if possible, else just map
+            const classOrder = {
+                'play-group':1, 'nursery':2, 'lkg':3, 'ukg':4,
+                'class-1':5, 'class-2':6, 'class-3':7, 'class-4':8, 'class-5':9,
+                'class-6':10, 'class-7':11, 'class-8':12, 'class-9':13, 'class-10':14
+            };
+            let docs = [];
+            snap.forEach(d => {
+                const data = d.data();
+                data.id = d.id;
+                docs.push(data);
+            });
+            docs.sort((a,b) => (classOrder[a.id]||99) - (classOrder[b.id]||99));
+            
+            docs.forEach(d => {
+                html += `<tr>
+                    <td style="font-weight:600;">${d.id.replace('-',' ').toUpperCase()}</td>
+                    <td>₹${d.monthly || 0}</td>
+                    <td>₹${d.annual || 0}</td>
+                </tr>`;
+            });
+            html += `</table>`;
+            container.innerHTML = html;
         }).catch(() => {});
     }
 

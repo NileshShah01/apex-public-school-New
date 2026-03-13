@@ -287,61 +287,14 @@ max-width:300px;
 
 
 <section class="section">
-
-<h2>Fee Structure</h2>
-
-<table class="fee-table">
-
-<tr>
-
-<th>Fee Type</th>
-
-<th>Amount</th>
-
-</tr>
-
-<tr>
-
-<td>Registration Fees</td>
-
-<td>₹500</td>
-
-</tr>
-
-<tr>
-
-<td>School Dress</td>
-
-<td>₹1200</td>
-
-</tr>
-
-<tr>
-
-<td>Books</td>
-
-<td>₹1500</td>
-
-</tr>
-
-<tr>
-
-<td>Tuition Fees</td>
-
-<td>₹500 Monthly</td>
-
-</tr>
-
-<tr>
-
-<td>Transport</td>
-
-<td>₹300 Monthly</td>
-
-</tr>
-
-</table>
-
+    <h2>Fee Structure</h2>
+    <div id="feesListAdmin" style="overflow-x:auto;">
+        <!-- Loaded via CMS -->
+        <table class="fee-table">
+            <tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee (₹)</th></tr>
+            <tr><td colspan="3" style="text-align:center; padding:2rem; color:#64748b;">Loading fee structure...</td></tr>
+        </table>
+    </div>
 </section>
 
 
@@ -413,9 +366,15 @@ max-width:300px;
 
 <div id="footer"></div>
 <!-- NEW FLOATING BUTTONS CONTAINER -->
-  <div id="floating-button"></div>
+<div id="floating-button"></div>
 
 <script src="script.js"></script>
+
+<!-- Firebase SDK for CMS -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/cms-settings.js"></script>
 
 <script>
 

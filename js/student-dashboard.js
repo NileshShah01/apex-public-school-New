@@ -1,6 +1,7 @@
 // Student Dashboard Logic - Premium Version
 const GITHUB_BASE = 'https://nileshshah01.github.io/Apex-public-school-test-01';
 let currentStudentID = null;
+let currentStudentClass = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     const session = localStorage.getItem('student_session');
@@ -57,7 +58,8 @@ async function fetchStudentData() {
             const data = doc.data();
             document.getElementById('disp_student_name').textContent = data.name;
             document.getElementById('disp_student_id').textContent = data.student_id || currentStudentID;
-            if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = data.class || 'N/A';
+            currentStudentClass = data.class || '';
+            if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = currentStudentClass || 'N/A';
             if (document.getElementById('disp_section')) document.getElementById('disp_section').textContent = data.section || 'N/A';
             
             // Try loading student photo
@@ -97,9 +99,11 @@ async function updateResultLink() {
     const year = document.getElementById('academicYear').value;
     const resultArea = document.getElementById('resultStatusArea');
     const admitArea = document.getElementById('admitCardStatusArea');
+    const timetableArea = document.getElementById('timetableStatusArea');
     
     resultArea.innerHTML = '<span class="badge" style="background:#f1f5f9; color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
     admitArea.innerHTML = '<span class="badge" style="background:#fef3c7; color:#92400e;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
+    if (timetableArea) timetableArea.innerHTML = '<span class="badge" style="background:#ccfbf1; color:#115e59;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
 
     // Check Result Card
     db.collection('reports').doc(`${currentStudentID}_${year}`).get().then(docRef => {
@@ -138,6 +142,28 @@ async function updateResultLink() {
             </div>
         `;
     });
+
+    // Check Class Timetable
+    if (timetableArea && currentStudentClass) {
+        const classId = currentStudentClass.toLowerCase().replace(/\s+/g, '-');
+        db.collection('timetables').doc(classId).get().then(docRef => {
+            if (docRef.exists) {
+                const pdfData = docRef.data().fileData;
+                timetableArea.innerHTML = `
+                    <a href="${pdfData}" download="Timetable_${currentStudentClass.replace(/\s+/g, '')}.pdf" class="btn-portal" style="background: #0d9488; color: white; padding: 0.75rem 1.5rem; font-size: 0.95rem; width: 100%; display: inline-block;">
+                        <i class="fas fa-download"></i> Download Timetable
+                    </a>
+                `;
+            } else { throw new Error("Not Found"); }
+        }).catch(e => {
+            timetableArea.innerHTML = `
+                <div style="padding: 0.75rem; background: #f0fdf4; border-radius: 0.5rem; color: #166534; display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span style="font-weight: 600;">Not available yet.</span>
+                </div>
+            `;
+        });
+    }
 }
 
 async function fetchNotices() {
