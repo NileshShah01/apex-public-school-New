@@ -1340,3 +1340,4 @@ function resetFeeTool() {
     document.getElementById('fee_resultsArea').style.display = 'none';
     showToast("Data erased from memory.");
 }
+

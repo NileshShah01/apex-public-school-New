@@ -24,7 +24,7 @@
     <div class="mobile-header" style="display: none; background: var(--secondary); color: white; padding: 1rem; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 900;">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <i class="fas fa-bars" onclick="toggleMobileSidebar()" style="font-size: 1.25rem; cursor: pointer;"></i>
-            <span style="font-weight: 600; font-size: 1.1rem;">Apex Admin</span>
+            <span style="font-weight: 600; font-size: 1.1rem;">Apex Public School</span>
         </div>
         <div id="loadingMini" style="display:none;"><i class="fas fa-spinner fa-spin"></i></div>
     </div>
@@ -33,8 +33,8 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="adminSidebar">
             <div class="sidebar-logo">
-                <i class="fas fa-school"></i>
-                <h2 style="font-size: 1.25rem;">Apex Admin</h2>
+                <img src="../images/ApexPublicSchoolLogo.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
+                <h2 style="font-size: 1.1rem; line-height: 1.2;">Apex Public School</h2>
             </div>
             <!-- Sidebar Toggle Button -->
             <button id="sidebarToggleBtn" onclick="toggleSidebar()" title="Toggle Sidebar" style="width:100%; background:rgba(255,255,255,0.1); border:none; color:rgba(255,255,255,0.7); padding:0.5rem; cursor:pointer; font-size:1rem; border-radius:0.5rem; margin-bottom:0.5rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; transition:all 0.2s;">
@@ -111,7 +111,6 @@
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
                     <div class="cat-submenu" id="catWebImages">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgGallery')">Gallery Page Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Page</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Page Facilities</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home School Memories</a>
@@ -727,18 +726,6 @@
                 </form>
             </section>
 
-            <!-- WEBSITE IMAGES: GALLERY SLIDER -->
-            <section id="cmsImgGallerySection" class="dashboard-section card" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <div>
-                        <h3 style="margin:0;"><i class="fas fa-bolt"></i> Gallery Page Top Slider</h3>
-                        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.25rem;">The top 10 photos fetch automatically from the Main Gallery, prioritized by latest upload.</p>
-                    </div>
-                </div>
-                <div style="background:#f8fafc; padding:1.5rem; border-radius:0.75rem; border:1px dashed var(--border); text-align:center;">
-                    <p style="margin:0; font-size:0.875rem; color:var(--text-main);">To add photos to the top slider, simply upload them to the <a href="#" onclick="showSection('cmsGallery')" style="color:var(--primary); font-weight:700;">Gallery Section</a>. The most recent 10 images will automatically rotate there.</p>
-                </div>
-            </section>
 
             <!-- WEBSITE IMAGES: ADMISSIONS PAGE -->
             <section id="cmsImgAdmissionsSection" class="dashboard-section card" style="display:none;">
@@ -1222,6 +1209,7 @@
                     </div>
                 </div>
             </section>
+
 
             <!-- Theme Customization Section -->
             <section id="cmsThemeSection" class="dashboard-section card" style="display: none;">

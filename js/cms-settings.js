@@ -432,13 +432,10 @@
     // ===================== GALLERY PAGE =====================
     function loadGalleryPage() {
         const container = document.getElementById('galleryDynamicGrid');
-        const sliderContainer = document.getElementById('galleryTopSlider');
-        const slideshowSection = document.getElementById('gallerySlideshowSection');
         const filters = document.getElementById('galleryFilters');
         if (!container) return;
         
         let allImages = [];
-        let topImages = [];
 
         db.collection('gallery').orderBy('createdAt','desc').get().then(snap => {
             if (snap.empty) { 
@@ -447,14 +444,6 @@
             }
             
             snap.forEach(doc => allImages.push(doc.data()));
-            
-            // TOP 10 FIFO logic for Slider
-            topImages = allImages.slice(0, 10);
-            if (sliderContainer && topImages.length > 0) {
-                renderSlider(topImages);
-                if (slideshowSection) slideshowSection.style.display = 'block';
-            }
-
             renderGallery('all');
 
             if (filters) {
@@ -471,32 +460,6 @@
                 });
             }
         }).catch(() => {});
-
-        function renderSlider(images) {
-            sliderContainer.innerHTML = '';
-            images.forEach((img, idx) => {
-                const active = idx === 0 ? 'active' : '';
-                sliderContainer.innerHTML += `
-                    <div class="gallery-slide ${active}" style="position:absolute; inset:0; opacity:${idx === 0 ? 1 : 0}; transition:opacity 1s ease; background:url('${img.url}') center/cover no-repeat;">
-                        <div style="display:none;" class="slide-meta" data-title="${img.caption || 'Apex Memory'}"></div>
-                    </div>`;
-            });
-
-            // Auto-slide logic (Faster as requested)
-            let current = 0;
-            const slides = sliderContainer.querySelectorAll('.gallery-slide');
-            const titleEl = document.getElementById('sliderTitle');
-            
-            function showNext() {
-                slides[current].style.opacity = 0;
-                current = (current + 1) % slides.length;
-                slides[current].style.opacity = 1;
-                if (titleEl) titleEl.textContent = slides[current].querySelector('.slide-meta').dataset.title;
-            }
-
-            if (titleEl && slides[0]) titleEl.textContent = slides[0].querySelector('.slide-meta').dataset.title;
-            if (slides.length > 1) setInterval(showNext, 3500); // 3.5s interval
-        }
 
         function renderGallery(filter) {
             container.innerHTML = '';
