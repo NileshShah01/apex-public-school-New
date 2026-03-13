@@ -350,7 +350,21 @@ cursor:pointer;
 <!-- NEW FLOATING BUTTONS CONTAINER -->
 <div id="floating-button"></div>
 
+<!-- Admin-added Gallery Photos (from CMS) -->
+<section style="max-width:1200px; margin:2rem auto; padding:2rem; background:rgba(255,255,255,0.95); border-radius:0.75rem;">
+    <h2 style="color:#1E40AF; margin-bottom:1.5rem; font-size:1.5rem;"><i class="fas fa-images"></i> Latest Photos</h2>
+    <div id="galleryDynamicGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1.25rem;">
+        <p style="color:#94a3b8;">Loading admin-added photos...</p>
+    </div>
+</section>
+
 <script src="script.js"></script>
+<!-- Firebase SDK for CMS -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/cms-settings.js"></script>
+
 
 <script>
 
