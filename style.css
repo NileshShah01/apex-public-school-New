@@ -270,15 +270,15 @@ gap:22px;
     .menu > a { 
         font-size: 0.85rem; 
         border: 1px solid rgba(30, 58, 138, 0.3);
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.15rem; /* Reduced from 0.2rem */
         width: 100%; 
-        padding: 0.35rem 0.6rem;
+        padding: 0.25rem 0.6rem; /* Reduced from 0.35rem 0.6rem */
         border-radius: 0.4rem;
         background: var(--white);
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.25rem; /* Reduced from 0.4rem to bring icon closer */
         color: var(--primary);
         font-weight: 600;
         transition: all 0.3s ease;
@@ -296,30 +296,30 @@ gap:22px;
 
     /* Restyle portal buttons inside mobile menu */
     .menu .header-buttons {
-        padding-top: 0.4rem;
-        margin-top: 0.2rem;
+        padding-top: 0.3rem; /* Reduced */
+        margin-top: 0.15rem; /* Reduced */
         border-top: 1px solid rgba(0,0,0,0.08);
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
+        gap: 0.3rem; /* Reduced */
         width: 100%;
-        padding-bottom: 2rem; /* Give space at the bottom so it's not hidden */
+        padding-bottom: 2rem; 
     }
 
     .menu .btn-portal-nav {
         border-bottom: none;
         border-radius: 0.4rem;
-        padding: 0.5rem 0.8rem !important;
+        padding: 0.4rem 0.8rem !important; /* Reduced */
         width: 100%;
         justify-content: flex-start;
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important; /* Slightly smaller */
         border: 1px solid rgba(30, 58, 138, 0.3);
-        background: #eef2ff; /* Very light blue for student/admin differentiation */
+        background: #eef2ff; 
         color: var(--primary);
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.4rem; /* Reduced */
     }
 
     .menu .btn-portal-nav:hover {

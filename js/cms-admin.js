@@ -14,7 +14,9 @@ const CMS_SECTIONS = {
     'cmsFees': { load: loadFeeStructure },
     'cmsHero': { load: loadHeroSlider },
     'cmsTheme': { load: loadCmsTheme },
-    'cmsStudentDashboard': { load: loadCmsStudentDashboard }
+    'cmsStudentDashboard': { load: loadCmsStudentDashboard },
+    'cmsImgGallery': { load: () => {} },
+    'cmsImgAdmissions': { load: loadImgAdmissions }
 };
 
 // Hook into existing showSection 
@@ -139,7 +141,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = document.getElementById('toggleIcon');
         if (icon) { icon.className = 'fas fa-chevron-right'; }
     }
+
+    document.getElementById('cmsFacilityImagesForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            smart_class_urls: [document.getElementById('f_smart_1').value.trim(), document.getElementById('f_smart_2').value.trim()].filter(u => u),
+            computer_lab_urls: [document.getElementById('f_computer_1').value.trim(), document.getElementById('f_computer_2').value.trim()].filter(u => u),
+            sports_urls: [document.getElementById('f_sports_1').value.trim(), document.getElementById('f_sports_2').value.trim()].filter(u => u),
+            security_urls: [document.getElementById('f_security_1').value.trim(), document.getElementById('f_security_2').value.trim()].filter(u => u),
+            transport_urls: [document.getElementById('f_transport_1').value.trim(), document.getElementById('f_transport_2').value.trim()].filter(u => u),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            await db.collection('settings').doc('admissions').set(data, { merge: true });
+            showToast('Admissions media updated live!');
+        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    });
 });
+
+// ===================== WEBSITE IMAGES CMS =====================
+async function loadImgAdmissions() {
+    try {
+        const doc = await db.collection('settings').doc('admissions').get();
+        if (doc.exists) {
+            const d = doc.data();
+            if (document.getElementById('f_smart_1')) document.getElementById('f_smart_1').value = (d.smart_class_urls || [])[0] || '';
+            if (document.getElementById('f_smart_2')) document.getElementById('f_smart_2').value = (d.smart_class_urls || [])[1] || '';
+            
+            if (document.getElementById('f_computer_1')) document.getElementById('f_computer_1').value = (d.computer_lab_urls || [])[0] || '';
+            if (document.getElementById('f_computer_2')) document.getElementById('f_computer_2').value = (d.computer_lab_urls || [])[1] || '';
+            
+            if (document.getElementById('f_sports_1')) document.getElementById('f_sports_1').value = (d.sports_urls || [])[0] || '';
+            if (document.getElementById('f_sports_2')) document.getElementById('f_sports_2').value = (d.sports_urls || [])[1] || '';
+            
+            if (document.getElementById('f_security_1')) document.getElementById('f_security_1').value = (d.security_urls || [])[0] || '';
+            if (document.getElementById('f_security_2')) document.getElementById('f_security_2').value = (d.security_urls || [])[1] || '';
+            
+            if (document.getElementById('f_transport_1')) document.getElementById('f_transport_1').value = (d.transport_urls || [])[0] || '';
+            if (document.getElementById('f_transport_2')) document.getElementById('f_transport_2').value = (d.transport_urls || [])[1] || '';
+        }
+    } catch(e) { console.error('loadImgAdmissions error:', e); }
+}
 
 // ===================== STUDENT DASHBOARD CMS =====================
 async function loadCmsStudentDashboard() {

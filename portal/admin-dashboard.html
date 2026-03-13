@@ -103,6 +103,19 @@
                     </div>
                 </div>
 
+                <!-- NEW: WEBSITE IMAGES CMS -->
+                <div class="nav-category" onclick="toggleCategory('catWebImages')">
+                    <div class="cat-header">
+                        <i class="fas fa-images"></i>
+                        <span>Website Images</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catWebImages">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgGallery')">Gallery Page Slider</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Page</a>
+                    </div>
+                </div>
+
                 <!-- STUDENT PORTAL CMS -->
                 <div class="nav-category" onclick="toggleCategory('catPortal')">
                     <div class="cat-header">
@@ -656,6 +669,58 @@
                     <div class="form-group"><label>Slide 4 Image URL</label><input type="url" id="hero_4" placeholder="https://..."></div>
                     <button type="submit" class="btn-portal btn-primary"><i class="fas fa-save"></i> Save Slider Images</button>
                 </form>
+            </section>
+
+            <!-- WEBSITE IMAGES: GALLERY SLIDER -->
+            <section id="cmsImgGallerySection" class="dashboard-section card" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h3 style="margin:0;"><i class="fas fa-bolt"></i> Gallery Page Top Slider</h3>
+                        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.25rem;">The top 10 photos fetch automatically from the Main Gallery, prioritized by latest upload.</p>
+                    </div>
+                </div>
+                <div style="background:#f8fafc; padding:1.5rem; border-radius:0.75rem; border:1px dashed var(--border); text-align:center;">
+                    <p style="margin:0; font-size:0.875rem; color:var(--text-main);">To add photos to the top slider, simply upload them to the <a href="#" onclick="showSection('cmsGallery')" style="color:var(--primary); font-weight:700;">Gallery Section</a>. The most recent 10 images will automatically rotate there.</p>
+                </div>
+            </section>
+
+            <!-- WEBSITE IMAGES: ADMISSIONS PAGE -->
+            <section id="cmsImgAdmissionsSection" class="dashboard-section" style="display:none;">
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <h3><i class="fas fa-school"></i> Admissions Page Facilities Photos</h3>
+                    <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:1.5rem;">Manage the images that appear when clicking facility cards on the admissions page.</p>
+                    
+                    <form id="cmsFacilityImagesForm">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                            <div class="form-group">
+                                <label>Smart Classrooms (URL 1)</label>
+                                <input type="url" id="f_smart_1" placeholder="https://...">
+                                <input type="url" id="f_smart_2" placeholder="https://..." style="margin-top:0.5rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Computer Lab (URL 1)</label>
+                                <input type="url" id="f_computer_1" placeholder="https://...">
+                                <input type="url" id="f_computer_2" placeholder="https://..." style="margin-top:0.5rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Sports & Playground (URL 1)</label>
+                                <input type="url" id="f_sports_1" placeholder="https://...">
+                                <input type="url" id="f_sports_2" placeholder="https://..." style="margin-top:0.5rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>CCTV Security (URL 1)</label>
+                                <input type="url" id="f_security_1" placeholder="https://...">
+                                <input type="url" id="f_security_2" placeholder="https://..." style="margin-top:0.5rem;">
+                            </div>
+                            <div class="form-group">
+                                <label>Transport Facility (URL 1)</label>
+                                <input type="url" id="f_transport_1" placeholder="https://...">
+                                <input type="url" id="f_transport_2" placeholder="https://..." style="margin-top:0.5rem;">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="margin-top:1rem;"><i class="fas fa-save"></i> Save Admissions Media</button>
+                    </form>
+                </div>
             </section>
 
             <!-- STUDENT DASHBOARD CONTROL SECTION -->

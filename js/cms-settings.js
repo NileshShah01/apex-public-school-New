@@ -12,7 +12,38 @@
         loadGalleryPage();
         loadStaff();
         loadHolidays();
-        loadFees();
+        loadAdmissionFacilities();
+    }
+
+    // ===================== ADMISSION FACILITIES (admissions.html) =====================
+    function loadAdmissionFacilities() {
+        const grid = document.getElementById('admissionsFacilitiesGrid');
+        if (!grid) return;
+
+        db.collection('settings').doc('admissions').get().then(doc => {
+            if (!doc.exists) return;
+            const d = doc.data();
+            
+            const mapping = {
+                'facility_smart_class': d.smart_class_urls,
+                'facility_computer_lab': d.computer_lab_urls,
+                'facility_sports': d.sports_urls,
+                'facility_security': d.security_urls,
+                'facility_transport': d.transport_urls
+            };
+
+            Object.entries(mapping).forEach(([id, urls]) => {
+                const container = document.getElementById(id);
+                if (container && urls && urls.length > 0) {
+                    container.innerHTML = '';
+                    urls.forEach(url => {
+                        container.innerHTML += `<img src="${url}" style="width:100%; height:80px; object-fit:cover; border-radius:0.5rem; cursor:pointer;" onclick="event.stopPropagation(); openLightbox({src:'${url}'})">`;
+                    });
+                } else if (container) {
+                    container.innerHTML = '<p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">No photos yet.</p>';
+                }
+            });
+        }).catch(() => {});
     }
 
     // ===================== GENERAL SETTINGS =====================
@@ -189,15 +220,29 @@
     // ===================== GALLERY PAGE =====================
     function loadGalleryPage() {
         const container = document.getElementById('galleryDynamicGrid');
+        const sliderContainer = document.getElementById('galleryTopSlider');
+        const slideshowSection = document.getElementById('gallerySlideshowSection');
         const filters = document.getElementById('galleryFilters');
         if (!container) return;
         
         let allImages = [];
+        let topImages = [];
 
-        db.collection('gallery').orderBy('createdAt','asc').get().then(snap => {
-            if (snap.empty) { container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No gallery images added yet.</p>'; return; }
+        db.collection('gallery').orderBy('createdAt','desc').get().then(snap => {
+            if (snap.empty) { 
+                container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No gallery images added yet.</p>'; 
+                return; 
+            }
             
             snap.forEach(doc => allImages.push(doc.data()));
+            
+            // TOP 10 FIFO logic for Slider
+            topImages = allImages.slice(0, 10);
+            if (sliderContainer && topImages.length > 0) {
+                renderSlider(topImages);
+                if (slideshowSection) slideshowSection.style.display = 'block';
+            }
+
             renderGallery('all');
 
             if (filters) {
@@ -215,6 +260,32 @@
             }
         }).catch(() => {});
 
+        function renderSlider(images) {
+            sliderContainer.innerHTML = '';
+            images.forEach((img, idx) => {
+                const active = idx === 0 ? 'active' : '';
+                sliderContainer.innerHTML += `
+                    <div class="gallery-slide ${active}" style="position:absolute; inset:0; opacity:${idx === 0 ? 1 : 0}; transition:opacity 1s ease; background:url('${img.url}') center/cover no-repeat;">
+                        <div style="display:none;" class="slide-meta" data-title="${img.caption || 'Apex Memory'}"></div>
+                    </div>`;
+            });
+
+            // Auto-slide logic (Faster as requested)
+            let current = 0;
+            const slides = sliderContainer.querySelectorAll('.gallery-slide');
+            const titleEl = document.getElementById('sliderTitle');
+            
+            function showNext() {
+                slides[current].style.opacity = 0;
+                current = (current + 1) % slides.length;
+                slides[current].style.opacity = 1;
+                if (titleEl) titleEl.textContent = slides[current].querySelector('.slide-meta').dataset.title;
+            }
+
+            if (titleEl && slides[0]) titleEl.textContent = slides[0].querySelector('.slide-meta').dataset.title;
+            if (slides.length > 1) setInterval(showNext, 3500); // 3.5s interval
+        }
+
         function renderGallery(filter) {
             container.innerHTML = '';
             const filteredImages = filter === 'all' 
@@ -228,7 +299,7 @@
 
             filteredImages.forEach(d => {
                 const catBadge = d.category ? `<span style="position:absolute; top:0.5rem; right:0.5rem; background:#1E40AF; color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; font-weight:bold;">${d.category}</span>` : '';
-                container.innerHTML += `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                container.innerHTML += `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); cursor:pointer;" onclick="openLightbox({src:'${d.url}'})">
                     <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy" style="width:100%; height:220px; object-fit:cover; display:block;">
                     ${catBadge}
                     ${d.caption ? `<div style="padding:0.5rem 0.75rem; font-size:0.85rem; color:#475569; text-align:center;">${d.caption}</div>` : ''}
