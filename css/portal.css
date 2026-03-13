@@ -89,6 +89,88 @@ body {
     display: none;
 }
 
+.sidebar.collapsed .sidebar-label {
+    transition: opacity 0.3s;
+}
+
+/* Accordion Sidebar */
+.nav-category {
+    margin-bottom: 0.25rem;
+}
+
+.cat-header {
+    padding: 0.8rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.cat-header:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.cat-header .arrow {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+}
+
+.cat-header.active {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.cat-header.active .arrow {
+    transform: rotate(180deg);
+}
+
+.cat-submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background: rgba(0,0,0,0.1);
+    margin: 0 0.5rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.cat-submenu.open {
+    max-height: 500px; /* Large enough for any list */
+    transition: max-height 0.5s ease-in;
+    margin-bottom: 0.5rem;
+}
+
+.sub-link {
+    padding: 0.6rem 1rem 0.6rem 3.25rem !important;
+    font-size: 0.85rem !important;
+    opacity: 0.8;
+}
+
+.sub-link:hover {
+    opacity: 1;
+    background: transparent !important;
+    color: var(--primary-light) !important;
+}
+
+/* Sidebar collapsed refinements */
+.sidebar.collapsed .cat-header span,
+.sidebar.collapsed .cat-header .arrow,
+.sidebar.collapsed .cat-submenu {
+    display: none;
+}
+
+.sidebar.collapsed .cat-header {
+    justify-content: center;
+    padding: 1rem;
+}
+
+
+
 .sidebar-group-label {
     padding: 0.5rem 1rem;
     font-size: 0.7rem;
@@ -156,10 +238,10 @@ body {
     color: var(--white);
 }
 
-/* Main Content */
+/* Main Content Layout Fix */
 .main-content {
-    background-color: var(--bg-gray);
-    padding: 2.5rem;
+    background: #f1f5f9;
+    padding: 2rem;
     overflow-y: auto;
 }
 
@@ -346,12 +428,67 @@ tr:hover {
 /* Utilities */
 .hidden { display: none !important; }
 
+/* Responsive Table */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.75rem;
+    background: white;
+    margin-bottom: 1rem;
+}
+
+.table-responsive table {
+    min-width: 800px; /* Minimum width to prevent squeezing */
+    margin-bottom: 0;
+}
+
 @media (max-width: 1024px) {
+    .mobile-header {
+        display: flex !important;
+    }
+
     .dashboard-layout {
         grid-template-columns: 1fr;
+        height: auto;
     }
+
     .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1000;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex !important; /* Overriding previous display:none */
+        box-shadow: 10px 0 20px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.mobile-open {
+        left: 0;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    /* Overlay when sidebar is open */
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 950;
         display: none;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 }
 

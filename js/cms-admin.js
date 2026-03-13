@@ -21,6 +21,12 @@ const _origShowSection = window.showSection;
 window.showSection = function(id) {
     _origShowSection(id);
     if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
+    
+    // Close mobile sidebar if open
+    const sidebar = document.getElementById('adminSidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) {
+        toggleMobileSidebar();
+    }
 };
 
 // ===================== STATS =====================
@@ -165,6 +171,57 @@ function toggleSidebar() {
     if (icon) icon.className = isCollapsed ? 'fas fa-chevron-right' : 'fas fa-bars';
     localStorage.setItem('adminSidebarCollapsed', isCollapsed ? 'true' : 'false');
 }
+
+// ===================== ACCORDION SIDEBAR =====================
+function toggleCategory(catId) {
+    const cat = document.getElementById(catId);
+    const header = cat.previousElementSibling;
+    const isOpen = cat.classList.contains('open');
+
+    // Close all other categories (optional: comment out if you want multiple open)
+    document.querySelectorAll('.cat-submenu').forEach(el => {
+        el.classList.remove('open');
+        el.previousElementSibling.classList.remove('active');
+    });
+
+    if (!isOpen) {
+        cat.classList.add('open');
+        header.classList.add('active');
+    }
+}
+
+// ===================== MOBILE DRAWER =====================
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    sidebar.classList.toggle('mobile-open');
+    
+    // Create overlay if not exists
+    let overlay = document.querySelector('.sidebar-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        overlay.onclick = toggleMobileSidebar;
+        document.body.appendChild(overlay);
+    }
+    overlay.classList.toggle('active');
+}
+
+// ===================== RESPONSIVE TABLES HELPER =====================
+function initResponsiveTables() {
+    document.querySelectorAll('table').forEach(table => {
+        if (!table.parentElement.classList.contains('table-responsive')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-responsive';
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        }
+    });
+}
+
+// Add to DOMContentLoaded or relevant init
+document.addEventListener('DOMContentLoaded', () => {
+    initResponsiveTables();
+});
 
 // ===================== GENERIC COLLECTION LIST LOADER =====================
 async function loadCmsList(collection, containerId, renderFn) {

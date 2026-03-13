@@ -20,6 +20,15 @@
     <!-- Toast Notification -->
     <div id="toast"></div>
 
+    <!-- Mobile Header -->
+    <div class="mobile-header" style="display: none; background: var(--secondary); color: white; padding: 1rem; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 900;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-bars" onclick="toggleMobileSidebar()" style="font-size: 1.25rem; cursor: pointer;"></i>
+            <span style="font-weight: 600; font-size: 1.1rem;">Apex Admin</span>
+        </div>
+        <div id="loadingMini" style="display:none;"><i class="fas fa-spinner fa-spin"></i></div>
+    </div>
+
     <div class="dashboard-layout">
         <!-- Sidebar -->
         <aside class="sidebar" id="adminSidebar">
@@ -34,137 +43,88 @@
             </button>
             
             <nav class="nav-menu">
+                <!-- DASHBOARD -->
                 <div class="nav-item">
                     <a href="#" class="nav-link active" onclick="showSection('studentList')">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+
+                <!-- STUDENT MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catStudent')">
+                    <div class="cat-header">
                         <i class="fas fa-users"></i>
-                        <span>Students List</span>
-                    </a>
+                        <span>Student Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catStudent">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Students List</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Bulk Import</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promotions</a>
+                        <a href="#" onclick="exportStudentData()" class="nav-link sub-link">Export Data</a>
+                    </div>
                 </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('bulkImport')">
-                        <i class="fas fa-file-import"></i>
-                        <span>Bulk Import</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('resultsStatus')">
-                        <i class="fas fa-clipboard-check"></i>
-                        <span>Results Status</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('notices')">
-                        <i class="fas fa-bullhorn"></i>
-                        <span>Manage Notices</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('promotions')">
+
+                <!-- ACADEMIC MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catAcademic')">
+                    <div class="cat-header">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>Promotions</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('websiteSettings')">
-                        <i class="fas fa-cogs"></i>
-                        <span>Website Settings</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('inquiries')">
-                        <i class="fas fa-inbox"></i>
-                        <span>Inquiries</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('bulkPdf')">
-                        <i class="fas fa-file-upload"></i>
-                        <span>Bulk PDF Upload</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="exportStudentData()">
-                        <i class="fas fa-file-export"></i>
-                        <span>Export Data</span>
-                    </a>
+                        <span>Academic Records</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catAcademic">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('resultsStatus')">Results Status</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdf')">Bulk PDF Upload</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('notices')">Manage Notices</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTimetable')">Timetables</a>
+                    </div>
                 </div>
 
-                <!-- CMS GROUP -->
-                <div style="padding:0.5rem 1rem; font-size:0.7rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.1em; margin-top:0.5rem;">Website CMS</div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsStats')">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Stats &amp; Numbers</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsEvents')">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Events</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsAchievements')">
-                        <i class="fas fa-trophy"></i>
-                        <span>Achievements</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsTestimonials')">
-                        <i class="fas fa-quote-left"></i>
-                        <span>Testimonials</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsAdmission')">
-                        <i class="fas fa-door-open"></i>
-                        <span>Admission Status</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsHolidays')">
-                        <i class="fas fa-umbrella-beach"></i>
-                        <span>Holiday List</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsGallery')">
-                        <i class="fas fa-images"></i>
-                        <span>Gallery</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsStaff')">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <span>Staff / Teachers</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsTimetable')">
-                        <i class="fas fa-clock"></i>
-                        <span>Timetables</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsFees')">
-                        <i class="fas fa-rupee-sign"></i>
-                        <span>Fee Structure</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsHero')">
-                        <i class="fas fa-image"></i>
-                        <span>Hero Slider</span>
-                    </a>
+                <!-- WEBSITE CMS -->
+                <div class="nav-category" onclick="toggleCategory('catCMS')">
+                    <div class="cat-header">
+                        <i class="fas fa-globe"></i>
+                        <span>Website CMS</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catCMS">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsHero')">Hero Slider</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStats')">Stats & Numbers</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsEvents')">Events</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAchievements')">Achievements</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTestimonials')">Testimonials</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAdmission')">Admission Status</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsHolidays')">Holiday List</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsGallery')">Gallery</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStaff')">Staff / Teachers</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFees')">Fee Structure</a>
+                    </div>
                 </div>
 
-                <!-- STUDENT PORTAL CMS GROUP -->
-                <div class="sidebar-group-label">Student Portal CMS</div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" onclick="showSection('cmsStudentDashboard')">
+                <!-- STUDENT PORTAL CMS -->
+                <div class="nav-category" onclick="toggleCategory('catPortal')">
+                    <div class="cat-header">
                         <i class="fas fa-chalkboard"></i>
-                        <span>Dashboard Control</span>
-                    </a>
+                        <span>Portal Control</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catPortal">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStudentDashboard')">Dashboard Control</a>
+                    </div>
+                </div>
+
+                <!-- UTILITIES -->
+                <div class="nav-category" onclick="toggleCategory('catUtils')">
+                    <div class="cat-header">
+                        <i class="fas fa-wrench"></i>
+                        <span>Utilities (Settings)</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catUtils">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('inquiries')">Inquiries</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('websiteSettings')">Site Settings</a>
+                    </div>
                 </div>
             </nav>
 
