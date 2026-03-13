@@ -118,7 +118,9 @@ function showSection(sectionId) {
         'bulkImport': 'Bulk Import Students',
         'notices': 'School Notice Board',
         'promotions': 'Class Promotions',
-        'websiteSettings': 'Frontend Website Settings'
+        'websiteSettings': 'Frontend Website Settings',
+        'inquiries': 'Admission Inquiries',
+        'bulkPdf': 'Bulk PDF Upload'
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
     
@@ -128,6 +130,7 @@ function showSection(sectionId) {
     if (sectionId === 'resultsStatus') populateResultsStatus();
     if (sectionId === 'studentList') loadInitialData();
     if (sectionId === 'websiteSettings') loadWebsiteSettings();
+    if (sectionId === 'inquiries') loadInquiries();
 }
 
 async function filterAndDisplayStudents() {
@@ -688,4 +691,122 @@ function updateStats() {
     document.getElementById('statTotalStudents').textContent = allStudents.length;
     const classes = new Set(allStudents.map(s => s.class));
     document.getElementById('statTotalClasses').textContent = classes.size;
+}
+
+// ===================== INQUIRIES =====================
+async function loadInquiries() {
+    const tbody = document.getElementById('inquiryTableBody');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading inquiries...</td></tr>';
+
+    try {
+        const snap = await db.collection('inquiries').orderBy('submittedAt', 'desc').get();
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">No inquiries yet.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = '';
+        snap.forEach(doc => {
+            const d = doc.data();
+            const date = d.submittedAt ? new Date(d.submittedAt.seconds * 1000).toLocaleDateString('en-IN') : 'N/A';
+            const statusColor = d.status === 'New' ? '#ef4444' : d.status === 'Contacted' ? '#f59e0b' : '#10b981';
+            tbody.innerHTML += `
+                <tr>
+                    <td>${date}</td>
+                    <td><b>${d.student || '-'}</b></td>
+                    <td>${d.parent || '-'}</td>
+                    <td><a href="tel:${d.mobile}">${d.mobile || '-'}</a></td>
+                    <td>${d.class || '-'}</td>
+                    <td>${d.village || '-'}</td>
+                    <td><span class="badge" style="background:${statusColor}; color:white;">${d.status || 'New'}</span></td>
+                    <td>
+                        <select onchange="updateInquiryStatus('${doc.id}', this.value)" style="padding:0.3rem; border-radius:0.3rem; border:1px solid #d1d5db; font-size:0.8rem;">
+                            <option ${d.status==='New'?'selected':''}>New</option>
+                            <option ${d.status==='Contacted'?'selected':''}>Contacted</option>
+                            <option ${d.status==='Admitted'?'selected':''}>Admitted</option>
+                            <option ${d.status==='Not Interested'?'selected':''}>Not Interested</option>
+                        </select>
+                    </td>
+                </tr>`;
+        });
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ef4444;">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function updateInquiryStatus(docId, newStatus) {
+    try {
+        await db.collection('inquiries').doc(docId).update({ status: newStatus });
+        showToast(`Status updated to "${newStatus}"`);
+    } catch(e) {
+        showToast('Error updating status: ' + e.message, 'error');
+    }
+}
+
+// ===================== BULK PDF UPLOAD =====================
+async function handleBulkUpload(event, collection) {
+    const files = Array.from(event.target.files);
+    if (!files.length) return;
+
+    const isReport = collection === 'reports';
+    const year = document.getElementById(isReport ? 'bulkReportYear' : 'bulkAdmitYear').value;
+    const logDiv = document.getElementById('bulkUploadLog');
+    const logItems = document.getElementById('bulkUploadLogItems');
+    logDiv.style.display = 'block';
+    logItems.innerHTML = `<p style="color:#64748b; margin-bottom:1rem;">Processing ${files.length} files for Year ${year}...</p>`;
+
+    // Build lookup: student_id -> firestore doc.id
+    const lookup = {};
+    allStudents.forEach(s => {
+        if (s.student_id) lookup[s.student_id.trim().toLowerCase()] = s.id;
+    });
+
+    let success = 0, failed = 0;
+
+    for (const file of files) {
+        const studentIdFromFile = file.name.replace(/\.pdf$/i, '').trim().toLowerCase();
+        const docId = lookup[studentIdFromFile];
+
+        if (!docId) {
+            logItems.innerHTML += `<div style="padding:0.5rem; background:#fff1f2; border-radius:0.5rem; margin-bottom:0.5rem; color:#be123c;">
+                ❌ <b>${file.name}</b> — Student ID "<b>${studentIdFromFile}</b>" not found in system.
+            </div>`;
+            failed++;
+            continue;
+        }
+
+        if (file.size > 900 * 1024) {
+            logItems.innerHTML += `<div style="padding:0.5rem; background:#fef9c3; border-radius:0.5rem; margin-bottom:0.5rem; color:#854d0e;">
+                ⚠️ <b>${file.name}</b> — File too large (max 900KB). Skipped.
+            </div>`;
+            failed++;
+            continue;
+        }
+
+        try {
+            const base64 = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+            await db.collection(collection).doc(`${docId}_${year}`).set({
+                fileData: base64,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            logItems.innerHTML += `<div style="padding:0.5rem; background:#ecfdf5; border-radius:0.5rem; margin-bottom:0.5rem; color:#065f46;">
+                ✅ <b>${file.name}</b> — Uploaded for Student "${studentIdFromFile}" (${year})
+            </div>`;
+            success++;
+        } catch(e) {
+            logItems.innerHTML += `<div style="padding:0.5rem; background:#fff1f2; border-radius:0.5rem; margin-bottom:0.5rem; color:#be123c;">
+                ❌ <b>${file.name}</b> — Upload failed: ${e.message}
+            </div>`;
+            failed++;
+        }
+    }
+
+    logItems.innerHTML += `<div style="margin-top:1rem; padding:1rem; background:#f1f5f9; border-radius:0.5rem; font-weight:700;">
+        Done: ✅ ${success} uploaded, ❌ ${failed} failed out of ${files.length} files.
+    </div>`;
+    showToast(`Bulk upload complete: ${success} success, ${failed} failed`);
+    event.target.value = ''; // Reset file input
 }

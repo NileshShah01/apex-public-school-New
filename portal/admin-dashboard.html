@@ -66,6 +66,18 @@
                     </a>
                 </div>
                 <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('inquiries')">
+                        <i class="fas fa-inbox"></i>
+                        <span>Inquiries</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('bulkPdf')">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Bulk PDF Upload</span>
+                    </a>
+                </div>
+                <div class="nav-item">
                     <a href="#" class="nav-link" onclick="exportStudentData()">
                         <i class="fas fa-file-export"></i>
                         <span>Export Data</span>
@@ -394,6 +406,81 @@
                     
                     <button type="submit" class="btn-portal btn-primary"><i class="fas fa-save"></i> Save Global Settings</button>
                 </form>
+            </section>
+
+            <!-- Inquiries Section -->
+            <section id="inquiriesSection" class="dashboard-section card" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h3 style="margin-bottom:0.25rem;"><i class="fas fa-inbox"></i> Admission Inquiries</h3>
+                        <p style="color:var(--text-muted); font-size:0.875rem;">Public inquiries submitted from the website inquiry form.</p>
+                    </div>
+                    <button class="btn-portal btn-ghost" onclick="loadInquiries()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Student Name</th>
+                                <th>Parent Name</th>
+                                <th>Mobile</th>
+                                <th>Class</th>
+                                <th>Village</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inquiryTableBody">
+                            <tr><td colspan="8" style="text-align:center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bulk PDF Upload Section -->
+            <section id="bulkPdfSection" class="dashboard-section card" style="display: none;">
+                <h3 style="margin-bottom:0.5rem;"><i class="fas fa-file-upload"></i> Bulk PDF Upload</h3>
+                <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Upload multiple Report Cards or Admit Cards at once. Each PDF must be named with the <strong>Student ID</strong> (e.g. <code>APX001.pdf</code>).</p>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
+                    <!-- Report Cards -->
+                    <div style="background:#f0f9ff; border:2px dashed #3b82f6; border-radius:1rem; padding:2rem; text-align:center;">
+                        <i class="fas fa-chart-line" style="font-size:2.5rem; color:#3b82f6; margin-bottom:1rem;"></i>
+                        <h4 style="color:#1e3a8a; margin-bottom:0.5rem;">Report Cards</h4>
+                        <p style="color:#555; font-size:0.875rem; margin-bottom:1rem;">Select multiple PDFs named by Student ID</p>
+                        <select id="bulkReportYear" style="padding:0.5rem; border-radius:0.5rem; border:1px solid #d1d5db; margin-bottom:1rem; width:100%;">
+                            <option value="2026">Year 2026</option>
+                            <option value="2027">Year 2027</option>
+                        </select>
+                        <input type="file" id="bulkReportFiles" accept="application/pdf" multiple style="display:none;" onchange="handleBulkUpload(event,'reports')">
+                        <button class="btn-portal btn-primary" onclick="document.getElementById('bulkReportFiles').click()" style="width:100%;">
+                            <i class="fas fa-upload"></i> Choose Report Card PDFs
+                        </button>
+                        <div id="bulkReportStatus" style="margin-top:1rem; font-size:0.85rem;"></div>
+                    </div>
+
+                    <!-- Admit Cards -->
+                    <div style="background:#fffbeb; border:2px dashed #f59e0b; border-radius:1rem; padding:2rem; text-align:center;">
+                        <i class="fas fa-id-badge" style="font-size:2.5rem; color:#d97706; margin-bottom:1rem;"></i>
+                        <h4 style="color:#b45309; margin-bottom:0.5rem;">Admit Cards</h4>
+                        <p style="color:#555; font-size:0.875rem; margin-bottom:1rem;">Select multiple PDFs named by Student ID</p>
+                        <select id="bulkAdmitYear" style="padding:0.5rem; border-radius:0.5rem; border:1px solid #d1d5db; margin-bottom:1rem; width:100%;">
+                            <option value="2026">Year 2026</option>
+                            <option value="2027">Year 2027</option>
+                        </select>
+                        <input type="file" id="bulkAdmitFiles" accept="application/pdf" multiple style="display:none;" onchange="handleBulkUpload(event,'admitcards')">
+                        <button class="btn-portal" onclick="document.getElementById('bulkAdmitFiles').click()" style="width:100%; background:#d97706; color:white; padding:0.75rem 1rem; border-radius:0.5rem; border:none; font-weight:700; cursor:pointer;">
+                            <i class="fas fa-upload"></i> Choose Admit Card PDFs
+                        </button>
+                        <div id="bulkAdmitStatus" style="margin-top:1rem; font-size:0.85rem;"></div>
+                    </div>
+                </div>
+
+                <div id="bulkUploadLog" style="margin-top:2rem; background:#f8fafc; border-radius:0.75rem; padding:1.5rem; display:none;">
+                    <h4 style="margin-bottom:1rem;">Upload Progress</h4>
+                    <div id="bulkUploadLogItems"></div>
+                </div>
             </section>
 
         </main>

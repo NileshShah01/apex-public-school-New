@@ -234,18 +234,103 @@ border:1px solid #ddd;
 
 <section class="section">
 
-<h2>Fill Inquiry Form</h2>
+<h2 style="color:#1E40AF; margin-bottom: 25px;"><i class="fa-solid fa-paper-plane"></i> Fill Admission Inquiry Form</h2>
+<p style="color:#555; margin-bottom: 25px;">Fill in your details below and our team will contact you shortly.</p>
 
-<div class="form-box">
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdBNze-zGc4b8n-iWuE0Iovxoz6ZTXc8mEIZyq120pNseQ3cA/viewform?embedded=true"
-height="1661">
-Loading…
-</iframe>
-
-</div>
+<form id="inquiryForm" style="display:grid; gap:18px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Parent / Guardian Name <span style="color:red">*</span></label>
+            <input type="text" id="inq_parent" required placeholder="Your full name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+        </div>
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Student Name <span style="color:red">*</span></label>
+            <input type="text" id="inq_student" required placeholder="Child's name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+        </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Mobile Number <span style="color:red">*</span></label>
+            <input type="tel" id="inq_mobile" required placeholder="10-digit mobile number" maxlength="10" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+        </div>
+        <div>
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Admission For Class <span style="color:red">*</span></label>
+            <select id="inq_class" required style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; background:white;">
+                <option value="">-- Select Class --</option>
+                <option>Play Group</option><option>Nursery</option><option>LKG</option><option>UKG</option>
+                <option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option>
+                <option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <label style="font-weight:600; display:block; margin-bottom:6px;">Village / Area</label>
+        <input type="text" id="inq_village" placeholder="Your village or area name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
+    </div>
+    <div>
+        <label style="font-weight:600; display:block; margin-bottom:6px;">Message / Query (Optional)</label>
+        <textarea id="inq_message" rows="3" placeholder="Any specific questions about admission, fees or transport..." style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; resize:vertical;"></textarea>
+    </div>
+    <div id="inq_status" style="display:none; padding:14px; border-radius:8px; font-weight:600; text-align:center;"></div>
+    <button type="submit" style="background:#1E40AF; color:white; padding:14px 30px; border:none; border-radius:8px; font-size:16px; font-weight:700; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='#2563EB'" onmouseout="this.style.background='#1E40AF'">
+        <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
+    </button>
+</form>
 
 </section>
+
+<!-- Firebase for Inquiry -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script>
+document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    const status = document.getElementById('inq_status');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    status.style.display = 'none';
+
+    const mobile = document.getElementById('inq_mobile').value.trim();
+    if (mobile.length !== 10 || isNaN(mobile)) {
+        status.style.display = 'block';
+        status.style.background = '#fff1f2';
+        status.style.color = '#be123c';
+        status.textContent = 'Please enter a valid 10-digit mobile number.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
+        return;
+    }
+
+    try {
+        await db.collection('inquiries').add({
+            parent: document.getElementById('inq_parent').value.trim(),
+            student: document.getElementById('inq_student').value.trim(),
+            mobile: mobile,
+            class: document.getElementById('inq_class').value,
+            village: document.getElementById('inq_village').value.trim(),
+            message: document.getElementById('inq_message').value.trim(),
+            status: 'New',
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        status.style.display = 'block';
+        status.style.background = '#ecfdf5';
+        status.style.color = '#065f46';
+        status.textContent = '✅ Inquiry submitted! Our team will contact you soon.';
+        this.reset();
+    } catch(err) {
+        status.style.display = 'block';
+        status.style.background = '#fff1f2';
+        status.style.color = '#be123c';
+        status.textContent = 'Error submitting. Please try again or call us directly.';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
+    }
+});
+</script>
+
 
 
 
