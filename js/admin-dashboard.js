@@ -110,19 +110,30 @@ function showSection(sectionId) {
     const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
     if (activeLink) activeLink.classList.add('active');
 
-    // Section Titles
     const titles = {
         'studentList': 'Student Management',
-        'resultsStatus': 'Result Verification',
+        'resultsStatus': 'Documents Verification',
         'addStudent': 'Add/Edit Student',
         'bulkImport': 'Bulk Import Students',
         'notices': 'School Notice Board',
         'promotions': 'Class Promotions',
         'websiteSettings': 'Frontend Website Settings',
         'inquiries': 'Admission Inquiries',
-        'bulkPdf': 'Bulk PDF Upload'
+        'bulkPdf': 'Bulk PDF Upload',
+        'cmsStats': 'Stats & Numbers',
+        'cmsEvents': 'Upcoming Events',
+        'cmsAchievements': 'Achievements',
+        'cmsTestimonials': 'Testimonials',
+        'cmsAdmission': 'Admission Status',
+        'cmsHolidays': 'Holiday List',
+        'cmsGallery': 'Gallery Management',
+        'cmsStaff': 'Staff & Teachers',
+        'cmsTimetable': 'Class Timetables',
+        'cmsFees': 'Fee Structure',
+        'cmsHero': 'Hero Slider Images'
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
+
     
     // Visibility logic
     document.getElementById('statsOverview').style.display = sectionId === 'studentList' ? 'grid' : 'none';
