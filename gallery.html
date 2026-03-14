@@ -185,6 +185,9 @@ cursor:pointer;
     <div id="galleryFilters" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;">
         <button class="filter-btn active" data-filter="Sports" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:#1E40AF; color:white; cursor:pointer; font-weight:600;">Sports</button>
         <button class="filter-btn" data-filter="Events" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Events</button>
+        <button class="filter-btn" data-filter="Museum" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Bihar Museum</button>
+        <button class="filter-btn" data-filter="Science" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Science Center</button>
+        <button class="filter-btn" data-filter="Trip" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">School Trip</button>
         <button class="filter-btn" data-filter="Functions" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Functions</button>
         <button class="filter-btn" data-filter="Awards" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Awards</button>
         <button class="filter-btn" data-filter="Facilities" style="padding:0.5rem 1rem; border-radius:999px; border:1px solid #cbd5e1; background:transparent; color:#475569; cursor:pointer; font-weight:600;">Facilities</button>
@@ -283,29 +286,6 @@ async function downloadImage() {
     }
 }
 
-
-/* FILTER */
-
-function filterGallery(e, category)
-{
-let cards = document.querySelectorAll(".gallery-card")
-let buttons = document.querySelectorAll(".filter-buttons button")
-
-buttons.forEach(btn => btn.classList.remove("active"))
-e.target.classList.add("active")
-
-cards.forEach(card =>
-{
-if(category === "all" || card.classList.contains(category))
-{
-card.style.display = "block"
-}
-else
-{
-card.style.display = "none"
-}
-})
-}
 
 
 </script>

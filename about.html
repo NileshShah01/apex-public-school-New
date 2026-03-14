@@ -1,60 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>About | Apex Public School</title> <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
-    <style>
-
-    
-.about-hero
-{
-background:url("images/School-Building.jpeg");
-background-size:cover;
-background-position:center;
-}
-.cta reveal
-{
-text-align:center;
-padding:50px 20px;
-background:#1E40AF;
-color:white;
-}
-
-.cta reveal button
-{
-padding:12px 22px;
-background:white;
-color:#1E40AF;
-border:none;
-cursor:pointer;
-border-radius:4px;
-font-weight:bold;
-margin-top:15px;
-}
-
-.cta reveal button:hover
-{
-background:#facc15;
-}
-
-.stats
-{
-display:flex;
-justify-content:center;
-gap:40px;
-flex-wrap:wrap;
-text-align:center;
-}
-
-.stat
-{
-min-width:120px;
-}
-
-.stat h2
-{
-font-size:40px;
-color:#1E40AF;
-}
-</style> 
+ 
 </head>
 <body>
 
@@ -103,11 +50,13 @@ color:#1E40AF;
 
 <!-- Statistics -->
 <section class="section stats">
-<h2>Academic Strength</h2>
-<div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
-<div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
-<div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
-<div class="stat"><h2 class="counter" id="stat_years" data-target="10">0</h2><p>Years of Excellence</p></div>
+    <h2>Academic Strength</h2>
+    <div class="stats-bar">
+        <div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
+        <div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
+        <div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
+        <div class="stat"><h2 class="counter" id="stat_years" data-target="10">0</h2><p>Years of Excellence</p></div>
+    </div>
 </section>
 <!-- Interactive Facilities Hover Panels -->
 <section class="facilities-hover reveal">
