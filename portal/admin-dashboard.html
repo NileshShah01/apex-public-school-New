@@ -75,7 +75,8 @@
                     </div>
                     <div class="cat-submenu" id="catAcademic">
                         <a href="#" class="nav-link sub-link" onclick="showSection('resultsStatus')">Results Status</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdf')">Bulk PDF Upload</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdf')"><i class="fas fa-file-upload"></i> Bulk PDF Upload</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')"><i class="fas fa-magic"></i> Admit Card Tool <span class="badge" style="background:#d97706;">New</span></a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('notices')">Manage Notices</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsTimetable')">Timetables</a>
                     </div>
@@ -536,48 +537,64 @@
                 </div>
             </section>
 
-            <!-- Bulk PDF Upload Section -->
-            <section id="bulkPdfSection" class="dashboard-section card" style="display: none;">
-                <h3 style="margin-bottom:0.5rem;"><i class="fas fa-file-upload"></i> Bulk PDF Upload</h3>
-                <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Upload multiple Report Cards or Admit Cards at once. Each PDF must be named with the <strong>Student ID</strong> (e.g. <code>APX001.pdf</code>).</p>
-                
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem;">
-                    <!-- Report Cards -->
-                    <div style="background:#f0f9ff; border:2px dashed #3b82f6; border-radius:1rem; padding:2rem; text-align:center;">
-                        <i class="fas fa-chart-line" style="font-size:2.5rem; color:#3b82f6; margin-bottom:1rem;"></i>
-                        <h4 style="color:#1e3a8a; margin-bottom:0.5rem;">Report Cards</h4>
-                        <p style="color:#555; font-size:0.875rem; margin-bottom:1rem;">Select multiple PDFs named by Student ID</p>
-                        <select id="bulkReportYear" style="padding:0.5rem; border-radius:0.5rem; border:1px solid #d1d5db; margin-bottom:1rem; width:100%;">
-                            <option value="2026">Year 2026</option>
-                            <option value="2027">Year 2027</option>
-                        </select>
-                        <input type="file" id="bulkReportFiles" accept="application/pdf" multiple style="display:none;" onchange="handleBulkUpload(event,'reports')">
-                        <button class="btn-portal btn-primary" onclick="document.getElementById('bulkReportFiles').click()" style="width:100%;">
-                            <i class="fas fa-upload"></i> Choose Report Card PDFs
-                        </button>
-                        <div id="bulkReportStatus" style="margin-top:1rem; font-size:0.85rem;"></div>
+            </section>
+            
+            <!-- Admit Card PDF Tool Section -->
+            <section id="admitCardToolSection" class="dashboard-section card" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h3 style="margin-bottom:0.25rem;"><i class="fas fa-magic"></i> Admit Card PDF Splitter</h3>
+                        <p style="color:var(--text-muted); font-size:0.875rem;">Upload one class-wise PDF. The tool will split it and assign each page to a student automatically.</p>
                     </div>
-
-                    <!-- Admit Cards -->
-                    <div style="background:#fffbeb; border:2px dashed #f59e0b; border-radius:1rem; padding:2rem; text-align:center;">
-                        <i class="fas fa-id-badge" style="font-size:2.5rem; color:#d97706; margin-bottom:1rem;"></i>
-                        <h4 style="color:#b45309; margin-bottom:0.5rem;">Admit Cards</h4>
-                        <p style="color:#555; font-size:0.875rem; margin-bottom:1rem;">Select multiple PDFs named by Student ID</p>
-                        <select id="bulkAdmitYear" style="padding:0.5rem; border-radius:0.5rem; border:1px solid #d1d5db; margin-bottom:1rem; width:100%;">
-                            <option value="2026">Year 2026</option>
-                            <option value="2027">Year 2027</option>
-                        </select>
-                        <input type="file" id="bulkAdmitFiles" accept="application/pdf" multiple style="display:none;" onchange="handleBulkUpload(event,'admitcards')">
-                        <button class="btn-portal" onclick="document.getElementById('bulkAdmitFiles').click()" style="width:100%; background:#d97706; color:white; padding:0.75rem 1rem; border-radius:0.5rem; border:none; font-weight:700; cursor:pointer;">
-                            <i class="fas fa-upload"></i> Choose Admit Card PDFs
-                        </button>
-                        <div id="bulkAdmitStatus" style="margin-top:1rem; font-size:0.85rem;"></div>
+                    <div style="background: #fff8e1; color: #b45309; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600; border: 1px solid #ffe082;">
+                        <i class="fas fa-info-circle"></i> Sorting: Students are matched by ID sequence.
                     </div>
                 </div>
 
-                <div id="bulkUploadLog" style="margin-top:2rem; background:#f8fafc; border-radius:0.75rem; padding:1.5rem; display:none;">
-                    <h4 style="margin-bottom:1rem;">Upload Progress</h4>
-                    <div id="bulkUploadLogItems"></div>
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                    <div style="background:#f8fafc; padding:1.5rem; border-radius:1rem; border:1px solid #e2e8f0;">
+                        <div class="form-group" style="margin-bottom:1.25rem;">
+                            <label>1. Select Class</label>
+                            <select id="admitToolClass" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid #cbd5e1;">
+                                <option value="">--- Choose Class ---</option>
+                                <option value="Play">Play</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+                                <option value="1">Class 1</option>
+                                <option value="2">Class 2</option>
+                                <option value="3">Class 3</option>
+                                <option value="4">Class 4</option>
+                                <option value="5">Class 5</option>
+                                <option value="6">Class 6</option>
+                                <option value="7">Class 7</option>
+                                <option value="8">Class 8</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:1.25rem;">
+                            <label>2. Academic Year</label>
+                            <select id="admitToolYear" style="width:100%; padding:0.75rem; border-radius:0.5rem; border:1px solid #cbd5e1;">
+                                <option value="2026">Year 2026</option>
+                                <option value="2027">Year 2027</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:1.5rem;">
+                            <label>3. Upload Class PDF</label>
+                            <input type="file" id="admitToolFile" accept="application/pdf" style="width:100%;">
+                        </div>
+                        <button class="btn-portal btn-primary" onclick="processAdmitCardPdf()" style="width:100%; padding:1rem;">
+                            <i class="fas fa-cogs"></i> Split & Assign Now
+                        </button>
+                    </div>
+
+                    <div style="background:#1e293b; color:#f1f5f9; padding:1.5rem; border-radius:1rem; font-family:monospace; min-height:300px; overflow-y:auto;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1rem; border-bottom:1px solid #334155; padding-bottom:0.5rem;">
+                            <span style="color:#94a3b8;">Processing Log Output</span>
+                            <span id="admitToolProgress" style="color:#38bdf8;">Idle</span>
+                        </div>
+                        <div id="admitToolLog" style="font-size:0.85rem; line-height:1.5;">
+                            > Waiting for input...
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -1345,6 +1362,8 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/admin-auth.js"></script>
+    <!-- PDF Lib for splitting -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="../js/admin-dashboard.js"></script>
     <script src="../js/cms-admin.js"></script>
 </body>

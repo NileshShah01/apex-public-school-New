@@ -113,6 +113,7 @@ function showSection(sectionId) {
     const titles = {
         'studentList': 'Student Management',
         'resultsStatus': 'Documents Verification',
+        'admitCardTool': 'Admit Card PDF Tool',
         'addStudent': 'Add/Edit Student',
         'bulkImport': 'Bulk Import Students',
         'notices': 'School Notice Board',
@@ -900,5 +901,102 @@ async function exportToCSV(collection) {
         showToast('Error exporting: ' + e.message, 'error');
     } finally {
         setLoading(false);
+    }
+}
+
+// ===================== ADMIT CARD PDF TOOL =====================
+async function processAdmitCardPdf() {
+    const classVal = document.getElementById('admitToolClass').value;
+    const year = document.getElementById('admitToolYear').value;
+    const fileInput = document.getElementById('admitToolFile');
+    const logArea = document.getElementById('admitToolLog');
+    const progressSpan = document.getElementById('admitToolProgress');
+
+    if (!classVal || !fileInput.files[0]) {
+        alert("Please select a Class and upload a PDF file.");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    logArea.innerHTML = `> Starting process for Class: ${classVal}, Year: ${year}<br>`;
+    logArea.innerHTML += `> File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)<br>`;
+    progressSpan.innerText = "Initializing...";
+
+    // 1. Get students for this class, sorted by Student ID
+    const students = allStudents
+        .filter(s => s.class === classVal)
+        .sort((a, b) => {
+            const idA = (a.student_id || "").toLowerCase();
+            const idB = (b.student_id || "").toLowerCase();
+            return idA.localeCompare(idB);
+        });
+
+    if (students.length === 0) {
+        logArea.innerHTML += `<span style="color:#ef4444;">> ERROR: No students found in Class ${classVal}. Aborting.</span><br>`;
+        progressSpan.innerText = "Failed";
+        return;
+    }
+
+    logArea.innerHTML += `> Found ${students.length} students in Class ${classVal}.<br>`;
+
+    try {
+        progressSpan.innerText = "Reading PDF...";
+        const arrayBuffer = await file.arrayBuffer();
+        const { PDFDocument } = PDFLib;
+        const mainPdfDoc = await PDFDocument.load(arrayBuffer);
+        const pageCount = mainPdfDoc.getPageCount();
+
+        logArea.innerHTML += `> PDF has ${pageCount} pages.<br>`;
+
+        if (pageCount !== students.length) {
+            logArea.innerHTML += `<span style="color:#f59e0b;">> WARNING: Page count (${pageCount}) does not match student count (${students.length}).</span><br>`;
+        }
+
+        const limit = Math.min(pageCount, students.length);
+        let successCount = 0;
+
+        for (let i = 0; i < limit; i++) {
+            const student = students[i];
+            progressSpan.innerText = `Splitting: ${i + 1}/${limit}`;
+            
+            try {
+                // Create a new PDF for this single page
+                const subPdfDoc = await PDFDocument.create();
+                const [copiedPage] = await subPdfDoc.copyPages(mainPdfDoc, [i]);
+                subPdfDoc.addPage(copiedPage);
+                
+                const pdfBytes = await subPdfDoc.save();
+                const base64 = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(new Blob([pdfBytes], { type: 'application/pdf' }));
+                });
+
+                logArea.innerHTML += `> Processing student: <b>${student.student_id}</b> (${student.name})...<br>`;
+
+                // Upload to Firestore
+                await db.collection('admitcards').doc(`${student.id}_${year}`).set({
+                    fileData: base64,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                logArea.innerHTML += `<span style="color:#10b981;">  ✅ Successfully assigned page ${i+1} to ${student.student_id}</span><br>`;
+                successCount++;
+            } catch (err) {
+                logArea.innerHTML += `<span style="color:#ef4444;">  ❌ Failed for ${student.student_id}: ${err.message}</span><br>`;
+            }
+            
+            // Auto-scroll log
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        logArea.innerHTML += `<span style="color:#38bdf8; font-weight:bold;">> COMPLETED: ${successCount} admit cards processed successfully.</span><br>`;
+        progressSpan.innerText = "Done";
+        showToast(`Admit Card Split complete! ${successCount} successful.`, 'success');
+
+    } catch (e) {
+        logArea.innerHTML += `<span style="color:#ef4444;">> CRITICAL ERROR: ${e.message}</span><br>`;
+        progressSpan.innerText = "Error";
+        console.error(e);
     }
 }
