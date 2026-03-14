@@ -43,9 +43,9 @@
         const hero = document.getElementById('facilitiesHero');
         const sliderTrack = document.getElementById('facilitiesSliderTrack');
         const hoverGrid = document.getElementById('facilitiesHoverGrid');
-        const galleryGrid = document.getElementById('facilitiesGalleryGrid');
+        const gallerySliderTrack = document.getElementById('facilitiesGallerySliderTrack');
 
-        if (!hero && !sliderTrack && !hoverGrid && !galleryGrid) return;
+        if (!hero && !sliderTrack && !hoverGrid && !gallerySliderTrack) return;
 
         try {
             const doc = await db.collection('settings').doc('facilitiesPage').get();
@@ -55,13 +55,10 @@
             // 1. Hero
             if (hero && data.heroUrl) hero.style.backgroundImage = `url("${data.heroUrl}")`;
 
-            // 2. Slider
+            // 2. Top Slider (Campus Life)
             if (sliderTrack && data.sliderUrls && data.sliderUrls.length > 0) {
-                sliderTrack.innerHTML = data.sliderUrls.map(url => `<img src="${url}" alt="Campus">`).join('');
-                // Duplicate images for infinite scroll if necessary, but CSS animation slide 35s might handle it if track is wide
-                if (data.sliderUrls.length < 10) {
-                   sliderTrack.innerHTML += data.sliderUrls.map(url => `<img src="${url}" alt="Campus">`).join('');
-                }
+                const imgHtml = data.sliderUrls.map(url => `<img src="${url}" alt="Campus">`).join('');
+                sliderTrack.innerHTML = imgHtml + imgHtml; // Duplicate for infinite loop
             }
 
             // 3. Hover Features
@@ -72,9 +69,10 @@
                 });
             }
 
-            // 4. Gallery
-            if (galleryGrid && data.galleryUrls && data.galleryUrls.length > 0) {
-                galleryGrid.innerHTML = data.galleryUrls.map(url => `<img src="${url}" loading="lazy" alt="Facility Photo">`).join('');
+            // 4. Bottom Gallery Slider
+            if (gallerySliderTrack && data.galleryUrls && data.galleryUrls.length > 0) {
+                const imgHtml = data.galleryUrls.map(url => `<img src="${url}" loading="lazy" alt="Facility Photo">`).join('');
+                gallerySliderTrack.innerHTML = imgHtml + imgHtml; // Duplicate for infinite loop
             }
 
         } catch(e) { console.error('Error loading facilities page data:', e); }
