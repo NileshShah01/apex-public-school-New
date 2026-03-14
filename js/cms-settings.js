@@ -508,21 +508,24 @@
 
         function renderGallery(filter) {
             container.innerHTML = '';
-            // We NO LONGER support 'all' filter as requested
+            // Filter images by selected category
             const filteredImages = allImages.filter(img => (img.category || 'Others') === filter);
             
             if (filteredImages.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:3rem; width:100%;">No images found in this category.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:5rem; width:100%;">No images found in this category.</p>`;
                 return;
             }
 
             filteredImages.forEach(d => {
-                const catBadge = d.category ? `<span style="position:absolute; top:0.5rem; right:0.5rem; background:#1E40AF; color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; font-weight:bold; z-index:10;">${d.category}</span>` : '';
-                container.innerHTML += `<div class="gallery-card" onclick="openLightbox({src:'${d.url}'})" style="cursor:pointer; position:relative;">
-                    <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy">
-                    ${catBadge}
-                    ${d.caption ? `<div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; padding:0.5rem; font-size:0.8rem; text-align:center; transform:translateY(100%); transition:transform 0.3s ease;" class="card-caption">${d.caption}</div>` : ''}
-                </div>`;
+                const catBadge = d.category ? `<span class="card-category">${d.category}</span>` : '';
+                container.innerHTML += `
+                    <div class="gallery-card" onclick="openLightbox({src:'${d.url}'})">
+                        <img src="${d.url}" alt="${d.caption||'Gallery'}" loading="lazy">
+                        ${catBadge}
+                        <div class="card-overlay">
+                            ${d.caption ? `<div class="card-caption">${d.caption}</div>` : ''}
+                        </div>
+                    </div>`;
             });
         }
     }

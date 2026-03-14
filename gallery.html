@@ -26,13 +26,14 @@
         }
 
         .page-header h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
             color: var(--primary);
+            margin-bottom: 1rem;
         }
 
         .filter-btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.75rem;
             border-radius: 999px;
             border: 1px solid var(--border);
             background: var(--white);
@@ -40,18 +41,104 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
         .filter-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .filter-btn.active {
             background: var(--primary);
             color: var(--white);
             border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* GALLERY FIXED CARD GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            width: 100%;
+            padding: 2rem 0;
+        }
+
+        .gallery-card {
+            background: var(--white);
+            border-radius: 1.5rem;
+            overflow: hidden;
             box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 4 / 3; /* Fixed Aspect Ratio */
+            border: 1px solid var(--border);
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-light);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Professional Fill */
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-card .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.8rem;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 5;
+        }
+
+        .gallery-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .gallery-card .card-caption {
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            transform: translateY(15px);
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-card:hover .card-caption {
+            transform: translateY(0);
+        }
+
+        .gallery-card .card-category {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* LIGHTBOX */
@@ -84,26 +171,28 @@
         }
 
         .lightbox-buttons button {
-            padding: 0.75rem 2rem;
+            padding: 0.85rem 2.5rem;
             border: none;
             background: var(--primary);
             color: var(--white);
             cursor: pointer;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             font-weight: 700;
             transition: 0.3s;
+            box-shadow: var(--shadow);
         }
 
         .lightbox-buttons button:hover {
             background: var(--secondary);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .close-btn {
             position: absolute;
             top: 2rem;
             right: 2rem;
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: var(--white);
             cursor: pointer;
             opacity: 0.8;
@@ -115,7 +204,6 @@
             transform: scale(1.1);
         }
     </style>
-
 </head>
 
 
