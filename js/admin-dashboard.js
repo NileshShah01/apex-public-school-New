@@ -109,7 +109,20 @@ function showSection(sectionId) {
     if (target) target.style.display = 'block';
 
     const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
-    if (activeLink) activeLink.classList.add('active');
+    if (activeLink) {
+        activeLink.classList.add('active');
+        
+        // Also highlight parent category header if it's a sub-link
+        if (activeLink.classList.contains('sub-link')) {
+            const parentCat = activeLink.closest('.nav-category');
+            if (parentCat) {
+                const header = parentCat.querySelector('.cat-header');
+                const submenu = parentCat.querySelector('.cat-submenu');
+                if (header) header.classList.add('active');
+                if (submenu) submenu.classList.add('open');
+            }
+        }
+    }
 
     const titles = {
         'studentList': 'Student Management',
@@ -132,7 +145,25 @@ function showSection(sectionId) {
         'cmsStaff': 'Staff & Teachers',
         'cmsTimetable': 'Class Timetables',
         'cmsFees': 'Fee Structure',
-        'cmsHero': 'Hero Slider Images'
+        'cmsHero': 'Hero Slider Images',
+        'cmsTheme': 'Theme Customization',
+        'cmsStudentDashboard': 'Student Dashboard Control',
+        'cmsImgAdmissions': 'Admissions Page Images',
+        'cmsImgHomeFacilities': 'Home Facilities Images',
+        'cmsImgHomeMemories': 'Home Memories Images',
+        'cmsImgHomeHero': 'Home Hero Images',
+        'cmsImgAboutHero': 'About Hero Image',
+        'cmsImgFacilities': 'Facilities Page Images',
+        'cmsGlobalStats': 'Global School Stats',
+        'cmsTextHome': 'Home Page Text Customization',
+        'cmsTextAbout': 'About Page Text Customization',
+        'cmsTextAcademics': 'Academics Page Text Customization',
+        'cmsTextAdmissions': 'Admissions Page Text Customization',
+        'cmsTextFacilities': 'Facilities Page Text Customization',
+        'cmsTextGallery': 'Gallery Page Text Customization',
+        'cmsTextContact': 'Contact Page Text Customization',
+        'cmsTextInquiry': 'Inquiry Page Text Customization',
+        'websiteSettings': 'General Site Settings'
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
 

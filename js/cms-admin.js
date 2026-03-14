@@ -447,20 +447,27 @@ async function loadPageTextAdmin(pageKey) {
         const doc = await db.collection('pageText').doc(pageKey).get();
         if (doc.exists) {
             const data = doc.data();
-            for (const [id, value] of Object.entries(data)) {
-                const input = document.getElementById(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}${id.replace(pageKey, '')}`);
-                // Special case mapper might be needed if IDs don't match pattern, but for now:
-                const directInput = document.querySelectorAll(`[id$="${id.charAt(0).toUpperCase() + id.slice(1)}"]`)[0];
-                // Simplified: search for input by property name suffix
-                const allInputs = document.querySelectorAll(`#cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form [id]`);
-                allInputs.forEach(input => {
-                    const key = input.id.replace(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`, '');
-                    const dbKey = key.charAt(0).toLowerCase() + key.slice(1);
-                    if (data[dbKey]) input.value = data[dbKey];
-                    // Also try direct match
-                    if (data[input.id]) input.value = data[input.id];
-                });
-            }
+            const allInputs = document.querySelectorAll(`#cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form [id]`);
+            allInputs.forEach(input => {
+                const id = input.id;
+                // Try several mapping strategies:
+                // 1. Pure key match
+                if (data[id]) {
+                    input.value = data[id];
+                } 
+                // 2. Mapping 'textHomeHeroTitle' -> 'heroTitle'
+                else {
+                    const pagePrefix = `text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`;
+                    const shortKey = id.replace(pagePrefix, '');
+                    const dbKey = shortKey.charAt(0).toLowerCase() + shortKey.slice(1);
+                    if (data[dbKey]) {
+                        input.value = data[dbKey];
+                    }
+                    else if (data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)]) {
+                         input.value = data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)];
+                    }
+                }
+            });
         }
     } catch(e) { console.error(`loadPageTextAdmin error for ${pageKey}:`, e); }
 }
