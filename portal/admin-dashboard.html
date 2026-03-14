@@ -353,20 +353,36 @@
                             <input type="text" id="student_id" placeholder="Auto-generated if empty">
                         </div>
                         <div class="form-group">
-                            <label>Reg No</label>
-                            <input type="text" id="student_reg_no">
-                        </div>
-                        <div class="form-group">
-                            <label>Roll No</label>
-                            <input type="text" id="student_roll_no">
-                        </div>
-                        <div class="form-group">
                             <label>Class</label>
                             <input type="text" id="student_class">
                         </div>
                         <div class="form-group">
                             <label>Section</label>
                             <input type="text" id="student_section">
+                        </div>
+                        <div class="form-group">
+                            <label>Roll No</label>
+                            <input type="text" id="student_roll_no">
+                        </div>
+                        <div class="form-group">
+                            <label>Reg No</label>
+                            <input type="text" id="student_reg_no">
+                        </div>
+                        <div class="form-group">
+                            <label>Session</label>
+                            <input type="text" id="student_session">
+                        </div>
+                        <div class="form-group">
+                            <label>Join Date</label>
+                            <input type="text" id="student_join_date">
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Personal & Identity</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="text" id="student_dob" placeholder="e.g. 01.01.2015">
                         </div>
                         <div class="form-group">
                             <label>Gender</label>
@@ -377,17 +393,85 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Date of Birth</label>
-                            <input type="text" id="student_dob" placeholder="e.g. 01.01.2015">
+                            <label>Student Aadhar</label>
+                            <input type="text" id="student_aadhar" maxlength="12">
                         </div>
+                        <div class="form-group">
+                            <label>Religion</label>
+                            <input type="text" id="student_religion">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" id="student_category">
+                        </div>
+                        <div class="form-group">
+                            <label>Caste</label>
+                            <input type="text" id="student_caste">
+                        </div>
+                        <div class="form-group">
+                            <label>PEN</label>
+                            <input type="text" id="student_pen">
+                        </div>
+                        <div class="form-group">
+                            <label>Smart Card No</label>
+                            <input type="text" id="student_smart_card_no">
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Family Details</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
                         <div class="form-group">
                             <label>Mother's Name</label>
                             <input type="text" id="student_mother">
                         </div>
+                        <div class="form-group">
+                            <label>Father's Aadhar</label>
+                            <input type="text" id="student_father_aadhar" maxlength="12">
+                        </div>
+                        <div class="form-group">
+                            <label>Mother's Aadhar</label>
+                            <input type="text" id="student_mother_aadhar" maxlength="12">
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Name</label>
+                            <input type="text" id="student_guardian_name">
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Phone</label>
+                            <input type="text" id="student_guardian_phone">
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label>Address</label>
-                        <textarea id="student_address" rows="2" style="width:100%; padding:0.625rem; border:1px solid var(--border); border-radius:0.5rem; font-size:0.875rem;"></textarea>
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Address & Logistics</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Current Address</label>
+                            <textarea id="student_address" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Permanent Address</label>
+                            <textarea id="student_permanent_address" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="student_city">
+                        </div>
+                        <div class="form-group">
+                            <label>Hostel Facility</label>
+                            <select id="student_hostel">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Transport Facility</label>
+                            <select id="student_transport">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div id="uploadProgress" style="display:none; margin-bottom:1rem;">
@@ -405,17 +489,17 @@
                 <h3>Bulk Student Import</h3>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <p style="font-weight: 600;">Download CSV Template</p>
+                        <p style="font-weight: 600;">Download Excel Template</p>
                         <p style="font-size: 0.875rem; color: var(--text-muted);">Use this format to ensure correct import</p>
                     </div>
-                    <button class="btn-portal btn-secondary" onclick="downloadCSVTemplate()">
-                        <i class="fas fa-file-csv"></i> Get Template
+                    <button class="btn-portal btn-secondary" onclick="downloadExcelTemplate()">
+                        <i class="fas fa-file-excel"></i> Get Template
                     </button>
                 </div>
                 <form id="bulkImportForm">
                     <div class="form-group">
-                        <label>Select CSV File</label>
-                        <input type="file" id="csvFile" accept=".csv" required>
+                        <label>Select Excel File (.xlsx, .xls)</label>
+                        <input type="file" id="excelFile" accept=".xlsx, .xls" required>
                     </div>
                     <button type="submit" class="btn-portal btn-primary">Start Bulk Import</button>
                 </form>

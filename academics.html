@@ -151,12 +151,14 @@
 
 </section>
 
-<section class="section stats">
-<h2>Academic Strength</h2>
-<div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
-<div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
-<div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
-<div class="stat"><h2 class="counter" id="stat_years" data-target="10">0</h2><p>Years of Excellence</p></div>
+<section class="section reveal">
+    <h2 class="section-title">Academic Strength</h2>
+    <div class="stats-bar">
+        <div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
+        <div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
+        <div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
+        <div class="stat"><h2 class="counter" id="stat_years" data-target="8">0</h2><p>Years of Excellence</p></div>
+    </div>
 </section>
 
 <section class="section">
@@ -260,28 +262,26 @@
        <div id="floating-button"></div>
   
 <script src="script.js"></script>
-
-<!-- Firebase SDK for CMS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/cms-settings.js"></script>
 <script>
-document.querySelectorAll(".counter").forEach(counter => {
-    counter.innerText = "0"
-    const update = () => {
-        const target = +counter.getAttribute("data-target")
-        const count = +counter.innerText
-        const inc = target / 80
-        if(count < target) {
-            counter.innerText = Math.ceil(count + inc)
-            setTimeout(update, 20)
-        } else {
-            counter.innerText = target
+    document.querySelectorAll(".counter").forEach(counter => {
+        counter.innerText = "0"
+        const update = () => {
+            const target = +counter.getAttribute("data-target")
+            const count = +counter.innerText
+            const inc = target / 80
+            if(count < target) {
+                counter.innerText = Math.ceil(count + inc)
+                setTimeout(update, 20)
+            } else {
+                counter.innerText = target
+            }
         }
-    }
-    update()
-})
+        update()
+    })
 </script>
 </body>
 

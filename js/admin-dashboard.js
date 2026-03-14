@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     document.getElementById('studentForm')?.addEventListener('submit', handleStudentSubmit);
     document.getElementById('bulkImportForm')?.addEventListener('submit', handleBulkImport);
+
     document.getElementById('noticeForm')?.addEventListener('submit', handleNoticeSubmit);
     document.getElementById('searchInput')?.addEventListener('input', () => { currentPage = 1; filterAndDisplayStudents(); });
     document.getElementById('classFilter')?.addEventListener('change', () => { currentPage = 1; filterAndDisplayStudents(); });
@@ -285,6 +286,199 @@ async function populateResultsStatus() {
             } else { throw new Error("Missing"); }
         }).catch(() => {
             const cell = document.getElementById(`status-admit-${docId}`);
+
+        filterAndDisplayStudents();
+        loadNoticeHistory();
+    } catch (error) {
+        console.error("Error loading data:", error);
+    }
+}
+
+function showSection(sectionId) {
+    // Hide all
+    document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+    // Show target
+    const target = document.getElementById(sectionId + 'Section');
+    if (target) target.style.display = 'block';
+
+    const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
+    if (activeLink) activeLink.classList.add('active');
+
+    const titles = {
+        'studentList': 'Student Management',
+        'resultsStatus': 'Documents Verification',
+        'admitCardTool': 'Admit Card PDF Tool',
+        'addStudent': 'Add/Edit Student',
+        'bulkImport': 'Bulk Import Students',
+        'notices': 'School Notice Board',
+        'promotions': 'Class Promotions',
+        'websiteSettings': 'Frontend Website Settings',
+        'inquiries': 'Admission Inquiries',
+        'bulkPdf': 'Bulk PDF Upload',
+        'cmsStats': 'Stats & Numbers',
+        'cmsEvents': 'Upcoming Events',
+        'cmsAchievements': 'Achievements',
+        'cmsTestimonials': 'Testimonials',
+        'cmsAdmission': 'Admission Status',
+        'cmsHolidays': 'Holiday List',
+        'cmsGallery': 'Gallery Management',
+        'cmsStaff': 'Staff & Teachers',
+        'cmsTimetable': 'Class Timetables',
+        'cmsFees': 'Fee Structure',
+        'cmsHero': 'Hero Slider Images'
+    };
+    document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
+
+    
+    // Visibility logic
+    document.getElementById('statsOverview').style.display = sectionId === 'studentList' ? 'grid' : 'none';
+
+    if (sectionId === 'resultsStatus') populateResultsStatus();
+    if (sectionId === 'studentList') loadInitialData();
+    if (sectionId === 'websiteSettings') loadWebsiteSettings();
+    if (sectionId === 'inquiries') loadInquiries();
+}
+
+async function filterAndDisplayStudents() {
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
+    const classVal = document.getElementById('classFilter')?.value || "";
+    const tbody = document.getElementById('studentTableBody');
+    if (!tbody) return;
+    
+    const filtered = allStudents.filter(s => {
+        const matchesSearch = s.name.toLowerCase().includes(searchTerm) || s.student_id.toLowerCase().includes(searchTerm);
+        const matchesClass = classVal === "" || s.class === classVal;
+        return matchesSearch && matchesClass;
+    });
+
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginated = filtered.slice(start, start + itemsPerPage);
+
+    tbody.innerHTML = '';
+    paginated.forEach(student => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="checkbox" class="student-checkbox" value="${student.id}" onchange="toggleSelect('${student.id}')" ${selectedStudents.has(student.id) ? 'checked' : ''}></td>
+            <td>${student.student_id}</td>
+            <td><b>${student.name}</b></td>
+            <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class || '-'}</span></td>
+            <td>${student.section || '-'}</td>
+            <td>${student.phone || '-'}</td>
+            <td>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn-portal btn-ghost btn-sm" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-portal btn-ghost btn-sm btn-danger" onclick="deleteStudent('${student.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    renderPagination(filtered.length);
+}
+
+function renderPagination(total) {
+    const container = document.getElementById('paginationControls');
+    const totalPages = Math.ceil(total / itemsPerPage);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <button class="btn-portal btn-ghost" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
+            <span style="font-size: 0.875rem;">Page ${currentPage} of ${totalPages || 1}</span>
+            <button class="btn-portal btn-ghost" onclick="changePage(1)" ${currentPage >= totalPages ? 'disabled' : ''}>Next</button>
+        </div>
+    `;
+}
+
+function changePage(delta) {
+    currentPage += delta;
+    filterAndDisplayStudents();
+}
+
+// Result and Admit Card Verification
+async function populateResultsStatus() {
+    const tbody = document.getElementById('resultsStatusTableBody');
+    const yearSelect = document.getElementById('resultsYearFilter');
+    const year = yearSelect ? yearSelect.value : '2026';
+    
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Checking documents...</td></tr>';
+    
+    let resultsCount = 0;
+    tbody.innerHTML = '';
+    
+    for (const student of allStudents) {
+        const docId = student.id; 
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+            <td>${student.student_id || docId}</td>
+            <td>${student.name}</td>
+            <td>Class ${student.class || '-'}</td>
+            <td>
+                <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                    <div id="status-report-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Rep: Checking...</span></div>
+                    <div id="status-admit-${docId}"><span class="badge" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Adm: Checking...</span></div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="file" id="upload-pdf-${docId}" accept="application/pdf" style="display:none;" onchange="uploadResult(event, '${docId}', '${year}')">
+                        <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-pdf-${docId}').click()" style="font-size:0.75rem;">
+                            <i class="fas fa-upload"></i> Report
+                        </button>
+                        <a id="preview-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden" style="font-size:0.75rem;">
+                            <i class="fas fa-external-link-alt"></i> View
+                        </a>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <input type="file" id="upload-admit-${docId}" accept="application/pdf" style="display:none;" onchange="uploadAdmitCard(event, '${docId}', '${year}')">
+                        <button class="btn-portal btn-ghost btn-sm" onclick="document.getElementById('upload-admit-${docId}').click()" style="font-size:0.75rem; color:#d97706;">
+                            <i class="fas fa-upload"></i> Admit
+                        </button>
+                        <a id="preview-admit-btn-${docId}" href="#" target="_blank" class="btn-portal btn-ghost btn-sm hidden" style="font-size:0.75rem;">
+                            <i class="fas fa-external-link-alt"></i> View
+                        </a>
+                    </div>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        
+        // Check Report Card 
+        db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
+            const cell = document.getElementById(`status-report-${docId}`);
+            if(docRef.exists) {
+                if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>';
+                const btn = document.getElementById(`preview-btn-${docId}`);
+                if(btn) {
+                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
+                    btn.classList.remove('hidden');
+                }
+                resultsCount++;
+                document.getElementById('statTotalResults').textContent = resultsCount;
+            } else { throw new Error("Missing"); }
+        }).catch(() => {
+            const cell = document.getElementById(`status-report-${docId}`);
+            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rep: Missing</span>';
+        });
+
+        // Check Admit Card
+        db.collection('admitcards').doc(`${docId}_${year}`).get().then(docRef => {
+            const cell = document.getElementById(`status-admit-${docId}`);
+            if(docRef.exists) {
+                if(cell) cell.innerHTML = '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
+                const btn = document.getElementById(`preview-admit-btn-${docId}`);
+                if(btn) {
+                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
+                    btn.classList.remove('hidden');
+                }
+            } else { throw new Error("Missing"); }
+        }).catch(() => {
+            const cell = document.getElementById(`status-admit-${docId}`);
             if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Adm: Missing</span>';
         });
     }
@@ -293,12 +487,10 @@ async function populateResultsStatus() {
 async function uploadResult(event, docId, year) {
     const file = event.target.files[0];
     if (!file) return;
-
     if (file.size > 900 * 1024) {
-        showToast('File too large! Max 900KB for free database storage.', 'error');
+        showToast('File too large! Max 900KB.', 'error');
         return;
     }
-
     setLoading(true);
     try {
         const base64 = await new Promise(resolve => {
@@ -306,16 +498,14 @@ async function uploadResult(event, docId, year) {
             reader.onload = e => resolve(e.target.result);
             reader.readAsDataURL(file);
         });
-        
-        // Save string directly to free Firestore DB
         await db.collection('reports').doc(`${docId}_${year}`).set({
             fileData: base64,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        showToast('Result PDF saved to free Database!');
-        populateResultsStatus(); // Refresh row statuses
+        showToast('Result PDF saved!');
+        populateResultsStatus(); 
     } catch (e) {
-        showToast('Error uploading PDF: ' + e.message, 'error');
+        showToast('Error: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -324,12 +514,10 @@ async function uploadResult(event, docId, year) {
 async function uploadAdmitCard(event, docId, year) {
     const file = event.target.files[0];
     if (!file) return;
-
     if (file.size > 900 * 1024) {
-        showToast('File too large! Max 900KB for free DB storage.', 'error');
+        showToast('File too large! Max 900KB.', 'error');
         return;
     }
-
     setLoading(true);
     try {
         const base64 = await new Promise(resolve => {
@@ -337,15 +525,14 @@ async function uploadAdmitCard(event, docId, year) {
             reader.onload = e => resolve(e.target.result);
             reader.readAsDataURL(file);
         });
-        
         await db.collection('admitcards').doc(`${docId}_${year}`).set({
             fileData: base64,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        showToast('Admit Card saved to Database!');
+        showToast('Admit Card saved!');
         populateResultsStatus(); 
     } catch (e) {
-        showToast('Error uploading Admit Card: ' + e.message, 'error');
+        showToast('Error: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -355,27 +542,22 @@ async function uploadAdmitCard(event, docId, year) {
 async function handlePromotion() {
     const fromClass = document.getElementById('promoteFromClass').value;
     const toClass = document.getElementById('promoteToClass').value;
-
     if (!fromClass || !toClass) {
         alert("Please select both source and target classes.");
         return;
     }
-
     const targets = allStudents.filter(s => s.class === fromClass);
     if (targets.length === 0) {
         alert("No students found in the selected class.");
         return;
     }
-
-    if (confirm(`Are you sure you want to promote ${targets.length} students from Class ${fromClass} to Class ${toClass}?`)) {
+    if (confirm(`Promote ${targets.length} students to Class ${toClass}?`)) {
         setLoading(true);
         try {
             const batch = db.batch();
-            targets.forEach(s => {
-                batch.update(db.collection('students').doc(s.id), { class: toClass });
-            });
+            targets.forEach(s => batch.update(db.collection('students').doc(s.id), { class: toClass }));
             await batch.commit();
-            showToast(`Promoted ${targets.length} students successfully!`);
+            showToast(`Promoted ${targets.length} students!`);
             await loadInitialData();
             showSection('studentList');
         } catch (error) {
@@ -392,7 +574,6 @@ async function handleNoticeSubmit(e) {
     setLoading(true);
     const title = document.getElementById('noticeTitle').value;
     const message = document.getElementById('noticeMessage').value;
-
     try {
         await db.collection('notices').add({
             title,
@@ -412,7 +593,6 @@ async function handleNoticeSubmit(e) {
 async function loadNoticeHistory() {
     const container = document.getElementById('adminNoticesContainer');
     if (!container) return;
-
     try {
         const snap = await db.collection('notices').orderBy('date', 'desc').get();
         container.innerHTML = '';
@@ -438,6 +618,8 @@ async function deleteNotice(id) {
         loadNoticeHistory();
     }
 }
+
+// // ===================== ERP TOOLS =====================
 
 // Website Settings / CMS
 async function loadWebsiteSettings() {
@@ -467,9 +649,9 @@ async function handleWebsiteSettingsSave(e) {
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         await db.collection('settings').doc('general').set(payload, { merge: true });
-        showToast("Website Settings updated live globally!");
+        showToast("Website Settings updated!");
     } catch (e) {
-        showToast("Error updating settings: " + e.message, "error");
+        showToast("Error update: " + e.message, "error");
     } finally {
         setLoading(false);
     }
@@ -478,7 +660,6 @@ async function handleWebsiteSettingsSave(e) {
 // Export Data
 function exportStudentData() {
     if (allStudents.length === 0) return;
-    
     try {
         const formattedData = allStudents.map(s => ({
             "Student ID": s.student_id || '',
@@ -494,34 +675,54 @@ function exportStudentData() {
             "Mother's Name": s.mother_name || '',
             "Address": s.address || ''
         }));
-        
         const ws = XLSX.utils.json_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Students Data");
-        XLSX.writeFile(wb, `apex_students_data_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast("Excel Export Successful!");
+        XLSX.utils.book_append_sheet(wb, ws, "Students");
+        XLSX.writeFile(wb, `apex_students_${new Date().toISOString().split('T')[0]}.xlsx`);
+        showToast("Exported!");
     } catch (e) {
-        showToast("Error generating Excel file: " + e.message, "error");
+        showToast("Export failed: " + e.message, "error");
     }
 }
 
 // Student Management Core
 async function handleStudentSubmit(e) {
     e.preventDefault();
-    const name    = document.getElementById('student_name').value.trim();
-    const father  = document.getElementById('student_father').value.trim();
-    const phone   = document.getElementById('student_phone').value.trim();
-    // Optional fields
-    const sid     = document.getElementById('student_id').value.trim() || phone;
-    const sclass  = document.getElementById('student_class').value.trim();
-    const sect    = document.getElementById('student_section').value.trim();
+    const sid = document.getElementById('student_id').value.trim();
+    const name = document.getElementById('student_name').value.trim();
+    const father = document.getElementById('student_father').value.trim();
+    const phone = document.getElementById('student_phone').value.trim();
+    const sclass = document.getElementById('student_class').value.trim();
+    const sect = document.getElementById('student_section').value.trim();
     const roll_no = document.getElementById('student_roll_no').value.trim();
-    const reg_no  = document.getElementById('student_reg_no').value.trim();
-    const gender  = document.getElementById('student_gender').value;
-    const dob     = document.getElementById('student_dob').value.trim();
-    const mother  = document.getElementById('student_mother').value.trim();
+    const reg_no = document.getElementById('student_reg_no').value.trim();
+    const session = document.getElementById('student_session').value.trim();
+    const join_date = document.getElementById('student_join_date').value.trim();
+    const dob = document.getElementById('student_dob').value.trim();
+    const gender = document.getElementById('student_gender').value;
+    const aadhar = document.getElementById('student_aadhar').value.trim();
+    const religion = document.getElementById('student_religion').value.trim();
+    const category = document.getElementById('student_category').value.trim();
+    const caste = document.getElementById('student_caste').value.trim();
+    const pen = document.getElementById('student_pen').value.trim();
+    const smart_card_no = document.getElementById('student_smart_card_no').value.trim();
+    const mother = document.getElementById('student_mother').value.trim();
+    const father_aadhar = document.getElementById('student_father_aadhar').value.trim();
+    const mother_aadhar = document.getElementById('student_mother_aadhar').value.trim();
+    const guardian_name = document.getElementById('student_guardian_name').value.trim();
+    const guardian_phone = document.getElementById('student_guardian_phone').value.trim();
     const address = document.getElementById('student_address').value.trim();
+    const permanent_address = document.getElementById('student_permanent_address').value.trim();
+    const city = document.getElementById('student_city').value.trim();
+    const hostel = document.getElementById('student_hostel').value;
+    const transport = document.getElementById('student_transport').value;
     const photoFile = document.getElementById('student_photo').files[0];
+
+    if (!name || !father || !phone) {
+        showToast('Please fill all mandatory fields (Name, Father Name, Mobile Number)', 'error');
+        return;
+    }
+
 
     // Use editingDocId if editing, otherwise use phone as doc ID
     const docId = editingDocId || phone;
@@ -554,12 +755,38 @@ async function handleStudentSubmit(e) {
         }
 
         const studentData = {
-            student_id: sid, name, father_name: father,
-            phone, class: sclass, section: sect,
-            roll_no, reg_no, gender, dob,
-            mother_name: mother, address
+            student_id: sid || phone, // Use student_id if provided, else phone
+            name,
+            father_name: father,
+            phone,
+            class: sclass,
+            section: sect,
+            roll_no,
+            reg_no,
+            session,
+            join_date,
+            dob,
+            gender,
+            aadhar,
+            religion,
+            category,
+            caste,
+            pen,
+            smart_card_no,
+            mother_name: mother,
+            father_aadhar,
+            mother_aadhar,
+            guardian_name,
+            guardian_phone,
+            address,
+            permanent_address,
+            city,
+            hostel,
+            transport,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         if (photoUrl) studentData.photo_url = photoUrl;
+
 
         await db.collection('students').doc(docId).set(studentData, { merge: true });
         showToast('Student saved successfully!');
@@ -629,7 +856,7 @@ function editStudent(id) {
     showSection('addStudent');
     document.getElementById('formTitle').textContent = 'Edit Student Profile';
     document.getElementById('student_id').value = s.student_id || '';
-    document.getElementById('student_id').disabled = false;
+    document.getElementById('student_id').disabled = false; // Enable editing student_id
     document.getElementById('student_name').value = s.name || '';
     document.getElementById('student_father').value = s.father_name || '';
     document.getElementById('student_phone').value = s.phone || '';
@@ -637,10 +864,26 @@ function editStudent(id) {
     document.getElementById('student_section').value = s.section || '';
     document.getElementById('student_roll_no').value = s.roll_no || '';
     document.getElementById('student_reg_no').value = s.reg_no || '';
-    document.getElementById('student_gender').value = s.gender || '';
+    document.getElementById('student_session').value = s.session || '';
+    document.getElementById('student_join_date').value = s.join_date || '';
     document.getElementById('student_dob').value = s.dob || '';
+    document.getElementById('student_gender').value = s.gender || '';
+    document.getElementById('student_aadhar').value = s.aadhar || '';
+    document.getElementById('student_religion').value = s.religion || '';
+    document.getElementById('student_category').value = s.category || '';
+    document.getElementById('student_caste').value = s.caste || '';
+    document.getElementById('student_pen').value = s.pen || '';
+    document.getElementById('student_smart_card_no').value = s.smart_card_no || '';
     document.getElementById('student_mother').value = s.mother_name || '';
+    document.getElementById('student_father_aadhar').value = s.father_aadhar || '';
+    document.getElementById('student_mother_aadhar').value = s.mother_aadhar || '';
+    document.getElementById('student_guardian_name').value = s.guardian_name || '';
+    document.getElementById('student_guardian_phone').value = s.guardian_phone || '';
     document.getElementById('student_address').value = s.address || '';
+    document.getElementById('student_permanent_address').value = s.permanent_address || '';
+    document.getElementById('student_city').value = s.city || '';
+    document.getElementById('student_hostel').value = s.hostel || 'No';
+    document.getElementById('student_transport').value = s.transport || 'No';
     // Show existing photo
     const photoDiv = document.getElementById('photoPreview');
     if (s.photo_url) {
@@ -650,49 +893,108 @@ function editStudent(id) {
     }
 }
 
-// Bulk Import
+// Bulk Import (Excel Version)
 async function handleBulkImport(e) {
     e.preventDefault();
-    const file = document.getElementById('csvFile').files[0];
+    const file = document.getElementById('excelFile').files[0];
     if (!file) return;
 
     setLoading(true);
     const reader = new FileReader();
     reader.onload = async (event) => {
-        const lines = event.target.result.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        
-        document.getElementById('importStats').style.display = 'block';
-        document.getElementById('totalImport').textContent = lines.length - 1;
-
-        let processed = 0;
-        for (let i = 1; i < lines.length; i++) {
-            const vals = lines[i].split(',').map(v => v.trim());
-            if (vals.length < headers.length || !vals[0]) continue;
-
-            const student = {};
-            headers.forEach((h, idx) => student[h] = vals[idx]);
+        try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
             
-            if (student.student_id) {
-                await db.collection('students').doc(student.student_id).set(student, { merge: true });
+            // Convert to JSON with headers
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            
+            if (jsonData.length === 0) {
+                showToast("The Excel file seems to be empty.", "error");
+                setLoading(false);
+                return;
+            }
+
+            document.getElementById('importStats').style.display = 'block';
+            document.getElementById('totalImport').textContent = jsonData.length;
+
+            let processed = 0;
+            for (const row of jsonData) {
+                // Map fields from Excel to Firestore schema
+                const studentData = {
+                    student_id: (row['Id'] || row['student_id'] || '').toString().trim(),
+                    name: (row['Name'] || row['name'] || '').toString().trim(),
+                    reg_no: (row['Reg No'] || row['reg_no'] || '').toString().trim(),
+                    roll_no: (row['Roll No'] || row['roll_no'] || '').toString().trim(),
+                    session: (row['Session'] || row['session'] || '').toString().trim(),
+                    class: (row['Class'] || row['class'] || '').toString().trim(),
+                    section: (row['Section'] || row['section'] || '').toString().trim(),
+                    dob: (row['Birth Date'] || row['dob'] || '').toString().trim(),
+                    join_date: (row['Join Date'] || row['join_date'] || '').toString().trim(),
+                    gender: (row['Gender'] || row['gender'] || '').toString().trim(),
+                    father_name: (row['Father Name'] || row['father_name'] || '').toString().trim(),
+                    mother_name: (row['Mother Name'] || row['mother_name'] || '').toString().trim(),
+                    phone: (row['Phone'] || row['phone'] || '').toString().trim(),
+                    religion: (row['Religion'] || row['religion'] || '').toString().trim(),
+                    category: (row['Category'] || row['category'] || '').toString().trim(),
+                    pen: (row['PEN'] || row['pen'] || '').toString().trim(),
+                    aadhar: (row['Aadhar'] || row['aadhar'] || '').toString().trim(),
+                    father_aadhar: (row['Father Aadhar'] || row['father_aadhar'] || '').toString().trim(),
+                    mother_aadhar: (row['Mother Aadhar'] || row['mother_aadhar'] || '').toString().trim(),
+                    caste: (row['Caste'] || row['caste'] || '').toString().trim(),
+                    hostel: (row['Hostel'] || row['hostel'] || '').toString().trim(),
+                    transport: (row['Transport'] || row['transport'] || '').toString().trim(),
+                    address: (row['Address'] || row['address'] || '').toString().trim(),
+                    permanent_address: (row['Permanent Address'] || row['permanent_address'] || '').toString().trim(),
+                    city: (row['City'] || row['city'] || '').toString().trim(),
+                    guardian_name: (row['Guardian Name'] || row['guardian_name'] || '').toString().trim(),
+                    guardian_phone: (row['Guardian Phone'] || row['guardian_phone'] || '').toString().trim(),
+                    smart_card_no: (row['Smart Card No'] || row['smart_card_no'] || '').toString().trim(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Mandatory fields validation
+                if (!studentData.name || !studentData.phone || !studentData.father_name) {
+                    continue;
+                }
+
+                const docId = studentData.student_id || studentData.phone;
+                await db.collection('students').doc(docId).set(studentData, { merge: true });
                 processed++;
                 document.getElementById('currentImport').textContent = processed;
             }
+
+            showToast(`Bulk Import Complete: ${processed} students processed.`);
+            showSection('studentList');
+        } catch (error) {
+            console.error("Excel processing error:", error);
+            showToast("Failed to process Excel file.", "error");
+        } finally {
+            setLoading(false);
         }
-        showToast(`Imported ${processed} students!`);
-        showSection('studentList');
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
 }
 
-function downloadCSVTemplate() {
-    const data = "student_id,name,class,section,roll_no,reg_no,gender,dob,father_name,mother_name,phone,address\n1001,Rahul Kumar,6,A,12,B101,Male,01.01.2015,Suresh Kumar,Meena Devi,9999999999,At- Village Name Dist- Saran";
-    const blob = new Blob([data], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "student_template.csv";
-    a.click();
+function downloadExcelTemplate() {
+    const headers = [
+        "Id", "Name", "Reg No", "Roll No", "Session", "Class", "Section", 
+        "Birth Date", "Join Date", "Gender", "Father Name", "Mother Name", 
+        "Phone", "Religion", "Category", "PEN", "Aadhar", "Father Aadhar", 
+        "Mother Aadhar", "Caste", "Hostel", "Transport", "Address", 
+        "Permanent Address", "City", "Guardian Name", "Guardian Phone", "Smart Card No"
+    ];
+    
+    const sampleData = [["APEX001", "Rahul Kumar", "R101", "12", "2026-27", "6", "A", "01.01.2012", "15.04.2023", "Male", "Suresh Kumar", "Meena Devi", "9876543210", "Hindu", "General", "P12345", "123456789012", "234567890123", "345678901234", "OBC", "No", "Yes", "Main Road, Saran", "Village Apex, Saran", "Saran", "Suresh Kumar", "9876543210", "SC1001"]];
+
+    const ws_data = [headers, ...sampleData];
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Students Template");
+    XLSX.writeFile(wb, "apex_student_import_template.xlsx");
+    showToast("Excel template downloaded!");
 }
 
 function logoutAdmin() {
@@ -704,6 +1006,7 @@ function updateStats() {
     const classes = new Set(allStudents.map(s => s.class));
     document.getElementById('statTotalClasses').textContent = classes.size;
 }
+
 
 // ===================== INQUIRIES =====================
 async function loadInquiries() {
