@@ -179,23 +179,42 @@ async function updateResultLink() {
     if (timetableArea) timetableArea.innerHTML = '<span class="badge" style="background:#ccfbf1; color:#115e59;"><i class="fas fa-spinner fa-spin"></i> Checking...</span>';
 
     // Check Result Card
-    db.collection('reports').doc(`${currentStudentID}_${year}`).get().then(docRef => {
+    try {
+        const docRef = await db.collection('reports').doc(`${currentStudentID}_${year}`).get();
         if (docRef.exists) {
             const pdfData = docRef.data().fileData;
-            resultArea.innerHTML = `
-                <a href="${pdfData}" download="ReportCard_${year}.pdf" class="btn-portal btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; width: 100%;">
-                    <i class="fas fa-download"></i> Download Report Card
-                </a>
-            `;
-        } else { throw new Error("Not Found"); }
-    }).catch(e => {
+            const className = currentStudentClass; // We need to check if results are published for this class
+            
+            // NEW: Publication Check
+            // We assume 'exams' term for reports is fixed or we fetch the latest term from publications
+            // For now, we check if ANY publication exists for this class in this year's exams
+            const pubSnap = await db.collection('publications').where('className', '==', className).where('published', '==', true).get();
+            
+            if (!pubSnap.empty) {
+                resultArea.innerHTML = `
+                    <a href="${pdfData}" download="ReportCard_${year}.pdf" class="btn-portal btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; width: 100%;">
+                        <i class="fas fa-download"></i> Download Report Card
+                    </a>
+                `;
+            } else {
+                resultArea.innerHTML = `
+                    <div style="padding: 0.75rem; background: #fffbeb; border-radius: 0.5rem; color: #b45309; display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-size: 0.9rem;">
+                        <i class="fas fa-clock"></i>
+                        <span style="font-weight: 600;">Result Processing...</span>
+                    </div>
+                `;
+            }
+        } else {
+            throw new Error("Not Found");
+        }
+    } catch (e) {
         resultArea.innerHTML = `
             <div style="padding: 0.75rem; background: #fff1f2; border-radius: 0.5rem; color: #be123c; display: flex; align-items: center; gap: 0.5rem; justify-content: center; font-size: 0.9rem;">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span style="font-weight: 600;">Not available yet.</span>
             </div>
         `;
-    });
+    }
 
     // Check Admit Card
     db.collection('admitcards').doc(`${currentStudentID}_${year}`).get().then(docRef => {
