@@ -451,6 +451,35 @@ body>section:nth-of-type(even),
     line-height: 1.7;
 }
 
+.card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+}
+
+.card i {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    width: 100%;
+}
+
 /* Mapping old classes to new system */
 .nav-card,
 .birthday-card,
@@ -803,6 +832,24 @@ body>section:nth-of-type(even),
     -webkit-text-fill-color: transparent;
 }
 
+.cta {
+    padding: 5rem 2rem;
+    background: var(--gradient-cta);
+    color: var(--white);
+    text-align: center;
+    border-radius: 2rem;
+    margin: 4rem auto;
+    max-width: 1000px;
+    box-shadow: var(--shadow-lg);
+}
+
+.cta h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--white);
+}
+
 .cta p {
     font-size: 1.25rem;
     opacity: 0.9;
@@ -810,17 +857,19 @@ body>section:nth-of-type(even),
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    color: var(--white);
 }
 
 .cta button {
     background: var(--white);
     color: var(--primary);
-    padding: 1.25rem 3rem;
+    padding: 1rem 2.5rem;
     border-radius: 3rem;
     font-weight: 800;
     font-size: 1.1rem;
     border: none;
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.5);
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -828,8 +877,9 @@ body>section:nth-of-type(even),
 
 .cta button:hover {
     transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 12px 25px rgba(245, 158, 11, 0.7);
-    background: #f59e0b;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+    background: var(--accent);
+    color: var(--white);
 }
 
 
@@ -1976,23 +2026,13 @@ footer {
 }
 
 .section {
-    max-width: 1100px;
-    margin: auto;
-    padding: 50px 20px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    border-radius: 10px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    margin-bottom: 30px;
-}
-
-.card {
-    transition: 0.35s;
-}
-
-.card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 4rem 2rem;
+    background: var(--white);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
 }
 
 /* Improve gallery hover effect */

@@ -12,153 +12,144 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
+    <style>
+        body {
+            background: var(--bg-gray);
+            color: var(--text-main);
+        }
 
-/* BACKGROUND */
+        .page-header {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
 
-body
-{
-background-image:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee");
-background-size:cover;
-background-attachment:fixed;
-background-position:center;
-}
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
 
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
 
-/* PAGE HEADER */
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
 
-.page-header
-{
-text-align:center;
-padding:60px 20px;
-background:rgba(255,255,255,0.9);
-}
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-gray);
+        }
 
-.page-header h1
-{
-font-size:38px;
-color:#1E40AF;
-margin-bottom:8px;
-}
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
 
+        .btn-submit {
+            padding: 1.25rem 3rem;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
 
-/* SECTION */
+        .btn-submit:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
 
-.section
-{
-max-width:1100px;
-margin:auto;
-padding:50px 20px;
-background:rgba(255,255,255,0.95);
-border-radius:6px;
-margin-bottom:30px;
-}
+        .quick-contact {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
 
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
 
-/* GRID */
+        .contact-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
 
-.grid
-{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
+        .faq-item {
+            margin-bottom: 1rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--white);
+        }
 
+        .faq-question {
+            padding: 1.5rem;
+            background: var(--bg-gray);
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
 
-/* CARD */
+        .faq-question:hover {
+            background: var(--border);
+        }
 
-.card
-{
-background:white;
-padding:25px;
-text-align:center;
-border-radius:6px;
-box-shadow:0 6px 14px rgba(0,0,0,0.12);
-transition:0.3s;
-}
-
-.card:hover
-{
-transform:translateY(-8px);
-}
-
-.card i
-{
-font-size:36px;
-color:#1E40AF;
-margin-bottom:10px;
-}
-
-
-/* FORM */
-
-.form-box iframe
-{
-width:100%;
-border:none;
-border-radius:6px;
-}
-
-
-/* CONTACT BUTTONS */
-
-.quick-contact
-{
-display:flex;
-justify-content:center;
-gap:20px;
-margin-top:25px;
-flex-wrap:wrap;
-}
-
-.quick-contact a
-{
-text-decoration:none;
-background:#1E40AF;
-color:white;
-padding:12px 20px;
-border-radius:4px;
-}
-
-.quick-contact a:hover
-{
-background:#2563EB;
-}
-
-
-/* FAQ */
-
-.faq
-{
-max-width:800px;
-margin:auto;
-}
-
-.faq-item
-{
-margin:10px 0;
-border-radius:4px;
-overflow:hidden;
-}
-
-.faq-question
-{
-background:#1E40AF;
-color:white;
-padding:12px;
-cursor:pointer;
-}
-
-.faq-answer
-{
-display:none;
-background:white;
-padding:12px;
-border:1px solid #ddd;
-}
-
-</style>
-
+        .faq-answer {
+            display: none;
+            padding: 1.5rem;
+            background: var(--white);
+            color: var(--text-main);
+            border-top: 1px solid var(--border);
+            line-height: 1.6;
+        }
+    </style>
 </head>
 
 
@@ -177,105 +168,90 @@ border:1px solid #ddd;
 
 
 
-<section class="section">
+<section class="reveal">
+    <h2 class="section-title">Why Contact Apex Public School</h2>
+    <div class="grid">
+        <div class="card">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h3>Quality Education</h3>
+            <p>Strong academic foundation and disciplined environment</p>
+        </div>
 
-<h2>Why Contact Apex Public School</h2>
+        <div class="card">
+            <i class="fa-solid fa-school"></i>
+            <h3>Modern Facilities</h3>
+            <p>Smart classrooms, computer lab and playground</p>
+        </div>
 
-<div class="grid">
+        <div class="card">
+            <i class="fa-solid fa-bus"></i>
+            <h3>Transport Facility</h3>
+            <p>Safe transport service for nearby villages</p>
+        </div>
 
-<div class="card">
-
-<i class="fa-solid fa-graduation-cap"></i>
-
-<h3>Quality Education</h3>
-
-<p>Strong academic foundation and disciplined environment</p>
-
-</div>
-
-
-<div class="card">
-
-<i class="fa-solid fa-school"></i>
-
-<h3>Modern Facilities</h3>
-
-<p>Smart classrooms, computer lab and playground</p>
-
-</div>
-
-
-<div class="card">
-
-<i class="fa-solid fa-bus"></i>
-
-<h3>Transport Facility</h3>
-
-<p>Safe transport service for nearby villages</p>
-
-</div>
-
-
-<div class="card">
-
-<i class="fa-solid fa-shield-halved"></i>
-
-<h3>Safe Campus</h3>
-
-<p>CCTV security and disciplined school environment</p>
-
-</div>
-
-</div>
-
+        <div class="card">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Safe Campus</h3>
+            <p>CCTV security and disciplined school environment</p>
+        </div>
+    </div>
 </section>
 
 
 
-<section class="section">
+<section class="reveal">
+    <h2 class="section-title">Admission Inquiry Form</h2>
+    <p class="text-muted" style="text-align:center; margin-bottom:3rem;">Fill in your details below and our team will contact you shortly.</p>
 
-<h2 style="color:#1E40AF; margin-bottom: 25px;"><i class="fa-solid fa-paper-plane"></i> Fill Admission Inquiry Form</h2>
-<p style="color:#555; margin-bottom: 25px;">Fill in your details below and our team will contact you shortly.</p>
+    <div class="form-container">
+        <form id="inquiryForm">
+            <div class="grid" style="gap:1.5rem; margin-bottom:1.5rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Parent / Guardian Name <span class="text-secondary">*</span></label>
+                    <input type="text" id="inq_parent" class="form-control" required placeholder="Your full name">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Student Name <span class="text-secondary">*</span></label>
+                    <input type="text" id="inq_student" class="form-control" required placeholder="Child's name">
+                </div>
+            </div>
+            
+            <div class="grid" style="gap:1.5rem; margin-bottom:1.5rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Mobile Number <span class="text-secondary">*</span></label>
+                    <input type="tel" id="inq_mobile" class="form-control" required placeholder="10-digit number" maxlength="10">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label">Admission For Class <span class="text-secondary">*</span></label>
+                    <select id="inq_class" class="form-control" required>
+                        <option value="">-- Select Class --</option>
+                        <option>Play Group</option><option>Nursery</option><option>LKG</option><option>UKG</option>
+                        <option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option>
+                        <option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option>
+                    </select>
+                </div>
+            </div>
 
-<form id="inquiryForm" style="display:grid; gap:18px;">
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
-        <div>
-            <label style="font-weight:600; display:block; margin-bottom:6px;">Parent / Guardian Name <span style="color:red">*</span></label>
-            <input type="text" id="inq_parent" required placeholder="Your full name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
-        </div>
-        <div>
-            <label style="font-weight:600; display:block; margin-bottom:6px;">Student Name <span style="color:red">*</span></label>
-            <input type="text" id="inq_student" required placeholder="Child's name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
-        </div>
+            <div class="form-group">
+                <label class="form-label">Village / Area</label>
+                <input type="text" id="inq_village" class="form-control" placeholder="Your village or area name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Message / Query (Optional)</label>
+                <textarea id="inq_message" class="form-control" rows="3" placeholder="Any specific questions about admission, fees or transport..."></textarea>
+            </div>
+
+            <div id="inq_status" style="display:none; padding:1rem; border-radius:0.75rem; font-weight:600; text-align:center; margin-bottom:1.5rem;"></div>
+            
+            <div style="text-align:center;">
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
+                </button>
+            </div>
+        </form>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
-        <div>
-            <label style="font-weight:600; display:block; margin-bottom:6px;">Mobile Number <span style="color:red">*</span></label>
-            <input type="tel" id="inq_mobile" required placeholder="10-digit mobile number" maxlength="10" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
-        </div>
-        <div>
-            <label style="font-weight:600; display:block; margin-bottom:6px;">Admission For Class <span style="color:red">*</span></label>
-            <select id="inq_class" required style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; background:white;">
-                <option value="">-- Select Class --</option>
-                <option>Play Group</option><option>Nursery</option><option>LKG</option><option>UKG</option>
-                <option>Class 1</option><option>Class 2</option><option>Class 3</option><option>Class 4</option>
-                <option>Class 5</option><option>Class 6</option><option>Class 7</option><option>Class 8</option>
-            </select>
-        </div>
-    </div>
-    <div>
-        <label style="font-weight:600; display:block; margin-bottom:6px;">Village / Area</label>
-        <input type="text" id="inq_village" placeholder="Your village or area name" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px;">
-    </div>
-    <div>
-        <label style="font-weight:600; display:block; margin-bottom:6px;">Message / Query (Optional)</label>
-        <textarea id="inq_message" rows="3" placeholder="Any specific questions about admission, fees or transport..." style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:15px; resize:vertical;"></textarea>
-    </div>
-    <div id="inq_status" style="display:none; padding:14px; border-radius:8px; font-weight:600; text-align:center;"></div>
-    <button type="submit" style="background:#1E40AF; color:white; padding:14px 30px; border:none; border-radius:8px; font-size:16px; font-weight:700; cursor:pointer; transition:0.3s;" onmouseover="this.style.background='#2563EB'" onmouseout="this.style.background='#1E40AF'">
-        <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
-    </button>
-</form>
+</section>
 
 </section>
 
@@ -334,80 +310,46 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
 
 
 
-<section class="section">
-
-<h2>Quick Contact</h2>
-
-<div class="quick-contact">
-
-<a href="tel:8084243031">
-<i class="fa-solid fa-phone"></i>
-Call School
-</a>
-
-<a href="https://wa.me/918084243031">
-<i class="fa-brands fa-whatsapp"></i>
-WhatsApp
-</a>
-
-<a href="mailto:Apexpublicschool61@gmail.com">
-<i class="fa-solid fa-envelope"></i>
-Email
-</a>
-
-</div>
-
+<section class="reveal">
+    <h2 class="section-title">Quick Contact</h2>
+    <div class="quick-contact">
+        <a href="tel:8084243031" class="contact-btn">
+            <i class="fa-solid fa-phone"></i> Call School
+        </a>
+        <a href="https://wa.me/918084243031" class="contact-btn">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="mailto:Apexpublicschool61@gmail.com" class="contact-btn">
+            <i class="fa-solid fa-envelope"></i> Email
+        </a>
+    </div>
 </section>
 
 
 
-<section class="section faq">
+<section class="reveal">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq">
+        <div class="faq-item">
+            <div class="faq-question">When do admissions start? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Admissions usually start from late March every year for the upcoming session.</div>
+        </div>
 
-<h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-question">Which classes are available? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Play Group to Class 8.</div>
+        </div>
 
-<div class="faq-item">
+        <div class="faq-item">
+            <div class="faq-question">Is transport available? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Yes, school transport facility is available for students from nearby village areas.</div>
+        </div>
 
-<div class="faq-question">When do admissions start</div>
-
-<div class="faq-answer">
-Admissions usually start from late March every year.
-</div>
-
-</div>
-
-
-<div class="faq-item">
-
-<div class="faq-question">Which classes are available</div>
-
-<div class="faq-answer">
-Play Group to Class 8.
-</div>
-
-</div>
-
-
-<div class="faq-item">
-
-<div class="faq-question">Is transport available</div>
-
-<div class="faq-answer">
-Yes school transport facility is available.
-</div>
-
-</div>
-
-
-<div class="faq-item">
-
-<div class="faq-question">How to contact school</div>
-
-<div class="faq-answer">
-You can call, WhatsApp or fill the inquiry form.
-</div>
-
-</div>
-
+        <div class="faq-item">
+            <div class="faq-question">How to contact school? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">You can call us directly, message on WhatsApp, or fill the inquiry form on this page.</div>
+        </div>
+    </div>
 </section>
 
 

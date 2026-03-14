@@ -13,209 +13,99 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+        body {
+            background: var(--bg-gray);
+            color: var(--text-main);
+        }
 
-/* PLANET BACKGROUND */
+        .page-header {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
 
-body
-{
-background: #f8fafc;
-color: var(--text-main);
-cursor:default;
-}
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
 
+        .ad-banner-row {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
 
-/* PAGE HEADER */
+        .ad-banner {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+        }
 
-.page-header
-{
-text-align:center;
-padding:60px 20px;
-background:rgba(255,255,255,0.9);
-}
+        .ad-banner:hover {
+            transform: scale(1.02);
+        }
 
-.page-header h1
-{
-font-size:38px;
-color:#1E40AF;
-}
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: var(--white);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
 
+        .fee-table th {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem;
+        }
 
-/* SECTION */
+        .fee-table td {
+            border: 1px solid var(--border);
+            padding: 1rem;
+            text-align: center;
+        }
 
-.section
-{
-max-width:1100px;
-margin:auto;
-padding:50px 20px;
-background:rgba(255,255,255,0.95);
-border-radius:6px;
-margin-bottom:30px;
-}
+        .faq-item {
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--white);
+        }
 
-.card
-{
-cursor:pointer;
-transition:0.3s;
-}
+        .faq-question {
+            padding: 1.25rem;
+            background: var(--bg-gray);
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
 
-.card:hover
-{
-transform:translateY(-8px);
-box-shadow:0 10px 20px rgba(0,0,0,0.2);
-}
-/* ADMISSION BANNER */
+        .faq-question:hover {
+            background: var(--border);
+        }
 
-.ad-banner
-{
-width:100%;
-max-width:400px;
-display:block;
-margin:auto;
-border-radius:6px;
-margin-bottom:30px;
-}
-/* GRID */
-
-.grid
-{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
-
-
-/* CARD */
-
-.card
-{
-background:white;
-padding:25px;
-text-align:center;
-border-radius:6px;
-box-shadow:0 6px 14px rgba(0,0,0,0.12);
-transition:0.3s;
-}
-
-.card:hover
-{
-transform:translateY(-8px);
-}
-
-.card i
-{
-font-size:35px;
-color:#1E40AF;
-margin-bottom:10px;
-}
-
-
-/* FEE TABLE */
-
-.fee-table
-{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-.fee-table th
-{
-background:#1E40AF;
-color:white;
-padding:10px;
-}
-
-.fee-table td
-{
-border:1px solid #ddd;
-padding:10px;
-text-align:center;
-}
-
-
-/* FAQ */
-
-.faq
-{
-max-width:800px;
-margin:auto;
-}
-
-.faq-item
-{
-margin:10px 0;
-border:1px solid #ddd;
-border-radius:4px;
-}
-
-.faq-question
-{
-padding:12px;
-background:#1E40AF;
-color:white;
-cursor:pointer;
-}
-
-.faq-answer
-{
-display:none;
-padding:12px;
-background:white;
-}
-
-.cta
-{
-text-align:center;
-padding:50px 20px;
-background:#1E40AF;
-color:white;
-}
-
-.cta button
-{
-padding:12px 22px;
-background:white;
-color:#1E40AF;
-border:none;
-cursor:pointer;
-border-radius:4px;
-font-weight:bold;
-margin-top:15px;
-}
-
-.cta button:hover
-{
-background:#facc15;
-}
-.ad-banner-row
-{
-display:flex;
-gap:20px;
-justify-content:center;
-align-items:center;
-flex-wrap:wrap;
-}
-
-.ad-banner
-{
-width:100%;
-max-width:350px;
-border-radius:6px;
-}
-@media(max-width:768px)
-{
-.ad-banner-row
-{
-flex-direction:column;
-}
-
-.ad-banner
-{
-max-width:300px;
-}
-}
-
-</style>
+        .faq-answer {
+            display: none;
+            padding: 1.25rem;
+            background: var(--white);
+            color: var(--text-main);
+            border-top: 1px solid var(--border);
+        }
+    </style>
 
 </head>
 
@@ -232,195 +122,165 @@ max-width:300px;
 </section>
 
 
-<section class="section"> <div class="ad-banner-row"> <img src="images/Admission Banner 1.png" class="ad-banner"> <img src="images/Admission Banner.png" class="ad-banner"> </div> </section>
-
-<section class="section">
-
-<h2>Admission Process</h2>
-
-<div class="grid">
-
-<a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card"> <i class="fa-solid fa-school"></i> <h3>Visit School</h3> <p id="admissionsVisitText">Visit Apex Public School office for enquiry<br>Open location in Google Maps</p></a>
-
-</div>
-
-    <div class="admission-card" onclick="location.href='inquiry.html'" style="cursor:pointer;">
-        <i class="fa-solid fa-file"></i>
-        <h3>Fill Form</h3>
-        <p>Fill the admission form with student details</p>
+<section class="reveal">
+    <div class="ad-banner-row">
+        <img src="images/Admission Banner 1.png" class="ad-banner" alt="Admission Banner 1">
+        <img src="images/Admission Banner.png" class="ad-banner" alt="Admission Banner 2">
     </div>
+</section>
 
-    <div class="admission-card">
-        <i class="fa-solid fa-folder-open"></i>
-        <h3>Submit Documents</h3>
-        <p>Provide required admission documents</p>
+<section class="reveal">
+    <h2 class="section-title">Admission Process</h2>
+    <div class="grid">
+        <a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card">
+            <i class="fa-solid fa-school"></i>
+            <h3>Visit School</h3>
+            <p id="admissionsVisitText">Visit Apex Public School office for enquiry<br>Open location in Google Maps</p>
+        </a>
+
+        <div class="card" onclick="location.href='inquiry.html'">
+            <i class="fa-solid fa-file"></i>
+            <h3>Fill Form</h3>
+            <p>Fill the admission form with student details</p>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>Submit Documents</h3>
+            <p>Provide required admission documents</p>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-money-bill"></i>
+            <h3>Pay Fees</h3>
+            <p>Pay admission and registration fees</p>
+        </div>
     </div>
+</section>
 
-    <div class="admission-card">
-        <i class="fa-solid fa-money-bill"></i>
-        <h3>Pay Fees</h3>
-        <p>Pay admission and registration fees</p>
+<section class="reveal">
+    <h2 class="section-title">Required Documents</h2>
+    <div class="grid">
+        <div class="card" id="admissionsDoc1">Aadhar Card</div>
+        <div class="card" id="admissionsDoc2">Birth Certificate</div>
+        <div class="card" id="admissionsDoc3">Passport Size Photos</div>
+        <div class="card" id="admissionsDoc4">Transfer Certificate</div>
     </div>
-</div>
-
 </section>
 
 
-<section class="section">
-
-<h2>Required Documents</h2>
-
-<div class="grid">
-
-<div class="card" id="admissionsDoc1">Aadhar Card</div>
-
-<div class="card" id="admissionsDoc2">Birth Certificate</div>
-
-<div class="card" id="admissionsDoc3">Passport Size Photos</div>
-
-<div class="card" id="admissionsDoc4">Transfer Certificate</div>
-
-</div>
-
-</section>
-
-
-<section class="section">
-    <h2>Fee Structure</h2>
+<section class="reveal">
+    <h2 class="section-title">Fee Structure</h2>
     <div id="feesListAdmin" style="overflow-x:auto;">
         <!-- Loaded via CMS -->
         <table class="fee-table">
-            <tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee (₹)</th></tr>
-            <tr><td colspan="3" style="text-align:center; padding:2rem; color:#64748b;">Loading fee structure...</td></tr>
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Monthly Fee (₹)</th>
+                    <th>Annual Fee (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" class="text-muted" style="padding:2rem; text-align:center;">Loading fee structure...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </section>
 
 
-<section class="section">
+<section class="reveal">
+    <h2 class="section-title">Facilities for Students</h2>
+    <p class="text-muted" style="text-align:center; margin-bottom:3rem;">Click on any facility to see photos</p>
 
-<h2>Facilities for Students</h2>
-<p style="text-align:center; color:var(--text-muted); margin-bottom:2rem;">Click on any facility to see photos</p>
-
-<div class="grid" id="admissionsFacilitiesGrid">
-    <!-- Facility cards with hidden image panels -->
-    <div class="facility-item" style="background:white; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s; cursor:pointer;" onclick="toggleFacilityPanel(this)">
-        <div style="padding:1.5rem; text-align:center;">
-            <i class="fas fa-chalkboard-teacher" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i>
-            <h3 style="font-size:1.1rem; margin:0;">Smart Classrooms</h3>
+    <div class="grid" id="admissionsFacilitiesGrid">
+        <div class="card" onclick="toggleFacilityPanel(this)">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h3>Smart Classrooms</h3>
+            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
+                <div id="facility_smart_class" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
+                </div>
+            </div>
         </div>
-        <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:#f1f5f9;">
-            <div id="facility_smart_class" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                <p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">Loading photos...</p>
+
+        <div class="card" onclick="toggleFacilityPanel(this)">
+            <i class="fas fa-laptop-code"></i>
+            <h3>Computer Lab</h3>
+            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
+                <div id="facility_computer_lab" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" onclick="toggleFacilityPanel(this)">
+            <i class="fas fa-futbol"></i>
+            <h3>Sports & Playground</h3>
+            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
+                <div id="facility_sports" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" onclick="toggleFacilityPanel(this)">
+            <i class="fas fa-shield-alt"></i>
+            <h3>CCTV Security</h3>
+            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
+                <div id="facility_security" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" onclick="toggleFacilityPanel(this)">
+            <i class="fas fa-bus"></i>
+            <h3>Transport</h3>
+            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
+                <div id="facility_transport" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="facility-item" style="background:white; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s; cursor:pointer;" onclick="toggleFacilityPanel(this)">
-        <div style="padding:1.5rem; text-align:center;">
-            <i class="fas fa-laptop-code" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i>
-            <h3 style="font-size:1.1rem; margin:0;">Computer Lab</h3>
-        </div>
-        <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:#f1f5f9;">
-            <div id="facility_computer_lab" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                <p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">Loading photos...</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="facility-item" style="background:white; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s; cursor:pointer;" onclick="toggleFacilityPanel(this)">
-        <div style="padding:1.5rem; text-align:center;">
-            <i class="fas fa-futbol" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i>
-            <h3 style="font-size:1.1rem; margin:0;">Sports & Playground</h3>
-        </div>
-        <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:#f1f5f9;">
-            <div id="facility_sports" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                <p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">Loading photos...</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="facility-item" style="background:white; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s; cursor:pointer;" onclick="toggleFacilityPanel(this)">
-        <div style="padding:1.5rem; text-align:center;">
-            <i class="fas fa-shield-alt" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i>
-            <h3 style="font-size:1.1rem; margin:0;">CCTV Security</h3>
-        </div>
-        <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:#f1f5f9;">
-            <div id="facility_security" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                <p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">Loading photos...</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="facility-item" style="background:white; border-radius:0.75rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:0.3s; cursor:pointer;" onclick="toggleFacilityPanel(this)">
-        <div style="padding:1.5rem; text-align:center;">
-            <i class="fas fa-bus" style="font-size:2rem; color:var(--primary); margin-bottom:1rem; display:block;"></i>
-            <h3 style="font-size:1.1rem; margin:0;">Transport</h3>
-        </div>
-        <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:#f1f5f9;">
-            <div id="facility_transport" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                <p style="grid-column:1/-1; font-size:0.8rem; color:#94a3b8; text-align:center;">Loading photos...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function toggleFacilityPanel(el) {
-        const panel = el.querySelector('.facility-panel');
-        const isOpen = panel.style.maxHeight !== '0px' && panel.style.maxHeight !== '';
-        
-        // Close all others
-        document.querySelectorAll('.facility-panel').forEach(p => p.style.maxHeight = '0px');
-        
-        if (!isOpen) {
-            panel.style.maxHeight = '500px';
+    <script>
+        function toggleFacilityPanel(el) {
+            const panel = el.querySelector('.facility-panel');
+            const isOpen = panel.style.maxHeight !== '0px' && panel.style.maxHeight !== '';
+            document.querySelectorAll('.facility-panel').forEach(p => p.style.maxHeight = '0px');
+            if (!isOpen) {
+                panel.style.maxHeight = '1000px';
+            }
         }
-    }
-</script>
-
+    </script>
 </section>
 
 
-<section class="section faq">
-
-<h2>Admission FAQ</h2>
-
-<div class="faq-item">
-
-<div class="faq-question">When does admission start?</div>
-
-<div class="faq-answer">Admissions start from late March for the new academic session.</div>
-
-</div>
-
-<div class="faq-item">
-
-<div class="faq-question">Which classes are available?</div>
-
-<div class="faq-answer">Play Group to Class 8.</div>
-
-</div>
-
-<div class="faq-item">
-
-<div class="faq-question">Is transport available?</div>
-
-<div class="faq-answer">Yes transport facility is available for students.</div>
-
-</div>
-
-
-
+<section class="reveal">
+    <h2 class="section-title">Admission FAQ</h2>
+    <div class="faq">
+        <div class="faq-item">
+            <div class="faq-question">When does admission start? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Admissions start from late March for the new academic session.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Which classes are available? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Play Group to Class 8.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Is transport available? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">Yes transport facility is available for students from nearby areas.</div>
+        </div>
+    </div>
 </section>
-<section class="cta">
-
-<h2>Admission Open 2026 to 2027</h2>
-
-<p>Join Apex Public School for quality education</p>
-
-<button onclick="location.href='contact.html'">Admission Inquiry</button>
-
+<section class="cta reveal">
+    <h2>Admission Open 2026 to 2027</h2>
+    <p>Join Apex Public School for quality education</p>
+    <button onclick="location.href='contact.html'">Admission Inquiry</button>
 </section>
 
 

@@ -16,49 +16,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        .cta
-{
-text-align:center;
-padding:50px 20px;
-background:#1E40AF;
-color:white;
-}
-
-.cta button
-{
-padding:12px 22px;
-background:white;
-border:none;
-cursor:pointer;
-border-radius:4px;
-font-weight:bold;
-margin-top:15px;
-}
-
-.cta button:hover
-{
-background:#facc15;
-}
-
-.stats
-{
-text-align:center;
-}
-
-.stat
-{
-display:inline-block;
-margin:20px;
-}
-
-.stat h2
-{
-font-size:40px;
-color:#1E40AF;
-}
-
-    </style>
 </head>
     
 <body>
@@ -193,10 +150,10 @@ color:#1E40AF;
 <!-- 4. PRINCIPAL MESSAGE -->
 <section class="reveal">
     <h2 class="section-title">Principal's Message</h2>
-    <div class="premium-card" style="max-width: 900px; margin: 0 auto; text-align: center;">
+    <div class="card" style="max-width: 900px; margin: 0 auto;">
         <p style="font-size: 1.125rem; font-style: italic; margin-bottom: 2rem;">"Education builds confidence, discipline and strong character. Our goal is to provide equal learning opportunities to every child, especially from economically weaker families."</p>
         <p style="font-size: 1.125rem; font-weight: 700; color: var(--primary);">Baby Kumari</p>
-        <p style="color: var(--text-muted);">Principal, Apex Public School</p>
+        <p class="text-muted">Principal, Apex Public School</p>
     </div>
 </section>
 
@@ -206,7 +163,7 @@ color:#1E40AF;
     <div class="facilities-slider">
         <div class="slider-track" id="homeFacilitiesTrack">
             <!-- Dynamically loaded from Firestore (loadHomeFacilities in cms-settings.js) -->
-            <p style="text-align:center; width:100%; color:var(--text-muted);">Loading facilities...</p>
+            <p class="text-muted" style="text-align:center; width:100%;">Loading facilities...</p>
         </div>
     </div>
     <div style="text-align: center; margin-top: 2rem;">
@@ -216,18 +173,18 @@ color:#1E40AF;
 
 <section class="reveal">
     <h2 class="section-title">Student Activities</h2>
-    <div class="card-grid">
-        <div class="premium-card" style="padding: 2rem;">
+    <div class="grid">
+        <div class="card">
             <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
             <h3>Sports Excellence</h3>
             <p>Students participate in various outdoor sports and national competitions.</p>
         </div>
-        <div class="premium-card" style="padding: 2rem;">
+        <div class="card">
             <img src="images/Republic-Day-img1.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
             <h3>Cultural Growth</h3>
             <p>We celebrate diversity through music, dance, and cultural festivals.</p>
         </div>
-        <div class="premium-card" style="padding: 2rem;">
+        <div class="card">
             <img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
             <h3>Scientific Inquiry</h3>
             <p>Educational trips to science centers and museums for hands-on learning.</p>
@@ -237,21 +194,21 @@ color:#1E40AF;
 
 <section class="reveal">
     <h2 class="section-title">Safe & Supportive Campus</h2>
-    <div class="card-grid">
-        <div class="premium-card">
-            <i class="fas fa-video" style="color: #6366f1; font-size: 2.5rem; background: rgba(99, 102, 241, 0.1); width: 80px; height: 80px; line-height: 80px; border-radius: 50%;"></i>
+    <div class="grid">
+        <div class="card">
+            <i class="fas fa-video"></i>
             <h3>CCTV Security</h3>
             <p>24/7 surveillance for student safety across the premises.</p>
         </div>
-        <div class="premium-card">
-            <i class="fas fa-user-shield" style="color: #ec4899; font-size: 2.5rem; background: rgba(236, 72, 153, 0.1); width: 80px; height: 80px; line-height: 80px; border-radius: 50%;"></i>
+        <div class="card">
+            <i class="fas fa-user-shield"></i>
             <h3>Constant Supervision</h3>
             <p>Dedicated staff monitoring during study and play hours.</p>
         </div>
-        <div class="premium-card">
-            <i class="fas fa-school" style="color: #14b8a6; font-size: 2.5rem; background: rgba(20, 184, 166, 0.1); width: 80px; height: 80px; line-height: 80px; border-radius: 50%;"></i>
-            <h3>Holistic Environment</h3>
-            <p>A discipline-centered campus focused on character building.</p>
+        <div class="card">
+            <i class="fas fa-first-aid"></i>
+            <h3>Medical Room</h3>
+            <p>Equipped to handle minor health needs and emergencies.</p>
         </div>
     </div>
 </section>
@@ -295,13 +252,9 @@ color:#1E40AF;
     <div class="card-grid" id="testimonialsContainer"></div>
 </section>
 <section class="cta">
-
-<h2>Admission Open 2026 to 2027</h2>
-
-<p>Join Apex Public School for quality education</p>
-
-<button onclick="location.href='contact.html'">Admission Inquiry</button>
-
+    <h2>Admission Open 2026 to 2027</h2>
+    <p>Join Apex Public School for quality education</p>
+    <button onclick="location.href='contact.html'">Admission Inquiry</button>
 </section>
 </section>
 
