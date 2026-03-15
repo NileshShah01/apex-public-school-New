@@ -45,7 +45,7 @@ async function loadSessions() {
 
     try {
         console.log("Fetching sessions from Firestore...");
-        const snapshot = await db.collection('sessions').orderBy('name', 'desc').get();
+        const snapshot = await db.collection('sessions').get();
         erpState.sessions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
         // Find active session
@@ -291,7 +291,6 @@ async function loadClassesForRegistration() {
     try {
         const snapshot = await db.collection('classes')
             .where('sessionId', '==', sessionId)
-            .orderBy('sortOrder', 'asc')
             .get();
         
         const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

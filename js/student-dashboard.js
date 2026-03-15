@@ -108,15 +108,27 @@ async function fetchStudentData() {
     setLoading(true);
     try {
         const sessionData = JSON.parse(localStorage.getItem('student_session'));
-        let doc = null;
+        
+        // CACHE CHECK: Use cached profile if available and not expired (e.g., 30 mins)
+        const CACHE_KEY = `student_profile_${sessionData.student_id || sessionData.student_phone}`;
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < 30 * 60 * 1000) { // 30 mins
+                displayStudentProfile(data);
+                setLoading(false);
+                return;
+            }
+        }
 
+        let doc = null;
         // Ensure we retrieve the correct Document ID by querying the phone number if available
         if (sessionData.student_phone) {
             const snap = await db.collection('students').where('phone', '==', sessionData.student_phone).get();
             if (!snap.empty) {
                 // Find matching name or just first match
                 doc = snap.docs.find(d => d.data().name.trim().toLowerCase() === sessionData.name.trim().toLowerCase()) || snap.docs[0];
-                currentStudentID = doc.id; // CRITICAL: Updates currentStudentID to true doc ID for reports!
+                currentStudentID = doc.id; 
             }
         }
 
@@ -128,23 +140,9 @@ async function fetchStudentData() {
 
         if (doc) {
             const data = doc.data();
-            document.getElementById('disp_student_name').textContent = data.name;
-            document.getElementById('disp_student_id').textContent = data.student_id || currentStudentID;
-            currentStudentClass = data.class || '';
-            if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = currentStudentClass || 'N/A';
-            if (document.getElementById('disp_section')) document.getElementById('disp_section').textContent = data.section || 'N/A';
-            if (document.getElementById('disp_father_name')) document.getElementById('disp_father_name').textContent = data.father_name || 'N/A';
-            
-            // Try loading student photo
-            if (data.photo_url) {
-                checkPhotoExists(data.photo_url);
-            } else if (data.student_id) {
-                const photoUrl = `${GITHUB_BASE}/images/students/${data.student_id}.jpg`;
-                checkPhotoExists(photoUrl);
-            }
-
-            // Initial Result Check
-            updateResultLink();
+            // Cache the retrieved data
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+            displayStudentProfile(data);
         } else {
             alert("Student record not found. Please contact admin.");
             logoutStudent();
@@ -154,6 +152,26 @@ async function fetchStudentData() {
     } finally {
         setLoading(false);
     }
+}
+
+function displayStudentProfile(data) {
+    document.getElementById('disp_student_name').textContent = data.name;
+    document.getElementById('disp_student_id').textContent = data.studentId || data.student_id || currentStudentID;
+    currentStudentClass = data.class || '';
+    if (document.getElementById('disp_class')) document.getElementById('disp_class').textContent = currentStudentClass || 'N/A';
+    if (document.getElementById('disp_section')) document.getElementById('disp_section').textContent = data.section || 'N/A';
+    if (document.getElementById('disp_father_name')) document.getElementById('disp_father_name').textContent = data.fatherName || data.father_name || 'N/A';
+    
+    // Try loading student photo
+    if (data.photo_url) {
+        checkPhotoExists(data.photo_url);
+    } else if (data.studentId || data.student_id) {
+        const photoUrl = `${GITHUB_BASE}/images/students/${data.studentId || data.student_id}.jpg`;
+        checkPhotoExists(photoUrl);
+    }
+
+    // Initial Result Check
+    updateResultLink();
 }
 
 function checkPhotoExists(url) {

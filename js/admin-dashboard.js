@@ -15,7 +15,10 @@ function previewPhoto(event) {
         document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
     };
     reader.readAsDataURL(file);
-}
+}// Global Loading Helper (backward compatibility for erp modules)
+window.showLoading = function(show) {
+    if (typeof setLoading === 'function') setLoading(show);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
@@ -57,18 +60,35 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initializeApp() {
+    console.log("Initializing App...");
     setLoading(true);
-    await loadInitialData();
-    updateStats();
-    
-    // Phase 8 + ERP Initializers
-    initCMS();
-    initCMSHero();
-    initCMSText();
-    initERPExams();
-    initCMSAdmission();
-    
-    setLoading(false);
+    try {
+        await loadInitialData();
+        updateStats();
+        
+        // Phase 8 + ERP Initializers (Wrapped to prevent one failure from hanging the whole app)
+        const safeInit = (fn, name) => {
+            try {
+                if (typeof fn === 'function') fn();
+                else console.warn(`Initializer ${name} not found.`);
+            } catch (e) {
+                console.error(`Error in ${name}:`, e);
+            }
+        };
+
+        // Note: initCMS* are mostly handled by DOMContentLoaded in cms-admin.js
+        
+        if (typeof initERPClassMgmt === 'function') safeInit(initERPClassMgmt, 'initERPClassMgmt');
+        if (typeof initERPExams === 'function') safeInit(initERPExams, 'initERPExams');
+        if (typeof initERPFees === 'function') safeInit(initERPFees, 'initERPFees');
+        if (typeof initERPAdmission === 'function') safeInit(initERPAdmission, 'initERPAdmission');
+
+    } catch (error) {
+        console.error("Initialization failed:", error);
+    } finally {
+        setLoading(false);
+        console.log("Initialization complete.");
+    }
 }
 
 function setLoading(show) {
@@ -90,36 +110,49 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.style.display = 'none', 3000);
 }
 
-async function loadInitialData() {
+async function loadInitialData(classFilterVal = "") {
     try {
-        const snapshot = await db.collection('students').get();
-        allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let query = db.collection('students');
         
-        // Populate Class Filters
-        const classes = [...new Set(allStudents.map(s => s.class))].sort((a,b) => a-b);
-        const classFilter = document.getElementById('classFilter');
-        const promoteFrom = document.getElementById('promoteFromClass');
-        
-        if (classFilter) {
-            const currentFilter = classFilter.value;
-            classFilter.innerHTML = '<option value="">All Classes</option>';
-            classes.forEach(c => {
-                classFilter.innerHTML += `<option value="${c}">Class ${c}</option>`;
-            });
-            classFilter.value = currentFilter;
+        // Optimization: Use .where() if a class filter is provided
+        if (classFilterVal) {
+            query = query.where("class", "==", classFilterVal);
         }
 
-        if (promoteFrom) {
-            promoteFrom.innerHTML = '<option value="">Select Class</option>';
-            classes.forEach(c => {
-                promoteFrom.innerHTML += `<option value="${c}">Class ${c}</option>`;
-            });
+        const snapshot = await query.get();
+        allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Update Stats
+        updateStats();
+
+        // Populate Class Filters only if it's the first load (to avoid wiping out the selection)
+        if (!classFilterVal) {
+            const classes = [...new Set(allStudents.map(s => s.class))].filter(Boolean).sort((a,b) => a-b);
+            const classFilter = document.getElementById('classFilter');
+            const promoteFrom = document.getElementById('promoteFromClass');
+            
+            if (classFilter) {
+                const currentFilter = classFilter.value;
+                classFilter.innerHTML = '<option value="">All Classes</option>';
+                classes.forEach(c => {
+                    classFilter.innerHTML += `<option value="${c}">Class ${c}</option>`;
+                });
+                classFilter.value = currentFilter;
+            }
+
+            if (promoteFrom) {
+                promoteFrom.innerHTML = '<option value="">Select Class</option>';
+                classes.forEach(c => {
+                    promoteFrom.innerHTML += `<option value="${c}">Class ${c}</option>`;
+                });
+            }
         }
 
         filterAndDisplayStudents();
         loadNoticeHistory();
     } catch (error) {
         console.error("Error loading data:", error);
+        showToast("Error loading student data", "error");
     }
 }
 
@@ -130,6 +163,9 @@ function showSection(sectionId, updateHash = true) {
     if (updateHash) {
         window.location.hash = sectionId;
     }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Hide all
     document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
@@ -240,8 +276,8 @@ function showSection(sectionId, updateHash = true) {
         'addResult': 'Manual Marks Entry',
         'manageAllResults': 'Consolidated Result Manager',
         'viewAllResults': 'View Full School Results',
-        'manageNonSubResult': 'Non-Subject Performance Entry',
-        'viewNonSubResult': 'View Co-Scholastic Results',
+        'manageNonSubResult': 'Co-Scholastic Performance Grading',
+        'viewNonSubResult': 'View Co-Scholastic Performance',
         'publishResult': 'Publish Exam Results Live',
         'reportCardRemarks': 'Bulk Report Card Remarks',
         'generateReportCard': 'Generate Students Report Cards',
@@ -264,8 +300,9 @@ function showSection(sectionId, updateHash = true) {
         'cmsStudentDashboard': 'Attendance & Portal Config',
         'resultsStatus': 'Student Results & Performance Status',
         'viewTimetable': 'Class Timetables Management',
-        'publishResult': 'Publish Results to Student Portal',
         'manageResult': 'Review & Manage Student Marks',
+        'manageAllResults': 'Full School Result Performance',
+        'publishResult': 'Mass Result Portal Toggle',
         'viewExamSchedule': 'Complete Exam Date Sheet',
         'cmsFeeTools': 'Parents Fee Due Analytics',
         'websiteSettings': 'Global Site Configuration'
@@ -275,9 +312,11 @@ function showSection(sectionId, updateHash = true) {
     
     // Visibility logic
     const statsGrid = document.getElementById('statsOverview');
-    if (statsGrid) {
-        statsGrid.style.display = (sectionId === 'studentList' || sectionId === 'dashboardOverview') ? 'grid' : 'none';
-    }
+    const quickHub = document.getElementById('quickActionsHub');
+    const isOverview = (sectionId === 'studentList' || sectionId === 'dashboardOverview');
+    
+    if (statsGrid) statsGrid.style.display = isOverview ? 'grid' : 'none';
+    if (quickHub) quickHub.style.display = isOverview ? 'block' : 'none';
 
     if (sectionId === 'dashboardOverview') loadDashboardOverview();
     if (sectionId === 'resultsStatus') populateResultsStatus();
@@ -291,8 +330,50 @@ function showSection(sectionId, updateHash = true) {
     if (sectionId === 'electiveMapping') loadElectiveDropdowns();
     if (sectionId === 'studentBulkUpdate') initBulkUpdate();
     if (sectionId === 'generateReportCard') initReportCardSection();
-    if (['examGrading', 'manageExam', 'manageExamSchedule', 'addResult'].includes(sectionId)) {
+    
+    // Fees Loaders
+    if (['feeMaster', 'createMonthlyFee', 'searchFeeDues'].includes(sectionId)) {
+        if (typeof initERPFees === 'function') initERPFees();
+    }
+    
+    // Admission Loaders
+    if (['addEnquiry', 'searchEnquiry'].includes(sectionId)) {
+        if (typeof initERPAdmission === 'function') initERPAdmission();
+    }
+    const erpSections = [
+        'examGrading', 'manageExam', 'manageExamSchedule', 'viewExamSchedule', 
+        'publishExamSchedule', 'admitCardTool', 'examAttendanceCard', 
+        'studentExamAttendance', 'addResult', 'manageResult', 
+        'publishResult', 'reportCardRemarks', 'manageNonSubResult'
+    ];
+    if (erpSections.includes(sectionId)) {
         initERPExams();
+    }
+
+    if (sectionId === 'studentIdPrint') {
+        if (typeof initERPIdCards === 'function') initERPIdCards();
+        initSearchableSelect('idPrintSearchContainer', (s) => {
+            document.getElementById('idPrintSid').value = s.id;
+            if (typeof updateIdPreview === 'function') updateIdPreview();
+        });
+    }
+
+    if (sectionId === 'employeeIdPrint') {
+        loadEmployeesForIdPrint();
+    }
+
+    if (sectionId === 'addEnquiry') {
+        populateEnquiryClasses();
+    }
+    
+    if (sectionId === 'manageAllResults') {
+        const sess = document.getElementById('allResultsSessionSelect');
+        const activeSess = localStorage.getItem('activeSessionName');
+        if (sess && activeSess) {
+            Array.from(sess.options).forEach(opt => {
+                if (opt.text === activeSess) opt.selected = true;
+            });
+        }
     }
     
     if (sectionId === 'studentList') loadInitialData();
@@ -311,6 +392,17 @@ function showSection(sectionId, updateHash = true) {
         initSearchableSelect('attendanceStudentSelect', (s) => {
             document.getElementById('att_studentId').value = s.id;
         });
+    }
+
+    if (sectionId === 'viewReportCard') {
+        initSearchableSelect('rcPreviewSearchContainer', (s) => {
+            document.getElementById('rcPreviewSid').value = s.id;
+        });
+        if (typeof populateRcPreviewExams === 'function') populateRcPreviewExams();
+    }
+
+    if (sectionId === 'studentExamAttendance') {
+        if (typeof loadExamAttSessions === 'function') loadExamAttSessions();
     }
 }
 
@@ -332,24 +424,28 @@ async function loadDashboardOverview() {
 
 async function updateStudentAttendance() {
     const studentId = document.getElementById('att_studentId').value;
-    const month = document.getElementById('att_month').value;
-    const percent = document.getElementById('att_percent').value;
+    const date = document.getElementById('att_date')?.value || new Date().toISOString().split('T')[0];
+    const status = document.getElementById('att_status')?.value || 'present';
+    const sclass = document.getElementById('att_class')?.value || '';
+    const section = document.getElementById('att_section')?.value || '';
 
-    if (!studentId || !month || !percent) {
-        showToast("Please select student, month and enter percentage", "error");
+    if (!studentId || !date) {
+        showToast("Please select student and date", "error");
         return;
     }
 
     setLoading(true);
     try {
-        await db.collection('attendance').doc(`${studentId}_${month}`).set({
+        await db.collection('attendance').add({
             studentId,
-            month,
-            percentage: Number(percent),
+            class: sclass,
+            section,
+            date,
+            status,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+        });
         
-        showToast("Attendance updated successfully!");
+        showToast("Attendance marked successfully!");
     } catch (e) {
         showToast("Error updating attendance: " + e.message, "error");
     } finally {
@@ -366,13 +462,13 @@ async function filterAndDisplayStudents() {
     const filtered = allStudents.filter(s => {
         const name = (s.name || "").toLowerCase();
         const sid = (s.student_id || "").toLowerCase();
-        const father = (s.father_name || "").toLowerCase();
-        const phone = (s.phone || "").toLowerCase();
+        const father = (s.fatherName || s.father_name || "").toLowerCase();
+        const mobile = (s.mobile || s.phone || "").toLowerCase();
         
         const matchesSearch = name.includes(searchTerm) || 
                              sid.includes(searchTerm) || 
                              father.includes(searchTerm) || 
-                             phone.includes(searchTerm);
+                             mobile.includes(searchTerm);
         
         const matchesClass = classVal === "" || s.class === classVal;
         return matchesSearch && matchesClass;
@@ -390,7 +486,7 @@ async function filterAndDisplayStudents() {
             <td><b>${student.name}</b></td>
             <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class || '-'}</span></td>
             <td>${student.section || '-'}</td>
-            <td>${student.phone || '-'}</td>
+            <td>${student.mobile || student.phone || '-'}</td>
             <td>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn-portal btn-ghost btn-sm" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i></button>
@@ -424,6 +520,16 @@ function changePage(delta) {
 }
 
 // Result and Admit Card Verification
+document.getElementById('classFilter')?.addEventListener('change', (e) => { 
+    currentPage = 1; 
+    const classVal = e.target.value;
+    if (classVal) {
+        loadInitialData(classVal); 
+    } else {
+        loadInitialData(); // Load all if cleared
+    }
+});
+
 async function populateResultsStatus() {
     const tbody = document.getElementById('resultsStatusTableBody');
     const yearSelect = document.getElementById('resultsYearFilter');
@@ -431,13 +537,11 @@ async function populateResultsStatus() {
     
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Checking documents...</td></tr>';
     
-    // Sort students by name for better verification UX
+    // Use currently loaded students (which might be filtered by class already)
     const sortedStudents = [...allStudents].sort((a,b) => (a.name || "").localeCompare(b.name || ""));
     
     let resultsCount = 0;
     tbody.innerHTML = '';
-    
-    // Limit to first 50 to avoid browser hang/overload if huge dataset
     const displayLimit = 50; 
     const verifiedList = sortedStudents.slice(0, displayLimit);
 
@@ -480,39 +584,67 @@ async function populateResultsStatus() {
         `;
         tbody.appendChild(tr);
         
-        // Check Report Card 
-        db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
-            const cell = document.getElementById(`status-report-${docId}`);
-            if(docRef.exists) {
-                if(cell) cell.innerHTML = '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>';
-                const btn = document.getElementById(`preview-btn-${docId}`);
-                if(btn) {
-                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
-                    btn.classList.remove('hidden');
-                }
-                resultsCount++;
-                document.getElementById('statTotalResults').textContent = resultsCount;
-            } else { throw new Error("Missing"); }
-        }).catch(() => {
-            const cell = document.getElementById(`status-report-${docId}`);
-            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rep: Missing</span>';
-        });
+        // OPTIMIZATION: Check session cache first for document status
+        const cacheKey = `status_${docId}_${year}`;
+        const cachedStatus = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
 
-        // Check Admit Card
-        db.collection('admitcards').doc(`${docId}_${year}`).get().then(docRef => {
-            const cell = document.getElementById(`status-admit-${docId}`);
-            if(docRef.exists) {
-                if(cell) cell.innerHTML = '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
-                const btn = document.getElementById(`preview-admit-btn-${docId}`);
-                if(btn) {
-                    btn.onclick = (e) => { e.preventDefault(); window.open().document.write(`<iframe src="${docRef.data().fileData}" width="100%" height="100%" style="border:none;"></iframe>`); };
+        const updateUI = (type, exists, data = null) => {
+            const cellId = type === 'report' ? `status-report-${docId}` : `status-admit-${docId}`;
+            const btnId = type === 'report' ? `preview-btn-${docId}` : `preview-admit-btn-${docId}`;
+            const cell = document.getElementById(cellId);
+            const btn = document.getElementById(btnId);
+
+            if (exists) {
+                if (cell) {
+                    cell.innerHTML = type === 'report' ? 
+                        '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>' :
+                        '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
+                }
+                if (btn) {
+                    btn.onclick = (e) => { 
+                        e.preventDefault(); 
+                        const win = window.open();
+                        win.document.write(`<iframe src="${data}" width="100%" height="100%" style="border:none;"></iframe>`); 
+                    };
                     btn.classList.remove('hidden');
                 }
-            } else { throw new Error("Missing"); }
-        }).catch(() => {
-            const cell = document.getElementById(`status-admit-${docId}`);
-            if(cell) cell.innerHTML = '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Adm: Missing</span>';
-        });
+                if (type === 'report') {
+                    resultsCount++;
+                    const countEl = document.getElementById('statTotalResults');
+                    if (countEl) countEl.textContent = resultsCount;
+                }
+            } else {
+                if (cell) cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-times-circle"></i> ${type === 'report' ? 'Rep' : 'Adm'}: Missing</span>`;
+            }
+        };
+
+        // Check Report Card (Cached or Firestore)
+        if (cachedStatus.reportData) {
+            updateUI('report', true, cachedStatus.reportData);
+        } else {
+            db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
+                if (docRef.exists) {
+                    const data = docRef.data().fileData;
+                    updateUI('report', true, data);
+                    const current = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
+                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, reportData: data }));
+                } else { updateUI('report', false); }
+            }).catch(() => updateUI('report', false));
+        }
+
+        // Check Admit Card (Cached or Firestore)
+        if (cachedStatus.admitData) {
+            updateUI('admit', true, cachedStatus.admitData);
+        } else {
+            db.collection('admitcards').doc(`${docId}_${year}`).get().then(docRef => {
+                if (docRef.exists) {
+                    const data = docRef.data().fileData;
+                    updateUI('admit', true, data);
+                    const current = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
+                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, admitData: data }));
+                } else { updateUI('admit', false); }
+            }).catch(() => updateUI('admit', false));
+        }
     }
 }
 
@@ -797,17 +929,17 @@ async function handleStudentSubmit(e) {
         }
 
         const studentData = {
-            student_id: finalSid,
+            studentId: finalSid,
             name,
-            father_name: father,
-            phone,
+            fatherName: father,
+            mobile: phone,
             class: sclass,
             section: sect,
-            roll_no,
-            reg_no,
-            session,
+            rollNo: roll_no,
+            regNo: reg_no,
+            admissionYear: session,
             join_date,
-            dob,
+            dateOfBirth: dob,
             gender,
             aadhar,
             religion,
@@ -815,7 +947,7 @@ async function handleStudentSubmit(e) {
             caste,
             pen,
             smart_card_no,
-            mother_name: mother,
+            motherName: mother,
             father_aadhar,
             mother_aadhar,
             guardian_name,
@@ -901,10 +1033,10 @@ async function editStudent(id) {
     document.getElementById('formTitle').textContent = 'Edit Student Profile';
     
     // Basic Fields
-    document.getElementById('student_id').value = s.student_id || '';
+    document.getElementById('student_id').value = s.studentId || s.student_id || '';
     document.getElementById('student_name').value = s.name || '';
-    document.getElementById('student_father').value = s.father_name || '';
-    document.getElementById('student_phone').value = s.phone || '';
+    document.getElementById('student_father').value = s.fatherName || s.father_name || '';
+    document.getElementById('student_phone').value = s.mobile || s.phone || '';
     
     // ERP Dropdowns (Async chain)
     if (typeof updateSessionDropdowns === 'function') {
@@ -932,10 +1064,10 @@ async function editStudent(id) {
         }
     }
 
-    document.getElementById('student_roll_no').value = s.roll_no || '';
-    document.getElementById('student_reg_no').value = s.reg_no || '';
+    document.getElementById('student_roll_no').value = s.rollNo || s.roll_no || '';
+    document.getElementById('student_reg_no').value = s.regNo || s.reg_no || '';
     document.getElementById('student_join_date').value = s.join_date || '';
-    document.getElementById('student_dob').value = s.dob || '';
+    document.getElementById('student_dob').value = s.dateOfBirth || s.dob || '';
     document.getElementById('student_gender').value = s.gender || '';
     document.getElementById('student_aadhar').value = s.aadhar || '';
     document.getElementById('student_religion').value = s.religion || '';
@@ -943,7 +1075,7 @@ async function editStudent(id) {
     document.getElementById('student_caste').value = s.caste || '';
     document.getElementById('student_pen').value = s.pen || '';
     document.getElementById('student_smart_card_no').value = s.smart_card_no || '';
-    document.getElementById('student_mother').value = s.mother_name || '';
+    document.getElementById('student_mother').value = s.motherName || s.mother_name || '';
     document.getElementById('student_father_aadhar').value = s.father_aadhar || '';
     document.getElementById('student_mother_aadhar').value = s.mother_aadhar || '';
     document.getElementById('student_guardian_name').value = s.guardian_name || '';
@@ -994,19 +1126,19 @@ async function handleBulkImport(e) {
             for (const row of jsonData) {
                 // Map fields from Excel to Firestore schema
                 const studentData = {
-                    student_id: (row['Id'] || row['student_id'] || '').toString().trim(),
+                    studentId: (row['Id'] || row['studentId'] || row['student_id'] || '').toString().trim(),
                     name: (row['Name'] || row['name'] || '').toString().trim(),
-                    reg_no: (row['Reg No'] || row['reg_no'] || '').toString().trim(),
-                    roll_no: (row['Roll No'] || row['roll_no'] || '').toString().trim(),
-                    session: (row['Session'] || row['session'] || '').toString().trim(),
+                    regNo: (row['Reg No'] || row['regNo'] || row['reg_no'] || '').toString().trim(),
+                    rollNo: (row['Roll No'] || row['rollNo'] || row['roll_no'] || '').toString().trim(),
+                    admissionYear: (row['Session'] || row['admissionYear'] || row['session'] || '').toString().trim(),
                     class: (row['Class'] || row['class'] || '').toString().trim(),
                     section: (row['Section'] || row['section'] || '').toString().trim(),
-                    dob: (row['Birth Date'] || row['dob'] || '').toString().trim(),
+                    dateOfBirth: (row['Birth Date'] || row['dateOfBirth'] || row['dob'] || '').toString().trim(),
                     join_date: (row['Join Date'] || row['join_date'] || '').toString().trim(),
                     gender: (row['Gender'] || row['gender'] || '').toString().trim(),
-                    father_name: (row['Father Name'] || row['father_name'] || '').toString().trim(),
-                    mother_name: (row['Mother Name'] || row['mother_name'] || '').toString().trim(),
-                    phone: (row['Phone'] || row['phone'] || '').toString().trim(),
+                    fatherName: (row['Father Name'] || row['fatherName'] || row['father_name'] || '').toString().trim(),
+                    motherName: (row['Mother Name'] || row['motherName'] || row['mother_name'] || '').toString().trim(),
+                    mobile: (row['Phone'] || row['mobile'] || row['phone'] || '').toString().trim(),
                     religion: (row['Religion'] || row['religion'] || '').toString().trim(),
                     category: (row['Category'] || row['category'] || '').toString().trim(),
                     pen: (row['PEN'] || row['pen'] || '').toString().trim(),
@@ -1026,11 +1158,11 @@ async function handleBulkImport(e) {
                 };
 
                 // Mandatory fields validation
-                if (!studentData.name || !studentData.phone || !studentData.father_name) {
+                if (!studentData.name || !studentData.mobile || !studentData.fatherName) {
                     continue;
                 }
 
-                const docId = studentData.student_id || studentData.phone;
+                const docId = studentData.studentId || studentData.mobile;
                 await db.collection('students').doc(docId).set(studentData, { merge: true });
                 processed++;
                 document.getElementById('currentImport').textContent = processed;
@@ -1216,14 +1348,14 @@ async function exportToCSV(collection) {
             
             // Format specific based on collection
             if (collection === 'students') {
-                row['Student ID'] = data.student_id;
+                row['Student ID'] = data.studentId || data.student_id;
                 row['Name'] = data.name;
                 row['Class'] = data.class;
                 row['Section'] = data.section;
-                row['DOB'] = data.dob;
-                row['Mobile'] = data.phone;
-                row['Father Name'] = data.father_name;
-                row['Village/Address'] = data.village;
+                row['DOB'] = data.dateOfBirth || data.dob;
+                row['Mobile'] = data.mobile || data.phone;
+                row['Father Name'] = data.fatherName || data.father_name;
+                row['Village/Address'] = data.village || data.address;
             } else if (collection === 'staff') {
                 row['Name'] = data.name;
                 row['Subject/Role'] = data.subject || data.role;
@@ -1299,8 +1431,8 @@ async function processAdmitCardPdf() {
     const students = allStudents
         .filter(s => s.class === classVal)
         .sort((a, b) => {
-            const idA = (a.student_id || "").toLowerCase();
-            const idB = (b.student_id || "").toLowerCase();
+            const idA = (a.studentId || a.student_id || "").toLowerCase();
+            const idB = (b.studentId || b.student_id || "").toLowerCase();
             return idA.localeCompare(idB);
         });
 
@@ -1345,7 +1477,7 @@ async function processAdmitCardPdf() {
                     reader.readAsDataURL(new Blob([pdfBytes], { type: 'application/pdf' }));
                 });
 
-                logArea.innerHTML += `> Processing student: <b>${student.student_id}</b> (${student.name})...<br>`;
+                logArea.innerHTML += `> Processing student: <b>${student.studentId || student.student_id}</b> (${student.name})...<br>`;
 
                 // Upload to Firestore
                 await db.collection('admitcards').doc(`${student.id}_${year}`).set({
@@ -1353,10 +1485,10 @@ async function processAdmitCardPdf() {
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                logArea.innerHTML += `<span style="color:#10b981;">  ✅ Successfully assigned page ${i+1} to ${student.student_id}</span><br>`;
+                logArea.innerHTML += `<span style="color:#10b981;">  ✅ Successfully assigned page ${i+1} to ${student.studentId || student.student_id}</span><br>`;
                 successCount++;
             } catch (err) {
-                logArea.innerHTML += `<span style="color:#ef4444;">  ❌ Failed for ${student.student_id}: ${err.message}</span><br>`;
+                logArea.innerHTML += `<span style="color:#ef4444;">  ❌ Failed for ${student.studentId || student.student_id}: ${err.message}</span><br>`;
             }
             
             // Auto-scroll log
@@ -1738,3 +1870,35 @@ window.loadRcSections = loadRcSections;
 window.loadRcStudents = loadRcStudents;
 window.processReportCardGeneration = processReportCardGeneration;
 window.initReportCardSection = initReportCardSection;
+
+async function loadEmployeesForIdPrint() {
+    const select = document.getElementById('empIdSelect');
+    if (!select) return;
+    
+    try {
+        const snap = await db.collection('employees').get();
+        select.innerHTML = '<option value="">-- Select Employee --</option>';
+        snap.docs.forEach(doc => {
+            const emp = doc.data();
+            select.innerHTML += `<option value="${doc.id}">${emp.name} (${emp.designation || ''})</option>`;
+        });
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function populateEnquiryClasses() {
+    const select = document.getElementById('enq_class');
+    if (!select) return;
+
+    try {
+        const snap = await db.collection('classes').get();
+        select.innerHTML = '<option value="">Select Class</option>';
+        snap.docs.forEach(doc => {
+            const c = doc.data();
+            select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+        });
+    } catch (e) {
+        console.error(e);
+    }
+}
