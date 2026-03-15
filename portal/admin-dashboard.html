@@ -21,12 +21,25 @@
     <div id="toast"></div>
 
     <!-- Mobile Header -->
-    <div class="mobile-header" style="display: none; background: var(--secondary); color: white; padding: 1rem; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 900;">
+    <div class="mobile-header">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-bars" onclick="toggleMobileSidebar()" style="font-size: 1.25rem; cursor: pointer;"></i>
-            <span style="font-weight: 600; font-size: 1.1rem;">Apex Public School</span>
+            <button class="menu-btn-shrunk" onclick="toggleMobileSidebar()" title="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div style="line-height: 1;">
+                <h1 style="font-size: 0.9rem; font-weight: 800; color: var(--secondary); margin: 0; white-space: nowrap;">Apex Admin</h1>
+                <div id="connectionStatus" style="font-size: 0.6rem; color: #10b981; display: flex; align-items: center; gap: 3px;">
+                    <span style="width: 4px; height: 4px; background: #10b981; border-radius: 50%;"></span> Online
+                </div>
+            </div>
         </div>
-        <div id="loadingMini" style="display:none;"><i class="fas fa-spinner fa-spin"></i></div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div id="loadingMini" style="display:none;"><i class="fas fa-spinner fa-spin" style="color: var(--primary);"></i></div>
+            <div class="user-pill-mini">
+                <span>A</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
     </div>
 
     <div class="dashboard-layout">
@@ -43,42 +56,203 @@
             </button>
             
             <nav class="nav-menu">
-                <!-- DASHBOARD -->
+                <!-- HOME -->
                 <div class="nav-item">
-                    <a href="#" class="nav-link active" onclick="showSection('studentList')">
+                    <a href="#" class="nav-link active" onclick="showSection('dashboardOverview')">
                         <i class="fas fa-home"></i>
-                        <span>Dashboard</span>
+                        <span>Home</span>
                     </a>
                 </div>
 
-                <!-- STUDENT MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catStudent')">
+                <!-- EMPLOYEE -->
+                <div class="nav-category" onclick="toggleCategory('catEmployee')">
                     <div class="cat-header">
-                        <i class="fas fa-users"></i>
-                        <span>Student Management</span>
+                        <i class="fas fa-user-tie"></i>
+                        <span>Employee</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catStudent">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Students List</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Bulk Import</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promotions</a>
-                        <a href="#" onclick="exportStudentData()" class="nav-link sub-link">Export Data</a>
+                    <div class="cat-submenu" id="catEmployee">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addEmployee')">Add Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('searchEmployee')">Search Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkEmployeeUpdate')">Update Bulk Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('employeeIdPrint')">Employee ID Print</a>
                     </div>
                 </div>
 
-                <!-- ACADEMIC MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catAcademic')">
+                <!-- TOOLS (ERP) -->
+                <div class="nav-category" onclick="toggleCategory('catToolsERP')">
                     <div class="cat-header">
-                        <i class="fas fa-graduation-cap"></i>
+                        <i class="fas fa-tools"></i>
+                        <span>Tools (ERP)</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catToolsERP">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFeeTools')">Parents Who Not Paid</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Bulk Student Update</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('generateReportCard')">Report Card Generator</a>
+                    </div>
+                </div>
+
+                <!-- ACADEMIC RECORDS -->
+                <div class="nav-category" onclick="toggleCategory('catAcademicRecords')">
+                    <div class="cat-header">
+                        <i class="fas fa-book-reader"></i>
                         <span>Academic Records</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catAcademic">
+                    <div class="cat-submenu" id="catAcademicRecords">
                         <a href="#" class="nav-link sub-link" onclick="showSection('resultsStatus')">Results Status</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdf')"><i class="fas fa-file-upload"></i> Bulk PDF Upload</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')"><i class="fas fa-magic"></i> Admit Card Tool <span class="badge" style="background:#d97706;">New</span></a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('notices')">Manage Notices</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTimetable')">Timetables</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdfUpload')">Bulk PDF Upload</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')">Admit Card Tool</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageNotices')">Manage Notices</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')">Timetables</a>
+                    </div>
+                </div>
+
+                <!-- EXAM MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catExam')">
+                    <div class="cat-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Exam Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catExam">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('examGrading')">Setup Exam Grading</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExam')">Manage Exam</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExamSchedule')">Manage Exam Schedule</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewExamSchedule')">View Exam Schedule</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('publishExamSchedule')">Publish Exam Schedule</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')">Exam Hall Ticket</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('examAttendanceCard')">Exam Attendance Card</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentExamAttendance')">Student Exam Attendance</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewExamAttendance')">View Exam Attendance</a>
+                    </div>
+                </div>
+
+                <!-- RESULT MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catResult')">
+                    <div class="cat-header">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>Result Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catResult">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageResult')">Manage Exam Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addResult')">Add Exam Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageAllResults')">Manage All Exam Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewAllResults')">View All Exam Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageNonSubResult')">Manage NonSubject Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewNonSubResult')">View NonSubject Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('publishResult')">Publish Exam Result</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('reportCardRemarks')">Report Card Remarks</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('generateReportCard')">Generate Report Card</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewReportCard')">View Report Card</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('publishReportCard')">Publish Report Card</a>
+                    </div>
+                </div>
+
+                <!-- CLASS MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catClass')">
+                    <div class="cat-header">
+                        <i class="fas fa-book"></i>
+                        <span>Class Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catClass">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')">Add Class Details</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')">Add Non-Subject</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addSyllabus')">Add Syllabus</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageSyllabus')">Manage Syllabus</a>
+                    </div>
+                </div>
+
+                <!-- TIME TABLE -->
+                <div class="nav-category" onclick="toggleCategory('catTimeTable')">
+                    <div class="cat-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Time Table</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catTimeTable">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('createTimetable')">Create Timetable</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')">View Timetable</a>
+                    </div>
+                </div>
+
+                <!-- ADMISSION & ENQUIRY -->
+                <div class="nav-category" onclick="toggleCategory('catAdmission')">
+                    <div class="cat-header">
+                        <i class="fas fa-hashtag"></i>
+                        <span>Admission & Enquiry</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catAdmission">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addEnquiry')">Add Enquiry</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('searchEnquiry')">Search Enquiry</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentAdmission')">Student Admission</a>
+                    </div>
+                </div>
+
+                <!-- STUDENT -->
+                <div class="nav-category" onclick="toggleCategory('catStudent')">
+                    <div class="cat-header">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Student</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catStudent">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addStudent')">Add Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Search Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Upload Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('electiveMapping')">Elective Subject Mapping</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promote Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentIdPrint')">Student ID Print</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('pickupIdPrint')">Pickup ID Print</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Student Bulk Update</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('hostelReport')">Hostel Student Report</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('transportReport')">Transport Student Report</a>
+                    </div>
+                </div>
+
+                <!-- FEES MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catFees')">
+                    <div class="cat-header">
+                        <i class="fas fa-indian-rupee-sign"></i>
+                        <span>Fees Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catFees">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('feeMaster')">Fee Master</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFee')">Create Monthly Fee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscount')">Bulk Fee Discount</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFee')">Search Student Fee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('classFeePayment')">Student Class Fee Payment</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDues')">Search Fee Dues</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessage')">Send Fee Message</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageFeeFine')">Manage Fee Fine</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('feeCarryForward')">Fee Carry Forward</a>
+                    </div>
+                </div>
+
+                <!-- WEBSITE CUSTOMISE -->
+                <div class="nav-category" onclick="toggleCategory('catCustomise')">
+                    <div class="cat-header">
+                        <i class="fas fa-folder"></i>
+                        <span>Website Customise</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catCustomise">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextHome')">Home Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAbout')">About Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAcademics')">Academics Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAdmissions')">Admissions Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextFacilities')">Facilities Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextGallery')">Gallery Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextContact')">Contact Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextInquiry')">Inquiry Page Text</a>
                     </div>
                 </div>
 
@@ -104,77 +278,30 @@
                     </div>
                 </div>
 
-                <!-- NEW: WEBSITE IMAGES CMS -->
-                <div class="nav-category" onclick="toggleCategory('catWebImages')">
-                    <div class="cat-header">
-                        <i class="fas fa-images"></i>
-                        <span>Website Images</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catWebImages">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Page</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Page Facilities</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home School Memories</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeHero')">Home Hero Slider</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAboutHero')">About Page Hero</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgFacilities')">Facilities Page Images</a>
-                    </div>
-                </div>
 
-                <!-- WEBSITE TEXT CUSTOMIZATION -->
-                <div class="nav-category" onclick="toggleCategory('catWebText')">
+                <!-- PORTAL CONTROL -->
+                <div class="nav-category" onclick="toggleCategory('catPortalControl')">
                     <div class="cat-header">
-                        <i class="fas fa-edit"></i>
-                        <span>Website Customise</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catWebText">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextHome')">Home Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAbout')">About Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAcademics')">Academics Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAdmissions')">Admissions Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextFacilities')">Facilities Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextGallery')">Gallery Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextContact')">Contact Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextInquiry')">Inquiry Page Text</a>
-                    </div>
-                </div>
-
-                <!-- STUDENT PORTAL CMS -->
-                <div class="nav-category" onclick="toggleCategory('catPortal')">
-                    <div class="cat-header">
-                        <i class="fas fa-chalkboard"></i>
+                        <i class="fas fa-desktop"></i>
                         <span>Portal Control</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catPortal">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStudentDashboard')">Dashboard Control</a>
+                    <div class="cat-submenu" id="catPortalControl">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStudentDashboard')">Student Portal Controls</a>
                     </div>
                 </div>
 
-                <!-- TOOLS -->
-                <div class="nav-category" onclick="toggleCategory('catTools')">
-                    <div class="cat-header">
-                        <i class="fas fa-tools"></i>
-                        <span>Tools (ERP)</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catTools">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFeeTools')">Parents Who Not Paid</a>
-                    </div>
-                </div>
 
-                <!-- UTILITIES -->
-                <div class="nav-category" onclick="toggleCategory('catUtils')">
+                <!-- UTILITIES / SETTINGS -->
+                <div class="nav-category" onclick="toggleCategory('catSettings')">
                     <div class="cat-header">
-                        <i class="fas fa-wrench"></i>
+                        <i class="fas fa-cog"></i>
                         <span>Utilities (Settings)</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catUtils">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('inquiries')">Inquiries</a>
+                    <div class="cat-submenu" id="catSettings">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('websiteSettings')">Global Settings</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsGlobalStats')">School Statistics</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('websiteSettings')">Site Settings</a>
                     </div>
                 </div>
 
@@ -233,9 +360,9 @@
 
             <!-- Student List Section -->
             <section id="studentListSection" class="dashboard-section card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <div style="display: flex; gap: 1rem;">
-                        <input type="text" id="searchInput" placeholder="Search students..." style="width: 300px;">
+                <div class="search-filter-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div style="display: flex; gap: 1rem; flex: 1;">
+                        <input type="text" id="searchInput" placeholder="Search by name, ID, father name or phone..." style="flex: 1; max-width: 400px;">
                         <select id="classFilter" style="width: auto;">
                             <option value="">All Classes</option>
                         </select>
@@ -350,15 +477,19 @@
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem;">
                         <div class="form-group">
                             <label>Student ID</label>
-                            <input type="text" id="student_id" placeholder="Auto-generated if empty">
+                            <input type="text" id="student_id" placeholder="Auto-generated (1000+)" readonly style="background:#f1f5f9; cursor:not-allowed;">
                         </div>
                         <div class="form-group">
-                            <label>Class</label>
-                            <input type="text" id="student_class">
+                            <label>Class <span style="color:#ef4444;">*</span></label>
+                            <select id="student_class" required onchange="updateRegistrationSections()">
+                                <option value="">Select Class</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label>Section</label>
-                            <input type="text" id="student_section">
+                            <label>Section <span style="color:#ef4444;">*</span></label>
+                            <select id="student_section" required>
+                                <option value="">Select Class First</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Roll No</label>
@@ -369,8 +500,10 @@
                             <input type="text" id="student_reg_no">
                         </div>
                         <div class="form-group">
-                            <label>Session</label>
-                            <input type="text" id="student_session">
+                            <label>Session <span style="color:#ef4444;">*</span></label>
+                            <select id="student_session" required onchange="loadClassesForRegistration()">
+                                <option value="">Select Session</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Join Date</label>
@@ -1279,18 +1412,19 @@
                     <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:1.5rem;">Update a student's attendance percentage. This will reflect in their dashboard immediately.</p>
                     
                     <div style="background:#f8fafc; padding:1.5rem; border-radius:0.75rem; border:1px solid var(--border);">
-                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:1rem; align-items: flex-end;">
+                        <div class="search-filter-row" style="display:grid; grid-template-columns: 2fr 1.5fr 1fr auto; gap:1rem; align-items: flex-end;">
                             <div class="form-group" style="margin:0;">
-                                <label>Student ID / Phone</label>
-                                <input type="text" id="att_studentId" placeholder="e.g. APEX001">
+                                <label>Search Student</label>
+                                <div id="attendanceStudentSelect"></div>
+                                <input type="hidden" id="att_studentId">
                             </div>
                             <div class="form-group" style="margin:0;">
                                 <label>For Month</label>
-                                <input type="month" id="att_month">
+                                <input type="month" id="att_month" style="width:100%;">
                             </div>
                             <div class="form-group" style="margin:0;">
                                 <label>Percentage (%)</label>
-                                <input type="number" id="att_percent" min="0" max="100" placeholder="85">
+                                <input type="number" id="att_percent" min="0" max="100" placeholder="85" style="width:100%;">
                             </div>
                             <button onclick="updateStudentAttendance()" class="btn-portal btn-primary" style="height:42px;"><i class="fas fa-plus"></i> Update</button>
                         </div>
@@ -1430,6 +1564,846 @@
                 </div>
             </div>
 
+            <!-- ERP PLACEHOLDER SECTIONS -->
+            <section id="dashboardOverviewSection" class="dashboard-section active">
+                <div class="stats-grid" id="statsOverview">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(59,130,246,0.1); color:#3b82f6;"><i class="fas fa-user-graduate"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Students</h3>
+                            <p id="totalStudentsCount">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(16,185,129,0.1); color:#10b981;"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Teachers</h3>
+                            <p id="totalTeachersCount">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(245,158,11,0.1); color:#f59e0b;"><i class="fas fa-indian-rupee-sign"></i></div>
+                        <div class="stat-info">
+                            <h3>Monthly Fees</h3>
+                            <p id="monthlyFeesTotal">Loading...</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background:rgba(239,68,68,0.1); color:#ef4444;"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3>Today's Attendance</h3>
+                            <p id="attendanceRate">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <div class="card" style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1.5rem;">Recent Admissions</h3>
+                        <div id="recentAdmissionsList" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            <i class="fas fa-user-plus" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>No recent admissions to show.</p>
+                        </div>
+                    </div>
+                    <div class="card" style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1.5rem;">Quick Notices</h3>
+                        <div id="dashboardNotices" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">No active notices.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EMPLOYEE SECTIONS -->
+            <section id="addEmployeeSection" class="dashboard-section card" style="display:none;"><h2>Add Employee</h2><p>Module under development...</p></section>
+            <section id="searchEmployeeSection" class="dashboard-section card" style="display:none;"><h2>Search Employee</h2><p>Module under development...</p></section>
+            <section id="bulkEmployeeUpdateSection" class="dashboard-section card" style="display:none;"><h2>Bulk Employee Update</h2><p>Module under development...</p></section>
+            <section id="employeeIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Employee ID Print</h2><p>Module under development...</p></section>
+
+            <!-- CLASS SECTIONS -->
+            <!-- ACADEMIC SESSIONS -->
+            <section id="addSessionSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Academic Sessions</h1>
+                        <p>Create and manage school academic years</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>New Session</h3>
+                        <form id="addSessionForm" onsubmit="handleSessionSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Session Name (e.g., 2024-25)</label>
+                                <input type="text" id="sessionNameInput" placeholder="2024-25" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="date" id="sessionStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="date" id="sessionEndDate" required>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <input type="checkbox" id="sessionIsActive">
+                                <label for="sessionIsActive" style="margin:0;">Set as Active Session</label>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-plus"></i> Create Session
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Existing Sessions</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Session Name</th>
+                                        <th>Date Range</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sessionsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CLASSES MANAGEMENT -->
+            <section id="addClassSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Manage Classes</h1>
+                        <p>Define classes/standards for the active session</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>Add New Class</h3>
+                        <form id="addClassForm" onsubmit="handleClassSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Class Name (e.g., Class 6th)</label>
+                                <input type="text" id="classNameInput" placeholder="Class 1st" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sort Order (Number)</label>
+                                <input type="number" id="classSortOrder" value="1" required>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-plus"></i> Add Class
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Class List</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Class Name</th>
+                                        <th>Total Students</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classesTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CLASS DETAILS (SECTIONS) -->
+            <section id="addClassDetailsSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Class Details & Sections</h1>
+                        <p>Manage sections and specific details for each class</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+                        <div class="form-group" style="min-width:200px;">
+                            <label>Select Class</label>
+                            <select id="detailsClassSelect" onchange="loadClassDetails()"></select>
+                        </div>
+                        <div class="form-group" style="min-width:200px;">
+                            <label>Add Section (e.g., B)</label>
+                            <input type="text" id="newSectionInput" placeholder="A, B, C...">
+                        </div>
+                        <button onclick="handleAddSection()" class="btn-portal btn-primary" style="margin-bottom:1.25rem;">
+                            <i class="fas fa-plus"></i> Add Section
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top:2rem;">
+                        <h3>Active Sections</h3>
+                        <div id="activeSectionsList" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:1rem;">
+                            <!-- Dynamic section tags -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="addSubjectSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Define Subjects</h1>
+                        <p>Manage scholastic subjects for the active session</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>New Subject</h3>
+                        <form id="addSubjectForm" onsubmit="handleSubjectSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Subject Name (e.g., Mathematics)</label>
+                                <input type="text" id="subjectNameInput" placeholder="Mathematics" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject Code (Optional)</label>
+                                <input type="text" id="subjectCodeInput" placeholder="MATH01">
+                            </div>
+                            <div class="form-group">
+                                <label>Subject Type</label>
+                                <select id="subjectTypeSelect">
+                                    <option value="Compulsory">Compulsory</option>
+                                    <option value="Elective">Elective</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-plus"></i> Add Subject
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Subject List</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Code</th>
+                                        <th>Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="addNonSubjectSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Non-Scholastic Subjects</h1>
+                        <p>Define co-curricular and personal development areas</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>New Non-Scholastic Area</h3>
+                        <form id="addNonSubjectForm" onsubmit="handleNonSubjectSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Area Name (e.g., Discipline, Arts)</label>
+                                <input type="text" id="nonSubjectNameInput" placeholder="Discipline" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description (Optional)</label>
+                                <textarea id="nonSubjectDescInput" placeholder="Brief details about grading parameters..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-plus"></i> Add Area
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Non-Scholastic Areas</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Area Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nonSubjectsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="addSyllabusSection" class="dashboard-section card" style="display:none;"><h2>Add Syllabus</h2><p>Module under development...</p></section>
+            <section id="manageSyllabusSection" class="dashboard-section card" style="display:none;"><h2>Manage Syllabus</h2><p>Module under development...</p></section>
+
+            <!-- TIMETABLE SECTIONS -->
+            <section id="createTimetableSection" class="dashboard-section card" style="display:none;"><h2>Create Timetable</h2><p>Module under development...</p></section>
+            <section id="viewTimetableSection" class="dashboard-section card" style="display:none;"><h2>View Timetable</h2><p>Module under development...</p></section>
+
+            <!-- ADMISSION SECTIONS -->
+            <section id="addEnquirySection" class="dashboard-section card" style="display:none;"><h2>Add Enquiry</h2><p>Module under development...</p></section>
+            <section id="searchEnquirySection" class="dashboard-section card" style="display:none;"><h2>Search Enquiry</h2><p>Module under development...</p></section>
+            <section id="studentAdmissionSection" class="dashboard-section card" style="display:none;"><h2>Student Admission</h2><p>Module under development...</p></section>
+
+            <!-- STUDENT EXTRAS -->
+            <section id="electiveMappingSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Elective Subject Mapping</h1>
+                        <p>Assign elective subjects to specific students</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Select Session</label>
+                            <select id="electiveSessionSelect" onchange="loadClassesForElectives()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Class</label>
+                            <select id="electiveClassSelect" onchange="loadStudentsForElectives()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Subject</label>
+                            <select id="electiveSubjectSelect"></select>
+                        </div>
+                        <button onclick="handleBulkElectiveMapping()" class="btn-portal btn-primary" style="margin-bottom:1.25rem;">
+                            <i class="fas fa-link"></i> Map Students
+                        </button>
+                    </div>
+
+                    <div style="margin-top:2rem;">
+                        <h3>Students List</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllElectiveStudents" onchange="toggleAllElectiveStudents(this)"></th>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Current Electives</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="electiveStudentsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="studentIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Student ID Print</h2><p>Module under development...</p></section>
+            <section id="pickupIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Pickup ID Print</h2><p>Module under development...</p></section>
+            <!-- STUDENT BULK UPDATE (Data Plan) -->
+            <section id="studentBulkUpdateSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Bulk Student Data Manager</h1>
+                        <p>Fast grid-based editing for multiple student records</p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn-portal btn-ghost" onclick="toggleBulkUpdateColumns()">
+                            <i class="fas fa-columns"></i> Columns
+                        </button>
+                        <button class="btn-portal" onclick="saveBulkStudentUpdate()">
+                            <i class="fas fa-save"></i> Save All Changes
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="bulk_student_session" onchange="loadClassesForBulkUpdate()" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="bulk_student_class" onchange="loadBulkStudentList()" class="form-control">
+                                <option value="">Select Session First</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="bulk_student_section" onchange="loadBulkStudentList()" class="form-control">
+                                <option value="">Select Class First</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column Toggles (Hidden by default) -->
+                <div id="bulkColumnToggles" class="card" style="display:none; margin-bottom:1.5rem; background:#f8fafc;">
+                    <h3 style="font-size:0.9rem; margin-bottom:1rem; color:var(--text-muted);">Toggle Visible Columns</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+                        <label class="cb-container">Roll No <input type="checkbox" checked onchange="toggleBulkCol('col_roll')"><span class="checkmark"></span></label>
+                        <label class="cb-container">Father Name <input type="checkbox" checked onchange="toggleBulkCol('col_father')"><span class="checkmark"></span></label>
+                        <label class="cb-container">Mobile <input type="checkbox" checked onchange="toggleBulkCol('col_mobile')"><span class="checkmark"></span></label>
+                        <label class="cb-container">Birth Date <input type="checkbox" checked onchange="toggleBulkCol('col_dob')"><span class="checkmark"></span></label>
+                        <label class="cb-container">Blood Group <input type="checkbox" onchange="toggleBulkCol('col_blood')"><span class="checkmark"></span></label>
+                        <label class="cb-container">Address <input type="checkbox" onchange="toggleBulkCol('col_address')"><span class="checkmark"></span></label>
+                        <label class="cb-container">SMS Contact <input type="checkbox" onchange="toggleBulkCol('col_sms')"><span class="checkmark"></span></label>
+                    </div>
+                </div>
+
+                <div class="card" style="padding:0; overflow:hidden;">
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student Name</th>
+                                    <th class="col_roll">Roll No</th>
+                                    <th class="col_father">Father's Name</th>
+                                    <th class="col_mobile">Mobile No</th>
+                                    <th class="col_dob">Birth Date</th>
+                                    <th class="col_blood" style="display:none;">Blood Gr.</th>
+                                    <th class="col_address" style="display:none;">Address</th>
+                                    <th class="col_sms" style="display:none;">SMS Alert No</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkUpdateTableBody">
+                                <tr>
+                                    <td colspan="9" style="text-align:center; padding:3rem; color:var(--text-muted);">
+                                        <i class="fas fa-filter" style="font-size:2rem; opacity:0.3; margin-bottom:1rem; display:block;"></i>
+                                        Select Session and Class to start bulk editing
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section id="hostelReportSection" class="dashboard-section card" style="display:none;"><h2>Hostel Student Report</h2><p>Module under development...</p></section>
+            <section id="transportReportSection" class="dashboard-section card" style="display:none;"><h2>Transport Student Report</h2><p>Module under development...</p></section>
+
+            <!-- FEES SECTIONS -->
+            <section id="feeMasterSection" class="dashboard-section card" style="display:none;"><h2>Fee Master</h2><p>Module under development...</p></section>
+            <section id="createMonthlyFeeSection" class="dashboard-section card" style="display:none;"><h2>Create Monthly Fee</h2><p>Module under development...</p></section>
+            <section id="bulkFeeDiscountSection" class="dashboard-section card" style="display:none;"><h2>Bulk Fee Discount</h2><p>Module under development...</p></section>
+            <section id="searchStudentFeeSection" class="dashboard-section card" style="display:none;"><h2>Search Student Fee</h2><p>Module under development...</p></section>
+            <section id="classFeePaymentSection" class="dashboard-section card" style="display:none;"><h2>Class Fee Payment</h2><p>Module under development...</p></section>
+            <section id="searchFeeDuesSection" class="dashboard-section card" style="display:none;"><h2>Search Fee Dues</h2><p>Module under development...</p></section>
+            <section id="sendFeeMessageSection" class="dashboard-section card" style="display:none;"><h2>Send Fee Message</h2><p>Module under development...</p></section>
+            <section id="manageFeeFineSection" class="dashboard-section card" style="display:none;"><h2>Manage Fee Fine</h2><p>Module under development...</p></section>
+            <section id="feeCarryForwardSection" class="dashboard-section card" style="display:none;"><h2>Fee Carry Forward</h2><p>Module under development...</p></section>
+
+            <!-- EXAM SECTIONS -->
+            <section id="examGradingSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Grading Rules</h1>
+                        <p>Define percentage ranges and corresponding grades</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>New Grading Rule</h3>
+                        <form id="addGradingForm" onsubmit="handleGradingSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Grade (e.g., A1)</label>
+                                <input type="text" id="gradeNameInput" placeholder="A1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Min Percentage (%)</label>
+                                <input type="number" id="gradeMinInput" placeholder="91" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Max Percentage (%)</label>
+                                <input type="number" id="gradeMaxInput" placeholder="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Remarks (Optional)</label>
+                                <input type="text" id="gradeRemarksInput" placeholder="Outstanding">
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-save"></i> Save Rule
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Active Grading Table</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Grade</th>
+                                        <th>Range</th>
+                                        <th>Remarks</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gradingTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="manageExamSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Manage Examinations</h1>
+                        <p>Define exam terms (e.g., UT-1, Half Yearly)</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                    <div class="card">
+                        <h3>Create Exam Term</h3>
+                        <form id="addExamForm" onsubmit="handleExamSubmit(event)" style="margin-top:1rem;">
+                            <div class="form-group">
+                                <label>Select Session</label>
+                                <select id="examSessionSelect" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Exam Name (e.g., Half Yearly)</label>
+                                <input type="text" id="examNameInput" placeholder="Half Yearly" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Weightage (%)</label>
+                                <input type="number" id="examWeightageInput" placeholder="50" required>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
+                                <i class="fas fa-plus"></i> Create Exam
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Defined Exams</h3>
+                        <div class="table-responsive" style="margin-top:1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Exam Name</th>
+                                        <th>Weightage</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="examsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="manageExamScheduleSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Exam Schedule</h1>
+                        <p>Set dates and timings for subject exams</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Select Exam Term</label>
+                            <select id="scheduleExamSelect" onchange="loadScheduleGrid()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Class</label>
+                            <select id="scheduleClassSelect" onchange="loadScheduleGrid()"></select>
+                        </div>
+                        <button onclick="saveExamSchedule()" class="btn-portal btn-primary" style="margin-bottom:1.25rem;">
+                            <i class="fas fa-save"></i> Save Schedule
+                        </button>
+                    </div>
+
+                    <div style="margin-top:2rem;">
+                        <div class="table-responsive">
+                            <table id="scheduleTable">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Start Time</th>
+                                        <th>Duration (Min)</th>
+                                        <th>Max Marks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scheduleTableBody">
+                                    <!-- Dynamic rows from subjects -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="viewExamScheduleSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>View Exam Schedule</h1>
+                        <p>Detailed view of scheduled exams across all classes</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-responsive">
+                        <table id="viewScheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Duration</th>
+                                    <th>Max Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="viewScheduleTableBody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="publishExamScheduleSection" class="dashboard-section card" style="display:none;">
+                <h2>Publish Exam Schedule</h2>
+                <div style="margin-top:1rem; padding:1.5rem; background:#f0f9ff; border-radius:0.75rem; border:1px solid #bae6fd;">
+                    <p style="color:#0369a1;"><i class="fas fa-info-circle"></i> This tool allows you to mass-publish schedules to the student portal. Coming in next minor update.</p>
+                </div>
+            </section>
+            <section id="examAttendanceCardSection" class="dashboard-section card" style="display:none;"><h2>Exam Attendance Card</h2><p>Module under development...</p></section>
+            <section id="studentExamAttendanceSection" class="dashboard-section card" style="display:none;"><h2>Student Exam Attendance</h2><p>Module under development...</p></section>
+            <section id="viewExamAttendanceSection" class="dashboard-section card" style="display:none;"><h2>View Exam Attendance</h2><p>Module under development...</p></section>
+            <section id="examHallPlanSection" class="dashboard-section card" style="display:none;"><h2>Exam Hall Plan</h2><p>Module under development...</p></section>
+            <section id="examHallDetailSection" class="dashboard-section card" style="display:none;"><h2>Exam Hall Detail</h2><p>Module under development...</p></section>
+            <section id="examSittingPlanSection" class="dashboard-section card" style="display:none;"><h2>Exam Sitting Plan</h2><p>Module under development...</p></section>
+
+            <!-- RESULT SECTIONS -->
+            <section id="manageResultSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Result Review & Management</h1>
+                        <p>Search and edit entered marks across all exams</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:1rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="manageResultsSession" onchange="loadManageResultsClasses()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="manageResultsClass" onchange="loadManageResultsSections()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="manageResultsSectionSelect" onchange="loadManageResultsSubjects()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam</label>
+                            <select id="manageResultsExam" onchange="refreshManageResultsTable()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="manageResultsSubject" onchange="refreshManageResultsTable()"></select>
+                        </div>
+                    </div>
+                    <div style="margin-top:2rem;">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="manageResultsTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="addResultSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Bulk Marks Entry</h1>
+                        <p>Enter student marks class-wise and subject-wise</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="marksSessionSelect" onchange="loadMarksClasses()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="marksClassSelect" onchange="loadMarksSections()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="marksSectionSelect" onchange="loadMarksSubjects()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam</label>
+                            <select id="marksExamSelect" onchange="refreshMarksGrid()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="marksSubjectSelect" onchange="refreshMarksGrid()"></select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:flex-end;">
+                        <button onclick="document.getElementById('excelUploadMarks').click()" class="btn-portal btn-ghost">
+                            <i class="fas fa-file-excel"></i> Upload Excel
+                        </button>
+                        <input type="file" id="excelUploadMarks" hidden accept=".xlsx, .xls" onchange="handleMarksExcelUpload(event)">
+                        <button onclick="saveMarksGrid()" class="btn-portal btn-primary">
+                            <i class="fas fa-save"></i> Save All Marks
+                        </button>
+                    </div>
+
+                    <div style="margin-top:2rem;">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Status (P/A)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="marksGridTableBody">
+                                    <!-- Student rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="manageAllResultsSection" class="dashboard-section card" style="display:none;"><h2>Manage All Results</h2><p>Module under development...</p></section>
+            <section id="viewAllResultsSection" class="dashboard-section card" style="display:none;"><h2>View All Results</h2><p>Module under development...</p></section>
+            <section id="manageNonSubResultSection" class="dashboard-section card" style="display:none;"><h2>Manage NonSubject Result</h2><p>Module under development...</p></section>
+            <section id="viewNonSubResultSection" class="dashboard-section card" style="display:none;"><h2>View NonSubject Result</h2><p>Module under development...</p></section>
+            <section id="publishResultSection" class="dashboard-section card" style="display:none;"><h2>Publish Exam Result</h2><p>Module under development...</p></section>
+            <section id="reportCardRemarksSection" class="dashboard-section card" style="display:none;"><h2>Report Card Remarks</h2><p>Module under development...</p></section>
+            <!-- REPORT CARD GENERATION (Phase 5) -->
+            <section id="generateReportCardSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Report Card Generator</h1>
+                        <p>Generate professional, data-driven report cards for students</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="rc_session" onchange="loadRcClasses()" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="rc_class" onchange="loadRcSections()" class="form-control">
+                                <option value="">Select Session First</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="rc_section" onchange="loadRcStudents()" class="form-control">
+                                <option value="">Select Class First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.25rem; margin-top:1.5rem;">
+                        <div class="form-group">
+                            <label>Select Student</label>
+                            <select id="rc_student" class="form-control">
+                                <option value="">Select Details Above</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Format</label>
+                            <select id="rc_format" class="form-control">
+                                <option value="Himalayan">Himalayan (Main)</option>
+                                <option value="MCQ_Normal">MCQ - Normal</option>
+                                <option value="MCQ_Standard">MCQ - Standard</option>
+                                <option value="MCQ_Advance">MCQ - Advance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:2rem; display:flex; justify-content:center;">
+                        <button class="btn-portal btn-primary" onclick="processReportCardGeneration()" style="padding:1rem 3rem;">
+                            <i class="fas fa-file-pdf"></i> Generate & Download Report Card
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 1.5rem; background: #f0f9ff; border-color: #bae6fd;">
+                    <p style="font-size: 0.9rem; color: #0369a1;">
+                        <i class="fas fa-info-circle"></i> <strong>Note:</strong> Ensure marks are entered for the selected term before generating report cards. Graphs will be generated automatically based on student performance.
+                    </p>
+                </div>
+            </section>
+            <section id="publishResultSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Publish Results</h1>
+                        <p>Control visibility of report cards in student portal</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Select Session</label>
+                            <select id="publishSessionSelect" onchange="refreshPublishStatus()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Exam Term</label>
+                            <select id="publishExamSelect" onchange="refreshPublishStatus()"></select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:2rem;">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="publishStatusTableBody">
+                                    <!-- List of all classes with toggle -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="viewReportCardSection" class="dashboard-section card" style="display:none;"><h2>View Report Card</h2><p>Module under development...</p></section>
+            <section id="publishReportCardSection" class="dashboard-section card" style="display:none;"><h2>Publish Report Card</h2><p>Module under development...</p></section>
         </main>
     </div>
 
@@ -1449,5 +2423,9 @@
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="../js/admin-dashboard.js"></script>
     <script src="../js/cms-admin.js"></script>
+    <script src="../js/erp-class-mgmt.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/erp-exams.js"></script>
+    <script src="../js/report-card-factory.js"></script>
 </body>
 </html>

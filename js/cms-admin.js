@@ -596,6 +596,8 @@ function toggleCategory(catId) {
 // ===================== MOBILE DRAWER =====================
 function toggleMobileSidebar() {
     const sidebar = document.getElementById('adminSidebar');
+    const isOpening = !sidebar.classList.contains('mobile-open');
+    
     sidebar.classList.toggle('mobile-open');
     
     // Create overlay if not exists
@@ -606,7 +608,16 @@ function toggleMobileSidebar() {
         overlay.onclick = toggleMobileSidebar;
         document.body.appendChild(overlay);
     }
-    overlay.classList.toggle('active');
+    
+    if (isOpening) {
+        overlay.style.display = 'block';
+        setTimeout(() => overlay.classList.add('active'), 10);
+        document.body.style.overflow = 'hidden';
+    } else {
+        overlay.classList.remove('active');
+        setTimeout(() => { if(!overlay.classList.contains('active')) overlay.style.display = 'none'; }, 300);
+        document.body.style.overflow = '';
+    }
 }
 
 // ===================== RESPONSIVE TABLES HELPER =====================

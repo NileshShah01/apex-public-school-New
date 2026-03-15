@@ -34,9 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged((user) => {
         if (user) {
             document.getElementById('adminEmail').textContent = user.email;
+            // Initialize ERP Class Management if available
+            if (typeof initERPClassMgmt === 'function') initERPClassMgmt();
+            
+            // Initial Routing based on Hash
+            const initialSection = window.location.hash.replace('#', '');
+            if (initialSection) {
+                showSection(initialSection);
+            } else {
+                showSection('dashboardOverview');
+            }
         } else {
             window.location.href = 'admin-login.html';
         }
+    });
+
+    // Hash change routing
+    window.addEventListener('hashchange', () => {
+        const sectionId = window.location.hash.replace('#', '');
+        if (sectionId) showSection(sectionId, false); // false = don't update hash again
     });
 });
 
@@ -44,6 +60,14 @@ async function initializeApp() {
     setLoading(true);
     await loadInitialData();
     updateStats();
+    
+    // Phase 8 + ERP Initializers
+    initCMS();
+    initCMSHero();
+    initCMSText();
+    initERPExams();
+    initCMSAdmission();
+    
     setLoading(false);
 }
 
@@ -99,14 +123,32 @@ async function loadInitialData() {
     }
 }
 
-function showSection(sectionId) {
+function showSection(sectionId, updateHash = true) {
+    if (!sectionId) sectionId = 'dashboardOverview';
+    
+    // Update hash for persistence
+    if (updateHash) {
+        window.location.hash = sectionId;
+    }
+
     // Hide all
     document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.cat-header').forEach(h => h.classList.remove('active'));
 
     // Show target
     const target = document.getElementById(sectionId + 'Section');
-    if (target) target.style.display = 'block';
+    if (target) {
+        target.style.display = 'block';
+    } else {
+        const fallbackTarget = document.getElementById(sectionId);
+        if (fallbackTarget) fallbackTarget.style.display = 'block';
+        else {
+            console.warn(`Section ${sectionId} not found, defaulting to dashboardOverview`);
+            showSection('dashboardOverview', true);
+            return;
+        }
+    }
 
     const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
     if (activeLink) {
@@ -125,56 +167,194 @@ function showSection(sectionId) {
     }
 
     const titles = {
-        'studentList': 'Student Management',
+        'dashboardOverview': 'School Overview',
+        'studentList': 'Student Search & Management',
         'resultsStatus': 'Documents Verification',
         'admitCardTool': 'Admit Card PDF Tool',
-        'addStudent': 'Add/Edit Student',
-        'bulkImport': 'Bulk Import Students',
-        'notices': 'School Notice Board',
-        'promotions': 'Class Promotions',
+        'addStudent': 'Add/Edit Student Information',
+        'bulkImport': 'Bulk Upload Students',
+        'notices': 'Manage School Notices',
+        'promotions': 'Student Class Promotions',
         'websiteSettings': 'Frontend Website Settings',
         'inquiries': 'Admission Inquiries',
-        'bulkPdf': 'Bulk PDF Upload',
-        'cmsStats': 'Stats & Numbers',
-        'cmsEvents': 'Upcoming Events',
-        'cmsAchievements': 'Achievements',
-        'cmsTestimonials': 'Testimonials',
-        'cmsAdmission': 'Admission Status',
-        'cmsHolidays': 'Holiday List',
-        'cmsGallery': 'Gallery Management',
-        'cmsStaff': 'Staff & Teachers',
-        'cmsTimetable': 'Class Timetables',
-        'cmsFees': 'Fee Structure',
+        'bulkPdf': 'Bulk PDF Report Upload',
+        
+        // Employee
+        'addEmployee': 'Add New Employee',
+        'searchEmployee': 'Search Employees',
+        'bulkEmployeeUpdate': 'Bulk Employee Data Update',
+        'employeeIdPrint': 'Employee Identity Cards',
+        
+        // Class
+        'addSession': 'Academic Sessions Management',
+        'addClass': 'Standard Classes Management',
+        'addClassDetails': 'Manage Sections & Class Details',
+        'addSubject': 'Define Subjects',
+        'addNonSubject': 'Define Non-Scholastic Subjects',
+        'addSyllabus': 'Upload Syllabus',
+        'manageSyllabus': 'Manage Academic Syllabus',
+        
+        // Time Table
+        'createTimetable': 'Generate Class Timetable',
+        'viewTimetable': 'View/Print Timetables',
+        
+        // Admission
+        'addEnquiry': 'New Admission Enquiry',
+        'searchEnquiry': 'Search/Follow-up Enquiries',
+        'studentAdmission': 'Complete Admission Process',
+        
+        // Student Extras
+        'electiveMapping': 'Elective Subject Allocation',
+        'studentIdPrint': 'Bulk ID Card Printing',
+        'pickupIdPrint': 'Pickup/Gate Pass Printing',
+        'studentBulkUpdate': 'Bulk Student Data Plan',
+        'hostelReport': 'Hostel Residents Report',
+        'transportReport': 'Transport/Bus Routes Report',
+        
+        // Fees
+        'feeMaster': 'Master Fee Configuration',
+        'createMonthlyFee': 'Generate Monthly Fee Records',
+        'bulkFeeDiscount': 'Apply Bulk Fee Discounts',
+        'searchStudentFee': 'Individual Student Fee History',
+        'classFeePayment': 'Class-wise Fee Collection',
+        'searchFeeDues': 'Arrears & Pending Dues List',
+        'sendFeeMessage': 'Automatic Due Notifications',
+        'manageFeeFine': 'Late Payment Fine Setup',
+        'feeCarryForward': 'Session Carry Forward (Dues)',
+        
+        // Exam
+        'examGrading': 'Setup Examination Grading Rules',
+        'manageExam': 'Define Examination Terms',
+        'manageExamSchedule': 'Create Exam Time Table',
+        'viewExamSchedule': 'View/Verify Exam Schedules',
+        'publishExamSchedule': 'Publish Schedules to Portal',
+        'examAttendanceCard': 'Print Exam Attendance Sheets',
+        'studentExamAttendance': 'Mark Student Exam Attendance',
+        'viewExamAttendance': 'View Exam Attendance Reports',
+        'examHallPlan': 'Design Exam Sitting Arrangement',
+        'examHallDetail': 'View Hall/Room Details',
+        'examSittingPlan': 'Export Student Sitting Plan',
+        
+        // Result
+        'manageResult': 'Process Examination Results',
+        'addResult': 'Manual Marks Entry',
+        'manageAllResults': 'Consolidated Result Manager',
+        'viewAllResults': 'View Full School Results',
+        'manageNonSubResult': 'Non-Subject Performance Entry',
+        'viewNonSubResult': 'View Co-Scholastic Results',
+        'publishResult': 'Publish Exam Results Live',
+        'reportCardRemarks': 'Bulk Report Card Remarks',
+        'generateReportCard': 'Generate Students Report Cards',
+        'viewReportCard': 'View/Download Generated Cards',
+        'publishReportCard': 'Push Report Cards to Student Portal',
+
+        // CMS
+        'cmsStats': 'Live Stats & Numbers',
+        'cmsEvents': 'Official School Events',
+        'cmsAchievements': 'School Achievements',
+        'cmsTestimonials': 'Parent Testimonials',
+        'cmsAdmission': 'Portal Admission Status',
+        'cmsHolidays': 'Annual Holiday Calendar',
+        'cmsGallery': 'Website Gallery Manager',
+        'cmsStaff': 'Staff & Teachers Directory',
+        'cmsTimetable': 'Timetable PDF Manager',
+        'cmsFees': 'Frontend Fee Structure',
         'cmsHero': 'Hero Slider Images',
-        'cmsTheme': 'Theme Customization',
-        'cmsStudentDashboard': 'Student Dashboard Control',
-        'cmsImgAdmissions': 'Admissions Page Images',
-        'cmsImgHomeFacilities': 'Home Facilities Images',
-        'cmsImgHomeMemories': 'Home Memories Images',
-        'cmsImgHomeHero': 'Home Hero Images',
-        'cmsImgAboutHero': 'About Hero Image',
-        'cmsImgFacilities': 'Facilities Page Images',
-        'cmsGlobalStats': 'Global School Stats',
-        'cmsTextHome': 'Home Page Text Customization',
-        'cmsTextAbout': 'About Page Text Customization',
-        'cmsTextAcademics': 'Academics Page Text Customization',
-        'cmsTextAdmissions': 'Admissions Page Text Customization',
-        'cmsTextFacilities': 'Facilities Page Text Customization',
-        'cmsTextGallery': 'Gallery Page Text Customization',
-        'cmsTextContact': 'Contact Page Text Customization',
-        'cmsTextInquiry': 'Inquiry Page Text Customization',
-        'websiteSettings': 'General Site Settings'
+        'cmsTheme': 'Global Website Theme',
+        'cmsStudentDashboard': 'Attendance & Portal Config',
+        'resultsStatus': 'Student Results & Performance Status',
+        'viewTimetable': 'Class Timetables Management',
+        'publishResult': 'Publish Results to Student Portal',
+        'manageResult': 'Review & Manage Student Marks',
+        'viewExamSchedule': 'Complete Exam Date Sheet',
+        'cmsFeeTools': 'Parents Fee Due Analytics',
+        'websiteSettings': 'Global Site Configuration'
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
 
     
     // Visibility logic
-    document.getElementById('statsOverview').style.display = sectionId === 'studentList' ? 'grid' : 'none';
+    const statsGrid = document.getElementById('statsOverview');
+    if (statsGrid) {
+        statsGrid.style.display = (sectionId === 'studentList' || sectionId === 'dashboardOverview') ? 'grid' : 'none';
+    }
 
+    if (sectionId === 'dashboardOverview') loadDashboardOverview();
     if (sectionId === 'resultsStatus') populateResultsStatus();
+    
+    // ERP Loaders
+    if (sectionId === 'addSession') loadSessions();
+    if (sectionId === 'addClass') loadClasses();
+    if (sectionId === 'addClassDetails') loadClasses();
+    if (sectionId === 'addSubject') loadSubjects();
+    if (sectionId === 'addNonSubject') loadNonSubjects();
+    if (sectionId === 'electiveMapping') loadElectiveDropdowns();
+    if (sectionId === 'studentBulkUpdate') initBulkUpdate();
+    if (sectionId === 'generateReportCard') initReportCardSection();
+    if (['examGrading', 'manageExam', 'manageExamSchedule', 'addResult'].includes(sectionId)) {
+        initERPExams();
+    }
+    
     if (sectionId === 'studentList') loadInitialData();
+    if (sectionId === 'addStudent') {
+        if (!editingDocId) {
+            document.getElementById('studentForm')?.reset();
+            document.getElementById('formTitle').textContent = 'Add New Student';
+            document.getElementById('photoPreview').innerHTML = '<i class="fas fa-user" style="font-size: 2.5rem; color: #94a3b8;"></i>';
+            document.getElementById('student_id').value = '';
+        }
+        if (typeof updateSessionDropdowns === 'function') updateSessionDropdowns();
+    }
     if (sectionId === 'websiteSettings') loadWebsiteSettings();
     if (sectionId === 'inquiries') loadInquiries();
+    if (sectionId === 'cmsStudentDashboard') {
+        initSearchableSelect('attendanceStudentSelect', (s) => {
+            document.getElementById('att_studentId').value = s.id;
+        });
+    }
+}
+
+async function loadDashboardOverview() {
+    // Populate counts from allStudents global array
+    if (allStudents && allStudents.length > 0) {
+        document.getElementById('totalStudentsCount').textContent = allStudents.length;
+    } else {
+        // Fallback for first load
+        const snap = await db.collection('students').get();
+        document.getElementById('totalStudentsCount').textContent = snap.size;
+    }
+    
+    // Other counts (Mocked for now, will connect to real collections in Phase 3)
+    document.getElementById('totalTeachersCount').textContent = "12";
+    document.getElementById('monthlyFeesTotal').textContent = "₹ 1,45,000";
+    document.getElementById('attendanceRate').textContent = "94%";
+}
+
+async function updateStudentAttendance() {
+    const studentId = document.getElementById('att_studentId').value;
+    const month = document.getElementById('att_month').value;
+    const percent = document.getElementById('att_percent').value;
+
+    if (!studentId || !month || !percent) {
+        showToast("Please select student, month and enter percentage", "error");
+        return;
+    }
+
+    setLoading(true);
+    try {
+        await db.collection('attendance').doc(`${studentId}_${month}`).set({
+            studentId,
+            month,
+            percentage: Number(percent),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        
+        showToast("Attendance updated successfully!");
+    } catch (e) {
+        showToast("Error updating attendance: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
 }
 
 async function filterAndDisplayStudents() {
@@ -184,7 +364,16 @@ async function filterAndDisplayStudents() {
     if (!tbody) return;
     
     const filtered = allStudents.filter(s => {
-        const matchesSearch = s.name.toLowerCase().includes(searchTerm) || s.student_id.toLowerCase().includes(searchTerm);
+        const name = (s.name || "").toLowerCase();
+        const sid = (s.student_id || "").toLowerCase();
+        const father = (s.father_name || "").toLowerCase();
+        const phone = (s.phone || "").toLowerCase();
+        
+        const matchesSearch = name.includes(searchTerm) || 
+                             sid.includes(searchTerm) || 
+                             father.includes(searchTerm) || 
+                             phone.includes(searchTerm);
+        
         const matchesClass = classVal === "" || s.class === classVal;
         return matchesSearch && matchesClass;
     });
@@ -240,12 +429,19 @@ async function populateResultsStatus() {
     const yearSelect = document.getElementById('resultsYearFilter');
     const year = yearSelect ? yearSelect.value : '2026';
     
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Checking documents...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Checking documents...</td></tr>';
+    
+    // Sort students by name for better verification UX
+    const sortedStudents = [...allStudents].sort((a,b) => (a.name || "").localeCompare(b.name || ""));
     
     let resultsCount = 0;
     tbody.innerHTML = '';
     
-    for (const student of allStudents) {
+    // Limit to first 50 to avoid browser hang/overload if huge dataset
+    const displayLimit = 50; 
+    const verifiedList = sortedStudents.slice(0, displayLimit);
+
+    for (const student of verifiedList) {
         const docId = student.id; 
         const tr = document.createElement('tr');
         
@@ -559,13 +755,23 @@ async function handleStudentSubmit(e) {
         return;
     }
 
-
-    // Use editingDocId if editing, otherwise use phone as doc ID
-    const docId = editingDocId || phone;
+    if (!sclass || !sect || !session) {
+        showToast('Please select Session, Class and Section from dropdowns', 'error');
+        return;
+    }
 
     setLoading(true);
     try {
         let photoUrl = '';
+        let finalSid = sid;
+        let docId = editingDocId;
+
+        // NEW STUDENT: Auto-generate ID starting from 1000
+        if (!docId) {
+            const nextId = await window.getNextStudentId();
+            finalSid = nextId.toString();
+            docId = finalSid; // Use student_id as firestore doc index
+        }
 
         // Upload photo string if selected (bypassing Storage)
         if (photoFile) {
@@ -591,7 +797,7 @@ async function handleStudentSubmit(e) {
         }
 
         const studentData = {
-            student_id: sid || phone, // Use student_id if provided, else phone
+            student_id: finalSid,
             name,
             father_name: father,
             phone,
@@ -685,22 +891,49 @@ async function deleteStudent(id) {
     }
 }
 
-function editStudent(id) {
+async function editStudent(id) {
     const s = allStudents.find(x => x.id === id);
     if (!s) return;
     editingDocId = id; // remember doc ID for saving
+    
+    // Show section first to ensure HTML elements exist
     showSection('addStudent');
     document.getElementById('formTitle').textContent = 'Edit Student Profile';
+    
+    // Basic Fields
     document.getElementById('student_id').value = s.student_id || '';
-    document.getElementById('student_id').disabled = false; // Enable editing student_id
     document.getElementById('student_name').value = s.name || '';
     document.getElementById('student_father').value = s.father_name || '';
     document.getElementById('student_phone').value = s.phone || '';
-    document.getElementById('student_class').value = s.class || '';
-    document.getElementById('student_section').value = s.section || '';
+    
+    // ERP Dropdowns (Async chain)
+    if (typeof updateSessionDropdowns === 'function') {
+        setLoading(true);
+        try {
+            await updateSessionDropdowns();
+            const sessionSelect = document.getElementById('student_session');
+            if (sessionSelect) {
+                sessionSelect.value = s.session || '';
+                await loadClassesForRegistration();
+                
+                const classSelect = document.getElementById('student_class');
+                if (classSelect) {
+                    classSelect.value = s.class || '';
+                    await updateRegistrationSections();
+                    
+                    const secSelect = document.getElementById('student_section');
+                    if (secSelect) secSelect.value = s.section || '';
+                }
+            }
+        } catch (e) {
+            console.error("Error pre-filling registration dropdowns:", e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     document.getElementById('student_roll_no').value = s.roll_no || '';
     document.getElementById('student_reg_no').value = s.reg_no || '';
-    document.getElementById('student_session').value = s.session || '';
     document.getElementById('student_join_date').value = s.join_date || '';
     document.getElementById('student_dob').value = s.dob || '';
     document.getElementById('student_gender').value = s.gender || '';
@@ -720,6 +953,7 @@ function editStudent(id) {
     document.getElementById('student_city').value = s.city || '';
     document.getElementById('student_hostel').value = s.hostel || 'No';
     document.getElementById('student_transport').value = s.transport || 'No';
+    
     // Show existing photo
     const photoDiv = document.getElementById('photoPreview');
     if (s.photo_url) {
@@ -1139,3 +1373,368 @@ async function processAdmitCardPdf() {
         console.error(e);
     }
 }
+// ===================== SEARCHABLE STUDENT SELECT =====================
+function initSearchableSelect(containerId, onSelect) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="searchable-select-wrapper" style="position:relative;">
+            <div class="select-trigger" onclick="toggleSearchDropdown('${containerId}')" style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1rem; border:1px solid var(--border); border-radius:0.5rem; background:white; cursor:pointer;">
+                <span id="${containerId}_label" style="color:var(--text-muted);">Select Student...</span>
+                <i class="fas fa-chevron-down" style="font-size:0.8rem; color:var(--text-muted);"></i>
+            </div>
+            <div id="${containerId}_dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1px solid var(--border); border-radius:0.5rem; margin-top:0.5rem; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000; max-height:300px; overflow:hidden; display:flex; flex-direction:column;">
+                <div style="padding:0.75rem; border-bottom:1px solid var(--border); background:#f8fafc;">
+                    <input type="text" placeholder="Search by name, father name or phone..." oninput="filterSearchDropdown('${containerId}', this.value)" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.4rem; font-size:0.9rem;">
+                </div>
+                <div id="${containerId}_list" style="overflow-y:auto; flex:1; max-height:220px;">
+                    <!-- List populated dynamically -->
+                </div>
+            </div>
+        </div>
+    `;
+    
+    window[`${containerId}_select`] = (s) => {
+        document.getElementById(`${containerId}_label`).textContent = `${s.name} [${s.father_name}] [${s.student_id}]`;
+        document.getElementById(`${containerId}_dropdown`).style.display = 'none';
+        if (onSelect) onSelect(s);
+    };
+}
+
+function toggleSearchDropdown(id) {
+    const drop = document.getElementById(`${id}_dropdown`);
+    const isVisible = drop.style.display === 'flex';
+    
+    // Close others
+    document.querySelectorAll('[id$="_dropdown"]').forEach(el => el.style.display = 'none');
+    
+    if (!isVisible) {
+        drop.style.display = 'flex';
+        renderDropdownList(id, allStudents);
+        const input = drop.querySelector('input');
+        if (input) { input.value = ''; input.focus(); }
+    }
+}
+
+function filterSearchDropdown(id, q) {
+    const term = q.toLowerCase();
+    const filtered = allStudents.filter(s => 
+        (s.name || '').toLowerCase().includes(term) || 
+        (s.student_id || '').toLowerCase().includes(term) || 
+        (s.father_name || '').toLowerCase().includes(term) ||
+        (s.phone || '').toLowerCase().includes(term)
+    );
+    renderDropdownList(id, filtered.slice(0, 30)); // Limit for performance
+}
+
+function renderDropdownList(id, list) {
+    const el = document.getElementById(`${id}_list`);
+    if (!el) return;
+    
+    if (list.length === 0) {
+        el.innerHTML = '<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">No students found</div>';
+        return;
+    }
+
+    el.innerHTML = list.map(s => `
+        <div onclick="window['${id}_select'](${JSON.stringify(s).replace(/"/g, '&quot;')})" style="padding:0.75rem 1rem; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">
+            <div style="font-weight:600; font-size:0.95rem; color:var(--secondary);">${s.name}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">F/N: ${s.father_name || '-'} | ID: ${s.student_id || '-'}</div>
+        </div>
+    `).join('');
+}
+
+// Close dropdowns on click outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.searchable-select-wrapper')) {
+        document.querySelectorAll('[id$="_dropdown"]').forEach(el => el.style.display = 'none');
+    }
+});
+
+// ==================== BULK STUDENT UPDATE LOGIC ====================
+async function initBulkUpdate() {
+    const sessionSelect = document.getElementById('bulk_student_session');
+    if (!sessionSelect) return;
+
+    // Use sessions from erpState (loaded via erp-class-mgmt.js)
+    if (typeof erpState !== 'undefined' && erpState.sessions.length > 0) {
+        populateBulkSessionDropdown();
+    } else {
+        await loadSessions(); // This is the fallback if erpState not ready
+        populateBulkSessionDropdown();
+    }
+}
+
+function populateBulkSessionDropdown() {
+    const sessionSelect = document.getElementById('bulk_student_session');
+    if (!sessionSelect) return;
+    
+    sessionSelect.innerHTML = '<option value="">Select Session</option>' + 
+        erpState.sessions.map(s => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    
+    if (erpState.activeSessionId) loadClassesForBulkUpdate();
+}
+
+async function loadClassesForBulkUpdate() {
+    const sessionSelect = document.getElementById('bulk_student_session');
+    const sessionId = sessionSelect.options[sessionSelect.selectedIndex]?.getAttribute('data-id');
+    const classSelect = document.getElementById('bulk_student_class');
+    if (!classSelect || !sessionId) return;
+
+    try {
+        const snapshot = await db.collection('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
+        const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        classSelect.innerHTML = '<option value="">Select Class</option>' + 
+            classes.map(cls => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
+        
+        document.getElementById('bulk_student_section').innerHTML = '<option value="">Select Class First</option>';
+    } catch (e) {
+        console.error("Error loading classes for bulk update:", e);
+    }
+}
+
+async function loadBulkStudentList() {
+    const session = document.getElementById('bulk_student_session').value;
+    const className = document.getElementById('bulk_student_class').value;
+    const section = document.getElementById('bulk_student_section').value;
+    const body = document.getElementById('bulkUpdateTableBody');
+
+    if (!session || !className) return;
+
+    body.innerHTML = '<tr><td colspan="9" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
+
+    try {
+        let query = db.collection('students')
+            .where('session', '==', session)
+            .where('class', '==', className);
+        
+        if (section) query = query.where('section', '==', section);
+
+        const snapshot = await query.get();
+        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (students.length === 0) {
+            body.innerHTML = '<tr><td colspan="9" style="text-align:center;">No students found matching filters.</td></tr>';
+            return;
+        }
+
+        // Maintain scroll position or reset?
+        body.innerHTML = students.map(s => `
+            <tr data-id="${s.id}">
+                <td style="font-family:monospace; font-size:0.75rem;">${s.student_id || s.id.slice(0,6)}</td>
+                <td><input type="text" class="bulk-input b-name" value="${s.name || ''}"></td>
+                <td class="col_roll"><input type="text" class="bulk-input b-roll" value="${s.roll_no || ''}"></td>
+                <td class="col_father"><input type="text" class="bulk-input b-father" value="${s.father_name || ''}"></td>
+                <td class="col_mobile"><input type="text" class="bulk-input b-mobile" value="${s.mobile || ''}"></td>
+                <td class="col_dob"><input type="date" class="bulk-input b-dob" value="${s.dob || ''}"></td>
+                <td class="col_blood" style="display:none;"><input type="text" class="bulk-input b-blood" value="${s.blood_group || ''}"></td>
+                <td class="col_address" style="display:none;"><input type="text" class="bulk-input b-address" value="${s.address || ''}"></td>
+                <td class="col_sms" style="display:none;"><input type="text" class="bulk-input b-sms" value="${s.sms_contact || ''}"></td>
+            </tr>
+        `).join('');
+
+        // Re-apply current column visibility
+        document.querySelectorAll('#bulkColumnToggles input[type="checkbox"]').forEach(cb => {
+            const colClass = cb.getAttribute('onchange').match(/'([^']+)'/)[1];
+            toggleBulkCol(colClass, cb.checked);
+        });
+
+    } catch (e) {
+        console.error("Error loading bulk list:", e);
+        body.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
+    }
+}
+
+function toggleBulkUpdateColumns() {
+    const toggles = document.getElementById('bulkColumnToggles');
+    toggles.style.display = toggles.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleBulkCol(colClass, forceState = null) {
+    const elements = document.querySelectorAll(`.${colClass}`);
+    const checkbox = document.querySelector(`input[onchange*="'${colClass}'"]`);
+    
+    const shouldShow = forceState !== null ? forceState : checkbox.checked;
+    if (checkbox) checkbox.checked = shouldShow;
+
+    elements.forEach(el => {
+        el.style.display = shouldShow ? '' : 'none';
+    });
+}
+
+async function saveBulkStudentUpdate() {
+    const rows = document.querySelectorAll('#bulkUpdateTableBody tr[data-id]');
+    if (rows.length === 0) return;
+
+    try {
+        setLoading(true);
+        const batch = db.batch();
+        let changeCount = 0;
+
+        rows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const data = {
+                name: row.querySelector('.b-name').value.trim(),
+                roll_no: row.querySelector('.b-roll').value.trim(),
+                father_name: row.querySelector('.b-father').value.trim(),
+                mobile: row.querySelector('.b-mobile').value.trim(),
+                dob: row.querySelector('.b-dob').value,
+                blood_group: row.querySelector('.b-blood').value.trim(),
+                address: row.querySelector('.b-address').value.trim(),
+                sms_contact: row.querySelector('.b-sms').value.trim(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            batch.update(db.collection('students').doc(id), data);
+            changeCount++;
+        });
+
+        await batch.commit();
+        showToast(`Successfully updated ${changeCount} student records!`, "success");
+        loadInitialData(); // Refresh main list too
+    } catch (e) {
+        console.error("Bulk update failed:", e);
+        showToast("Failed to save changes: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Global exposure
+window.toggleBulkUpdateColumns = toggleBulkUpdateColumns;
+window.toggleBulkCol = toggleBulkCol;
+window.loadClassesForBulkUpdate = loadClassesForBulkUpdate;
+window.loadBulkStudentList = loadBulkStudentList;
+window.saveBulkStudentUpdate = saveBulkStudentUpdate;
+window.initBulkUpdate = initBulkUpdate;
+
+// ==================== REPORT CARD LOGIC (Phase 5) ====================
+async function initReportCardSection() {
+    const sessionSelect = document.getElementById('rc_session');
+    if (!sessionSelect) return;
+
+    if (typeof erpState !== 'undefined' && erpState.sessions.length > 0) {
+        populateRcSessionDropdown();
+    } else {
+        await loadSessions();
+        populateRcSessionDropdown();
+    }
+}
+
+function populateRcSessionDropdown() {
+    const sessionSelect = document.getElementById('rc_session');
+    if (!sessionSelect) return;
+    sessionSelect.innerHTML = '<option value="">Select Session</option>' + 
+        erpState.sessions.map(s => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    if (erpState.activeSessionId) loadRcClasses();
+}
+
+async function loadRcClasses() {
+    const sessionSelect = document.getElementById('rc_session');
+    const sessionId = sessionSelect.options[sessionSelect.selectedIndex]?.getAttribute('data-id');
+    const classSelect = document.getElementById('rc_class');
+    if (!classSelect || !sessionId) return;
+
+    try {
+        const snapshot = await db.collection('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
+        const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        classSelect.innerHTML = '<option value="">Select Class</option>' + 
+            classes.map(cls => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
+        document.getElementById('rc_section').innerHTML = '<option value="">Select Class First</option>';
+        document.getElementById('rc_student').innerHTML = '<option value="">Select Details Above</option>';
+    } catch (e) { console.error(e); }
+}
+
+async function loadRcSections() {
+    const classSelect = document.getElementById('rc_class');
+    const className = classSelect.value;
+    const sectSelect = document.getElementById('rc_section');
+    if (!sectSelect || !className) return;
+
+    const session = document.getElementById('rc_session').value;
+    try {
+        const snapshot = await db.collection('students').where('session', '==', session).where('class', '==', className).get();
+        const students = snapshot.docs.map(doc => doc.data());
+        const sections = [...new Set(students.map(s => s.section).filter(Boolean))];
+        sectSelect.innerHTML = '<option value="">Select Section</option>' + 
+            sections.map(s => `<option value="${s}">${s}</option>`).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function loadRcStudents() {
+    const session = document.getElementById('rc_session').value;
+    const className = document.getElementById('rc_class').value;
+    const section = document.getElementById('rc_section').value;
+    const studentSelect = document.getElementById('rc_student');
+    if (!studentSelect || !session || !className) return;
+
+    studentSelect.innerHTML = '<option value="">Loading students...</option>';
+    try {
+        let query = db.collection('students').where('session', '==', session).where('class', '==', className);
+        if (section) query = query.where('section', '==', section);
+        const snapshot = await query.get();
+        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        studentSelect.innerHTML = '<option value="">Select Student</option>' + 
+            students.map(s => `<option value="${s.id}">${s.name} (${s.student_id || s.id.slice(0,6)})</option>`).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function processReportCardGeneration() {
+    const studentId = document.getElementById('rc_student').value;
+    const format = document.getElementById('rc_format').value;
+    const session = document.getElementById('rc_session').value;
+
+    if (!studentId) { showToast("Please select a student first", "error"); return; }
+
+    try {
+        setLoading(true);
+        // 1. Fetch Student Data
+        const sDoc = await db.collection('students').doc(studentId).get();
+        if (!sDoc.exists) throw new Error("Student not found");
+        const student = sDoc.data();
+
+        // 2. Fetch Marks (For now, just getting all marks for this student/session)
+        // In a real scenario, you'd filter by Term/Exam too
+        const mSnap = await db.collection('marks').where('studentId', '==', studentId).where('session', '==', session).get();
+        const marks = mSnap.docs.map(doc => doc.data());
+
+        // 3. School Details (Mock or from Settings)
+        const schoolDetails = {
+            name: "HIMALAYAN INTERNATIONAL SCHOOL", // As per reference
+            address: "CHETAN PARSA, PARSA, SARAN, BIHAR - 841219"
+        };
+
+        const examDetails = {
+            title: "TERM 2",
+            session: session
+        };
+
+        // 4. Generate via common Factory
+        if (format === 'Himalayan') {
+            await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
+        } else if (format === 'MCQ_Normal') {
+            await window.ReportCardFactory.generateMCQNormal(student, marks, examDetails, schoolDetails);
+        } else if (format === 'MCQ_Standard') {
+            await window.ReportCardFactory.generateMCQStandard(student, marks, examDetails, schoolDetails);
+        } else if (format === 'MCQ_Advance') {
+            await window.ReportCardFactory.generateMCQAdvance(student, marks, examDetails, schoolDetails);
+        } else {
+            showToast("Selected format is not yet supported.", "error");
+        }
+        
+    } catch (e) {
+        console.error("Report generation failed:", e);
+        showToast("Error: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Global exposure
+window.loadRcClasses = loadRcClasses;
+window.loadRcSections = loadRcSections;
+window.loadRcStudents = loadRcStudents;
+window.processReportCardGeneration = processReportCardGeneration;
+window.initReportCardSection = initReportCardSection;
