@@ -9,16 +9,28 @@ let examState = {
     activeSessionId: null
 };
 
+// Internal loading helper
+function setLoading(show) {
+    if (typeof window.setLoading === 'function') window.setLoading(show);
+    else {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = show ? 'flex' : 'none';
+    }
+}
 async function initERPExams() {
     console.log("ERP Exams Initializing...");
     try {
-        const sessionSnap = await db.collection('sessions').orderBy('name', 'desc').get();
+        const sessionSnap = await db.collection('sessions').get();
         const sessions = sessionSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         const active = sessions.find(s => s.active);
         if (active) examState.activeSessionId = active.id;
 
-        // Populate session dropdowns in Exam, Marks, Manage Results, and Publish sections
-        const sessionDropdowns = ['examSessionSelect', 'marksSessionSelect', 'manageResultsSession', 'publishSessionSelect'];
+        // Populate session dropdowns for all ERP sections
+        const sessionDropdowns = [
+            'examSessionSelect', 'marksSessionSelect', 'manageResultsSession', 
+            'publishSessionSelect', 'admitSessionSelect', 'attnSessionSelect',
+            'allResultsSessionSelect'
+        ];
         sessionDropdowns.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -45,13 +57,17 @@ async function initERPExams() {
 
 async function updateScheduleClasses() {
     if (!examState.activeSessionId) return;
-    const el = document.getElementById('scheduleClassSelect');
-    if (!el) return;
+    const selects = ['scheduleClassSelect', 'attnMarkClassSelect', 'remarkClassSelect', 'allResultsClassSelect', 'nonSubClassSelect'];
     try {
-        const snap = await db.collection('classes').where('sessionId', '==', examState.activeSessionId).orderBy('sortOrder', 'asc').get();
+        const snap = await db.collection('classes').where('sessionId', '==', examState.activeSessionId).get();
         const classes = snap.docs.map(doc => doc.data().name);
-        el.innerHTML = '<option value="">Select Class</option>' + 
+        const options = '<option value="">Select Class</option>' + 
             classes.map(c => `<option value="${c}">${c}</option>`).join('');
+        
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = options;
+        });
     } catch (e) { console.error(e); }
 }
 
@@ -68,6 +84,7 @@ async function loadGradingRules() {
         renderGradingRules();
     } catch (e) {
         console.error("Error loading grades:", e);
+        body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--danger);">Error loading grading rules. Please check permissions.</td></tr>';
     }
 }
 
@@ -97,7 +114,7 @@ async function handleGradingSubmit(event) {
     const remarks = document.getElementById('gradeRemarksInput').value.trim();
 
     try {
-        showLoading(true);
+        setLoading(true);
         await db.collection('gradingRules').add({
             name, min, max, remarks,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -108,20 +125,20 @@ async function handleGradingSubmit(event) {
     } catch (e) {
         showToast("Error saving rule", "error");
     } finally {
-        showLoading(false);
+        setLoading(false);
     }
 }
 
 async function deleteGradingRule(id) {
     if (!confirm("Delete this grading rule?")) return;
     try {
-        showLoading(true);
+        setLoading(true);
         await db.collection('gradingRules').doc(id).delete();
         await loadGradingRules();
     } catch (e) {
         showToast("Error deleting rule", "error");
     } finally {
-        showLoading(false);
+        setLoading(false);
     }
 }
 
@@ -174,7 +191,7 @@ async function handleExamSubmit(event) {
     }
 
     try {
-        showLoading(true);
+        setLoading(true);
         await db.collection('exams').add({
             name, sessionId, weightage,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -185,25 +202,30 @@ async function handleExamSubmit(event) {
     } catch (e) {
         showToast("Error creating exam", "error");
     } finally {
-        showLoading(false);
+        setLoading(false);
     }
 }
 
 async function deleteExam(id) {
     if (!confirm("Delete this exam term?")) return;
     try {
-        showLoading(true);
+        setLoading(true);
         await db.collection('exams').doc(id).delete();
         await loadExams();
     } catch (e) {
         showToast("Error deleting exam", "error");
     } finally {
-        showLoading(false);
+        setLoading(false);
     }
 }
 
 function updateExamSelects() {
-    const selects = ['scheduleExamSelect', 'marksExamSelect', 'manageResultsExam', 'publishExamSelect'];
+    const selects = [
+        'scheduleExamSelect', 'marksExamSelect', 'manageResultsExam', 
+        'publishExamSelect', 'admitExamSelect', 'attnExamSelect',
+        'attnMarkExamSelect', 'remarkExamSelect', 'publishExamSelect',
+        'nonSubExamSelect', 'publishSchedExamSelect', 'allResultsExamSelect'
+    ];
     selects.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -379,13 +401,21 @@ async function refreshMarksGrid() {
             return;
         }
 
+        const enteredCount = Object.keys(existingMarks).length;
+        const totalCount = students.length;
+        
+        const countStudentsEl = document.getElementById('marksCountStudents');
+        const countEnteredEl = document.getElementById('marksCountEntered');
+        if(countStudentsEl) countStudentsEl.innerText = totalCount;
+        if(countEnteredEl) countEnteredEl.innerText = enteredCount;
+
         body.innerHTML = students.map(s => `
             <tr data-student-id="${s.id}">
                 <td>${s.roll_no || '-'}</td>
                 <td><strong>${s.name}</strong></td>
-                <td><input type="number" class="marks-input" value="${existingMarks[s.id]?.obtained || ''}" placeholder="0"></td>
+                <td><input type="number" class="marks-input form-control" value="${existingMarks[s.id]?.obtained || ''}" placeholder="0" style="width:120px;"></td>
                 <td>
-                    <select class="status-select">
+                    <select class="status-select form-control" style="width:120px;">
                         <option value="P" ${existingMarks[s.id]?.status === 'P' ? 'selected' : ''}>Present</option>
                         <option value="A" ${existingMarks[s.id]?.status === 'A' ? 'selected' : ''}>Absent</option>
                     </select>
@@ -472,10 +502,78 @@ function handleMarksExcelUpload(event) {
 /**
  * DOCUMENT GENERATION (Hall Tickets & Attendance Cards)
  */
-async function generateHallTickets() {
-    const examId = document.getElementById('marksExamSelect').value;
-    const className = document.getElementById('marksClassSelect').value;
-    const sessionName = document.getElementById('marksSessionSelect').options[document.getElementById('marksSessionSelect').selectedIndex]?.text;
+async function generateHallTicketsForTool() {
+    const examId = document.getElementById('admitExamSelect').value;
+    const className = document.getElementById('admitClassSelect').value;
+    const sessionName = document.getElementById('admitSessionSelect').options[document.getElementById('admitSessionSelect').selectedIndex]?.text;
+
+    if (!examId || !className || !sessionName) {
+        showToast("Select All Details First", "error");
+        return;
+    }
+
+    // Reuse existing logic but with specified IDs
+    // We update the temp inputs to match generateHallTickets expectations or just call it after setting globals
+    // Better: Refactor generateHallTickets to take params
+    await generateHallTickets(examId, className, sessionName);
+}
+
+async function generateAttendanceCards() {
+    const examId = document.getElementById('attnExamSelect').value;
+    const className = document.getElementById('attnClassSelect').value;
+    const sessionName = document.getElementById('attnSessionSelect').options[document.getElementById('attnSessionSelect').selectedIndex]?.text;
+
+    if (!examId || !className) {
+        showToast("Select Exam and Class", "error");
+        return;
+    }
+
+    try {
+        setLoading(true);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const studentsSnap = await db.collection('students').where('class', '==', className).where('session', '==', sessionName).get();
+        const students = studentsSnap.docs.map(d => d.data());
+        const examName = examState.exams.find(e => e.id === examId)?.name || 'Exam';
+
+        if (students.length === 0) {
+            showToast("No students found", "error");
+            return;
+        }
+
+        // Generate signature sheet
+        doc.setFontSize(16);
+        doc.text("APEX PUBLIC SCHOOL", 105, 15, { align: "center" });
+        doc.setFontSize(12);
+        doc.text(`EXAMINATION ATTENDANCE SHEET - ${examName}`, 105, 22, { align: "center" });
+        doc.text(`Class: ${className} | Session: ${sessionName}`, 105, 28, { align: "center" });
+        
+        const body = students.map(s => [s.roll_no || '-', s.name, '', '']);
+        doc.autoTable({
+            startY: 35,
+            head: [['Roll No', 'Student Name', 'Student Signature', 'Invigilator Sig']],
+            body: body,
+            theme: 'grid',
+            headStyles: { fillColor: [40, 40, 40] },
+            styles: { minCellHeight: 12, verticalLine: true }
+        });
+
+        doc.save(`Attendance_${className}_${examName}.pdf`);
+        showToast("Attendance sheets generated", "success");
+    } catch (e) {
+        console.error(e);
+        showToast("Generation failed", "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Updated generateHallTickets to accept params
+async function generateHallTickets(examIdParam, classNameParam, sessionNameParam) {
+    const examId = examIdParam || document.getElementById('marksExamSelect').value;
+    const className = classNameParam || document.getElementById('marksClassSelect').value;
+    const sessionName = sessionNameParam || document.getElementById('marksSessionSelect').options[document.getElementById('marksSessionSelect').selectedIndex]?.text;
 
     if (!examId || !className) {
         showToast("Select Exam and Class first", "error");
@@ -626,21 +724,31 @@ async function refreshManageResultsTable() {
 
         const studentIds = marksSnap.docs.map(doc => doc.data().studentId);
         const students = {};
-        // Chunk student fetches to avoid limits if needed, but for small classes this is fine
-        const studentsSnap = await db.collection('students').where('__name__', 'in', studentIds).get();
-        studentsSnap.forEach(doc => students[doc.id] = doc.data());
+        if (studentIds.length > 0) {
+            // Firestore 'in' query supports up to 10 IDs, but we can have more.
+            // For now, let's fetch all students of the class and filter locally for simplicity and robustness.
+            const studentsSnap = await db.collection('students').where('class', '==', cls).where('section', '==', sec).get();
+            studentsSnap.forEach(doc => students[doc.id] = doc.data());
+        }
 
         body.innerHTML = marksSnap.docs.map(doc => {
             const data = doc.data();
             const student = students[data.studentId] || { name: 'Unknown', roll_no: '-' };
+            
+            // Calculate Grade
+            const score = parseFloat(data.obtained) || 0;
+            const max = examState.exams.find(e => e.id === ex)?.maxMarks || 100; // Default or from schedule if available
+            const percent = (score / max) * 100;
+            const gradeRule = examState.gradingRules.find(g => percent >= g.min && percent <= g.max) || { name: '--' };
+
             return `
                 <tr>
-                    <td>${student.roll_no}</td>
-                    <td>${student.name}</td>
-                    <td>${data.obtained}</td>
-                    <td>${data.status === 'P' ? '<span class="badge" style="background:#dcfce7; color:#166534;">Present</span>' : '<span class="badge" style="background:#fee2e2; color:#b91c1c;">Absent</span>'}</td>
-                    <td>
-                        <button onclick="deleteMarkRecord('${doc.id}')" class="btn-portal btn-ghost" style="color:var(--danger);">
+                    <td>${student.roll_no || '-'}</td>
+                    <td><strong>${student.name}</strong></td>
+                    <td><span class="badge" style="background:var(--primary-light); color:var(--primary);">${data.obtained}</span></td>
+                    <td><span class="badge" style="background:#f1f5f9; color:#64748b; font-weight:600;">${gradeRule.name}</span></td>
+                    <td style="text-align:right;">
+                        <button onclick="deleteMarkRecord('${doc.id}')" class="btn-portal btn-ghost" style="color:var(--danger); padding:0.25rem 0.5rem;">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -712,11 +820,71 @@ async function togglePublish(examId, className, currentStatus) {
             examId,
             className,
             published: !currentStatus,
+            type: 'result',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
         
         showToast(`Results ${!currentStatus ? 'published' : 'unpublished'} for ${className}`, "success");
         refreshPublishStatus();
+    } catch (e) {
+        showToast("Error: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+/**
+ * PUBLISH SCHEDULES
+ */
+async function loadPublishScheduleStatus() {
+    const body = document.getElementById('publishSchedTableBody');
+    const sessionId = document.getElementById('publishSchedSessionSelect').value;
+    const examId = document.getElementById('publishSchedExamSelect').value;
+
+    if (!body) return;
+    if (!sessionId || !examId) {
+        body.innerHTML = '<tr><td colspan="3" style="text-align:center;">Select Session and Exam.</td></tr>';
+        return;
+    }
+
+    try {
+        const classesSnap = await db.collection('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
+        const pubsSnap = await db.collection('publications').where('examId', '==', examId).where('type', '==', 'schedule').get();
+        const pubs = {};
+        pubsSnap.forEach(doc => pubs[doc.data().className] = doc.data().published);
+
+        body.innerHTML = classesSnap.docs.map(doc => {
+            const cls = doc.data().name;
+            const isPublished = pubs[cls] || false;
+            return `
+                <tr>
+                    <td><strong>${cls}</strong></td>
+                    <td><span class="badge" style="background:rgba(var(--primary-rgb), 0.1); color:var(--primary);">Configured</span></td>
+                    <td style="text-align:right;">
+                        <button onclick="toggleSchedulePublish('${examId}', '${cls}', ${isPublished})" class="btn-portal ${isPublished ? 'btn-ghost' : 'btn-primary'}" style="padding:0.4rem 1rem; font-size:0.8rem;">
+                            ${isPublished ? 'Hide from Portal' : 'Show on Portal'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function toggleSchedulePublish(examId, className, currentStatus) {
+    try {
+        setLoading(true);
+        const docId = `sched_${examId}_${className.replace(/\s+/g, '_')}`;
+        await db.collection('publications').doc(docId).set({
+            examId,
+            className,
+            type: 'schedule',
+            published: !currentStatus,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        
+        showToast(`Schedule visibility updated for ${className}`, "success");
+        loadPublishScheduleStatus();
     } catch (e) {
         showToast("Error: " + e.message, "error");
     } finally {
@@ -742,13 +910,440 @@ window.saveMarksGrid = saveMarksGrid;
 window.handleMarksExcelUpload = handleMarksExcelUpload;
 window.updateScheduleClasses = updateScheduleClasses;
 window.initERPExams = initERPExams;
+/**
+ * REPORT CARD REMARKS & CO-SCHOLASTIC
+ */
+async function loadRemarksGrid() {
+    const cls = document.getElementById('remarkClassSelect').value;
+    const ex = document.getElementById('remarkExamSelect').value;
+    const body = document.getElementById('remarksGridBody');
+    if (!body || !cls || !ex) return;
+
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+    try {
+        const studentsSnap = await db.collection('students').where('class', '==', cls).get();
+        const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        const remarksSnap = await db.collection('remarks').where('examId', '==', ex).where('className', '==', cls).get();
+        const existing = {};
+        remarksSnap.forEach(doc => existing[doc.data().studentId] = doc.data());
+
+        body.innerHTML = students.map(s => `
+            <tr data-student-id="${s.id}">
+                <td><strong>${s.name}</strong></td>
+                <td><textarea class="remark-text" style="width:100%; height:40px; border-radius:4px; border:1px solid #ddd;">${existing[s.id]?.text || ''}</textarea></td>
+                <td><input type="text" class="remark-art" placeholder="A" style="width:40px; text-align:center;" value="${existing[s.id]?.art || ''}"></td>
+                <td><input type="text" class="remark-disc" placeholder="A" style="width:40px; text-align:center;" value="${existing[s.id]?.disc || ''}"></td>
+                <td><button onclick="saveRemarkRow(this)" class="btn-portal" style="padding:0.3rem 0.6rem; font-size:0.75rem;">Save</button></td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function saveRemarkRow(btn) {
+    const row = btn.closest('tr');
+    const studentId = row.dataset.studentId;
+    const examId = document.getElementById('remarkExamSelect').value;
+    const className = document.getElementById('remarkClassSelect').value;
+    const text = row.querySelector('.remark-text').value;
+    const art = row.querySelector('.remark-art').value;
+    const disc = row.querySelector('.remark-disc').value;
+
+    try {
+        await db.collection('remarks').doc(`${examId}_${studentId}`).set({
+            examId, studentId, className, text, art, disc,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        showToast("Remark Saved", "success");
+    } catch (e) { showToast("Error Saving", "error"); }
+}
+
+async function loadAttnMarkGrid() {
+    const cls = document.getElementById('attnMarkClassSelect').value;
+    const body = document.getElementById('attnMarkGridBody');
+    if (!body || !cls) return;
+
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading Students...</td></tr>';
+    try {
+        const snap = await db.collection('students').where('class', '==', cls).get();
+        const students = snap.docs.map(d => d.data());
+        
+        body.innerHTML = students.map(s => `
+            <tr>
+                <td>${s.roll_no || '-'}</td>
+                <td><strong>${s.name}</strong></td>
+                <td>
+                    <select class="attn-status" data-id="${s.student_id}" style="padding:4px; border-radius:4px;">
+                        <option value="P">Present</option>
+                        <option value="A">Absent</option>
+                    </select>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function saveAttnMarkGrid() {
+    const cls = document.getElementById('attnMarkClassSelect').value;
+    const examId = document.getElementById('attnMarkExamSelect').value;
+    const rows = document.querySelectorAll('#attnMarkGridBody tr');
+    
+    if (!cls || !examId) {
+        showToast("Select Class and Exam", "error");
+        return;
+    }
+
+    try {
+        setLoading(true);
+        const batch = db.batch();
+        rows.forEach(row => {
+            const studentId = row.querySelector('.attn-status').dataset.id;
+            const status = row.querySelector('.attn-status').value;
+            const ref = db.collection('marks').doc(`${examId}_${studentId}_placeholder`); // We use a placeholder subject or a separate attendance collection
+            // Better to use a dedicated attendance collection for the exam
+            const attRef = db.collection('exam_attendance').doc(`${examId}_${studentId}`);
+            batch.set(attRef, {
+                examId, studentId, className: cls, status,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+        await batch.commit();
+        showToast("Attendance Saved Successfully", "success");
+    } catch (e) {
+        console.error(e);
+        showToast("Save Failed", "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Global Exports for everything added in Phase 8
 window.generateHallTickets = generateHallTickets;
+window.generateHallTicketsForTool = generateHallTicketsForTool;
+window.generateAttendanceCards = generateAttendanceCards;
+window.loadRemarksGrid = loadRemarksGrid;
+window.saveRemarkRow = saveRemarkRow;
+window.loadAttnMarkGrid = loadAttnMarkGrid;
+window.saveAttnMarkGrid = saveAttnMarkGrid;
+async function loadNonSubGrid() {
+    const cls = document.getElementById('nonSubClassSelect').value;
+    const ex = document.getElementById('nonSubExamSelect').value;
+    const body = document.getElementById('nonSubGridBody');
+    if (!body || !cls || !ex) return;
+
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+    try {
+        const studentsSnap = await db.collection('students').where('class', '==', cls).get();
+        const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        const nonSubSnap = await db.collection('non_subject_marks').where('examId', '==', ex).where('className', '==', cls).get();
+        const existing = {};
+        nonSubSnap.forEach(doc => existing[doc.data().studentId] = doc.data());
+
+        body.innerHTML = students.map(s => `
+            <tr data-student-id="${s.id}">
+                <td><strong>${s.name}</strong></td>
+                <td><input type="text" class="non-health" placeholder="A" style="width:50px; text-align:center;" value="${existing[s.id]?.health || ''}"></td>
+                <td><input type="text" class="non-music" placeholder="A" style="width:50px; text-align:center;" value="${existing[s.id]?.music || ''}"></td>
+                <td><input type="text" class="non-work" placeholder="A" style="width:50px; text-align:center;" value="${existing[s.id]?.work || ''}"></td>
+                <td><button onclick="saveNonSubRow(this)" class="btn-portal" style="padding:0.3rem 0.6rem; font-size:0.75rem;">Save</button></td>
+            </tr>
+        `).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function saveNonSubRow(btn) {
+    const row = btn.closest('tr');
+    const studentId = row.dataset.studentId;
+    const examId = document.getElementById('nonSubExamSelect').value;
+    const className = document.getElementById('nonSubClassSelect').value;
+    const health = row.querySelector('.non-health').value;
+    const music = row.querySelector('.non-music').value;
+    const work = row.querySelector('.non-work').value;
+
+    try {
+        await db.collection('non_subject_marks').doc(`${examId}_${studentId}`).set({
+            examId, studentId, className, health, music, work,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        showToast("Grades Saved", "success");
+    } catch (e) { showToast("Error Saving", "error"); }
+}
+
+// Global Exports
+window.loadNonSubGrid = loadNonSubGrid;
+window.saveNonSubRow = saveNonSubRow;
+async function loadConsolidatedResults() {
+    const sessId = document.getElementById('allResultsSessionSelect').value;
+    const clsName = document.getElementById('allResultsClassSelect').value;
+    const exId = document.getElementById('allResultsExamSelect').value;
+    const area = document.getElementById('consolidatedResultsArea');
+
+    if (!sessId || !clsName || !exId || !area) return;
+
+    area.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; padding:3rem; color:var(--text-muted);">
+            <i class="fas fa-spinner fa-spin fa-2x" style="margin-bottom:1rem;"></i>
+            <p>Aggregating school records and generating matrix...</p>
+        </div>
+    `;
+
+    try {
+        // 1. Fetch Students
+        const studentsSnap = await db.collection('students').where('class', '==', clsName).get();
+        const students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // 2 Fetch Subjects
+        const subjectsSnap = await db.collection('subjects').where('sessionId', '==', sessId).get();
+        const subjects = subjectsSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
+
+        // 3 Fetch Marks for this specific exam and class
+        const marksSnap = await db.collection('marks')
+            .where('className', '==', clsName)
+            .where('examId', '==', exId)
+            .get();
+        const allMarks = marksSnap.docs.map(d => d.data());
+
+        if (students.length === 0) {
+            area.innerHTML = '<p style="text-align:center; padding:2rem;">No students found in this class.</p>';
+            return;
+        }
+
+        // Build Table
+        let html = `
+            <div class="table-responsive">
+                <table class="portal-table" style="font-size:0.85rem;">
+                    <thead>
+                        <tr>
+                            <th style="min-width:150px;">Student</th>
+                            ${subjects.map(s => `<th style="text-align:center;">${s.name}</th>`).join('')}
+                            <th style="text-align:center; background:var(--bg-light);">Total</th>
+                            <th style="text-align:center; background:var(--bg-light);">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        students.forEach(s => {
+            let rowTotal = 0;
+            let subCount = 0;
+            html += `
+                <tr>
+                    <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.roll_no || '-'}</small></td>
+            `;
+            subjects.forEach(sub => {
+                const m = allMarks.find(mark => mark.studentId === s.id && mark.subjectId === sub.id);
+                const score = m ? parseFloat(m.obtained) : 0;
+                rowTotal += score;
+                if (score > 0) subCount++;
+                html += `<td style="text-align:center;">${m ? score : '-'}</td>`;
+            });
+
+            const percentage = subCount > 0 ? (rowTotal / (subCount * 100)) * 100 : 0; // Assuming 100 as base for simplicity
+            html += `
+                    <td style="text-align:center; font-weight:700; background:var(--bg-light);">${rowTotal}</td>
+                    <td style="text-align:center; font-weight:700; background:var(--bg-light); color:var(--primary);">${percentage.toFixed(1)}%</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        area.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        area.innerHTML = `<p style="color:var(--danger); text-align:center;">Failed to load consolidated results: ${e.message}</p>`;
+    }
+}
+
+window.loadConsolidatedResults = loadConsolidatedResults;
 
 window.loadManageResultsClasses = loadManageResultsClasses;
 window.loadManageResultsSections = loadManageResultsSections;
 window.loadManageResultsSubjects = loadManageResultsSubjects;
 window.refreshManageResultsTable = refreshManageResultsTable;
 window.deleteMarkRecord = deleteMarkRecord;
+
 window.refreshPublishStatus = refreshPublishStatus;
 window.togglePublish = togglePublish;
+
+window.initERPExams = initERPExams;
 window.loadViewScheduleGrid = loadViewScheduleGrid;
+
+/**
+ * REPORT CARD PREVIEW (SINGLE STUDENT)
+ */
+async function populateRcPreviewExams() {
+    const select = document.getElementById('rcPreviewExam');
+    if (!select) return;
+    try {
+        const snap = await db.collection('exams').get();
+        select.innerHTML = '<option value="">-- Select Exam --</option>';
+        snap.docs.forEach(doc => {
+            select.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+async function previewSingleReportCard() {
+    const studentId = document.getElementById('rcPreviewSid').value;
+    const examId = document.getElementById('rcPreviewExam').value;
+    const format = document.getElementById('rcPreviewFormat').value;
+
+    if (!studentId || !examId) {
+        showToast("Please select student and exam", "error");
+        return;
+    }
+
+    try {
+        setLoading(true);
+        const sSnap = await db.collection('students').doc(studentId).get();
+        const student = sSnap.data();
+
+        const examSnap = await db.collection('exams').doc(examId).get();
+        const examDetails = examSnap.data();
+
+        // Get Marks
+        const marksSnap = await db.collection('marks').where('studentId', '==', studentId).where('examId', '==', examId).get();
+        const marks = {};
+        marksSnap.forEach(doc => { marks[doc.data().subjectId] = doc.data().marks; });
+
+        // Get School Details (Mocked for now)
+        const schoolDetails = { name: "APEX PUBLIC SCHOOL", address: "Maruti Ganj, Ayodhya", phone: "9125565555" };
+
+        if (format === 'Himalayan') {
+            await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
+        } else {
+            // Add other formats as needed
+            showToast("Generating preview...", "info");
+            await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
+        }
+    } catch (e) {
+        showToast("Error: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+/**
+ * EXAM ATTENDANCE MODULE
+ */
+async function loadExamAttSessions() {
+    const select = document.getElementById('examAttSession');
+    if (!select) return;
+    try {
+        const snap = await db.collection('sessions').get();
+        select.innerHTML = '<option value="">-- Select --</option>';
+        snap.docs.forEach(doc => {
+            select.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+async function loadExamAttClasses() {
+    const sid = document.getElementById('examAttSession').value;
+    const select = document.getElementById('examAttClass');
+    if (!select || !sid) return;
+    try {
+        const snap = await db.collection('classes').where('sessionId', '==', sid).get();
+        select.innerHTML = '<option value="">-- Select --</option>';
+        snap.docs.forEach(doc => {
+            select.innerHTML += `<option value="${doc.data().name}">${doc.data().name}</option>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+async function loadExamAttSections() { /* Simplified */ }
+async function loadExamAttSubjects() {
+    const select = document.getElementById('examAttSubject');
+    if (!select) return;
+    try {
+        const snap = await db.collection('subjects').get();
+        select.innerHTML = '<option value="">-- Select --</option>';
+        snap.docs.forEach(doc => {
+            select.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+        });
+        
+        // Also populate Exams
+        const examSelect = document.getElementById('examAttExam');
+        const examSnap = await db.collection('exams').get();
+        examSelect.innerHTML = '<option value="">-- Select --</option>';
+        examSnap.docs.forEach(doc => {
+            examSelect.innerHTML += `<option value="${doc.id}">${doc.data().name}</option>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+async function refreshExamAttGrid() {
+    const cls = document.getElementById('examAttClass').value;
+    const body = document.getElementById('examAttGridBody');
+    if (!body || !cls) return;
+
+    try {
+        const snap = await db.collection('students').where('class', '==', cls).get();
+        body.innerHTML = snap.docs.map(doc => {
+            const s = doc.data();
+            return `
+                <tr data-student-id="${doc.id}">
+                    <td>${s.roll_no || '-'}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>
+                        <select class="att-status" style="width:100px;">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="att-remarks" placeholder="Optional" style="width:100%;"></td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function saveExamAttendance() {
+    const examId = document.getElementById('examAttExam').value;
+    const subjectId = document.getElementById('examAttSubject').value;
+    if (!examId || !subjectId) {
+        showToast("Select Exam and Subject", "error");
+        return;
+    }
+
+    try {
+        setLoading(true);
+        const rows = document.querySelectorAll('#examAttGridBody tr');
+        const batch = db.batch();
+        
+        rows.forEach(row => {
+            const studentId = row.dataset.studentId;
+            const status = row.querySelector('.att-status').value;
+            const remarks = row.querySelector('.att-remarks').value;
+            
+            const docRef = db.collection('exam_attendance').doc(`${examId}_${subjectId}_${studentId}`);
+            batch.set(docRef, {
+                studentId, examId, subjectId, status, remarks,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+        
+        await batch.commit();
+        showToast("Attendance Saved Successfully", "success");
+    } catch (e) {
+        showToast("Error: " + e.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Global exposure
+window.populateRcPreviewExams = populateRcPreviewExams;
+window.previewSingleReportCard = previewSingleReportCard;
+window.loadExamAttSessions = loadExamAttSessions;
+window.loadExamAttClasses = loadExamAttClasses;
+window.loadExamAttSections = loadExamAttSections;
+window.loadExamAttSubjects = loadExamAttSubjects;
+window.refreshExamAttGrid = refreshExamAttGrid;
+window.saveExamAttendance = saveExamAttendance;

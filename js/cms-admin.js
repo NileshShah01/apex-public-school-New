@@ -1074,11 +1074,11 @@ function updateFileName(inputId, statusId) {
 }
 
 const SEARCH_TERMS = {
-    "Student Id": ['student id', 'id', 'admission no', 'adm no', 'id_no', 'student_id', 'scholar no', 'reg no', 'roll no', 'sid', 'id no', 'stuid', 'enrollment'],
+    "Student Id": ['studentId', 'student id', 'id', 'admission no', 'adm no', 'id_no', 'student_id', 'scholar no', 'reg no', 'roll no', 'sid', 'id no', 'stuid', 'enrollment'],
     "Student Name": ['student name', 'name', 'student_name', 'candidate name', 'full name', 'sname', 'student'],
-    "Father Name": ['father name', 'father_name', 'father', 'guardian name', 'guardian', 'father_name'],
-    "Phone": ['phone', 'mobile', 'contact', 'mobile number', 'phone number', 'whatsapp', 'mob'],
-    "Session": ['session', 'year', 'academic year', 'acad_year'],
+    "Father Name": ['fatherName', 'father name', 'father_name', 'father', 'guardian name', 'guardian'],
+    "Phone": ['mobile', 'phone', 'contact', 'mobile number', 'phone number', 'whatsapp', 'mob'],
+    "Session": ['admissionYear', 'session', 'year', 'academic year', 'acad_year'],
     "Class": ['class', 'cls', 'grade', 'standard', 'standard_no'],
     "Due Amount": ['due amount', 'balance', 'pending', 'dues', 'total due', 'amount due', 'due', 'remain', 'arrear']
 };

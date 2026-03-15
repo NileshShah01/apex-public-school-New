@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Apex Public School</title>
     <link rel="stylesheet" href="../css/portal.css">
+    <link rel="stylesheet" href="../css/id-cards.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -182,6 +183,7 @@
                     </div>
                 </div>
 
+                <!-- Moved Admission & Student to TOP -->
                 <!-- ADMISSION & ENQUIRY -->
                 <div class="nav-category" onclick="toggleCategory('catAdmission')">
                     <div class="cat-header">
@@ -214,6 +216,40 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Student Bulk Update</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('hostelReport')">Hostel Student Report</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('transportReport')">Transport Student Report</a>
+                    </div>
+                </div>
+
+                <!-- EXAM & RESULT (Previously Top) -->
+                <!-- EXAM MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catExams')">
+                    <div class="cat-header">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Exam Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catExams">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('examGrading')">Grading Rules</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExam')">Create Exams</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExamSchedule')">Exam Timetable</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewExamSchedule')">View Date-Sheet</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('publishExamSchedule')">Publish Schedule</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')">Admit Card Tool</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('examAttendanceCard')">Print Attendance</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentExamAttendance')">Student Exam Attendance</a>
+                    </div>
+                </div>
+
+                <!-- RESULT MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catResults')">
+                    <div class="cat-header">
+                        <i class="fas fa-poll"></i>
+                        <span>Result Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catResults">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addResult')">Bulk Marks Entry</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewReportCard')">View Report Card</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('publishReportCard')">Publish Report Card</a>
                     </div>
                 </div>
 
@@ -352,6 +388,43 @@
                     <div class="stat-info">
                         <h3>Results Ready</h3>
                         <p id="statTotalResults">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ERP Service Hub - Quick Access -->
+            <div id="quickActionsHub" class="feature-hub">
+                <h2><i class="fas fa-th-large"></i> ERP Service Hub</h2>
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="showSection('addEnquiry')">
+                        <div class="icon-box" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="fas fa-user-plus"></i></div>
+                        <h4>New Enquiry</h4>
+                        <p>Record admission leads</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('studentAdmission')">
+                        <div class="icon-box" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fas fa-id-card"></i></div>
+                        <h4>Admissions</h4>
+                        <p>Register new student</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('feeMaster')">
+                        <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fas fa-credit-card"></i></div>
+                        <h4>Fees Center</h4>
+                        <p>Process payments</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('studentIdPrint')">
+                        <div class="icon-box" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i class="fas fa-print"></i></div>
+                        <h4>ID Generator</h4>
+                        <p>Print student cards</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('studentExamAttendance')">
+                        <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fas fa-check-double"></i></div>
+                        <h4>Exam Portal</h4>
+                        <p>Marks & Attendance</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('viewReportCard')">
+                        <div class="icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fas fa-file-invoice"></i></div>
+                        <h4>Report Cards</h4>
+                        <p>Preview academic results</p>
                     </div>
                 </div>
             </div>
@@ -1614,13 +1687,7 @@
                 </div>
             </section>
 
-            <!-- EMPLOYEE SECTIONS -->
-            <section id="addEmployeeSection" class="dashboard-section card" style="display:none;"><h2>Add Employee</h2><p>Module under development...</p></section>
-            <section id="searchEmployeeSection" class="dashboard-section card" style="display:none;"><h2>Search Employee</h2><p>Module under development...</p></section>
-            <section id="bulkEmployeeUpdateSection" class="dashboard-section card" style="display:none;"><h2>Bulk Employee Update</h2><p>Module under development...</p></section>
-            <section id="employeeIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Employee ID Print</h2><p>Module under development...</p></section>
 
-            <!-- CLASS SECTIONS -->
             <!-- ACADEMIC SESSIONS -->
             <section id="addSessionSection" class="dashboard-section" style="display:none;">
                 <div class="header">
@@ -1842,7 +1909,7 @@
                                 <tbody id="nonSubjectsTableBody">
                                     <!-- Dynamic content -->
                                 </tbody>
-                            </table>
+                                </table>
                         </div>
                     </div>
                 </div>
@@ -1851,13 +1918,185 @@
             <section id="manageSyllabusSection" class="dashboard-section card" style="display:none;"><h2>Manage Syllabus</h2><p>Module under development...</p></section>
 
             <!-- TIMETABLE SECTIONS -->
-            <section id="createTimetableSection" class="dashboard-section card" style="display:none;"><h2>Create Timetable</h2><p>Module under development...</p></section>
-            <section id="viewTimetableSection" class="dashboard-section card" style="display:none;"><h2>View Timetable</h2><p>Module under development...</p></section>
+            <section id="studentExamAttendanceSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Mark Exam Attendance</h1>
+                        <p>Track student presence in the examination hall</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <p style="color:var(--text-muted); margin-bottom:1.5rem;">Note: Attendance can also be marked during bulk marks entry. This section is for attendance-only tracking.</p>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="attnMarkClassSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="attnMarkSectionSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam</label>
+                            <select id="attnMarkExamSelect" onchange="loadAttnMarkGrid()" class="form-control"></select>
+                        </div>
+                        <button onclick="saveAttnMarkGrid()" class="btn-portal btn-primary">
+                            <i class="fas fa-save"></i> Save Attendance
+                        </button>
+                    </div>
+                    <div style="margin-top:2rem;">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Attendance Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attnMarkGridBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            <table style="min-width: 800px;">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Physical Health</th>
+                                        <th>Music/Dance</th>
+                                        <th>Work Education</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nonSubGridBody">
+                                    <!-- Student rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="viewTimetableSection" class="dashboard-section card" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Class Timetables</h1>
+                        <p>View and print schedules for different classes</p>
+                    </div>
+                </div>
+                <div class="card" style="text-align:center; padding:3rem;">
+                    <i class="fas fa-calendar-alt" style="font-size:3rem; color:var(--primary); opacity:0.3; margin-bottom:1.5rem;"></i>
+                    <p>Timetable module is initialized. Select class to view.</p>
+                </div>
+            </section>
 
             <!-- ADMISSION SECTIONS -->
-            <section id="addEnquirySection" class="dashboard-section card" style="display:none;"><h2>Add Enquiry</h2><p>Module under development...</p></section>
-            <section id="searchEnquirySection" class="dashboard-section card" style="display:none;"><h2>Search Enquiry</h2><p>Module under development...</p></section>
-            <section id="studentAdmissionSection" class="dashboard-section card" style="display:none;"><h2>Student Admission</h2><p>Module under development...</p></section>
+            <section id="addEnquirySection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Add Admission Enquiry</h1>
+                        <p>Capture details of prospective students</p>
+                    </div>
+                </div>
+                <div class="card" style="max-width: 800px; margin: 0 auto;">
+                    <form id="enquiryForm" onsubmit="saveEnquiry(event)">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
+                            <div class="form-group">
+                                <label>Student Name</label>
+                                <input type="text" id="enq_name" class="form-control" required placeholder="Name of student">
+                            </div>
+                            <div class="form-group">
+                                <label>Father Name</label>
+                                <input type="text" id="enq_father" class="form-control" required placeholder="Father's name">
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Number</label>
+                                <input type="text" id="enq_mobile" class="form-control" required placeholder="10-digit mobile">
+                            </div>
+                            <div class="form-group">
+                                <label>Class Required</label>
+                                <select id="enq_class" class="form-control" required>
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Source of Enquiry</label>
+                                <select id="enq_source" class="form-control">
+                                    <option value="Direct Walk-in">Direct Walk-in</option>
+                                    <option value="Online/Website">Online/Website</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Reference">Reference</option>
+                                    <option value="Advertisement">Advertisement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Next Follow-up Date</label>
+                                <input type="date" id="enq_followup" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:1.25rem;">
+                            <label>Remarks</label>
+                            <textarea id="enq_remarks" class="form-control" rows="3" placeholder="Additional notes..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="width:100%; margin-top:1.5rem;">
+                            <i class="fas fa-save"></i> Save Enquiry
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="searchEnquirySection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Search Enquiries</h1>
+                        <p>Track and manage admission leads</p>
+                    </div>
+                    <button class="btn-portal btn-primary" onclick="showSection('addEnquiry')">
+                        <i class="fas fa-plus"></i> New Enquiry
+                    </button>
+                </div>
+                <div class="card" style="padding:0; overflow:hidden;">
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student & Father</th>
+                                    <th>Class</th>
+                                    <th>Mobile</th>
+                                    <th>Next Follow-up</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enquiryTableBody">
+                                <!-- Dynamic content from erp-admission.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="studentAdmissionSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Student Admission</h1>
+                        <p>Convert leads to formal student registration</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="text-align:center; padding:3rem;">
+                        <i class="fas fa-user-plus" style="font-size:3rem; color:var(--primary); opacity:0.3; margin-bottom:1.5rem;"></i>
+                        <p style="margin-bottom:1.5rem; font-size:1.1rem;">Would you like to register a new student or convert an existing Enquiry?</p>
+                        <div style="display:flex; justify-content:center; gap:1.5rem;">
+                            <button onclick="showSection('addStudent')" class="btn-portal btn-primary">
+                                <i class="fas fa-plus"></i> Regular Admission
+                            </button>
+                            <button onclick="showSection('searchEnquiry')" class="btn-portal btn-ghost">
+                                <i class="fas fa-search"></i> From Enquiry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- STUDENT EXTRAS -->
             <section id="electiveMappingSection" class="dashboard-section" style="display:none;">
@@ -1906,8 +2145,101 @@
                     </div>
                 </div>
             </section>
-            <section id="studentIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Student ID Print</h2><p>Module under development...</p></section>
-            <section id="pickupIdPrintSection" class="dashboard-section card" style="display:none;"><h2>Pickup ID Print</h2><p>Module under development...</p></section>
+            <section id="studentIdPrintSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Premium ID Card Generator</h1>
+                        <p>Design and print professional student identity cards</p>
+                    </div>
+                </div>
+
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem;">
+                    <div>
+                        <!-- Step 1: Selection & Configuration -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-id-card" style="color:var(--primary);"></i> Configuration</h3>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
+                                <div class="form-group">
+                                    <label>Search Student</label>
+                                    <div id="idPrintSearchContainer"></div>
+                                    <input type="hidden" id="idPrintSid">
+                                </div>
+                                <div class="form-group">
+                                    <label>Orientation</label>
+                                    <select id="idCardOrientation" class="form-control" onchange="updateIdPreview()">
+                                        <option value="vertical">Vertical (Standard)</option>
+                                        <option value="horizontal">Horizontal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <label style="font-weight: 700; color: var(--text-main);">Select Design Template</label>
+                                <div class="template-gallery" id="idTemplateGallery">
+                                    <!-- Populated by JS -->
+                                </div>
+                                <input type="hidden" id="selectedIdTemplate" value="template1">
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Batch Options -->
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> Batch Generation</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Select a class to generate ID cards for all students at once.</p>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
+                                <div class="form-group">
+                                    <label>Select Class</label>
+                                    <select id="idBatchClassSelect" class="form-control"></select>
+                                </div>
+                                <button onclick="generateBatchIdCards()" class="btn-portal btn-ghost" style="margin-bottom: 1.25rem;">
+                                    <i class="fas fa-file-pdf"></i> Generate Batch PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside>
+                        <!-- Step 3: Live Preview -->
+                        <div class="card" style="position: sticky; top: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem; text-align: center;">Live Preview</h3>
+                            <div id="idCardPreviewContainer" style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: #f1f5f9; border-radius: 12px; border: 2px dashed var(--border); overflow: hidden; padding: 20px;">
+                                <div style="color: var(--text-muted); text-align: center;">
+                                    <i class="fas fa-eye-slash" style="font-size: 3rem; opacity: 0.2; display: block; margin-bottom: 1rem;"></i>
+                                    Select a student to see preview
+                                </div>
+                            </div>
+                            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button onclick="generateSingleIdCard()" class="btn-portal btn-primary" style="width: 100%;">
+                                    <i class="fas fa-download"></i> Download Selected ID
+                                </button>
+                                <button onclick="printIdPreview()" class="btn-portal btn-secondary" style="width: 100%;">
+                                    <i class="fas fa-print"></i> Direct Print
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="employeeIdPrintSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Employee ID Card Generator</h1>
+                        <p>Generate printable identity cards for staff members</p>
+                    </div>
+                </div>
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <div class="form-group">
+                        <label>Select Employee</label>
+                        <select id="empIdSelect" class="form-control">
+                            <option value="">-- Select Employee --</option>
+                        </select>
+                    </div>
+                    <button onclick="generateEmployeeIdCard()" class="btn-portal btn-primary" style="width:100%; margin-top:1.5rem;">
+                        <i class="fas fa-print"></i> Generate & Print ID Card
+                    </button>
+                </div>
+            </section>
             <!-- STUDENT BULK UPDATE (Data Plan) -->
             <section id="studentBulkUpdateSection" class="dashboard-section" style="display:none;">
                 <div class="header">
@@ -1993,9 +2325,66 @@
 
             <!-- FEES SECTIONS -->
             <section id="feeMasterSection" class="dashboard-section card" style="display:none;"><h2>Fee Master</h2><p>Module under development...</p></section>
-            <section id="createMonthlyFeeSection" class="dashboard-section card" style="display:none;"><h2>Create Monthly Fee</h2><p>Module under development...</p></section>
+            <section id="createMonthlyFeeSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Generate Monthly Fees</h1>
+                        <p>Generate fee records for all students in a class for a specific month</p>
+                    </div>
+                </div>
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <form onsubmit="handleMonthlyFeeGenerate(event)">
+                        <div class="form-group">
+                            <label>Select Class</label>
+                            <select id="genFeeClass" class="form-control" required>
+                                <option value="">-- Select Class --</option>
+                                <option value="Play Group">Play Group</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="LKG">LKG</option>
+                                <option value="UKG">UKG</option>
+                                <option value="Class 1">Class 1</option>
+                                <option value="Class 2">Class 2</option>
+                                <option value="Class 3">Class 3</option>
+                                <option value="Class 4">Class 4</option>
+                                <option value="Class 5">Class 5</option>
+                                <option value="Class 6">Class 6</option>
+                                <option value="Class 7">Class 7</option>
+                                <option value="Class 8">Class 8</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fee Month</label>
+                            <input type="month" id="genFeeMonth" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn-portal btn-primary" style="width:100%"><i class="fas fa-magic"></i> Generate Fees Now</button>
+                    </form>
+                </div>
+            </section>
             <section id="bulkFeeDiscountSection" class="dashboard-section card" style="display:none;"><h2>Bulk Fee Discount</h2><p>Module under development...</p></section>
-            <section id="searchStudentFeeSection" class="dashboard-section card" style="display:none;"><h2>Search Student Fee</h2><p>Module under development...</p></section>
+            <section id="searchStudentFeeSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Student Fee Search & Payment</h1>
+                        <p>Search by Student ID to view history and process payments</p>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1rem; align-items:flex-end;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Search Student</label>
+                            <div id="feeSearchSidContainer"></div>
+                            <input type="hidden" id="feeSearchSid">
+                        </div>
+                        <button onclick="searchStudentFees()" class="btn-portal btn-primary"><i class="fas fa-search"></i> Refresh Fees</button>
+                    </div>
+                </div>
+                <div id="feeSearchResults" class="card" style="padding:0; overflow:hidden;">
+                    <div style="padding:3rem; text-align:center; color:var(--text-muted);">
+                        <i class="fas fa-file-invoice-dollar" style="font-size:3rem; opacity:0.1; margin-bottom:1rem;"></i>
+                        <p>Search for a student to see their fee records.</p>
+                    </div>
+                </div>
+            </section>
             <section id="classFeePaymentSection" class="dashboard-section card" style="display:none;"><h2>Class Fee Payment</h2><p>Module under development...</p></section>
             <section id="searchFeeDuesSection" class="dashboard-section card" style="display:none;"><h2>Search Fee Dues</h2><p>Module under development...</p></section>
             <section id="sendFeeMessageSection" class="dashboard-section card" style="display:none;"><h2>Send Fee Message</h2><p>Module under development...</p></section>
@@ -2007,44 +2396,49 @@
                 <div class="header">
                     <div>
                         <h1>Grading Rules</h1>
-                        <p>Define percentage ranges and corresponding grades</p>
+                        <p>Configure percentage thresholds and grade labels</p>
                     </div>
                 </div>
                 <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
                     <div class="card">
-                        <h3>New Grading Rule</h3>
-                        <form id="addGradingForm" onsubmit="handleGradingSubmit(event)" style="margin-top:1rem;">
+                        <h3 style="margin-bottom:1.25rem;"><i class="fas fa-plus-circle" style="color:var(--primary);"></i> New Rule</h3>
+                        <form id="addGradingForm" onsubmit="handleGradingSubmit(event)">
                             <div class="form-group">
-                                <label>Grade (e.g., A1)</label>
+                                <label>Grade Name (e.g., A1)</label>
                                 <input type="text" id="gradeNameInput" placeholder="A1" required>
                             </div>
-                            <div class="form-group">
-                                <label>Min Percentage (%)</label>
-                                <input type="number" id="gradeMinInput" placeholder="91" required>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                                <div class="form-group">
+                                    <label>Min %</label>
+                                    <input type="number" id="gradeMinInput" placeholder="91" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Max %</label>
+                                    <input type="number" id="gradeMaxInput" placeholder="100" required>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label>Max Percentage (%)</label>
-                                <input type="number" id="gradeMaxInput" placeholder="100" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Remarks (Optional)</label>
+                                <label>Remarks</label>
                                 <input type="text" id="gradeRemarksInput" placeholder="Outstanding">
                             </div>
-                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
-                                <i class="fas fa-save"></i> Save Rule
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%; margin-top:0.5rem;">
+                                <i class="fas fa-save"></i> Save Grading Rule
                             </button>
                         </form>
                     </div>
                     <div class="card">
-                        <h3>Active Grading Table</h3>
-                        <div class="table-responsive" style="margin-top:1rem;">
-                            <table>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                            <h3><i class="fas fa-table" style="color:var(--primary);"></i> Grading Schema</h3>
+                            <span class="badge" style="background:rgba(30,58,138,0.1); color:var(--primary);">Current Active</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="portal-table">
                                 <thead>
                                     <tr>
                                         <th>Grade</th>
-                                        <th>Range</th>
+                                        <th>Percentage Range</th>
                                         <th>Remarks</th>
-                                        <th>Actions</th>
+                                        <th style="text-align:right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="gradingTableBody">
@@ -2060,39 +2454,42 @@
                 <div class="header">
                     <div>
                         <h1>Manage Examinations</h1>
-                        <p>Define exam terms (e.g., UT-1, Half Yearly)</p>
+                        <p>Define assessment terms and academic milestones</p>
                     </div>
                 </div>
                 <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
                     <div class="card">
-                        <h3>Create Exam Term</h3>
-                        <form id="addExamForm" onsubmit="handleExamSubmit(event)" style="margin-top:1rem;">
+                        <h3 style="margin-bottom:1.25rem;"><i class="fas fa-calendar-plus" style="color:var(--primary);"></i> Define Exam</h3>
+                        <form id="addExamForm" onsubmit="handleExamSubmit(event)">
                             <div class="form-group">
-                                <label>Select Session</label>
+                                <label>Target Session</label>
                                 <select id="examSessionSelect" required></select>
                             </div>
                             <div class="form-group">
-                                <label>Exam Name (e.g., Half Yearly)</label>
+                                <label>Exam Title (e.g., Term 1)</label>
                                 <input type="text" id="examNameInput" placeholder="Half Yearly" required>
                             </div>
                             <div class="form-group">
-                                <label>Weightage (%)</label>
+                                <label>Result Weightage (%)</label>
                                 <input type="number" id="examWeightageInput" placeholder="50" required>
                             </div>
-                            <button type="submit" class="btn-portal btn-primary" style="width:100%;">
-                                <i class="fas fa-plus"></i> Create Exam
+                            <button type="submit" class="btn-portal btn-primary" style="width:100%; margin-top:0.5rem;">
+                                <i class="fas fa-plus"></i> Initialize Exam Term
                             </button>
                         </form>
                     </div>
                     <div class="card">
-                        <h3>Defined Exams</h3>
-                        <div class="table-responsive" style="margin-top:1rem;">
-                            <table>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                            <h3><i class="fas fa-list-check" style="color:var(--primary);"></i> Exam Terms</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Defined assessments for this session</p>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="portal-table">
                                 <thead>
                                     <tr>
-                                        <th>Exam Name</th>
+                                        <th>Assessment Name</th>
                                         <th>Weightage</th>
-                                        <th>Actions</th>
+                                        <th style="text-align:right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="examsTableBody">
@@ -2106,32 +2503,32 @@
             <section id="manageExamScheduleSection" class="dashboard-section" style="display:none;">
                 <div class="header">
                     <div>
-                        <h1>Exam Schedule</h1>
-                        <p>Set dates and timings for subject exams</p>
+                        <h1>Exam Timetable Generator</h1>
+                        <p>Map assessment dates and maximum weightage for subjects</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; align-items:flex-end;">
                         <div class="form-group">
-                            <label>Select Exam Term</label>
-                            <select id="scheduleExamSelect" onchange="loadScheduleGrid()"></select>
+                            <label><i class="fas fa-file-invoice" style="margin-right:5px;"></i> Assessment Term</label>
+                            <select id="scheduleExamSelect" onchange="loadScheduleGrid()" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <label>Select Class</label>
-                            <select id="scheduleClassSelect" onchange="loadScheduleGrid()"></select>
+                            <label><i class="fas fa-users-rectangle" style="margin-right:5px;"></i> Select Class</label>
+                            <select id="scheduleClassSelect" onchange="loadScheduleGrid()" class="form-control"></select>
                         </div>
-                        <button onclick="saveExamSchedule()" class="btn-portal btn-primary" style="margin-bottom:1.25rem;">
-                            <i class="fas fa-save"></i> Save Schedule
+                        <button onclick="saveExamSchedule()" class="btn-portal btn-primary">
+                            <i class="fas fa-cloud-upload-alt"></i> Save Schedule
                         </button>
                     </div>
 
                     <div style="margin-top:2rem;">
                         <div class="table-responsive">
-                            <table id="scheduleTable">
-                                <thead>
+                            <table class="portal-table" id="scheduleTable">
+                                <thead style="background:var(--bg-light);">
                                     <tr>
-                                        <th>Subject</th>
-                                        <th>Date</th>
+                                        <th>Subject Name</th>
+                                        <th>Exam Date</th>
                                         <th>Start Time</th>
                                         <th>Duration (Min)</th>
                                         <th>Max Marks</th>
@@ -2145,25 +2542,25 @@
                     </div>
                 </div>
             </section>
+
             <section id="viewExamScheduleSection" class="dashboard-section" style="display:none;">
                 <div class="header">
                     <div>
-                        <h1>View Exam Schedule</h1>
-                        <p>Detailed view of scheduled exams across all classes</p>
+                        <h1>Global Exam Calendar</h1>
+                        <p>Visual overview of all scheduled assessments</p>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" style="padding:0; overflow:hidden;">
                     <div class="table-responsive">
-                        <table id="viewScheduleTable">
+                        <table class="portal-table" id="viewScheduleTable">
                             <thead>
                                 <tr>
-                                    <th>Exam</th>
+                                    <th>Exam Term</th>
                                     <th>Class</th>
                                     <th>Subject</th>
                                     <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Duration</th>
-                                    <th>Max Marks</th>
+                                    <th>Timing</th>
+                                    <th>Weight</th>
                                 </tr>
                             </thead>
                             <tbody id="viewScheduleTableBody">
@@ -2174,67 +2571,164 @@
                 </div>
             </section>
             
-            <section id="publishExamScheduleSection" class="dashboard-section card" style="display:none;">
-                <h2>Publish Exam Schedule</h2>
-                <div style="margin-top:1rem; padding:1.5rem; background:#f0f9ff; border-radius:0.75rem; border:1px solid #bae6fd;">
-                    <p style="color:#0369a1;"><i class="fas fa-info-circle"></i> This tool allows you to mass-publish schedules to the student portal. Coming in next minor update.</p>
+            <section id="publishExamScheduleSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Publish Schedules</h1>
+                        <p>Control the visibility of exam timetables in the Student Portal</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; align-items:flex-end; margin-bottom:1.5rem;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="publishSchedSessionSelect" class="form-control" onchange="loadPublishScheduleStatus()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam Term</label>
+                            <select id="publishSchedExamSelect" class="form-control" onchange="loadPublishScheduleStatus()"></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Schedule Status</th>
+                                    <th style="text-align:right;">Portal Visibility</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publishSchedTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
-            <section id="examAttendanceCardSection" class="dashboard-section card" style="display:none;"><h2>Exam Attendance Card</h2><p>Module under development...</p></section>
-            <section id="studentExamAttendanceSection" class="dashboard-section card" style="display:none;"><h2>Student Exam Attendance</h2><p>Module under development...</p></section>
-            <section id="viewExamAttendanceSection" class="dashboard-section card" style="display:none;"><h2>View Exam Attendance</h2><p>Module under development...</p></section>
-            <section id="examHallPlanSection" class="dashboard-section card" style="display:none;"><h2>Exam Hall Plan</h2><p>Module under development...</p></section>
-            <section id="examHallDetailSection" class="dashboard-section card" style="display:none;"><h2>Exam Hall Detail</h2><p>Module under development...</p></section>
-            <section id="examSittingPlanSection" class="dashboard-section card" style="display:none;"><h2>Exam Sitting Plan</h2><p>Module under development...</p></section>
+
+            <section id="admitCardToolSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Hall Ticket Generator</h1>
+                        <p>Batch generate examination admit cards with one click</p>
+                    </div>
+                </div>
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <div class="card">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                            <div class="form-group">
+                                <label>Target Class</label>
+                                <select id="admitClassSelect" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Exam Term</label>
+                                <select id="admitExamSelect" class="form-control"></select>
+                            </div>
+                            <button onclick="generateHallTicketsForTool()" class="btn-portal btn-primary">
+                                <i class="fas fa-file-pdf"></i> Generate PDF
+                            </button>
+                        </div>
+                        <div style="margin-top:2rem; padding:1.5rem; border:1px dashed var(--border); border-radius:1rem; background:var(--bg-light); text-align:center;">
+                            <i class="fas fa-file-image" style="font-size:2rem; opacity:0.2; margin-bottom:1rem; display:block;"></i>
+                            <p style="color:var(--text-muted);">PDF Preview will be rendered after generation</p>
+                        </div>
+                    </div>
+                    <div class="card" style="background:var(--primary); color:white;">
+                        <h3>Quick Stats</h3>
+                        <div style="margin-top:1.5rem;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                                <span>Total Students</span>
+                                <span id="admitCardTotalStudents">--</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                                <span>Mapped Records</span>
+                                <span id="admitCardMappedRecords">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examAttendanceCardSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Exam Signature Sheets</h1>
+                        <p>Print attendance logs for examination hall supervisors</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="attnClassSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam Term</label>
+                            <select id="attnExamSelect" class="form-control"></select>
+                        </div>
+                        <button onclick="generateAttendanceCards()" class="btn-portal btn-primary">
+                            <i class="fas fa-print"></i> Download Sheet
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examSittingPlanSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Exam Sitting Plan</h1>
+                        <p>Manage exam hall seating arrangements</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="margin-top:1rem; padding:1.5rem; background:#f0f9ff; border-radius:0.75rem; border:1px solid #bae6fd;">
+                        <p style="color:#0369a1;"><i class="fas fa-info-circle"></i> Sitting plan management is currently optimized for manual entry. Auto-generation features coming soon.</p>
+                    </div>
+                </div>
+            </section>
 
             <!-- RESULT SECTIONS -->
             <section id="manageResultSection" class="dashboard-section" style="display:none;">
                 <div class="header">
                     <div>
-                        <h1>Result Review & Management</h1>
-                        <p>Search and edit entered marks across all exams</p>
+                        <h1>Result Audit & Review</h1>
+                        <p>Verify and adjust examination marks with full transparency</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:1rem; align-items:flex-end;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end; margin-bottom:1.5rem;">
                         <div class="form-group">
-                            <label>Session</label>
-                            <select id="manageResultsSession" onchange="loadManageResultsClasses()"></select>
+                            <label><i class="fas fa-layer-group"></i> Class</label>
+                            <select id="manageResultsClass" onchange="loadManageResultsSections()" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <label>Class</label>
-                            <select id="manageResultsClass" onchange="loadManageResultsSections()"></select>
+                            <label><i class="fas fa-code-branch"></i> Section</label>
+                            <select id="manageResultsSectionSelect" onchange="loadManageResultsSubjects()" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <label>Section</label>
-                            <select id="manageResultsSectionSelect" onchange="loadManageResultsSubjects()"></select>
+                            <label><i class="fas fa-file-contract"></i> Exam</label>
+                            <select id="manageResultsExam" onchange="refreshManageResultsTable()" class="form-control"></select>
                         </div>
                         <div class="form-group">
-                            <label>Exam</label>
-                            <select id="manageResultsExam" onchange="refreshManageResultsTable()"></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Subject</label>
-                            <select id="manageResultsSubject" onchange="refreshManageResultsTable()"></select>
+                            <label><i class="fas fa-book"></i> Subject</label>
+                            <select id="manageResultsSubject" onchange="refreshManageResultsTable()" class="form-control"></select>
                         </div>
                     </div>
-                    <div style="margin-top:2rem;">
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Roll No</th>
-                                        <th>Student Name</th>
-                                        <th>Marks Obtained</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="manageResultsTableBody">
-                                    <!-- Dynamic content -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Student Name</th>
+                                    <th>Score Obtained</th>
+                                    <th>Grade</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageResultsTableBody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -2242,68 +2736,166 @@
                 <div class="header">
                     <div>
                         <h1>Bulk Marks Entry</h1>
-                        <p>Enter student marks class-wise and subject-wise</p>
+                        <p>High-speed data entry grid for examination results</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
-                        <div class="form-group">
-                            <label>Session</label>
-                            <select id="marksSessionSelect" onchange="loadMarksClasses()"></select>
-                        </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem; align-items:flex-end; margin-bottom:1.5rem;">
                         <div class="form-group">
                             <label>Class</label>
-                            <select id="marksClassSelect" onchange="loadMarksSections()"></select>
+                            <select id="marksClassSelect" onchange="loadMarksSections()" class="form-control"></select>
                         </div>
                         <div class="form-group">
                             <label>Section</label>
-                            <select id="marksSectionSelect" onchange="loadMarksSubjects()"></select>
+                            <select id="marksSectionSelect" onchange="loadMarksSubjects()" class="form-control"></select>
                         </div>
                         <div class="form-group">
                             <label>Exam</label>
-                            <select id="marksExamSelect" onchange="refreshMarksGrid()"></select>
+                            <select id="marksExamSelect" onchange="refreshMarksGrid()" class="form-control"></select>
                         </div>
                         <div class="form-group">
                             <label>Subject</label>
-                            <select id="marksSubjectSelect" onchange="refreshMarksGrid()"></select>
+                            <select id="marksSubjectSelect" onchange="refreshMarksGrid()" class="form-control"></select>
                         </div>
                     </div>
 
-                    <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:flex-end;">
-                        <button onclick="document.getElementById('excelUploadMarks').click()" class="btn-portal btn-ghost">
-                            <i class="fas fa-file-excel"></i> Upload Excel
-                        </button>
-                        <input type="file" id="excelUploadMarks" hidden accept=".xlsx, .xls" onchange="handleMarksExcelUpload(event)">
-                        <button onclick="saveMarksGrid()" class="btn-portal btn-primary">
-                            <i class="fas fa-save"></i> Save All Marks
-                        </button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; background:var(--bg-light); padding:1rem; border-radius:1rem;">
+                        <div style="display:flex; gap:1.5rem;">
+                            <div style="text-align:center;">
+                                <span style="display:block; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Total Students</span>
+                                <strong id="marksCountStudents">--</strong>
+                            </div>
+                            <div style="text-align:center;">
+                                <span style="display:block; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Entered</span>
+                                <strong id="marksCountEntered" style="color:var(--success);">--</strong>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:0.75rem;">
+                            <button onclick="document.getElementById('excelUploadMarks').click()" class="btn-portal btn-ghost">
+                                <i class="fas fa-file-excel"></i> Import Excel
+                            </button>
+                            <input type="file" id="excelUploadMarks" hidden accept=".xlsx, .xls" onchange="handleMarksExcelUpload(event)">
+                            <button onclick="saveMarksGrid()" class="btn-portal btn-primary">
+                                <i class="fas fa-check-double"></i> Finalize Marks
+                            </button>
+                        </div>
                     </div>
 
-                    <div style="margin-top:2rem;">
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Roll No</th>
-                                        <th>Student Name</th>
-                                        <th>Marks Obtained</th>
-                                        <th>Status (P/A)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="marksGridTableBody">
-                                    <!-- Student rows -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:100px;">Roll No</th>
+                                    <th>Student Name</th>
+                                    <th style="width:180px;">Score Obtained</th>
+                                    <th style="width:150px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksGridTableBody">
+                                <!-- Student rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
-            <section id="manageAllResultsSection" class="dashboard-section card" style="display:none;"><h2>Manage All Results</h2><p>Module under development...</p></section>
-            <section id="viewAllResultsSection" class="dashboard-section card" style="display:none;"><h2>View All Results</h2><p>Module under development...</p></section>
-            <section id="manageNonSubResultSection" class="dashboard-section card" style="display:none;"><h2>Manage NonSubject Result</h2><p>Module under development...</p></section>
-            <section id="viewNonSubResultSection" class="dashboard-section card" style="display:none;"><h2>View NonSubject Result</h2><p>Module under development...</p></section>
-            <section id="publishResultSection" class="dashboard-section card" style="display:none;"><h2>Publish Exam Result</h2><p>Module under development...</p></section>
-            <section id="reportCardRemarksSection" class="dashboard-section card" style="display:none;"><h2>Report Card Remarks</h2><p>Module under development...</p></section>
+            <section id="publishResultSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Publish Exam Results</h1>
+                        <p>Toggle final result visibility for students and parents</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; align-items:flex-end; margin-bottom:1.5rem;">
+                        <div class="form-group">
+                            <label>Academic Session</label>
+                            <select id="publishSessionSelect" class="form-control" onchange="refreshPublishStatus()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assessment Term</label>
+                            <select id="publishExamSelect" class="form-control" onchange="refreshPublishStatus()"></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Evaluation Status</th>
+                                    <th style="text-align:right;">Portal Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publishStatusTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="manageAllResultsSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Consolidated Result Manager</h1>
+                        <p>View and manage final results for the entire school</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                        <div class="form-group">
+                            <label>Session</label>
+                            <select id="allResultsSessionSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <select id="allResultsClassSelect" class="form-control" onchange="loadConsolidatedResults()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam Term</label>
+                            <select id="allResultsExamSelect" class="form-control" onchange="loadConsolidatedResults()"></select>
+                        </div>
+                    </div>
+                    <div id="consolidatedResultsArea" style="margin-top:2rem;">
+                        <!-- Results table or summary grid -->
+                    </div>
+                </div>
+            </section>
+            <section id="reportCardRemarksSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Final Remarks & Co-Scholastic</h1>
+                        <p>Teacher observations and non-academic behavioral grading</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem; align-items:flex-end; margin-bottom:1.5rem;">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-badge"></i> Select Class</label>
+                            <select id="remarkClassSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-file-invoice"></i> Assessment Term</label>
+                            <select id="remarkExamSelect" onchange="loadRemarksGrid()" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th style="min-width:250px;">Teacher's Observations</th>
+                                    <th style="width:120px;">Art/Craft</th>
+                                    <th style="width:120px;">Discipline</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="remarksGridBody">
+                                <!-- Student rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
             <!-- REPORT CARD GENERATION (Phase 5) -->
             <section id="generateReportCardSection" class="dashboard-section" style="display:none;">
                 <div class="header">
@@ -2364,46 +2956,108 @@
                     </p>
                 </div>
             </section>
-            <section id="publishResultSection" class="dashboard-section" style="display:none;">
+            <!-- DUPLICATE publishResultSection REMOVED -->
+
+            <section id="studentExamAttendanceSection" class="dashboard-section" style="display:none;">
                 <div class="header">
                     <div>
-                        <h1>Publish Results</h1>
-                        <p>Control visibility of report cards in student portal</p>
+                        <h1>Mark Exam Attendance</h1>
+                        <p>Record student presence for specific examinations</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem; align-items:flex-end;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
                         <div class="form-group">
-                            <label>Select Session</label>
-                            <select id="publishSessionSelect" onchange="refreshPublishStatus()"></select>
+                            <label>Session</label>
+                            <select id="examAttSession" onchange="loadExamAttClasses()"></select>
                         </div>
                         <div class="form-group">
-                            <label>Select Exam Term</label>
-                            <select id="publishExamSelect" onchange="refreshPublishStatus()"></select>
+                            <label>Class</label>
+                            <select id="examAttClass" onchange="loadExamAttSections()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <select id="examAttSection" onchange="loadExamAttSubjects()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Exam</label>
+                            <select id="examAttExam" onchange="refreshExamAttGrid()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select id="examAttSubject" onchange="refreshExamAttGrid()"></select>
                         </div>
                     </div>
-
-                    <div style="margin-top:2rem;">
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Class Name</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="publishStatusTableBody">
-                                    <!-- List of all classes with toggle -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <div style="margin-top:1.5rem; display:flex; justify-content:flex-end;">
+                        <button onclick="saveExamAttendance()" class="btn-portal btn-primary">
+                            <i class="fas fa-save"></i> Save Attendance
+                        </button>
+                    </div>
+                    <div class="table-responsive" style="margin-top:2rem;">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Student Name</th>
+                                    <th>Status (Present/Absent)</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examAttGridBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
 
-            <section id="viewReportCardSection" class="dashboard-section card" style="display:none;"><h2>View Report Card</h2><p>Module under development...</p></section>
-            <section id="publishReportCardSection" class="dashboard-section card" style="display:none;"><h2>Publish Report Card</h2><p>Module under development...</p></section>
+            <section id="viewReportCardSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Report Card Previewer</h1>
+                        <p>Quickly view or generate a report card for an individual student</p>
+                    </div>
+                </div>
+                <div class="card" style="max-width: 600px; margin:0 auto;">
+                    <div class="form-group">
+                        <label>Search Student</label>
+                        <div id="rcPreviewSearchContainer"></div>
+                        <input type="hidden" id="rcPreviewSid">
+                    </div>
+                    <div class="form-group" style="margin-top:1.25rem;">
+                        <label>Select Exam</label>
+                        <select id="rcPreviewExam" class="form-control"></select>
+                    </div>
+                    <div class="form-group" style="margin-top:1.25rem;">
+                        <label>Template Format</label>
+                        <select id="rcPreviewFormat" class="form-control">
+                            <option value="Himalayan">Himalayan (Standard)</option>
+                            <option value="MCQ_Normal">MCQ Normal</option>
+                            <option value="MCQ_Standard">MCQ Standard</option>
+                            <option value="MCQ_Advance">MCQ Advance</option>
+                        </select>
+                    </div>
+                    <button onclick="previewSingleReportCard()" class="btn-portal btn-primary" style="width:100%; margin-top:2rem;">
+                        <i class="fas fa-eye"></i> Generate & View Preview
+                    </button>
+                </div>
+            </section>
+
+            <section id="publishReportCardSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Publish Report Cards</h1>
+                        <p>Control visibility of PDF report cards in student portal</p>
+                    </div>
+                </div>
+                <div class="card" style="text-align:center; padding:3rem;">
+                    <i class="fas fa-file-contract" style="font-size:3rem; color:var(--primary); opacity:0.3; margin-bottom:1.5rem;"></i>
+                    <p>This module allows mass-locking of report cards after verification. Linked to Mass Result Toggle.</p>
+                    <button onclick="showSection('publishResult')" class="btn-portal btn-primary" style="margin-top:1.5rem;">
+                         Go to Publishing Controls
+                    </button>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -2412,6 +3066,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -2419,13 +3074,16 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/admin-auth.js"></script>
-    <!-- PDF Lib for splitting -->
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-    <script src="../js/admin-dashboard.js"></script>
     <script src="../js/cms-admin.js"></script>
     <script src="../js/erp-class-mgmt.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../js/erp-exams.js"></script>
+    <script src="../js/erp-fees.js"></script>
+    <script src="../js/erp-id-cards.js"></script>
+    <script src="../js/erp-admission.js"></script>
+    <script src="../js/id-card-templates.js"></script>
     <script src="../js/report-card-factory.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
 </body>
 </html>
