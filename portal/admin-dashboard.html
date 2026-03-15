@@ -65,125 +65,34 @@
                     </a>
                 </div>
 
-                <!-- EMPLOYEE -->
-                <div class="nav-category" onclick="toggleCategory('catEmployee')">
+                <!-- ID GENERATOR -->
+                <div class="nav-item" onclick="showSection('studentIdPrint')">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-id-card"></i>
+                        <span>ID Generator</span>
+                    </a>
+                </div>
+
+                <!-- STUDENT -->
+                <div class="nav-category" onclick="toggleCategory('catStudent')">
                     <div class="cat-header">
-                        <i class="fas fa-user-tie"></i>
-                        <span>Employee</span>
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Student Management</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catEmployee">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addEmployee')">Add Employee</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('searchEmployee')">Search Employee</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkEmployeeUpdate')">Update Bulk Employee</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('employeeIdPrint')">Employee ID Print</a>
+                    <div class="cat-submenu" id="catStudent">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addStudent')">Add Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Search Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Upload Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('electiveMapping')">Elective Subject Mapping</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promote Student</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('pickupIdPrint')">Pickup ID Print</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Student Bulk Update</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('hostelReport')">Hostel Student Report</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('transportReport')">Transport Student Report</a>
                     </div>
                 </div>
 
-                <!-- TOOLS (ERP) -->
-                <div class="nav-category" onclick="toggleCategory('catToolsERP')">
-                    <div class="cat-header">
-                        <i class="fas fa-tools"></i>
-                        <span>Tools (ERP)</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catToolsERP">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFeeTools')">Parents Who Not Paid</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Bulk Student Update</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('generateReportCard')">Report Card Generator</a>
-                    </div>
-                </div>
-
-                <!-- ACADEMIC RECORDS -->
-                <div class="nav-category" onclick="toggleCategory('catAcademicRecords')">
-                    <div class="cat-header">
-                        <i class="fas fa-book-reader"></i>
-                        <span>Academic Records</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catAcademicRecords">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('resultsStatus')">Results Status</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkPdfUpload')">Bulk PDF Upload</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')">Admit Card Tool</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageNotices')">Manage Notices</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')">Timetables</a>
-                    </div>
-                </div>
-
-                <!-- EXAM MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catExam')">
-                    <div class="cat-header">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Exam Management</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catExam">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('examGrading')">Setup Exam Grading</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExam')">Manage Exam</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageExamSchedule')">Manage Exam Schedule</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewExamSchedule')">View Exam Schedule</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('publishExamSchedule')">Publish Exam Schedule</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('admitCardTool')">Exam Hall Ticket</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('examAttendanceCard')">Exam Attendance Card</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentExamAttendance')">Student Exam Attendance</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewExamAttendance')">View Exam Attendance</a>
-                    </div>
-                </div>
-
-                <!-- RESULT MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catResult')">
-                    <div class="cat-header">
-                        <i class="fas fa-flag-checkered"></i>
-                        <span>Result Management</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catResult">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageResult')">Manage Exam Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addResult')">Add Exam Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageAllResults')">Manage All Exam Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewAllResults')">View All Exam Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageNonSubResult')">Manage NonSubject Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewNonSubResult')">View NonSubject Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('publishResult')">Publish Exam Result</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('reportCardRemarks')">Report Card Remarks</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('generateReportCard')">Generate Report Card</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewReportCard')">View Report Card</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('publishReportCard')">Publish Report Card</a>
-                    </div>
-                </div>
-
-                <!-- CLASS MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catClass')">
-                    <div class="cat-header">
-                        <i class="fas fa-book"></i>
-                        <span>Class Management</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catClass">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')">Add Class Details</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')">Add Non-Subject</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addSyllabus')">Add Syllabus</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageSyllabus')">Manage Syllabus</a>
-                    </div>
-                </div>
-
-                <!-- TIME TABLE -->
-                <div class="nav-category" onclick="toggleCategory('catTimeTable')">
-                    <div class="cat-header">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Time Table</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catTimeTable">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('createTimetable')">Create Timetable</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')">View Timetable</a>
-                    </div>
-                </div>
-
-                <!-- Moved Admission & Student to TOP -->
                 <!-- ADMISSION & ENQUIRY -->
                 <div class="nav-category" onclick="toggleCategory('catAdmission')">
                     <div class="cat-header">
@@ -198,28 +107,6 @@
                     </div>
                 </div>
 
-                <!-- STUDENT -->
-                <div class="nav-category" onclick="toggleCategory('catStudent')">
-                    <div class="cat-header">
-                        <i class="fas fa-user-graduate"></i>
-                        <span>Student</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catStudent">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('addStudent')">Add Student</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Search Student</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Upload Student</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('electiveMapping')">Elective Subject Mapping</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promote Student</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentIdPrint')">Student ID Print</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('pickupIdPrint')">Pickup ID Print</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')">Student Bulk Update</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('hostelReport')">Hostel Student Report</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('transportReport')">Transport Student Report</a>
-                    </div>
-                </div>
-
-                <!-- EXAM & RESULT (Previously Top) -->
                 <!-- EXAM MANAGEMENT -->
                 <div class="nav-category" onclick="toggleCategory('catExams')">
                     <div class="cat-header">
@@ -250,6 +137,8 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('addResult')">Bulk Marks Entry</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('viewReportCard')">View Report Card</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('publishReportCard')">Publish Report Card</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('manageAllResults')">Manage Results</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('reportCardRemarks')">Report Remarks</a>
                     </div>
                 </div>
 
@@ -265,30 +154,52 @@
                         <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFee')">Create Monthly Fee</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscount')">Bulk Fee Discount</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFee')">Search Student Fee</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('classFeePayment')">Student Class Fee Payment</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDues')">Search Fee Dues</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessage')">Send Fee Message</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('manageFeeFine')">Manage Fee Fine</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('feeCarryForward')">Fee Carry Forward</a>
                     </div>
                 </div>
 
-                <!-- WEBSITE CUSTOMISE -->
-                <div class="nav-category" onclick="toggleCategory('catCustomise')">
+                <!-- EMPLOYEE -->
+                <div class="nav-category" onclick="toggleCategory('catEmployee')">
                     <div class="cat-header">
-                        <i class="fas fa-folder"></i>
-                        <span>Website Customise</span>
+                        <i class="fas fa-user-tie"></i>
+                        <span>Employee</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
-                    <div class="cat-submenu" id="catCustomise">
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextHome')">Home Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAbout')">About Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAcademics')">Academics Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAdmissions')">Admissions Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextFacilities')">Facilities Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextGallery')">Gallery Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextContact')">Contact Page Text</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextInquiry')">Inquiry Page Text</a>
+                    <div class="cat-submenu" id="catEmployee">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addEmployee')">Add Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('searchEmployee')">Search Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('bulkEmployeeUpdate')">Update Bulk Employee</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('employeeIdPrint')">Employee ID Print</a>
+                    </div>
+                </div>
+
+                <!-- CLASS MANAGEMENT -->
+                <div class="nav-category" onclick="toggleCategory('catClass')">
+                    <div class="cat-header">
+                        <i class="fas fa-book"></i>
+                        <span>Class Management</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catClass">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')">Add Class Details</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')">Add Non-Subject</a>
+                    </div>
+                </div>
+
+                <!-- TIME TABLE -->
+                <div class="nav-category" onclick="toggleCategory('catTimeTable')">
+                    <div class="cat-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Time Table</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catTimeTable">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('createTimetable')">Create Timetable</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')">View Timetable</a>
                     </div>
                 </div>
 
@@ -302,37 +213,18 @@
                     <div class="cat-submenu" id="catCMS">
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsHero')">Hero Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsTheme')">Theme Customization</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStats')">Stats & Numbers</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsEvents')">Events</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAchievements')">Achievements</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTestimonials')">Testimonials</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAdmission')">Admission Status</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsHolidays')">Holiday List</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsGallery')">Gallery</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsStaff')">Staff / Teachers</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsFees')">Fee Structure</a>
-                    </div>
-                </div>
-
-
-                <!-- PORTAL CONTROL -->
-                <div class="nav-category" onclick="toggleCategory('catPortalControl')">
-                    <div class="cat-header">
-                        <i class="fas fa-desktop"></i>
-                        <span>Portal Control</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="cat-submenu" id="catPortalControl">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAdmission')">Admission Status</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsStudentDashboard')">Student Portal Controls</a>
                     </div>
                 </div>
 
-
-                <!-- UTILITIES / SETTINGS -->
+                <!-- SETTINGS -->
                 <div class="nav-category" onclick="toggleCategory('catSettings')">
                     <div class="cat-header">
                         <i class="fas fa-cog"></i>
-                        <span>Utilities (Settings)</span>
+                        <span>Settings</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
                     <div class="cat-submenu" id="catSettings">
@@ -406,30 +298,115 @@
                         <h4>Admissions</h4>
                         <p>Register new student</p>
                     </div>
+                    <div class="feature-card" onclick="showSection('studentIdPrint')">
+                        <div class="icon-box" style="background: rgba(99, 102, 2 indigo, 0.1); color: #6366f1;"><i class="fas fa-print"></i></div>
+                        <h4>ID Generator</h4>
+                        <p>Print student cards</p>
+                    </div>
                     <div class="feature-card" onclick="showSection('feeMaster')">
                         <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fas fa-credit-card"></i></div>
                         <h4>Fees Center</h4>
                         <p>Process payments</p>
-                    </div>
-                    <div class="feature-card" onclick="showSection('studentIdPrint')">
-                        <div class="icon-box" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i class="fas fa-print"></i></div>
-                        <h4>ID Generator</h4>
-                        <p>Print student cards</p>
                     </div>
                     <div class="feature-card" onclick="showSection('studentExamAttendance')">
                         <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fas fa-check-double"></i></div>
                         <h4>Exam Portal</h4>
                         <p>Marks & Attendance</p>
                     </div>
+                    <div class="feature-card" onclick="showSection('examGrading')">
+                        <div class="icon-box" style="background: rgba(249, 115, 22, 0.1); color: #f97316;"><i class="fas fa-ruler-combined"></i></div>
+                        <h4>Grading Rules</h4>
+                        <p>Set exam standards</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('addResult')">
+                        <div class="icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fas fa-edit"></i></div>
+                        <h4>Marks Entry</h4>
+                        <p>Bulk update results</p>
+                    </div>
                     <div class="feature-card" onclick="showSection('viewReportCard')">
-                        <div class="icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fas fa-file-invoice"></i></div>
+                        <div class="icon-box" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i class="fas fa-file-invoice"></i></div>
                         <h4>Report Cards</h4>
                         <p>Preview academic results</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Content Sections -->
+            <!-- Student ID Card Generator -->
+            <section id="studentIdPrintSection" class="dashboard-section" style="display:none;">
+                <div class="header">
+                    <div>
+                        <h1>Premium ID Card Generator</h1>
+                        <p>Design and print professional student identity cards</p>
+                    </div>
+                </div>
+
+                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem;">
+                    <div>
+                        <!-- Step 1: Selection & Configuration -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-id-card" style="color:var(--primary);"></i> Configuration</h3>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
+                                <div class="form-group">
+                                    <label>Search Student</label>
+                                    <div id="idPrintSearchContainer"></div>
+                                    <input type="hidden" id="idPrintSid">
+                                </div>
+                                <div class="form-group">
+                                    <label>Orientation</label>
+                                    <select id="idCardOrientation" class="form-control" onchange="updateIdPreview()">
+                                        <option value="vertical">Vertical (Standard)</option>
+                                        <option value="horizontal">Horizontal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <label style="font-weight: 700; color: var(--text-main);">Select Design Template</label>
+                                <div class="template-gallery" id="idTemplateGallery">
+                                    <!-- Populated by JS -->
+                                </div>
+                                <input type="hidden" id="selectedIdTemplate" value="template1">
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Batch Options -->
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> Batch Generation</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Select a class to generate ID cards for all students at once.</p>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
+                                <div class="form-group">
+                                    <label>Select Class</label>
+                                    <select id="idBatchClassSelect" class="form-control"></select>
+                                </div>
+                                <button onclick="generateBatchIdCards()" class="btn-portal btn-ghost" style="margin-bottom: 1.25rem;">
+                                    <i class="fas fa-file-pdf"></i> Generate Batch PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside>
+                        <!-- Step 3: Live Preview -->
+                        <div class="card" style="position: sticky; top: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem; text-align: center;">Live Preview</h3>
+                            <div id="idCardPreviewContainer" style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: #f1f5f9; border-radius: 12px; border: 2px dashed var(--border); overflow: hidden; padding: 20px;">
+                                <div style="color: var(--text-muted); text-align: center;">
+                                    <i class="fas fa-eye-slash" style="font-size: 3rem; opacity: 0.2; display: block; margin-bottom: 1rem;"></i>
+                                    Select a student to see preview
+                                </div>
+                            </div>
+                            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button onclick="generateSingleIdCard()" class="btn-portal btn-primary" style="width: 100%;">
+                                    <i class="fas fa-download"></i> Download Selected ID
+                                </button>
+                                <button onclick="printIdPreview()" class="btn-portal btn-secondary" style="width: 100%;">
+                                    <i class="fas fa-print"></i> Direct Print
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
 
             <!-- Student List Section -->
             <section id="studentListSection" class="dashboard-section card">
@@ -2143,81 +2120,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </section>
-            <section id="studentIdPrintSection" class="dashboard-section" style="display:none;">
-                <div class="header">
-                    <div>
-                        <h1>Premium ID Card Generator</h1>
-                        <p>Design and print professional student identity cards</p>
-                    </div>
-                </div>
-
-                <div class="grid-2-1" style="display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem;">
-                    <div>
-                        <!-- Step 1: Selection & Configuration -->
-                        <div class="card" style="margin-bottom: 1.5rem;">
-                            <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-id-card" style="color:var(--primary);"></i> Configuration</h3>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
-                                <div class="form-group">
-                                    <label>Search Student</label>
-                                    <div id="idPrintSearchContainer"></div>
-                                    <input type="hidden" id="idPrintSid">
-                                </div>
-                                <div class="form-group">
-                                    <label>Orientation</label>
-                                    <select id="idCardOrientation" class="form-control" onchange="updateIdPreview()">
-                                        <option value="vertical">Vertical (Standard)</option>
-                                        <option value="horizontal">Horizontal</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div style="margin-top: 1.5rem;">
-                                <label style="font-weight: 700; color: var(--text-main);">Select Design Template</label>
-                                <div class="template-gallery" id="idTemplateGallery">
-                                    <!-- Populated by JS -->
-                                </div>
-                                <input type="hidden" id="selectedIdTemplate" value="template1">
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Batch Options -->
-                        <div class="card">
-                            <h3 style="margin-bottom: 1rem;"><i class="fas fa-layer-group" style="color:var(--primary);"></i> Batch Generation</h3>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Select a class to generate ID cards for all students at once.</p>
-                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; align-items:flex-end;">
-                                <div class="form-group">
-                                    <label>Select Class</label>
-                                    <select id="idBatchClassSelect" class="form-control"></select>
-                                </div>
-                                <button onclick="generateBatchIdCards()" class="btn-portal btn-ghost" style="margin-bottom: 1.25rem;">
-                                    <i class="fas fa-file-pdf"></i> Generate Batch PDF
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <aside>
-                        <!-- Step 3: Live Preview -->
-                        <div class="card" style="position: sticky; top: 1.5rem;">
-                            <h3 style="margin-bottom: 1.25rem; text-align: center;">Live Preview</h3>
-                            <div id="idCardPreviewContainer" style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: #f1f5f9; border-radius: 12px; border: 2px dashed var(--border); overflow: hidden; padding: 20px;">
-                                <div style="color: var(--text-muted); text-align: center;">
-                                    <i class="fas fa-eye-slash" style="font-size: 3rem; opacity: 0.2; display: block; margin-bottom: 1rem;"></i>
-                                    Select a student to see preview
-                                </div>
-                            </div>
-                            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
-                                <button onclick="generateSingleIdCard()" class="btn-portal btn-primary" style="width: 100%;">
-                                    <i class="fas fa-download"></i> Download Selected ID
-                                </button>
-                                <button onclick="printIdPreview()" class="btn-portal btn-secondary" style="width: 100%;">
-                                    <i class="fas fa-print"></i> Direct Print
-                                </button>
-                            </div>
-                        </div>
-                    </aside>
                 </div>
             </section>
 

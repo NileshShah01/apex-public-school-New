@@ -38,8 +38,8 @@ const ID_TEMPLATES = {
                     <i class="fas fa-phone-alt"></i> ${data.schoolContact}
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-family:'Alex Brush', cursive; font-size:11pt; color:#1e293b; line-height:0.7;">Sign</div>
-                    <div style="font-size:5.5pt; font-weight:900; color:#64748b;">Principal</div>
+                    <img src="../images/principal-sign.png" style="height:7.5mm; margin-bottom:-2mm; mix-blend-mode:multiply;">
+                    <div style="font-size:5.5pt; font-weight:900; color:#64748b; border-top:1px solid #ddd; margin-top:1px;">Principal</div>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@ const ID_TEMPLATES = {
                 <tr style="border-bottom:none;"><td style="padding:2px 10px; color:#64748b; font-weight:800; vertical-align:top;">Address</td><td style="padding:2px; font-weight:600; font-size:5.5pt; line-height:1.1;">: ${data.address}</td></tr>
             </table>
             <div style="position:absolute; bottom:5px; right:10px; text-align:center;">
-                 <div style="font-family:cursive; font-size:9pt; line-height:1;">Sign</div>
+                 <img src="../images/principal-sign.png" style="height:6mm; margin-bottom:-1mm; mix-blend-mode:multiply;">
                  <div style="font-size:5pt; font-weight:800; color:#64748b; border-top:1px solid #ccc; margin-top:1px;">Principal</div>
             </div>
         </div>
@@ -97,7 +97,7 @@ const ID_TEMPLATES = {
                 </div>
             </div>
             <div class="footer-wave" style="height:10mm; background:#1e3a8a; color:white;">
-                <div style="font-family:cursive; font-size:10pt; opacity:0.7; margin-top:-2mm;">Sign</div>
+                <img src="../images/principal-sign.png" style="height:7mm; margin-bottom:-3mm; filter:brightness(0) invert(1);">
                 <div style="position:absolute; bottom:1px; font-size:5pt; font-weight:900;">Principal's Signature</div>
             </div>
         </div>
@@ -131,8 +131,8 @@ const ID_TEMPLATES = {
                     <i class="fas fa-phone-alt"></i> ${data.schoolContact}
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-family:cursive; font-size:9pt; line-height:0.7;">Sign</div>
-                    <div style="font-size:4.5pt; font-weight:900;">Principal Signature</div>
+                    <img src="../images/principal-sign.png" style="height:6.5mm; margin-bottom:-2mm; filter:brightness(0) invert(1);">
+                    <div style="font-size:4.5pt; font-weight:900; border-top:1px solid rgba(255,255,255,0.3); margin-top:1px;">Principal Signature</div>
                 </div>
             </div>
         </div>
@@ -157,6 +157,13 @@ const ID_TEMPLATES = {
                     <div><b style="color:#64748b; font-size:5.5pt;">Mother:</b><br><span style="font-weight:700;">${data.motherName || 'N/A'}</span></div>
                     <div><b style="color:#64748b; font-size:5.5pt;">ID / Class:</b><br><span style="font-weight:700;">${data.studentId} / ${data.class}</span></div>
                     <div><b style="color:#64748b; font-size:5.5pt;">DOB:</b><br><span style="font-weight:700;">${data.dateOfBirth || 'N/A'}</span></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:4px; border-top:1px solid #eee; padding:2px 10px 0;">
+                    <div style="font-size:6.5pt; font-weight:900; color:#0f172a;">ID CARD</div>
+                    <div style="text-align:right;">
+                        <img src="../images/principal-sign.png" style="height:6.5mm; margin-bottom:-1mm; mix-blend-mode:multiply;">
+                        <div style="font-size:4.5pt; font-weight:900; color:#64748b; border-top:0.5px solid #ccc; margin-top:1px;">Principal</div>
+                    </div>
                 </div>
             </div>
             <div class="bottom-bar" style="background:#0f172a; color:white; padding:4px;">
