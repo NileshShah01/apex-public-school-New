@@ -45,7 +45,7 @@
 
     <div class="dashboard-layout">
         <!-- Sidebar -->
-        <aside class="sidebar" id="adminSidebar">
+        <aside class="sidebar glass-sidebar" id="adminSidebar">
             <div class="sidebar-logo">
                 <img src="../images/ApexPublicSchoolLogo.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
                 <h2 style="font-size: 1.1rem; line-height: 1.2;">Apex Public School</h2>
@@ -94,7 +94,7 @@
                 </div>
 
                 <!-- ADMISSION & ENQUIRY -->
-                <div class="nav-category" onclick="toggleCategory('catAdmission')">
+                <div class="nav-category" id="navAdmission" onclick="toggleCategory('catAdmission')">
                     <div class="cat-header">
                         <i class="fas fa-hashtag"></i>
                         <span>Admission & Enquiry</span>
@@ -108,7 +108,7 @@
                 </div>
 
                 <!-- EXAM MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catExams')">
+                <div class="nav-category" id="navExams" onclick="toggleCategory('catExams')">
                     <div class="cat-header">
                         <i class="fas fa-file-contract"></i>
                         <span>Exam Management</span>
@@ -127,7 +127,7 @@
                 </div>
 
                 <!-- RESULT MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catResults')">
+                <div class="nav-category" id="navResults" onclick="toggleCategory('catResults')">
                     <div class="cat-header">
                         <i class="fas fa-poll"></i>
                         <span>Result Management</span>
@@ -143,7 +143,7 @@
                 </div>
 
                 <!-- FEES MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catFees')">
+                <div class="nav-category" id="navFees" onclick="toggleCategory('catFees')">
                     <div class="cat-header">
                         <i class="fas fa-indian-rupee-sign"></i>
                         <span>Fees Management</span>
@@ -160,7 +160,7 @@
                 </div>
 
                 <!-- EMPLOYEE -->
-                <div class="nav-category" onclick="toggleCategory('catEmployee')">
+                <div class="nav-category" id="navEmployee" onclick="toggleCategory('catEmployee')">
                     <div class="cat-header">
                         <i class="fas fa-user-tie"></i>
                         <span>Employee</span>
@@ -175,7 +175,7 @@
                 </div>
 
                 <!-- CLASS MANAGEMENT -->
-                <div class="nav-category" onclick="toggleCategory('catClass')">
+                <div class="nav-category" id="navClass" onclick="toggleCategory('catClass')">
                     <div class="cat-header">
                         <i class="fas fa-book"></i>
                         <span>Class Management</span>
@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- TIME TABLE -->
-                <div class="nav-category" onclick="toggleCategory('catTimeTable')">
+                <div class="nav-category" id="navTimeTable" onclick="toggleCategory('catTimeTable')">
                     <div class="cat-header">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Time Table</span>
@@ -203,7 +203,7 @@
                     </div>
                 </div>
 
-                <!-- WEBSITE CMS -->
+                <!-- WEBSITE CMS: GLOBAL -->
                 <div class="nav-category" onclick="toggleCategory('catCMS')">
                     <div class="cat-header">
                         <i class="fas fa-globe"></i>
@@ -213,10 +213,51 @@
                     <div class="cat-submenu" id="catCMS">
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsHero')">Hero Slider</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsTheme')">Theme Customization</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsGallery')">Gallery</a>
-                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStaff')">Staff / Teachers</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsAdmission')">Admission Status</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsGlobalStats')">School Statistics</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsGallery')">Photo Gallery</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsStaff')">Staff / Teachers</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsHolidays')">Holiday List</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsEvents')">Events & News</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsAchievements')">Achievements</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTestimonials')">Testimonials</a>
                         <a href="#" class="nav-link sub-link" onclick="showSection('cmsStudentDashboard')">Student Portal Controls</a>
+                    </div>
+                </div>
+
+                <!-- WEBSITE CMS: IMAGES -->
+                <div class="nav-category" onclick="toggleCategory('catPageImages')">
+                    <div class="cat-header">
+                        <i class="fas fa-images"></i>
+                        <span>Page Imagery</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catPageImages">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeHero')">Home Hero Images</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeFacilities')">Home Facilities List</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgHomeMemories')">Home Memories Grid</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAboutHero')">About Page Banner</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgAdmissions')">Admissions Photos</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsImgFacilities')">Facilities Page Media</a>
+                    </div>
+                </div>
+
+                <!-- WEBSITE CMS: TEXT -->
+                <div class="nav-category" onclick="toggleCategory('catPageText')">
+                    <div class="cat-header">
+                        <i class="fas fa-font"></i>
+                        <span>Page Content</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="cat-submenu" id="catPageText">
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextHome')">Home Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAbout')">About Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAcademics')">Academics Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextAdmissions')">Admissions Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextFacilities')">Facilities Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextGallery')">Gallery Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextContact')">Contact Page Text</a>
+                        <a href="#" class="nav-link sub-link" onclick="showSection('cmsTextInquiry')">Inquiry Page Text</a>
                     </div>
                 </div>
 
@@ -261,21 +302,21 @@
 
             <!-- Status Grid (Visible in default view) -->
             <div id="statsOverview" class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card glass-card">
                     <div class="stat-icon" style="background: #eff6ff; color: #1e40af;"><i class="fas fa-user-graduate"></i></div>
                     <div class="stat-info">
                         <h3>Total Students</h3>
                         <p id="statTotalStudents">0</p>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card glass-card">
                     <div class="stat-icon" style="background: #ecfdf5; color: #065f46;"><i class="fas fa-layer-group"></i></div>
                     <div class="stat-info">
                         <h3>Active Classes</h3>
                         <p id="statTotalClasses">0</p>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card glass-card">
                     <div class="stat-icon" style="background: #fef3c7; color: #92400e;"><i class="fas fa-file-pdf"></i></div>
                     <div class="stat-info">
                         <h3>Results Ready</h3>
@@ -303,11 +344,30 @@
                         <h4>ID Generator</h4>
                         <p>Print student cards</p>
                     </div>
-                    <div class="feature-card" onclick="showSection('feeMaster')">
+                    <div class="feature-card glass-card" onclick="showSection('feeMaster')">
                         <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fas fa-credit-card"></i></div>
-                        <h4>Fees Center</h4>
-                        <p>Process payments</p>
+                        <h4>Fee Master</h4>
+                        <p>Configure fee items</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Analytics Hub -->
+            <div id="analyticsHub" class="dashboard-section" style="margin-top: 3rem;">
+                <h2 style="font-size: 1.1rem; color: var(--secondary); margin-bottom: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chart-pie"></i> Analytics Hub
+                </h2>
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+                    <div class="card glass-card">
+                        <h4 style="margin-bottom: 1rem;"><i class="fas fa-chart-line" style="color: #10b981;"></i> Fee Collection Trend</h4>
+                        <canvas id="feeChart" height="200"></canvas>
+                    </div>
+                    <div class="card glass-card">
+                        <h4 style="margin-bottom: 1rem;"><i class="fas fa-chart-area" style="color: #3b82f6;"></i> Enrollment Growth</h4>
+                        <canvas id="enrollmentChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
                     <div class="feature-card" onclick="showSection('studentExamAttendance')">
                         <div class="icon-box" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i class="fas fa-check-double"></i></div>
                         <h4>Exam Portal</h4>
@@ -2987,5 +3047,6 @@
     <script src="../js/id-card-templates.js"></script>
     <script src="../js/report-card-factory.js"></script>
     <script src="../js/admin-dashboard.js"></script>
+    <script src="../js/dashboard-analytics.js"></script>
 </body>
 </html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNR World | Super Administrator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/portal.css">
+    <style>
+        :root {
+            --super-primary: #6366f1;
+            --super-bg: #0f172a;
+            --super-card: rgba(30, 41, 59, 0.7);
+            --super-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: var(--super-bg);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Glassmorphism Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--super-card);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid var(--super-border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--super-border);
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #6366f1;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2rem 3rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--super-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--super-border);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--super-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-val {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Schools Table */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: #94a3b8;
+            font-weight: 600;
+            border-bottom: 1px solid var(--super-border);
+        }
+
+        td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--super-border);
+            color: #cbd5e1;
+        }
+
+        .btn {
+            background: var(--super-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-stage { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .badge-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 500px;
+            background: var(--super-bg);
+            border: 1px solid var(--super-border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #94a3b8; font-size: 0.875rem; }
+        .form-control {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--super-border);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-family: inherit;
+        }
+
+        .form-control:focus { outline: none; border-color: var(--super-primary); }
+
+    </style>
+</head>
+<body>
+    
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="fas fa-layer-group" style="color:var(--super-primary);"></i>
+            <span>SNR World</span>
+        </div>
+        <ul class="nav-list">
+            <li><a href="#" class="nav-link active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="#" class="nav-link"><i class="fas fa-university"></i> Schools</a></li>
+            <li><a href="#" class="nav-link"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="#" class="nav-link"><i class="fas fa-cog"></i> Platform Settings</a></li>
+        </ul>
+        <div style="margin-top: auto;">
+            <a href="#" class="nav-link" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1 style="font-size: 2rem;">Platform Overview</h1>
+                <p style="color: #94a3b8;">Manage your SNR World SaaS instances</p>
+            </div>
+            <button class="btn" onclick="openModal('schoolModal')"><i class="fas fa-plus"></i> Register New School</button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <div class="stat-icon"><i class="fas fa-school"></i></div>
+                <div>
+                    <div class="stat-val" id="countSchools">0</div>
+                    <div class="stat-label">Schools On-boarded</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: #10b981; background: rgba(16,185,129,0.1);"><i class="fas fa-user-graduate"></i></div>
+                <div>
+                    <div class="stat-val" id="countStudents">0</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon" style="color: #f59e0b; background: rgba(245,158,11,0.1);"><i class="fas fa-crown"></i></div>
+                <div>
+                    <div class="stat-val" id="countPremium">0</div>
+                    <div class="stat-label">Stage 5 Instances</div>
+                </div>
+            </div>
+        </div>
+
+        <section class="card">
+            <div class="section-title">
+                <span>Provisioned Schools</span>
+                <div style="display: flex; gap: 0.75rem;">
+                    <input type="text" placeholder="Search schools..." class="form-control" style="width: 250px; background: rgba(255,255,255,0.05);">
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>School ID</th>
+                            <th>School Name</th>
+                            <th>Subdomain</th>
+                            <th>Stage</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schoolTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Register School -->
+    <div class="modal" id="schoolModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-plus-circle" style="color:var(--super-primary);"></i> Register School
+            </h2>
+            <form id="addSchoolForm">
+                <div class="form-group">
+                    <label>Principal/School Name</label>
+                    <input type="text" id="schoolName" class="form-control" required placeholder="e.g. Apex Public School">
+                </div>
+                <div class="form-group">
+                    <label>Proposed Subdomain</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="text" id="subdomain" class="form-control" required placeholder="apex" style="flex:1;">
+                        <span style="color: #94a3b8;">.snredu.in</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Administrator Email</label>
+                    <input type="email" id="adminEmail" class="form-control" required placeholder="pincipal@school.com">
+                </div>
+                <div class="form-group">
+                    <label>Activation Stage</label>
+                    <select id="schoolStage" class="form-control">
+                        <option value="1">Stage 1: Static Site</option>
+                        <option value="2">Stage 2: CMS Admin</option>
+                        <option value="3">Stage 3: Student Portal</option>
+                        <option value="4">Stage 4: ERP Tools</option>
+                        <option value="5">Stage 5: Full ERP Suite</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" style="background: rgba(239, 68, 68, 0.1); color: #f87171;" onclick="closeModal('schoolModal')">Cancel</button>
+                    <button type="submit" class="btn">Commission School</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/super-admin.js"></script>
+
+    <script>
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    </script>
+</body>
+</html>

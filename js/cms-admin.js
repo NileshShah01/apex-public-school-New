@@ -1,4 +1,54 @@
-// cms-admin.js - All CMS Admin Panel functions for website content management
+// ===================== SNR WORLD: STAGE PERMISSIONS =====================
+/**
+ * Dynamically show/hide sidebar modules based on the school's active SaaS stage.
+ */
+async function applyStagePermissions() {
+    console.log(`Checking permissions for: ${CURRENT_SCHOOL_ID}`);
+    try {
+        const schoolDoc = await db.collection('schools').doc(CURRENT_SCHOOL_ID).get();
+        if (!schoolDoc.exists) {
+            console.warn("School record not found. Defaulting to full access (Development Mode).");
+            return;
+        }
+
+        const stage = schoolDoc.data().stage || 1;
+        console.log(`SaaS Level: Stage ${stage}`);
+
+        // Sidebar Elements Mapping
+        const modules = {
+            'navAdmission': 4, // Needs Stage 4+
+            'navExams': 5,     // Needs Stage 5
+            'navResults': 5,   // Needs Stage 5
+            'navFees': 4,      // Needs Stage 4+
+            'navEmployee': 5,  // Needs Stage 5
+            'navClass': 4,     // Needs Stage 4+
+            'navTimeTable': 4  // Needs Stage 4+
+        };
+
+        // Website CMS and Page Content are usually Stage 2+ (Included by default for Admin Panel)
+        
+        for (const [id, minStage] of Object.entries(modules)) {
+            const el = document.getElementById(id);
+            if (el) {
+                if (stage < minStage) {
+                    el.style.display = 'none';
+                    console.log(`- Restricted: ${id}`);
+                } else {
+                    el.style.display = 'block';
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Permission check failed:", e);
+    }
+}
+
+// Auto-run on dashboard load
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname.includes('admin-dashboard')) {
+        applyStagePermissions();
+    }
+});
 
 // ===================== SHOW SECTION ROUTING =====================
 const CMS_SECTIONS = {

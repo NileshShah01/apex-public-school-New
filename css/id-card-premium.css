@@ -1,0 +1,43 @@
+/* PREMIUM ID CARD REFINEMENTS */
+.id-card-wrapper {
+    position: relative;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #1e293b;
+}
+
+/* Texture/Pattern Overlays */
+.id-card-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+}
+
+.photo-frame img, .photo-box img, .photo-circle img, .photo-container img, .photo-ring img {
+    background-color: #f1f5f9;
+}
+
+/* Security Seal */
+.security-seal {
+    position: absolute;
+    width: 15mm;
+    height: 15mm;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Glassmorphism for specific elements */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.template-item:hover {
+    transform: translateY(-2px);
+}
