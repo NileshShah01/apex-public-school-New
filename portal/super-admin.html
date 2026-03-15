@@ -230,6 +230,16 @@
 </head>
 <body>
     
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.9); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center;">
+        <div class="spinner" style="width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.1); border-top: 5px solid var(--super-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 1rem; color: #94a3b8; font-weight: 600;">Processing SNR World Data...</p>
+    </div>
+
+    <style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
     <aside class="sidebar">
         <div class="brand">
             <i class="fas fa-layer-group" style="color:var(--super-primary);"></i>
@@ -283,7 +293,7 @@
             <div class="section-title">
                 <span>Provisioned Schools</span>
                 <div style="display: flex; gap: 0.75rem;">
-                    <input type="text" placeholder="Search schools..." class="form-control" style="width: 250px; background: rgba(255,255,255,0.05);">
+                    <input type="text" id="schoolSearch" onkeyup="filterSchools()" placeholder="Search by Name or ID..." class="form-control" style="width: 250px; background: rgba(255,255,255,0.05);">
                 </div>
             </div>
             <div class="table-container">
@@ -302,6 +312,15 @@
                         <!-- Dynamic content -->
                     </tbody>
                 </table>
+            </div>
+        <!-- Platform Activity Log -->
+        <section class="card" style="margin-top: 3rem;">
+            <div class="section-title">
+                <span><i class="fas fa-history"></i> Recent Activity Log</span>
+            </div>
+            <div id="activityLog" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Dynamic logs -->
+                <p style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 1rem;">Loading activity...</p>
             </div>
         </section>
     </main>
@@ -341,6 +360,40 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
                     <button type="button" class="btn" style="background: rgba(239, 68, 68, 0.1); color: #f87171;" onclick="closeModal('schoolModal')">Cancel</button>
                     <button type="submit" class="btn">Commission School</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit School -->
+    <div class="modal" id="editSchoolModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+                <i class="fas fa-edit" style="color:var(--super-primary);"></i> Edit School Instance
+            </h2>
+            <form id="editSchoolForm">
+                <input type="hidden" id="editSchoolId">
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="editSchoolName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Subdomain</label>
+                    <input type="text" id="editSubdomain" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>SaaS Stage</label>
+                    <select id="editSchoolStage" class="form-control">
+                        <option value="1">Stage 1: Static Site</option>
+                        <option value="2">Stage 2: CMS Admin</option>
+                        <option value="3">Stage 3: Student Portal</option>
+                        <option value="4">Stage 4: ERP Tools</option>
+                        <option value="5">Stage 5: Full ERP Suite</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" style="background: rgba(239, 68, 68, 0.1); color: #f87171;" onclick="closeModal('editSchoolModal')">Cancel</button>
+                    <button type="submit" class="btn">Update Information</button>
                 </div>
             </form>
         </div>
