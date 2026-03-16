@@ -1,0 +1,33 @@
+{
+  "name": "website-antigravity",
+  "version": "1.0.0",
+  "description": "Apex Public School Official Website",
+  "main": "script.js",
+  "scripts": {
+    "lint": "eslint \"**/*.{js,html}\" && stylelint \"**/*.css\"",
+    "format": "prettier --write \"**/*.{js,html,css}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NileshShah01/apex-public-school-New.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NileshShah01/apex-public-school-New/issues"
+  },
+  "homepage": "https://github.com/NileshShah01/apex-public-school-New#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.3",
+    "eslint-plugin-html": "^8.1.4",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "stylelint": "^17.4.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.1"
+  }
+}

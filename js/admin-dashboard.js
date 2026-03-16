@@ -12,11 +12,12 @@ function previewPhoto(event) {
     document.getElementById('photoFileName').textContent = file.name;
     const reader = new FileReader();
     reader.onload = (e) => {
-        document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+        document.getElementById('photoPreview').innerHTML =
+            `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
     };
     reader.readAsDataURL(file);
-}// Global Loading Helper (backward compatibility for erp modules)
-window.showLoading = function(show) {
+} // Global Loading Helper (backward compatibility for erp modules)
+window.showLoading = function (show) {
     if (typeof setLoading === 'function') setLoading(show);
 };
 
@@ -28,8 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('bulkImportForm')?.addEventListener('submit', handleBulkImport);
 
     document.getElementById('noticeForm')?.addEventListener('submit', handleNoticeSubmit);
-    document.getElementById('searchInput')?.addEventListener('input', () => { currentPage = 1; filterAndDisplayStudents(); });
-    document.getElementById('classFilter')?.addEventListener('change', () => { currentPage = 1; filterAndDisplayStudents(); });
+    document.getElementById('searchInput')?.addEventListener('input', () => {
+        currentPage = 1;
+        filterAndDisplayStudents();
+    });
+    document.getElementById('classFilter')?.addEventListener('change', () => {
+        currentPage = 1;
+        filterAndDisplayStudents();
+    });
     document.getElementById('selectAll')?.addEventListener('change', handleSelectAll);
     document.getElementById('websiteSettingsForm')?.addEventListener('submit', handleWebsiteSettingsSave);
 
@@ -39,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('adminEmail').textContent = user.email;
             // Initialize ERP Class Management if available
             if (typeof initERPClassMgmt === 'function') initERPClassMgmt();
-            
+
             // Initial Routing based on Hash
             const initialSection = window.location.hash.replace('#', '');
             if (initialSection) {
@@ -60,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initializeApp() {
-    console.log("Initializing App...");
+    console.log('Initializing App...');
     setLoading(true);
     try {
         await loadInitialData();
         updateStats();
-        
+
         // Phase 8 + ERP Initializers (Wrapped to prevent one failure from hanging the whole app)
         const safeInit = (fn, name) => {
             try {
@@ -77,17 +84,17 @@ async function initializeApp() {
         };
 
         // Note: initCMS* are mostly handled by DOMContentLoaded in cms-admin.js
-        
+
         if (typeof initERPClassMgmt === 'function') safeInit(initERPClassMgmt, 'initERPClassMgmt');
         if (typeof initERPExams === 'function') safeInit(initERPExams, 'initERPExams');
         if (typeof initERPFees === 'function') safeInit(initERPFees, 'initERPFees');
         if (typeof initERPAdmission === 'function') safeInit(initERPAdmission, 'initERPAdmission');
-
+        if (typeof initQuestionPapers === 'function') safeInit(initQuestionPapers, 'initQuestionPapers');
     } catch (error) {
-        console.error("Initialization failed:", error);
+        console.error('Initialization failed:', error);
     } finally {
         setLoading(false);
-        console.log("Initialization complete.");
+        console.log('Initialization complete.');
     }
 }
 
@@ -107,34 +114,34 @@ function showToast(message, type = 'success') {
     toast.style.padding = '1rem 2rem';
     toast.style.zIndex = '2000';
     toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3000);
+    setTimeout(() => (toast.style.display = 'none'), 3000);
 }
 
-async function loadInitialData(classFilterVal = "") {
+async function loadInitialData(classFilterVal = '') {
     try {
-        let query = db.collection('students');
-        
+        let query = schoolData('students');
+
         // Optimization: Use .where() if a class filter is provided
         if (classFilterVal) {
-            query = query.where("class", "==", classFilterVal);
+            query = query.where('class', '==', classFilterVal);
         }
 
         const snapshot = await query.get();
-        allStudents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
+        allStudents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
         // Update Stats
         updateStats();
 
         // Populate Class Filters only if it's the first load (to avoid wiping out the selection)
         if (!classFilterVal) {
-            const classes = [...new Set(allStudents.map(s => s.class))].filter(Boolean).sort((a,b) => a-b);
+            const classes = [...new Set(allStudents.map((s) => s.class))].filter(Boolean).sort((a, b) => a - b);
             const classFilter = document.getElementById('classFilter');
             const promoteFrom = document.getElementById('promoteFromClass');
-            
+
             if (classFilter) {
                 const currentFilter = classFilter.value;
                 classFilter.innerHTML = '<option value="">All Classes</option>';
-                classes.forEach(c => {
+                classes.forEach((c) => {
                     classFilter.innerHTML += `<option value="${c}">Class ${c}</option>`;
                 });
                 classFilter.value = currentFilter;
@@ -142,7 +149,7 @@ async function loadInitialData(classFilterVal = "") {
 
             if (promoteFrom) {
                 promoteFrom.innerHTML = '<option value="">Select Class</option>';
-                classes.forEach(c => {
+                classes.forEach((c) => {
                     promoteFrom.innerHTML += `<option value="${c}">Class ${c}</option>`;
                 });
             }
@@ -151,14 +158,14 @@ async function loadInitialData(classFilterVal = "") {
         filterAndDisplayStudents();
         loadNoticeHistory();
     } catch (error) {
-        console.error("Error loading data:", error);
-        showToast("Error loading student data", "error");
+        console.error('Error loading data:', error);
+        showToast('Error loading student data', 'error');
     }
 }
 
 function showSection(sectionId, updateHash = true) {
     if (!sectionId) sectionId = 'dashboardOverview';
-    
+
     // Update hash for persistence
     if (updateHash) {
         window.location.hash = sectionId;
@@ -168,9 +175,9 @@ function showSection(sectionId, updateHash = true) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Hide all
-    document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.querySelectorAll('.cat-header').forEach(h => h.classList.remove('active'));
+    document.querySelectorAll('.dashboard-section').forEach((s) => (s.style.display = 'none'));
+    document.querySelectorAll('.nav-link').forEach((l) => l.classList.remove('active'));
+    document.querySelectorAll('.cat-header').forEach((h) => h.classList.remove('active'));
 
     // Show target
     const target = document.getElementById(sectionId + 'Section');
@@ -189,7 +196,7 @@ function showSection(sectionId, updateHash = true) {
     const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
     if (activeLink) {
         activeLink.classList.add('active');
-        
+
         // Also highlight parent category header if it's a sub-link
         if (activeLink.classList.contains('sub-link')) {
             const parentCat = activeLink.closest('.nav-category');
@@ -203,124 +210,144 @@ function showSection(sectionId, updateHash = true) {
     }
 
     const titles = {
-        'dashboardOverview': 'School Overview',
-        'studentList': 'Student Search & Management',
-        'resultsStatus': 'Documents Verification',
-        'admitCardTool': 'Admit Card PDF Tool',
-        'addStudent': 'Add/Edit Student Information',
-        'bulkImport': 'Bulk Upload Students',
-        'notices': 'Manage School Notices',
-        'promotions': 'Student Class Promotions',
-        'websiteSettings': 'Frontend Website Settings',
-        'inquiries': 'Admission Inquiries',
-        'bulkPdf': 'Bulk PDF Report Upload',
-        
+        dashboardOverview: 'School Overview',
+        studentList: 'Student Search & Management',
+        resultsStatus: 'Documents Verification',
+        admitCardTool: 'Admit Card PDF Tool',
+        addStudent: 'Add/Edit Student Information',
+        bulkImport: 'Bulk Upload Students',
+        notices: 'Manage School Notices',
+        promotions: 'Student Class Promotions',
+        websiteSettings: 'Frontend Website Settings',
+        inquiries: 'Admission Inquiries',
+        bulkPdf: 'Bulk PDF Report Upload',
+
         // Employee
-        'addEmployee': 'Add New Employee',
-        'searchEmployee': 'Search Employees',
-        'bulkEmployeeUpdate': 'Bulk Employee Data Update',
-        'employeeIdPrint': 'Employee Identity Cards',
-        
+        addEmployee: 'Add New Employee',
+        searchEmployee: 'Search Employees',
+        bulkEmployeeUpdate: 'Bulk Employee Data Update',
+        employeeIdPrint: 'Employee Identity Cards',
+
         // Class
-        'addSession': 'Academic Sessions Management',
-        'addClass': 'Standard Classes Management',
-        'addClassDetails': 'Manage Sections & Class Details',
-        'addSubject': 'Define Subjects',
-        'addNonSubject': 'Define Non-Scholastic Subjects',
-        'addSyllabus': 'Upload Syllabus',
-        'manageSyllabus': 'Manage Academic Syllabus',
-        
+        addSession: 'Academic Sessions Management',
+        addClass: 'Standard Classes Management',
+        addClassDetails: 'Manage Sections & Class Details',
+        addSubject: 'Define Subjects',
+        addNonSubject: 'Define Non-Scholastic Subjects',
+        addSyllabus: 'Upload Syllabus',
+        manageSyllabus: 'Manage Academic Syllabus',
+
         // Time Table
-        'createTimetable': 'Generate Class Timetable',
-        'viewTimetable': 'View/Print Timetables',
-        
+        createTimetable: 'Generate Class Timetable',
+        viewTimetable: 'View/Print Timetables',
+
         // Admission
-        'addEnquiry': 'New Admission Enquiry',
-        'searchEnquiry': 'Search/Follow-up Enquiries',
-        'studentAdmission': 'Complete Admission Process',
-        
+        addEnquiry: 'New Admission Enquiry',
+        searchEnquiry: 'Search/Follow-up Enquiries',
+        studentAdmission: 'Complete Admission Process',
+
         // Student Extras
-        'electiveMapping': 'Elective Subject Allocation',
-        'studentIdPrint': 'Bulk ID Card Printing',
-        'pickupIdPrint': 'Pickup/Gate Pass Printing',
-        'studentBulkUpdate': 'Bulk Student Data Plan',
-        'hostelReport': 'Hostel Residents Report',
-        'transportReport': 'Transport/Bus Routes Report',
-        
+        electiveMapping: 'Elective Subject Allocation',
+        studentIdPrint: 'Bulk ID Card Printing',
+        pickupIdPrint: 'Pickup/Gate Pass Printing',
+        studentBulkUpdate: 'Bulk Student Data Plan',
+        hostelReport: 'Hostel Residents Report',
+        transportReport: 'Transport/Bus Routes Report',
+
         // Fees
-        'feeMaster': 'Master Fee Configuration',
-        'createMonthlyFee': 'Generate Monthly Fee Records',
-        'bulkFeeDiscount': 'Apply Bulk Fee Discounts',
-        'searchStudentFee': 'Individual Student Fee History',
-        'classFeePayment': 'Class-wise Fee Collection',
-        'searchFeeDues': 'Arrears & Pending Dues List',
-        'sendFeeMessage': 'Automatic Due Notifications',
-        'manageFeeFine': 'Late Payment Fine Setup',
-        'feeCarryForward': 'Session Carry Forward (Dues)',
-        
+        feeMaster: 'Master Fee Configuration',
+        createMonthlyFee: 'Generate Monthly Fee Records',
+        bulkFeeDiscount: 'Apply Bulk Fee Discounts',
+        searchStudentFee: 'Individual Student Fee History',
+        classFeePayment: 'Class-wise Fee Collection',
+        searchFeeDues: 'Arrears & Pending Dues List',
+        sendFeeMessage: 'Automatic Due Notifications',
+        manageFeeFine: 'Late Payment Fine Setup',
+        feeCarryForward: 'Session Carry Forward (Dues)',
+
         // Exam
-        'examGrading': 'Setup Examination Grading Rules',
-        'manageExam': 'Define Examination Terms',
-        'manageExamSchedule': 'Create Exam Time Table',
-        'viewExamSchedule': 'View/Verify Exam Schedules',
-        'publishExamSchedule': 'Publish Schedules to Portal',
-        'examAttendanceCard': 'Print Exam Attendance Sheets',
-        'studentExamAttendance': 'Mark Student Exam Attendance',
-        'viewExamAttendance': 'View Exam Attendance Reports',
-        'examHallPlan': 'Design Exam Sitting Arrangement',
-        'examHallDetail': 'View Hall/Room Details',
-        'examSittingPlan': 'Export Student Sitting Plan',
-        
+        examGrading: 'Setup Examination Grading Rules',
+        manageExam: 'Define Examination Terms',
+        manageExamSchedule: 'Create Exam Time Table',
+        viewExamSchedule: 'View/Verify Exam Schedules',
+        publishExamSchedule: 'Publish Schedules to Portal',
+        examAttendanceCard: 'Print Exam Attendance Sheets',
+        studentExamAttendance: 'Mark Student Exam Attendance',
+        viewExamAttendance: 'View Exam Attendance Reports',
+        examHallPlan: 'Design Exam Sitting Arrangement',
+        examHallDetail: 'View Hall/Room Details',
+        examSittingPlan: 'Export Student Sitting Plan',
+
         // Result
-        'manageResult': 'Process Examination Results',
-        'addResult': 'Manual Marks Entry',
-        'manageAllResults': 'Consolidated Result Manager',
-        'viewAllResults': 'View Full School Results',
-        'manageNonSubResult': 'Co-Scholastic Performance Grading',
-        'viewNonSubResult': 'View Co-Scholastic Performance',
-        'publishResult': 'Publish Exam Results Live',
-        'reportCardRemarks': 'Bulk Report Card Remarks',
-        'generateReportCard': 'Generate Students Report Cards',
-        'viewReportCard': 'View/Download Generated Cards',
-        'publishReportCard': 'Push Report Cards to Student Portal',
+        manageResult: 'Process Examination Results',
+        addResult: 'Manual Marks Entry',
+        manageAllResults: 'Consolidated Result Manager',
+        viewAllResults: 'View Full School Results',
+        manageNonSubResult: 'Co-Scholastic Performance Grading',
+        viewNonSubResult: 'View Co-Scholastic Performance',
+        publishResult: 'Publish Exam Results Live',
+        reportCardRemarks: 'Bulk Report Card Remarks',
+        generateReportCard: 'Generate Students Report Cards',
+        viewReportCard: 'View/Download Generated Cards',
+        publishReportCard: 'Push Report Cards to Student Portal',
 
         // CMS
-        'cmsStats': 'Live Stats & Numbers',
-        'cmsEvents': 'Official School Events',
-        'cmsAchievements': 'School Achievements',
-        'cmsTestimonials': 'Parent Testimonials',
-        'cmsAdmission': 'Portal Admission Status',
-        'cmsHolidays': 'Annual Holiday Calendar',
-        'cmsGallery': 'Website Gallery Manager',
-        'cmsStaff': 'Staff & Teachers Directory',
-        'cmsTimetable': 'Timetable PDF Manager',
-        'cmsFees': 'Frontend Fee Structure',
-        'cmsHero': 'Hero Slider Images',
-        'cmsTheme': 'Global Website Theme',
-        'cmsStudentDashboard': 'Attendance & Portal Config',
-        'resultsStatus': 'Student Results & Performance Status',
-        'viewTimetable': 'Class Timetables Management',
-        'manageResult': 'Review & Manage Student Marks',
-        'manageAllResults': 'Full School Result Performance',
-        'publishResult': 'Mass Result Portal Toggle',
-        'viewExamSchedule': 'Complete Exam Date Sheet',
-        'cmsFeeTools': 'Parents Fee Due Analytics',
-        'websiteSettings': 'Global Site Configuration'
+        cmsStats: 'Live Stats & Numbers',
+        cmsEvents: 'Official School Events',
+        cmsAchievements: 'School Achievements',
+        cmsTestimonials: 'Parent Testimonials',
+        cmsAdmission: 'Portal Admission Status',
+        cmsHolidays: 'Annual Holiday Calendar',
+        cmsGallery: 'Website Gallery Manager',
+        cmsStaff: 'Staff & Teachers Directory',
+        cmsTimetable: 'Timetable PDF Manager',
+        cmsFees: 'Frontend Fee Structure',
+        cmsHero: 'Hero Slider Images',
+        cmsTheme: 'Global Website Theme',
+        cmsStudentDashboard: 'Attendance & Portal Config',
+        resultsStatus: 'Student Results & Performance Status',
+        viewTimetable: 'Class Timetables Management',
+        manageResult: 'Review & Manage Student Marks',
+        manageAllResults: 'Full School Result Performance',
+        publishResult: 'Mass Result Portal Toggle',
+        viewExamSchedule: 'Complete Exam Date Sheet',
+        cmsFeeTools: 'Parents Fee Due Analytics',
+        websiteSettings: 'Global Site Configuration',
+        questionPaperLibrary: 'Question Paper Library',
+        parentsNotPaidTool: "Parents Who Didn't Pay Tool",
+        attendanceManagement: 'Mark Daily Attendance',
+        viewAttendanceStats: 'Attendance Analytics & Reports',
+        assignHomework: 'Assign New Homework',
+        homeworkHistory: 'Homework Publishing History',
+        classTimetables: 'Class-wise Weekly Schedules',
+        teacherTimetables: 'Teacher-wise schedules',
+        bulkResultGenerator: 'Bulk Result Generation & Publishing',
+        resultAnalytics: 'Academic Performance Analytics',
+        sendNotification: 'Broadcast School Notifications',
+        notificationHistory: 'Message Delivery Logs',
+        bookCatalog: 'Library Book Catalog',
+        issueReturn: 'Book Issue & Return',
+        manageRoutes: 'Transport Routes & Vehicles',
+        mapTransport: 'Assign student Transport',
     };
     document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
 
-    
-    // Visibility logic
-    const statsGrid = document.getElementById('statsOverview');
-    const quickHub = document.getElementById('quickActionsHub');
-    const isOverview = (sectionId === 'studentList' || sectionId === 'dashboardOverview');
-    
-    if (statsGrid) statsGrid.style.display = isOverview ? 'grid' : 'none';
-    if (quickHub) quickHub.style.display = isOverview ? 'block' : 'none';
+    // Visibility logic - Home specific elements are now children of dashboardOverviewSection
+    const analytics = document.getElementById('analyticsHub');
+
+    // Explicitly handle analytics hub display if needed (though it's a child now)
+    // Analytics hub might need display block if it has special class
+    if (analytics) analytics.style.display = 'block';
+
+    // Special Module Initializations
+    if (sectionId === 'questionPaperLibrary') {
+        if (typeof populateQpFilters === 'function') populateQpFilters();
+        if (typeof loadQuestionPapers === 'function') loadQuestionPapers();
+    }
 
     if (sectionId === 'dashboardOverview') loadDashboardOverview();
     if (sectionId === 'resultsStatus') populateResultsStatus();
-    
+
     // ERP Loaders
     if (sectionId === 'addSession') loadSessions();
     if (sectionId === 'addClass') loadClasses();
@@ -330,21 +357,38 @@ function showSection(sectionId, updateHash = true) {
     if (sectionId === 'electiveMapping') loadElectiveDropdowns();
     if (sectionId === 'studentBulkUpdate') initBulkUpdate();
     if (sectionId === 'generateReportCard') initReportCardSection();
-    
+    if (sectionId === 'attendanceManagement') initERPAttendance();
+    if (sectionId === 'assignHomework' || sectionId === 'homeworkHistory') initERPHomework();
+    if (sectionId === 'classTimetables') initERPTimetable();
+    if (sectionId === 'bulkResultGenerator') ReportCardTool.initUI();
+    if (sectionId === 'resultAnalytics') ResultAnalytics.init();
+    if (sectionId === 'sendNotification' || sectionId === 'notificationHistory') ERPNotifications.init();
+    if (sectionId === 'bookCatalog' || sectionId === 'issueReturn') ERPLibrary.init();
+    if (sectionId === 'manageRoutes' || sectionId === 'mapTransport') ERPTransport.init();
+
     // Fees Loaders
     if (['feeMaster', 'createMonthlyFee', 'searchFeeDues'].includes(sectionId)) {
         if (typeof initERPFees === 'function') initERPFees();
     }
-    
+
     // Admission Loaders
     if (['addEnquiry', 'searchEnquiry'].includes(sectionId)) {
         if (typeof initERPAdmission === 'function') initERPAdmission();
     }
     const erpSections = [
-        'examGrading', 'manageExam', 'manageExamSchedule', 'viewExamSchedule', 
-        'publishExamSchedule', 'admitCardTool', 'examAttendanceCard', 
-        'studentExamAttendance', 'addResult', 'manageResult', 
-        'publishResult', 'reportCardRemarks', 'manageNonSubResult'
+        'examGrading',
+        'manageExam',
+        'manageExamSchedule',
+        'viewExamSchedule',
+        'publishExamSchedule',
+        'admitCardTool',
+        'examAttendanceCard',
+        'studentExamAttendance',
+        'addResult',
+        'manageResult',
+        'publishResult',
+        'reportCardRemarks',
+        'manageNonSubResult',
     ];
     if (erpSections.includes(sectionId)) {
         initERPExams();
@@ -365,23 +409,24 @@ function showSection(sectionId, updateHash = true) {
     if (sectionId === 'addEnquiry') {
         populateEnquiryClasses();
     }
-    
+
     if (sectionId === 'manageAllResults') {
         const sess = document.getElementById('allResultsSessionSelect');
         const activeSess = localStorage.getItem('activeSessionName');
         if (sess && activeSess) {
-            Array.from(sess.options).forEach(opt => {
+            Array.from(sess.options).forEach((opt) => {
                 if (opt.text === activeSess) opt.selected = true;
             });
         }
     }
-    
+
     if (sectionId === 'studentList') loadInitialData();
     if (sectionId === 'addStudent') {
         if (!editingDocId) {
             document.getElementById('studentForm')?.reset();
             document.getElementById('formTitle').textContent = 'Add New Student';
-            document.getElementById('photoPreview').innerHTML = '<i class="fas fa-user" style="font-size: 2.5rem; color: #94a3b8;"></i>';
+            document.getElementById('photoPreview').innerHTML =
+                '<i class="fas fa-user" style="font-size: 2.5rem; color: #94a3b8;"></i>';
             document.getElementById('student_id').value = '';
         }
         if (typeof updateSessionDropdowns === 'function') updateSessionDropdowns();
@@ -412,14 +457,14 @@ async function loadDashboardOverview() {
         document.getElementById('totalStudentsCount').textContent = allStudents.length;
     } else {
         // Fallback for first load
-        const snap = await db.collection('students').get();
+        const snap = await schoolData('students').get();
         document.getElementById('totalStudentsCount').textContent = snap.size;
     }
-    
+
     // Other counts (Mocked for now, will connect to real collections in Phase 3)
-    document.getElementById('totalTeachersCount').textContent = "12";
-    document.getElementById('monthlyFeesTotal').textContent = "₹ 1,45,000";
-    document.getElementById('attendanceRate').textContent = "94%";
+    document.getElementById('totalTeachersCount').textContent = '12';
+    document.getElementById('monthlyFeesTotal').textContent = '₹ 1,45,000';
+    document.getElementById('attendanceRate').textContent = '94%';
 }
 
 async function updateStudentAttendance() {
@@ -430,47 +475,49 @@ async function updateStudentAttendance() {
     const section = document.getElementById('att_section')?.value || '';
 
     if (!studentId || !date) {
-        showToast("Please select student and date", "error");
+        showToast('Please select student and date', 'error');
         return;
     }
 
     setLoading(true);
     try {
-        await db.collection('attendance').add({
-            studentId,
-            class: sclass,
-            section,
-            date,
-            status,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        showToast("Attendance marked successfully!");
+        await schoolData('attendance').add(
+            withSchool({
+                studentId,
+                class: sclass,
+                section,
+                date,
+                status,
+            })
+        );
+
+        showToast('Attendance marked successfully!');
     } catch (e) {
-        showToast("Error updating attendance: " + e.message, "error");
+        showToast('Error updating attendance: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
 }
 
 async function filterAndDisplayStudents() {
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
-    const classVal = document.getElementById('classFilter')?.value || "";
+    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const classVal = document.getElementById('classFilter')?.value || '';
     const tbody = document.getElementById('studentTableBody');
     if (!tbody) return;
-    
-    const filtered = allStudents.filter(s => {
-        const name = (s.name || "").toLowerCase();
-        const sid = (s.student_id || "").toLowerCase();
-        const father = (s.fatherName || s.father_name || "").toLowerCase();
-        const mobile = (s.mobile || s.phone || "").toLowerCase();
-        
-        const matchesSearch = name.includes(searchTerm) || 
-                             sid.includes(searchTerm) || 
-                             father.includes(searchTerm) || 
-                             mobile.includes(searchTerm);
-        
-        const matchesClass = classVal === "" || s.class === classVal;
+
+    const filtered = allStudents.filter((s) => {
+        const name = (s.name || '').toLowerCase();
+        const sid = (s.student_id || '').toLowerCase();
+        const father = (s.fatherName || s.father_name || '').toLowerCase();
+        const mobile = (s.mobile || s.phone || '').toLowerCase();
+
+        const matchesSearch =
+            name.includes(searchTerm) ||
+            sid.includes(searchTerm) ||
+            father.includes(searchTerm) ||
+            mobile.includes(searchTerm);
+
+        const matchesClass = classVal === '' || s.class === classVal;
         return matchesSearch && matchesClass;
     });
 
@@ -478,7 +525,7 @@ async function filterAndDisplayStudents() {
     const paginated = filtered.slice(start, start + itemsPerPage);
 
     tbody.innerHTML = '';
-    paginated.forEach(student => {
+    paginated.forEach((student) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="checkbox" class="student-checkbox" value="${student.id}" onchange="toggleSelect('${student.id}')" ${selectedStudents.has(student.id) ? 'checked' : ''}></td>
@@ -520,11 +567,11 @@ function changePage(delta) {
 }
 
 // Result and Admit Card Verification
-document.getElementById('classFilter')?.addEventListener('change', (e) => { 
-    currentPage = 1; 
+document.getElementById('classFilter')?.addEventListener('change', (e) => {
+    currentPage = 1;
     const classVal = e.target.value;
     if (classVal) {
-        loadInitialData(classVal); 
+        loadInitialData(classVal);
     } else {
         loadInitialData(); // Load all if cleared
     }
@@ -534,21 +581,22 @@ async function populateResultsStatus() {
     const tbody = document.getElementById('resultsStatusTableBody');
     const yearSelect = document.getElementById('resultsYearFilter');
     const year = yearSelect ? yearSelect.value : '2026';
-    
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Checking documents...</td></tr>';
-    
+
+    tbody.innerHTML =
+        '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Checking documents...</td></tr>';
+
     // Use currently loaded students (which might be filtered by class already)
-    const sortedStudents = [...allStudents].sort((a,b) => (a.name || "").localeCompare(b.name || ""));
-    
+    const sortedStudents = [...allStudents].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
     let resultsCount = 0;
     tbody.innerHTML = '';
-    const displayLimit = 50; 
+    const displayLimit = 50;
     const verifiedList = sortedStudents.slice(0, displayLimit);
 
     for (const student of verifiedList) {
-        const docId = student.id; 
+        const docId = student.id;
         const tr = document.createElement('tr');
-        
+
         tr.innerHTML = `
             <td>${student.student_id || docId}</td>
             <td>${student.name}</td>
@@ -583,10 +631,10 @@ async function populateResultsStatus() {
             </td>
         `;
         tbody.appendChild(tr);
-        
+
         // OPTIMIZATION: Check session cache first for document status
         const cacheKey = `status_${docId}_${year}`;
-        const cachedStatus = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
+        const cachedStatus = JSON.parse(sessionStorage.getItem(cacheKey) || '{}');
 
         const updateUI = (type, exists, data = null) => {
             const cellId = type === 'report' ? `status-report-${docId}` : `status-admit-${docId}`;
@@ -596,15 +644,18 @@ async function populateResultsStatus() {
 
             if (exists) {
                 if (cell) {
-                    cell.innerHTML = type === 'report' ? 
-                        '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>' :
-                        '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
+                    cell.innerHTML =
+                        type === 'report'
+                            ? '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Rep: Available</span>'
+                            : '<span class="badge badge-success" style="background:#f59e0b;"><i class="fas fa-check-circle"></i> Adm: Available</span>';
                 }
                 if (btn) {
-                    btn.onclick = (e) => { 
-                        e.preventDefault(); 
+                    btn.onclick = (e) => {
+                        e.preventDefault();
                         const win = window.open();
-                        win.document.write(`<iframe src="${data}" width="100%" height="100%" style="border:none;"></iframe>`); 
+                        win.document.write(
+                            `<iframe src="${data}" width="100%" height="100%" style="border:none;"></iframe>`
+                        );
                     };
                     btn.classList.remove('hidden');
                 }
@@ -614,7 +665,8 @@ async function populateResultsStatus() {
                     if (countEl) countEl.textContent = resultsCount;
                 }
             } else {
-                if (cell) cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-times-circle"></i> ${type === 'report' ? 'Rep' : 'Adm'}: Missing</span>`;
+                if (cell)
+                    cell.innerHTML = `<span class="badge badge-danger"><i class="fas fa-times-circle"></i> ${type === 'report' ? 'Rep' : 'Adm'}: Missing</span>`;
             }
         };
 
@@ -622,28 +674,38 @@ async function populateResultsStatus() {
         if (cachedStatus.reportData) {
             updateUI('report', true, cachedStatus.reportData);
         } else {
-            db.collection('reports').doc(`${docId}_${year}`).get().then(docRef => {
-                if (docRef.exists) {
-                    const data = docRef.data().fileData;
-                    updateUI('report', true, data);
-                    const current = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
-                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, reportData: data }));
-                } else { updateUI('report', false); }
-            }).catch(() => updateUI('report', false));
+            schoolDoc('reports', `${docId}_${year}`)
+                .get()
+                .then((docRef) => {
+                    if (docRef.exists) {
+                        const data = docRef.data().fileData;
+                        updateUI('report', true, data);
+                        const current = JSON.parse(sessionStorage.getItem(cacheKey) || '{}');
+                        sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, reportData: data }));
+                    } else {
+                        updateUI('report', false);
+                    }
+                })
+                .catch(() => updateUI('report', false));
         }
 
         // Check Admit Card (Cached or Firestore)
         if (cachedStatus.admitData) {
             updateUI('admit', true, cachedStatus.admitData);
         } else {
-            db.collection('admitcards').doc(`${docId}_${year}`).get().then(docRef => {
-                if (docRef.exists) {
-                    const data = docRef.data().fileData;
-                    updateUI('admit', true, data);
-                    const current = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
-                    sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, admitData: data }));
-                } else { updateUI('admit', false); }
-            }).catch(() => updateUI('admit', false));
+            schoolDoc('admitcards', `${docId}_${year}`)
+                .get()
+                .then((docRef) => {
+                    if (docRef.exists) {
+                        const data = docRef.data().fileData;
+                        updateUI('admit', true, data);
+                        const current = JSON.parse(sessionStorage.getItem(cacheKey) || '{}');
+                        sessionStorage.setItem(cacheKey, JSON.stringify({ ...current, admitData: data }));
+                    } else {
+                        updateUI('admit', false);
+                    }
+                })
+                .catch(() => updateUI('admit', false));
         }
     }
 }
@@ -657,17 +719,18 @@ async function uploadResult(event, docId, year) {
     }
     setLoading(true);
     try {
-        const base64 = await new Promise(resolve => {
+        const base64 = await new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = e => resolve(e.target.result);
+            reader.onload = (e) => resolve(e.target.result);
             reader.readAsDataURL(file);
         });
-        await db.collection('reports').doc(`${docId}_${year}`).set({
-            fileData: base64,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        await schoolDoc('reports', `${docId}_${year}`).set(
+            withSchool({
+                fileData: base64,
+            })
+        );
         showToast('Result PDF saved!');
-        populateResultsStatus(); 
+        populateResultsStatus();
     } catch (e) {
         showToast('Error: ' + e.message, 'error');
     } finally {
@@ -684,17 +747,18 @@ async function uploadAdmitCard(event, docId, year) {
     }
     setLoading(true);
     try {
-        const base64 = await new Promise(resolve => {
+        const base64 = await new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = e => resolve(e.target.result);
+            reader.onload = (e) => resolve(e.target.result);
             reader.readAsDataURL(file);
         });
-        await db.collection('admitcards').doc(`${docId}_${year}`).set({
-            fileData: base64,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        await schoolDoc('admitcards', `${docId}_${year}`).set(
+            withSchool({
+                fileData: base64,
+            })
+        );
         showToast('Admit Card saved!');
-        populateResultsStatus(); 
+        populateResultsStatus();
     } catch (e) {
         showToast('Error: ' + e.message, 'error');
     } finally {
@@ -707,30 +771,179 @@ async function handlePromotion() {
     const fromClass = document.getElementById('promoteFromClass').value;
     const toClass = document.getElementById('promoteToClass').value;
     if (!fromClass || !toClass) {
-        alert("Please select both source and target classes.");
+        alert('Please select both source and target classes.');
         return;
     }
-    const targets = allStudents.filter(s => s.class === fromClass);
+    const targets = allStudents.filter((s) => s.class === fromClass);
     if (targets.length === 0) {
-        alert("No students found in the selected class.");
+        alert('No students found in the selected class.');
         return;
     }
     if (confirm(`Promote ${targets.length} students to Class ${toClass}?`)) {
         setLoading(true);
         try {
             const batch = db.batch();
-            targets.forEach(s => batch.update(db.collection('students').doc(s.id), { class: toClass }));
+            targets.forEach((s) => batch.update(schoolDoc('students', s.id), { class: toClass }));
             await batch.commit();
             showToast(`Promoted ${targets.length} students!`);
             await loadInitialData();
             showSection('studentList');
         } catch (error) {
-            showToast("Promotion failed: " + error.message, "error");
+            showToast('Promotion failed: ' + error.message, 'error');
         } finally {
             setLoading(false);
         }
     }
 }
+
+const ReportCardTool = {
+    // UI HELPER FUNCTIONS
+    async initUI() {
+        const sessionSelect = document.getElementById('bulkRes_sessionSelect');
+        if (sessionSelect && erpState.sessions) {
+            sessionSelect.innerHTML =
+                '<option value="">Select Session</option>' +
+                erpState.sessions
+                    .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+                    .join('');
+
+            if (erpState.activeSessionId) {
+                await this.loadClasses();
+                await this.loadExams();
+            }
+        }
+    },
+
+    async loadClasses() {
+        const sessId = document.getElementById('bulkRes_sessionSelect').value;
+        const el = document.getElementById('bulkRes_classSelect');
+        if (!el || !sessId) return;
+        const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
+        el.innerHTML =
+            '<option value="">Select Class</option>' +
+            snap.docs.map((doc) => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+    },
+
+    async loadSections() {
+        const sessId = document.getElementById('bulkRes_sessionSelect').value;
+        const cls = document.getElementById('bulkRes_classSelect').value;
+        const el = document.getElementById('bulkRes_sectionSelect');
+        if (!el || !cls) return;
+        const snap = await schoolData('classes')
+            .where('sessionId', '==', sessId)
+            .where('name', '==', cls)
+            .limit(1)
+            .get();
+        if (!snap.empty) {
+            const sections = snap.docs[0].data().sections || [];
+            el.innerHTML =
+                '<option value="All">All Sections</option>' +
+                sections.map((s) => `<option value="${s}">${s}</option>`).join('');
+        }
+    },
+
+    async loadExams() {
+        const sessId = document.getElementById('bulkRes_sessionSelect').value;
+        const el = document.getElementById('bulkRes_examSelect');
+        if (!el || !sessId) return;
+        const snap = await schoolData('exams').where('sessionId', '==', sessId).get();
+        el.innerHTML =
+            '<option value="">Select Exam</option>' +
+            snap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+    },
+
+    async loadStudents() {
+        const sess =
+            document.getElementById('bulkRes_sessionSelect').options[
+                document.getElementById('bulkRes_sessionSelect').selectedIndex
+            ].text;
+        const cls = document.getElementById('bulkRes_classSelect').value;
+        const sec = document.getElementById('bulkRes_sectionSelect').value;
+        const body = document.getElementById('bulkResTableBody');
+
+        if (!cls) return;
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+
+        const q = schoolData('students').where('session', '==', sess).where('class', '==', cls);
+        const snap = sec === 'All' ? await q.get() : await q.where('section', '==', sec).get();
+
+        if (snap.empty) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;">No students found.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = snap.docs
+            .map((doc) => {
+                const s = doc.data();
+                return `
+                <tr>
+                    <td><input type="checkbox" class="bulk-res-check" value="${doc.id}"></td>
+                    <td>${s.roll_no || '-'}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td><span class="badge" style="background:#f1f5f9;">Ready</span></td>
+                    <td id="status_${doc.id}"><span style="color:var(--text-muted);">Waiting</span></td>
+                </tr>
+            `;
+            })
+            .join('');
+        document.getElementById('startBulkGenBtn').disabled = false;
+    },
+
+    async runBulk() {
+        const selected = Array.from(document.querySelectorAll('.bulk-res-check:checked')).map((cb) => cb.value);
+        if (selected.length === 0) return;
+
+        const examId = document.getElementById('bulkRes_examSelect').value;
+        const sessionId = document.getElementById('bulkRes_sessionSelect').value;
+        if (!examId) {
+            showToast('Select Exam First', 'error');
+            return;
+        }
+
+        if (!confirm(`Generate & Publish report cards for ${selected.length} students?`)) return;
+
+        const progressArea = document.getElementById('bulkResProgressArea');
+        const bar = document.getElementById('bulkResProgressBar');
+        const statusMsg = document.getElementById('bulkResStatusMsg');
+        const percentMsg = document.getElementById('bulkResPercentMsg');
+
+        progressArea.style.display = 'block';
+        document.getElementById('startBulkGenBtn').disabled = true;
+
+        let success = 0;
+        for (let i = 0; i < selected.length; i++) {
+            const sid = selected[i];
+            const nameEl = document.getElementById(`status_${sid}`);
+            nameEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            const res = await this.processReportCard(sid, examId, sessionId);
+
+            if (res.success) {
+                success++;
+                nameEl.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> Published';
+            } else {
+                nameEl.innerHTML = `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Failed: ${res.reason || 'Error'}`;
+            }
+
+            const p = Math.round(((i + 1) / selected.length) * 100);
+            bar.style.width = `${p}%`;
+            percentMsg.textContent = `${p}%`;
+            statusMsg.textContent = `Processing student ${i + 1} of ${selected.length}...`;
+        }
+
+        showToast(`Successfully processed ${success} report cards!`);
+        document.getElementById('startBulkGenBtn').disabled = false;
+    },
+};
+
+// Global hooks
+window.loadBulkResClasses = () => ReportCardTool.loadClasses();
+window.loadBulkResSections = () => ReportCardTool.loadSections();
+window.loadStudentsForBulkRes = () => ReportCardTool.loadStudents();
+window.toggleBulkResSelection = (master) => {
+    document.querySelectorAll('.bulk-res-check').forEach((cb) => (cb.checked = master.checked));
+};
+window.runBulkGeneration = () => ReportCardTool.runBulk();
 
 // Notice Board
 async function handleNoticeSubmit(e) {
@@ -739,16 +952,17 @@ async function handleNoticeSubmit(e) {
     const title = document.getElementById('noticeTitle').value;
     const message = document.getElementById('noticeMessage').value;
     try {
-        await db.collection('notices').add({
-            title,
-            message,
-            date: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showToast("Notice published!");
+        await schoolData('notices').add(
+            withSchool({
+                title,
+                message,
+            })
+        );
+        showToast('Notice published!');
         e.target.reset();
         await loadNoticeHistory();
     } catch (e) {
-        showToast(e.message, "error");
+        showToast(e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -758,11 +972,11 @@ async function loadNoticeHistory() {
     const container = document.getElementById('adminNoticesContainer');
     if (!container) return;
     try {
-        const snap = await db.collection('notices').orderBy('date', 'desc').get();
+        const snap = await schoolData('notices').orderBy('date', 'desc').get();
         container.innerHTML = '';
-        snap.forEach(doc => {
+        snap.forEach((doc) => {
             const d = doc.data();
-            const date = d.date ? new Date(d.date.seconds*1000).toLocaleDateString() : 'Just now';
+            const date = d.date ? new Date(d.date.seconds * 1000).toLocaleDateString() : 'Just now';
             container.innerHTML += `
                 <div style="padding:1rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -777,9 +991,14 @@ async function loadNoticeHistory() {
 }
 
 async function deleteNotice(id) {
-    if (confirm("Delete this notice?")) {
-        await db.collection('notices').doc(id).delete();
-        loadNoticeHistory();
+    if (confirm('Delete this notice?')) {
+        try {
+            await schoolDoc('notices', id).delete();
+            showToast('Notice deleted');
+            loadNoticeHistory();
+        } catch (e) {
+            showToast('Error deleting notice: ' + e.message, 'error');
+        }
     }
 }
 
@@ -788,16 +1007,20 @@ async function deleteNotice(id) {
 // Website Settings / CMS
 async function loadWebsiteSettings() {
     try {
-        const doc = await db.collection('settings').doc('general').get();
+        const doc = await schoolDoc('settings', 'general').get();
         if (doc.exists) {
             const data = doc.data();
             document.getElementById('set_marquee').value = data.marquee || '';
             document.getElementById('set_phone').value = data.phone || '';
             document.getElementById('set_email').value = data.email || '';
             document.getElementById('set_address').value = data.address || '';
+
+            // Sync to localStorage for React tools
+            if (data.schoolName) localStorage.setItem('schoolName', data.schoolName);
+            if (data.logo) localStorage.setItem('schoolLogo', data.logo);
         }
     } catch (e) {
-        console.error("Error loading settings:", e);
+        console.error('Error loading settings:', e);
     }
 }
 
@@ -805,17 +1028,25 @@ async function handleWebsiteSettingsSave(e) {
     e.preventDefault();
     setLoading(true);
     try {
+        const schoolName = document.getElementById('set_schoolName')?.value.trim() || '';
+        const logo = document.getElementById('set_logo')?.value.trim() || ''; // Assuming there's a logo field or URL
+
         const payload = {
             marquee: document.getElementById('set_marquee').value.trim(),
             phone: document.getElementById('set_phone').value.trim(),
             email: document.getElementById('set_email').value.trim(),
             address: document.getElementById('set_address').value.trim(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
-        await db.collection('settings').doc('general').set(payload, { merge: true });
-        showToast("Website Settings updated!");
+
+        if (schoolName) payload.schoolName = schoolName;
+
+        await schoolDoc('settings', 'general').set(payload, { merge: true });
+        showToast('Website Settings updated!');
+        // Sync to localStorage
+        if (schoolName) localStorage.setItem('schoolName', schoolName);
     } catch (e) {
-        showToast("Error update: " + e.message, "error");
+        showToast('Error update: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -825,27 +1056,27 @@ async function handleWebsiteSettingsSave(e) {
 function exportStudentData() {
     if (allStudents.length === 0) return;
     try {
-        const formattedData = allStudents.map(s => ({
-            "Student ID": s.student_id || '',
-            "Name": s.name || '',
-            "Mobile/Phone": s.phone || '',
-            "Class": s.class || '',
-            "Section": s.section || '',
-            "Roll No": s.roll_no || '',
-            "Reg No": s.reg_no || '',
-            "Gender": s.gender || '',
-            "DOB": s.dob || '',
+        const formattedData = allStudents.map((s) => ({
+            'Student ID': s.student_id || '',
+            Name: s.name || '',
+            'Mobile/Phone': s.phone || '',
+            Class: s.class || '',
+            Section: s.section || '',
+            'Roll No': s.roll_no || '',
+            'Reg No': s.reg_no || '',
+            Gender: s.gender || '',
+            DOB: s.dob || '',
             "Father's Name": s.father_name || '',
             "Mother's Name": s.mother_name || '',
-            "Address": s.address || ''
+            Address: s.address || '',
         }));
         const ws = XLSX.utils.json_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Students");
+        XLSX.utils.book_append_sheet(wb, ws, 'Students');
         XLSX.writeFile(wb, `apex_students_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast("Exported!");
+        showToast('Exported!');
     } catch (e) {
-        showToast("Export failed: " + e.message, "error");
+        showToast('Export failed: ' + e.message, 'error');
     }
 }
 
@@ -908,16 +1139,21 @@ async function handleStudentSubmit(e) {
         // Upload photo string if selected (bypassing Storage)
         if (photoFile) {
             document.getElementById('uploadProgress').style.display = 'block';
-            photoUrl = await new Promise(resolve => {
+            photoUrl = await new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onload = e => {
+                reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const MAX = 300;
-                        let w = img.width, h = img.height;
-                        if (w > MAX) { h *= MAX/w; w = MAX; }
-                        canvas.width = w; canvas.height = h;
+                        let w = img.width,
+                            h = img.height;
+                        if (w > MAX) {
+                            h *= MAX / w;
+                            w = MAX;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         resolve(canvas.toDataURL('image/jpeg', 0.8));
                     };
@@ -957,12 +1193,11 @@ async function handleStudentSubmit(e) {
             city,
             hostel,
             transport,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
         if (photoUrl) studentData.photo_url = photoUrl;
 
-
-        await db.collection('students').doc(docId).set(studentData, { merge: true });
+        await schoolDoc('students', docId).set(withSchool(studentData), { merge: true });
         showToast('Student saved successfully!');
         editingDocId = null;
         showSection('studentList');
@@ -982,7 +1217,7 @@ function toggleSelect(id) {
 
 function handleSelectAll(e) {
     const cbs = document.querySelectorAll('.student-checkbox');
-    cbs.forEach(cb => {
+    cbs.forEach((cb) => {
         cb.checked = e.target.checked;
         if (e.target.checked) selectedStudents.add(cb.value);
         else selectedStudents.delete(cb.value);
@@ -1005,7 +1240,7 @@ async function handleBulkDelete() {
     if (confirm(`Delete ${selectedStudents.size} students?`)) {
         setLoading(true);
         const batch = db.batch();
-        selectedStudents.forEach(id => batch.delete(db.collection('students').doc(id)));
+        selectedStudents.forEach((id) => batch.delete(schoolDoc('students', id)));
         await batch.commit();
         selectedStudents.clear();
         updateBulkUI();
@@ -1015,29 +1250,29 @@ async function handleBulkDelete() {
 }
 
 async function deleteStudent(id) {
-    if (confirm("Delete this student profile?")) {
+    if (confirm('Delete this student profile?')) {
         setLoading(true);
-        await db.collection('students').doc(id).delete();
+        await schoolDoc('students', id).delete();
         loadInitialData();
         setLoading(false);
     }
 }
 
 async function editStudent(id) {
-    const s = allStudents.find(x => x.id === id);
+    const s = allStudents.find((x) => x.id === id);
     if (!s) return;
     editingDocId = id; // remember doc ID for saving
-    
+
     // Show section first to ensure HTML elements exist
     showSection('addStudent');
     document.getElementById('formTitle').textContent = 'Edit Student Profile';
-    
+
     // Basic Fields
     document.getElementById('student_id').value = s.studentId || s.student_id || '';
     document.getElementById('student_name').value = s.name || '';
     document.getElementById('student_father').value = s.fatherName || s.father_name || '';
     document.getElementById('student_phone').value = s.mobile || s.phone || '';
-    
+
     // ERP Dropdowns (Async chain)
     if (typeof updateSessionDropdowns === 'function') {
         setLoading(true);
@@ -1047,18 +1282,18 @@ async function editStudent(id) {
             if (sessionSelect) {
                 sessionSelect.value = s.session || '';
                 await loadClassesForRegistration();
-                
+
                 const classSelect = document.getElementById('student_class');
                 if (classSelect) {
                     classSelect.value = s.class || '';
                     await updateRegistrationSections();
-                    
+
                     const secSelect = document.getElementById('student_section');
                     if (secSelect) secSelect.value = s.section || '';
                 }
             }
         } catch (e) {
-            console.error("Error pre-filling registration dropdowns:", e);
+            console.error('Error pre-filling registration dropdowns:', e);
         } finally {
             setLoading(false);
         }
@@ -1085,7 +1320,7 @@ async function editStudent(id) {
     document.getElementById('student_city').value = s.city || '';
     document.getElementById('student_hostel').value = s.hostel || 'No';
     document.getElementById('student_transport').value = s.transport || 'No';
-    
+
     // Show existing photo
     const photoDiv = document.getElementById('photoPreview');
     if (s.photo_url) {
@@ -1109,12 +1344,12 @@ async function handleBulkImport(e) {
             const workbook = XLSX.read(data, { type: 'array' });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-            
+
             // Convert to JSON with headers
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            
+
             if (jsonData.length === 0) {
-                showToast("The Excel file seems to be empty.", "error");
+                showToast('The Excel file seems to be empty.', 'error');
                 setLoading(false);
                 return;
             }
@@ -1154,7 +1389,7 @@ async function handleBulkImport(e) {
                     guardian_name: (row['Guardian Name'] || row['guardian_name'] || '').toString().trim(),
                     guardian_phone: (row['Guardian Phone'] || row['guardian_phone'] || '').toString().trim(),
                     smart_card_no: (row['Smart Card No'] || row['smart_card_no'] || '').toString().trim(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 };
 
                 // Mandatory fields validation
@@ -1163,7 +1398,7 @@ async function handleBulkImport(e) {
                 }
 
                 const docId = studentData.studentId || studentData.mobile;
-                await db.collection('students').doc(docId).set(studentData, { merge: true });
+                await schoolDoc('students', docId).set(withSchool(studentData), { merge: true });
                 processed++;
                 document.getElementById('currentImport').textContent = processed;
             }
@@ -1171,8 +1406,8 @@ async function handleBulkImport(e) {
             showToast(`Bulk Import Complete: ${processed} students processed.`);
             showSection('studentList');
         } catch (error) {
-            console.error("Excel processing error:", error);
-            showToast("Failed to process Excel file.", "error");
+            console.error('Excel processing error:', error);
+            showToast('Failed to process Excel file.', 'error');
         } finally {
             setLoading(false);
         }
@@ -1182,47 +1417,102 @@ async function handleBulkImport(e) {
 
 function downloadExcelTemplate() {
     const headers = [
-        "Id", "Name", "Reg No", "Roll No", "Session", "Class", "Section", 
-        "Birth Date", "Join Date", "Gender", "Father Name", "Mother Name", 
-        "Phone", "Religion", "Category", "PEN", "Aadhar", "Father Aadhar", 
-        "Mother Aadhar", "Caste", "Hostel", "Transport", "Address", 
-        "Permanent Address", "City", "Guardian Name", "Guardian Phone", "Smart Card No"
+        'Id',
+        'Name',
+        'Reg No',
+        'Roll No',
+        'Session',
+        'Class',
+        'Section',
+        'Birth Date',
+        'Join Date',
+        'Gender',
+        'Father Name',
+        'Mother Name',
+        'Phone',
+        'Religion',
+        'Category',
+        'PEN',
+        'Aadhar',
+        'Father Aadhar',
+        'Mother Aadhar',
+        'Caste',
+        'Hostel',
+        'Transport',
+        'Address',
+        'Permanent Address',
+        'City',
+        'Guardian Name',
+        'Guardian Phone',
+        'Smart Card No',
     ];
-    
-    const sampleData = [["APEX001", "Rahul Kumar", "R101", "12", "2026-27", "6", "A", "01.01.2012", "15.04.2023", "Male", "Suresh Kumar", "Meena Devi", "9876543210", "Hindu", "General", "P12345", "123456789012", "234567890123", "345678901234", "OBC", "No", "Yes", "Main Road, Saran", "Village Apex, Saran", "Saran", "Suresh Kumar", "9876543210", "SC1001"]];
+
+    const sampleData = [
+        [
+            'APEX001',
+            'Rahul Kumar',
+            'R101',
+            '12',
+            '2026-27',
+            '6',
+            'A',
+            '01.01.2012',
+            '15.04.2023',
+            'Male',
+            'Suresh Kumar',
+            'Meena Devi',
+            '9876543210',
+            'Hindu',
+            'General',
+            'P12345',
+            '123456789012',
+            '234567890123',
+            '345678901234',
+            'OBC',
+            'No',
+            'Yes',
+            'Main Road, Saran',
+            'Village Apex, Saran',
+            'Saran',
+            'Suresh Kumar',
+            '9876543210',
+            'SC1001',
+        ],
+    ];
 
     const ws_data = [headers, ...sampleData];
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Students Template");
-    XLSX.writeFile(wb, "apex_student_import_template.xlsx");
-    showToast("Excel template downloaded!");
+    XLSX.utils.book_append_sheet(wb, ws, 'Students Template');
+    XLSX.writeFile(wb, 'apex_student_import_template.xlsx');
+    showToast('Excel template downloaded!');
 }
 
 function logoutAdmin() {
-    auth.signOut().then(() => window.location.href = 'admin-login.html');
+    auth.signOut().then(() => (window.location.href = 'admin-login.html'));
 }
 
 function updateStats() {
     document.getElementById('statTotalStudents').textContent = allStudents.length;
-    const classes = new Set(allStudents.map(s => s.class));
+    const classes = new Set(allStudents.map((s) => s.class));
     document.getElementById('statTotalClasses').textContent = classes.size;
 }
-
 
 // ===================== INQUIRIES =====================
 async function loadInquiries() {
     const tbody = document.getElementById('inquiryTableBody');
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading inquiries...</td></tr>';
+    tbody.innerHTML =
+        '<tr><td colspan="8" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading inquiries...</td></tr>';
 
     try {
-        const snap = await db.collection('inquiries').orderBy('submittedAt', 'desc').get();
+        const snap = await schoolData('inquiries').orderBy('submittedAt', 'desc').get();
         if (snap.empty) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#64748b;">No inquiries yet.</td></tr>';
+            tbody.innerHTML =
+                '<tr><td colspan="8" style="text-align:center; color:#64748b;">No inquiries yet.</td></tr>';
             return;
         }
         tbody.innerHTML = '';
-        snap.forEach(doc => {
+        snap.forEach((doc) => {
             const d = doc.data();
             const date = d.submittedAt ? new Date(d.submittedAt.seconds * 1000).toLocaleDateString('en-IN') : 'N/A';
             const statusColor = d.status === 'New' ? '#ef4444' : d.status === 'Contacted' ? '#f59e0b' : '#10b981';
@@ -1237,26 +1527,37 @@ async function loadInquiries() {
                     <td><span class="badge" style="background:${statusColor}; color:white;">${d.status || 'New'}</span></td>
                     <td>
                         <select onchange="updateInquiryStatus('${doc.id}', this.value)" style="padding:0.3rem; border-radius:0.3rem; border:1px solid #d1d5db; font-size:0.8rem;">
-                            <option ${d.status==='New'?'selected':''}>New</option>
-                            <option ${d.status==='Contacted'?'selected':''}>Contacted</option>
-                            <option ${d.status==='Admitted'?'selected':''}>Admitted</option>
-                            <option ${d.status==='Not Interested'?'selected':''}>Not Interested</option>
+                            <option ${d.status === 'New' ? 'selected' : ''}>New</option>
+                            <option ${d.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
+                            <option ${d.status === 'Admitted' ? 'selected' : ''}>Admitted</option>
+                            <option ${d.status === 'Not Interested' ? 'selected' : ''}>Not Interested</option>
                         </select>
                     </td>
                 </tr>`;
         });
-    } catch(e) {
+    } catch (e) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ef4444;">Error: ${e.message}</td></tr>`;
     }
 }
 
 async function updateInquiryStatus(docId, newStatus) {
     try {
-        await db.collection('inquiries').doc(docId).update({ status: newStatus });
+        await schoolDoc('inquiries', docId).update({ status: newStatus });
         showToast(`Status updated to "${newStatus}"`);
-    } catch(e) {
+    } catch (e) {
         showToast('Error updating status: ' + e.message, 'error');
     }
+}
+
+// ===================== LIBRARY HELPERS =====================
+function toggleAddBookForm() {
+    const wrapper = document.getElementById('addBookFormWrapper');
+    if (wrapper) wrapper.style.display = wrapper.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleAddRouteForm() {
+    const wrapper = document.getElementById('addRouteFormWrapper');
+    if (wrapper) wrapper.style.display = wrapper.style.display === 'none' ? 'block' : 'none';
 }
 
 // ===================== BULK PDF UPLOAD =====================
@@ -1273,14 +1574,18 @@ async function handleBulkUpload(event, collection) {
 
     // Build lookup: student_id -> firestore doc.id
     const lookup = {};
-    allStudents.forEach(s => {
+    allStudents.forEach((s) => {
         if (s.student_id) lookup[s.student_id.trim().toLowerCase()] = s.id;
     });
 
-    let success = 0, failed = 0;
+    let success = 0,
+        failed = 0;
 
     for (const file of files) {
-        const studentIdFromFile = file.name.replace(/\.pdf$/i, '').trim().toLowerCase();
+        const studentIdFromFile = file.name
+            .replace(/\.pdf$/i, '')
+            .trim()
+            .toLowerCase();
         const docId = lookup[studentIdFromFile];
 
         if (!docId) {
@@ -1300,20 +1605,22 @@ async function handleBulkUpload(event, collection) {
         }
 
         try {
-            const base64 = await new Promise(resolve => {
+            const base64 = await new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onload = e => resolve(e.target.result);
+                reader.onload = (e) => resolve(e.target.result);
                 reader.readAsDataURL(file);
             });
-            await db.collection(collection).doc(`${docId}_${year}`).set({
-                fileData: base64,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await schoolDoc(collection, `${docId}_${year}`).set(
+                withSchool({
+                    fileData: base64,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                })
+            );
             logItems.innerHTML += `<div style="padding:0.5rem; background:#ecfdf5; border-radius:0.5rem; margin-bottom:0.5rem; color:#065f46;">
                 ✅ <b>${file.name}</b> — Uploaded for Student "${studentIdFromFile}" (${year})
             </div>`;
             success++;
-        } catch(e) {
+        } catch (e) {
             logItems.innerHTML += `<div style="padding:0.5rem; background:#fff1f2; border-radius:0.5rem; margin-bottom:0.5rem; color:#be123c;">
                 ❌ <b>${file.name}</b> — Upload failed: ${e.message}
             </div>`;
@@ -1332,20 +1639,20 @@ async function handleBulkUpload(event, collection) {
 async function exportToCSV(collection) {
     try {
         setLoading(true);
-        const snap = await db.collection(collection).get();
+        const snap = await schoolData(collection).get();
         if (snap.empty) {
             showToast('No data to export', 'error');
             return;
         }
 
-        let csvContent = "data:text/csv;charset=utf-8,";
+        let csvContent = 'data:text/csv;charset=utf-8,';
         let headers = [];
         let rows = [];
 
-        snap.forEach(doc => {
+        snap.forEach((doc) => {
             const data = doc.data();
             const row = {};
-            
+
             // Format specific based on collection
             if (collection === 'students') {
                 row['Student ID'] = data.studentId || data.student_id;
@@ -1377,10 +1684,10 @@ async function exportToCSV(collection) {
         // Extract headers from first row
         if (rows.length > 0) {
             headers = Object.keys(rows[0]);
-            csvContent += headers.map(h => `"${h}"`).join(",") + "\r\n";
-            
-            rows.forEach(row => {
-                const values = headers.map(header => {
+            csvContent += headers.map((h) => `"${h}"`).join(',') + '\r\n';
+
+            rows.forEach((row) => {
+                const values = headers.map((header) => {
                     let val = row[header] === undefined ? '' : row[header];
                     // Escape quotes
                     if (typeof val === 'string') {
@@ -1389,20 +1696,20 @@ async function exportToCSV(collection) {
                     }
                     return val;
                 });
-                csvContent += values.join(",") + "\r\n";
+                csvContent += values.join(',') + '\r\n';
             });
         }
 
         const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${collection}_export_${new Date().toISOString().split('T')[0]}.csv`);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `${collection}_export_${new Date().toISOString().split('T')[0]}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         showToast(`Exported ${rows.length} records!`);
-    } catch(e) {
+    } catch (e) {
         showToast('Error exporting: ' + e.message, 'error');
     } finally {
         setLoading(false);
@@ -1418,34 +1725,34 @@ async function processAdmitCardPdf() {
     const progressSpan = document.getElementById('admitToolProgress');
 
     if (!classVal || !fileInput.files[0]) {
-        alert("Please select a Class and upload a PDF file.");
+        alert('Please select a Class and upload a PDF file.');
         return;
     }
 
     const file = fileInput.files[0];
     logArea.innerHTML = `> Starting process for Class: ${classVal}, Year: ${year}<br>`;
     logArea.innerHTML += `> File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)<br>`;
-    progressSpan.innerText = "Initializing...";
+    progressSpan.innerText = 'Initializing...';
 
     // 1. Get students for this class, sorted by Student ID
     const students = allStudents
-        .filter(s => s.class === classVal)
+        .filter((s) => s.class === classVal)
         .sort((a, b) => {
-            const idA = (a.studentId || a.student_id || "").toLowerCase();
-            const idB = (b.studentId || b.student_id || "").toLowerCase();
+            const idA = (a.studentId || a.student_id || '').toLowerCase();
+            const idB = (b.studentId || b.student_id || '').toLowerCase();
             return idA.localeCompare(idB);
         });
 
     if (students.length === 0) {
         logArea.innerHTML += `<span style="color:#ef4444;">> ERROR: No students found in Class ${classVal}. Aborting.</span><br>`;
-        progressSpan.innerText = "Failed";
+        progressSpan.innerText = 'Failed';
         return;
     }
 
     logArea.innerHTML += `> Found ${students.length} students in Class ${classVal}.<br>`;
 
     try {
-        progressSpan.innerText = "Reading PDF...";
+        progressSpan.innerText = 'Reading PDF...';
         const arrayBuffer = await file.arrayBuffer();
         const { PDFDocument } = PDFLib;
         const mainPdfDoc = await PDFDocument.load(arrayBuffer);
@@ -1463,45 +1770,46 @@ async function processAdmitCardPdf() {
         for (let i = 0; i < limit; i++) {
             const student = students[i];
             progressSpan.innerText = `Splitting: ${i + 1}/${limit}`;
-            
+
             try {
                 // Create a new PDF for this single page
                 const subPdfDoc = await PDFDocument.create();
                 const [copiedPage] = await subPdfDoc.copyPages(mainPdfDoc, [i]);
                 subPdfDoc.addPage(copiedPage);
-                
+
                 const pdfBytes = await subPdfDoc.save();
-                const base64 = await new Promise(resolve => {
+                const base64 = await new Promise((resolve) => {
                     const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result);
+                    reader.onload = (e) => resolve(e.target.result);
                     reader.readAsDataURL(new Blob([pdfBytes], { type: 'application/pdf' }));
                 });
 
                 logArea.innerHTML += `> Processing student: <b>${student.studentId || student.student_id}</b> (${student.name})...<br>`;
 
                 // Upload to Firestore
-                await db.collection('admitcards').doc(`${student.id}_${year}`).set({
-                    fileData: base64,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                await schoolDoc('admitcards', `${student.id}_${year}`).set(
+                    withSchool({
+                        fileData: base64,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    })
+                );
 
-                logArea.innerHTML += `<span style="color:#10b981;">  ✅ Successfully assigned page ${i+1} to ${student.studentId || student.student_id}</span><br>`;
+                logArea.innerHTML += `<span style="color:#10b981;">  ✅ Successfully assigned page ${i + 1} to ${student.studentId || student.student_id}</span><br>`;
                 successCount++;
             } catch (err) {
                 logArea.innerHTML += `<span style="color:#ef4444;">  ❌ Failed for ${student.studentId || student.student_id}: ${err.message}</span><br>`;
             }
-            
+
             // Auto-scroll log
             logArea.scrollTop = logArea.scrollHeight;
         }
 
         logArea.innerHTML += `<span style="color:#38bdf8; font-weight:bold;">> COMPLETED: ${successCount} admit cards processed successfully.</span><br>`;
-        progressSpan.innerText = "Done";
+        progressSpan.innerText = 'Done';
         showToast(`Admit Card Split complete! ${successCount} successful.`, 'success');
-
     } catch (e) {
         logArea.innerHTML += `<span style="color:#ef4444;">> CRITICAL ERROR: ${e.message}</span><br>`;
-        progressSpan.innerText = "Error";
+        progressSpan.innerText = 'Error';
         console.error(e);
     }
 }
@@ -1526,7 +1834,7 @@ function initSearchableSelect(containerId, onSelect) {
             </div>
         </div>
     `;
-    
+
     window[`${containerId}_select`] = (s) => {
         document.getElementById(`${containerId}_label`).textContent = `${s.name} [${s.father_name}] [${s.student_id}]`;
         document.getElementById(`${containerId}_dropdown`).style.display = 'none';
@@ -1537,25 +1845,29 @@ function initSearchableSelect(containerId, onSelect) {
 function toggleSearchDropdown(id) {
     const drop = document.getElementById(`${id}_dropdown`);
     const isVisible = drop.style.display === 'flex';
-    
+
     // Close others
-    document.querySelectorAll('[id$="_dropdown"]').forEach(el => el.style.display = 'none');
-    
+    document.querySelectorAll('[id$="_dropdown"]').forEach((el) => (el.style.display = 'none'));
+
     if (!isVisible) {
         drop.style.display = 'flex';
         renderDropdownList(id, allStudents);
         const input = drop.querySelector('input');
-        if (input) { input.value = ''; input.focus(); }
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
     }
 }
 
 function filterSearchDropdown(id, q) {
     const term = q.toLowerCase();
-    const filtered = allStudents.filter(s => 
-        (s.name || '').toLowerCase().includes(term) || 
-        (s.student_id || '').toLowerCase().includes(term) || 
-        (s.father_name || '').toLowerCase().includes(term) ||
-        (s.phone || '').toLowerCase().includes(term)
+    const filtered = allStudents.filter(
+        (s) =>
+            (s.name || '').toLowerCase().includes(term) ||
+            (s.student_id || '').toLowerCase().includes(term) ||
+            (s.father_name || '').toLowerCase().includes(term) ||
+            (s.phone || '').toLowerCase().includes(term)
     );
     renderDropdownList(id, filtered.slice(0, 30)); // Limit for performance
 }
@@ -1563,24 +1875,29 @@ function filterSearchDropdown(id, q) {
 function renderDropdownList(id, list) {
     const el = document.getElementById(`${id}_list`);
     if (!el) return;
-    
+
     if (list.length === 0) {
-        el.innerHTML = '<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">No students found</div>';
+        el.innerHTML =
+            '<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">No students found</div>';
         return;
     }
 
-    el.innerHTML = list.map(s => `
+    el.innerHTML = list
+        .map(
+            (s) => `
         <div onclick="window['${id}_select'](${JSON.stringify(s).replace(/"/g, '&quot;')})" style="padding:0.75rem 1rem; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">
             <div style="font-weight:600; font-size:0.95rem; color:var(--secondary);">${s.name}</div>
             <div style="font-size:0.75rem; color:var(--text-muted);">F/N: ${s.father_name || '-'} | ID: ${s.student_id || '-'}</div>
         </div>
-    `).join('');
+    `
+        )
+        .join('');
 }
 
 // Close dropdowns on click outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.searchable-select-wrapper')) {
-        document.querySelectorAll('[id$="_dropdown"]').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('[id$="_dropdown"]').forEach((el) => (el.style.display = 'none'));
     }
 });
 
@@ -1601,10 +1918,13 @@ async function initBulkUpdate() {
 function populateBulkSessionDropdown() {
     const sessionSelect = document.getElementById('bulk_student_session');
     if (!sessionSelect) return;
-    
-    sessionSelect.innerHTML = '<option value="">Select Session</option>' + 
-        erpState.sessions.map(s => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
-    
+
+    sessionSelect.innerHTML =
+        '<option value="">Select Session</option>' +
+        erpState.sessions
+            .map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+            .join('');
+
     if (erpState.activeSessionId) loadClassesForBulkUpdate();
 }
 
@@ -1615,15 +1935,19 @@ async function loadClassesForBulkUpdate() {
     if (!classSelect || !sessionId) return;
 
     try {
-        const snapshot = await db.collection('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
-        const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        classSelect.innerHTML = '<option value="">Select Class</option>' + 
-            classes.map(cls => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
-        
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc')
+            .get();
+        const classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+        classSelect.innerHTML =
+            '<option value="">Select Class</option>' +
+            classes.map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
+
         document.getElementById('bulk_student_section').innerHTML = '<option value="">Select Class First</option>';
     } catch (e) {
-        console.error("Error loading classes for bulk update:", e);
+        console.error('Error loading classes for bulk update:', e);
     }
 }
 
@@ -1635,27 +1959,29 @@ async function loadBulkStudentList() {
 
     if (!session || !className) return;
 
-    body.innerHTML = '<tr><td colspan="9" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
+    body.innerHTML =
+        '<tr><td colspan="9" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
 
     try {
-        let query = db.collection('students')
-            .where('session', '==', session)
-            .where('class', '==', className);
-        
+        let query = schoolData('students').where('session', '==', session).where('class', '==', className);
+
         if (section) query = query.where('section', '==', section);
 
         const snapshot = await query.get();
-        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const students = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
         if (students.length === 0) {
-            body.innerHTML = '<tr><td colspan="9" style="text-align:center;">No students found matching filters.</td></tr>';
+            body.innerHTML =
+                '<tr><td colspan="9" style="text-align:center;">No students found matching filters.</td></tr>';
             return;
         }
 
         // Maintain scroll position or reset?
-        body.innerHTML = students.map(s => `
+        body.innerHTML = students
+            .map(
+                (s) => `
             <tr data-id="${s.id}">
-                <td style="font-family:monospace; font-size:0.75rem;">${s.student_id || s.id.slice(0,6)}</td>
+                <td style="font-family:monospace; font-size:0.75rem;">${s.student_id || s.id.slice(0, 6)}</td>
                 <td><input type="text" class="bulk-input b-name" value="${s.name || ''}"></td>
                 <td class="col_roll"><input type="text" class="bulk-input b-roll" value="${s.roll_no || ''}"></td>
                 <td class="col_father"><input type="text" class="bulk-input b-father" value="${s.father_name || ''}"></td>
@@ -1665,17 +1991,19 @@ async function loadBulkStudentList() {
                 <td class="col_address" style="display:none;"><input type="text" class="bulk-input b-address" value="${s.address || ''}"></td>
                 <td class="col_sms" style="display:none;"><input type="text" class="bulk-input b-sms" value="${s.sms_contact || ''}"></td>
             </tr>
-        `).join('');
+        `
+            )
+            .join('');
 
         // Re-apply current column visibility
-        document.querySelectorAll('#bulkColumnToggles input[type="checkbox"]').forEach(cb => {
+        document.querySelectorAll('#bulkColumnToggles input[type="checkbox"]').forEach((cb) => {
             const colClass = cb.getAttribute('onchange').match(/'([^']+)'/)[1];
             toggleBulkCol(colClass, cb.checked);
         });
-
     } catch (e) {
-        console.error("Error loading bulk list:", e);
-        body.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
+        console.error('Error loading bulk list:', e);
+        body.innerHTML =
+            '<tr><td colspan="9" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
     }
 }
 
@@ -1687,11 +2015,11 @@ function toggleBulkUpdateColumns() {
 function toggleBulkCol(colClass, forceState = null) {
     const elements = document.querySelectorAll(`.${colClass}`);
     const checkbox = document.querySelector(`input[onchange*="'${colClass}'"]`);
-    
+
     const shouldShow = forceState !== null ? forceState : checkbox.checked;
     if (checkbox) checkbox.checked = shouldShow;
 
-    elements.forEach(el => {
+    elements.forEach((el) => {
         el.style.display = shouldShow ? '' : 'none';
     });
 }
@@ -1705,7 +2033,7 @@ async function saveBulkStudentUpdate() {
         const batch = db.batch();
         let changeCount = 0;
 
-        rows.forEach(row => {
+        rows.forEach((row) => {
             const id = row.getAttribute('data-id');
             const data = {
                 name: row.querySelector('.b-name').value.trim(),
@@ -1716,19 +2044,19 @@ async function saveBulkStudentUpdate() {
                 blood_group: row.querySelector('.b-blood').value.trim(),
                 address: row.querySelector('.b-address').value.trim(),
                 sms_contact: row.querySelector('.b-sms').value.trim(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
-            
-            batch.update(db.collection('students').doc(id), data);
+
+            batch.update(schoolDoc('students', id), data);
             changeCount++;
         });
 
         await batch.commit();
-        showToast(`Successfully updated ${changeCount} student records!`, "success");
+        showToast(`Successfully updated ${changeCount} student records!`, 'success');
         loadInitialData(); // Refresh main list too
     } catch (e) {
-        console.error("Bulk update failed:", e);
-        showToast("Failed to save changes: " + e.message, "error");
+        console.error('Bulk update failed:', e);
+        showToast('Failed to save changes: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -1758,8 +2086,11 @@ async function initReportCardSection() {
 function populateRcSessionDropdown() {
     const sessionSelect = document.getElementById('rc_session');
     if (!sessionSelect) return;
-    sessionSelect.innerHTML = '<option value="">Select Session</option>' + 
-        erpState.sessions.map(s => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    sessionSelect.innerHTML =
+        '<option value="">Select Session</option>' +
+        erpState.sessions
+            .map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+            .join('');
     if (erpState.activeSessionId) loadRcClasses();
 }
 
@@ -1770,13 +2101,19 @@ async function loadRcClasses() {
     if (!classSelect || !sessionId) return;
 
     try {
-        const snapshot = await db.collection('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
-        const classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        classSelect.innerHTML = '<option value="">Select Class</option>' + 
-            classes.map(cls => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc')
+            .get();
+        const classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        classSelect.innerHTML =
+            '<option value="">Select Class</option>' +
+            classes.map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
         document.getElementById('rc_section').innerHTML = '<option value="">Select Class First</option>';
         document.getElementById('rc_student').innerHTML = '<option value="">Select Details Above</option>';
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function loadRcSections() {
@@ -1787,12 +2124,18 @@ async function loadRcSections() {
 
     const session = document.getElementById('rc_session').value;
     try {
-        const snapshot = await db.collection('students').where('session', '==', session).where('class', '==', className).get();
-        const students = snapshot.docs.map(doc => doc.data());
-        const sections = [...new Set(students.map(s => s.section).filter(Boolean))];
-        sectSelect.innerHTML = '<option value="">Select Section</option>' + 
-            sections.map(s => `<option value="${s}">${s}</option>`).join('');
-    } catch (e) { console.error(e); }
+        const snapshot = await schoolData('students')
+            .where('session', '==', session)
+            .where('class', '==', className)
+            .get();
+        const students = snapshot.docs.map((doc) => doc.data());
+        const sections = [...new Set(students.map((s) => s.section).filter(Boolean))];
+        sectSelect.innerHTML =
+            '<option value="">Select Section</option>' +
+            sections.map((s) => `<option value="${s}">${s}</option>`).join('');
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function loadRcStudents() {
@@ -1804,13 +2147,18 @@ async function loadRcStudents() {
 
     studentSelect.innerHTML = '<option value="">Loading students...</option>';
     try {
-        let query = db.collection('students').where('session', '==', session).where('class', '==', className);
+        let query = schoolData('students').where('session', '==', session).where('class', '==', className);
         if (section) query = query.where('section', '==', section);
         const snapshot = await query.get();
-        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        studentSelect.innerHTML = '<option value="">Select Student</option>' + 
-            students.map(s => `<option value="${s.id}">${s.name} (${s.student_id || s.id.slice(0,6)})</option>`).join('');
-    } catch (e) { console.error(e); }
+        const students = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        studentSelect.innerHTML =
+            '<option value="">Select Student</option>' +
+            students
+                .map((s) => `<option value="${s.id}">${s.name} (${s.student_id || s.id.slice(0, 6)})</option>`)
+                .join('');
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function processReportCardGeneration() {
@@ -1818,29 +2166,35 @@ async function processReportCardGeneration() {
     const format = document.getElementById('rc_format').value;
     const session = document.getElementById('rc_session').value;
 
-    if (!studentId) { showToast("Please select a student first", "error"); return; }
+    if (!studentId) {
+        showToast('Please select a student first', 'error');
+        return;
+    }
 
     try {
         setLoading(true);
         // 1. Fetch Student Data
-        const sDoc = await db.collection('students').doc(studentId).get();
-        if (!sDoc.exists) throw new Error("Student not found");
+        const sDoc = await schoolDoc('students', studentId).get();
+        if (!sDoc.exists) throw new Error('Student not found');
         const student = sDoc.data();
 
         // 2. Fetch Marks (For now, just getting all marks for this student/session)
         // In a real scenario, you'd filter by Term/Exam too
-        const mSnap = await db.collection('marks').where('studentId', '==', studentId).where('session', '==', session).get();
-        const marks = mSnap.docs.map(doc => doc.data());
+        const mSnap = await schoolData('marks')
+            .where('studentId', '==', studentId)
+            .where('session', '==', session)
+            .get();
+        const marks = mSnap.docs.map((doc) => doc.data());
 
         // 3. School Details (Mock or from Settings)
         const schoolDetails = {
-            name: "HIMALAYAN INTERNATIONAL SCHOOL", // As per reference
-            address: "CHETAN PARSA, PARSA, SARAN, BIHAR - 841219"
+            name: 'HIMALAYAN INTERNATIONAL SCHOOL', // As per reference
+            address: 'CHETAN PARSA, PARSA, SARAN, BIHAR - 841219',
         };
 
         const examDetails = {
-            title: "TERM 2",
-            session: session
+            title: 'TERM 2',
+            session: session,
         };
 
         // 4. Generate via common Factory
@@ -1853,12 +2207,11 @@ async function processReportCardGeneration() {
         } else if (format === 'MCQ_Advance') {
             await window.ReportCardFactory.generateMCQAdvance(student, marks, examDetails, schoolDetails);
         } else {
-            showToast("Selected format is not yet supported.", "error");
+            showToast('Selected format is not yet supported.', 'error');
         }
-        
     } catch (e) {
-        console.error("Report generation failed:", e);
-        showToast("Error: " + e.message, "error");
+        console.error('Report generation failed:', e);
+        showToast('Error: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -1874,11 +2227,11 @@ window.initReportCardSection = initReportCardSection;
 async function loadEmployeesForIdPrint() {
     const select = document.getElementById('empIdSelect');
     if (!select) return;
-    
+
     try {
-        const snap = await db.collection('employees').get();
+        const snap = await schoolData('employees').get();
         select.innerHTML = '<option value="">-- Select Employee --</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const emp = doc.data();
             select.innerHTML += `<option value="${doc.id}">${emp.name} (${emp.designation || ''})</option>`;
         });
@@ -1892,9 +2245,9 @@ async function populateEnquiryClasses() {
     if (!select) return;
 
     try {
-        const snap = await db.collection('classes').get();
+        const snap = await schoolData('classes').get();
         select.innerHTML = '<option value="">Select Class</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const c = doc.data();
             select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
         });

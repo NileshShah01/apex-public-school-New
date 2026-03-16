@@ -91,7 +91,14 @@ const STAGES = [
   "Includes All Stage 4 + Complete School Manegement ERP Software - Stage 6"
 ];
 
-const CustomTooltip = ({ active, payload, label, prefix = '' }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+  prefix?: string;
+}
+
+const CustomTooltip = ({ active, payload, label, prefix = '' }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-panel p-4 border-blue-500/30 shadow-blue-500/20">
@@ -177,7 +184,7 @@ export default function App() {
         <div className="p-8 flex items-center gap-3">
           <div 
             className="w-10 h-10 rounded-xl flex items-center justify-center glow-blue transition-all duration-500"
-            style={{ backgroundColor: config.accentColor, boxShadow: `0 0 20px ${config.accentColor}4d` }}
+            style={{ backgroundColor: config.accentColor }}
           >
             {renderLogo()}
           </div>
@@ -244,7 +251,7 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="relative p-2 rounded-full hover:bg-white/5 transition-all">
+            <button className="relative p-2 rounded-full hover:bg-white/5 transition-all" title="Notifications">
               <Bell className="w-6 h-6 text-slate-400" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#030303]" />
             </button>
@@ -302,7 +309,7 @@ export default function App() {
 
 // --- Views ---
 
-const DashboardView = ({ showToast }: { showToast: any }) => (
+const DashboardView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="space-y-8">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, i) => (
@@ -395,7 +402,7 @@ const AnalyticsView = ({ compact = false }: { compact?: boolean }) => (
   </div>
 );
 
-const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], setSchools: any, showToast: any }) => {
+const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], setSchools: React.Dispatch<React.SetStateAction<School[]>>, showToast: (message: string, type?: 'success' | 'info') => void }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<{ id: string, name: string, newStage: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -521,6 +528,7 @@ const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], se
                       onChange={(e) => handleStageChangeRequest(school.id, school.name, e.target.value)}
                       onBlur={() => setEditingId(null)}
                       autoFocus
+                      title="Select School Stage"
                     >
                       {STAGES.map(stage => (
                         <option key={stage} value={stage}>{stage}</option>
@@ -567,7 +575,7 @@ const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], se
   );
 };
 
-const AddSchoolView = ({ showToast }: { showToast: any }) => (
+const AddSchoolView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="max-w-2xl mx-auto glass-panel p-8">
     <h2 className="text-2xl font-bold text-white mb-6">Register New School</h2>
     <form className="space-y-6" onSubmit={(e) => {
@@ -589,7 +597,7 @@ const AddSchoolView = ({ showToast }: { showToast: any }) => (
       </div>
       <div className="space-y-2">
         <label className="text-sm text-slate-400">Educational Stage</label>
-        <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none">
+        <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none" title="Educational Stage">
           {STAGES.map(stage => (
             <option key={stage}>{stage}</option>
           ))}
@@ -606,7 +614,7 @@ const AddSchoolView = ({ showToast }: { showToast: any }) => (
   </div>
 );
 
-const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConfig: any, showToast: any }) => (
+const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConfig: React.Dispatch<React.SetStateAction<any>>, showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="max-w-4xl mx-auto space-y-8">
     <div className="glass-panel p-8">
       <div className="flex items-center justify-between mb-6">
@@ -645,6 +653,7 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
                 value={config.accentColor}
                 onChange={(e) => setConfig({ ...config, accentColor: e.target.value })}
                 className="w-10 h-10 rounded-full bg-transparent border-none outline-none cursor-pointer"
+                title="Choose Accent Color"
               />
             </div>
           </div>
@@ -752,7 +761,7 @@ const QuickActionsPanel = () => (
   </div>
 );
 
-const StageView = ({ showToast }: { showToast: any }) => (
+const StageView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="space-y-8">
     <div className="glass-panel p-8">
       <div className="flex items-center justify-between mb-8">
@@ -784,7 +793,7 @@ const StageView = ({ showToast }: { showToast: any }) => (
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">Status: Active</p>
                 </div>
               </div>
-              <button className="p-2 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all">
+              <button className="p-2 hover:bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all" title="Configure Stage">
                 <Settings className="w-4 h-4 text-slate-400" />
               </button>
             </div>
@@ -805,7 +814,7 @@ const StageView = ({ showToast }: { showToast: any }) => (
   </div>
 );
 
-const SubscriptionView = ({ showToast }: { showToast: any }) => (
+const SubscriptionView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="glass-panel p-8">
     <h2 className="text-xl font-bold text-white mb-6">Platform Subscriptions</h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -836,7 +845,7 @@ const SubscriptionView = ({ showToast }: { showToast: any }) => (
   </div>
 );
 
-const SettingsView = ({ showToast }: { showToast: any }) => (
+const SettingsView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="max-w-4xl mx-auto space-y-8">
     <div className="glass-panel p-8">
       <h2 className="text-xl font-bold text-white mb-8">System Settings</h2>
@@ -920,7 +929,7 @@ const LogsView = () => (
   </div>
 );
 
-const SystemHealthView = ({ showToast }: { showToast: any }) => (
+const SystemHealthView = ({ showToast }: { showToast: (message: string, type?: 'success' | 'info') => void }) => (
   <div className="space-y-8">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {[
@@ -949,6 +958,7 @@ const SystemHealthView = ({ showToast }: { showToast: any }) => (
         <button 
           onClick={() => showToast('Refreshing system metrics...', 'info')}
           className="p-2 hover:bg-white/5 rounded-lg transition-all"
+          title="Refresh Metrics"
         >
           <Activity className="w-5 h-5 text-blue-400" />
         </button>

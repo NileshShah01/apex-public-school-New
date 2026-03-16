@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Check Firestore for matching phone
-                const snapshot = await db.collection('students').where('phone', '==', studentPhone).get();
+                // Check Firestore for matching phone in the current school
+                const snapshot = await schoolData('students').where('phone', '==', studentPhone).get();
 
                 if (snapshot.empty) {
                     throw new Error('Mobile Number not found. Please check your number.');
@@ -43,13 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = matchedDoc.data();
 
                 // Success - store session and redirect
-                localStorage.setItem('student_session', JSON.stringify({
-                    student_phone: studentPhone,
-                    student_id: data.student_id || matchedDoc.id,
-                    name: data.name
-                }));
+                localStorage.setItem(
+                    'student_session',
+                    JSON.stringify({
+                        student_phone: studentPhone,
+                        student_id: data.student_id || matchedDoc.id,
+                        name: data.name,
+                    })
+                );
                 window.location.href = 'student-dashboard.html';
-
             } catch (error) {
                 loginError.textContent = error.message;
                 loginError.style.display = 'block';

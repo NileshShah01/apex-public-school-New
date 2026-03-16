@@ -1,0 +1,9 @@
+node_modules/
+.firebase/
+firebase-debug.log*
+.DS_Store
+*.zip
+temp_question_tool/
+temp_super_admin/
+portal/question-formatter/
+screenshot_temp.html

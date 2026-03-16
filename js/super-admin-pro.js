@@ -7,12 +7,12 @@ let allSchools = [];
 let growthChart = null;
 
 const STAGES = [
-    { name: "Static Website", id: 1, desc: "Basic online presence with essential school information." },
-    { name: "CMS Admin Panel", id: 2, desc: "Full control over website content via a dedicated admin panel." },
-    { name: "Student Dashboard", id: 3, desc: "Personalized dashboards for students to track progress." },
-    { name: "ERP Tools", id: 4, desc: "Advanced administrative tools for school operations." },
-    { name: "Custom Tools", id: 5, desc: "Custom-built specialized tools for unique requirements." },
-    { name: "Full ERP Suite", id: 6, desc: "The ultimate ERP solution for complete school management." }
+    { name: 'Static Website', id: 1, desc: 'Basic online presence with essential school information.' },
+    { name: 'CMS Admin Panel', id: 2, desc: 'Full control over website content via a dedicated admin panel.' },
+    { name: 'Student Dashboard', id: 3, desc: 'Personalized dashboards for students to track progress.' },
+    { name: 'ERP Tools', id: 4, desc: 'Advanced administrative tools for school operations.' },
+    { name: 'Custom Tools', id: 5, desc: 'Custom-built specialized tools for unique requirements.' },
+    { name: 'Full ERP Suite', id: 6, desc: 'The ultimate ERP solution for complete school management.' },
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
     initTabNavigation();
     initCharts();
-    
+
     // 3. Data Sync
     await refreshData();
 
@@ -58,7 +58,7 @@ async function checkSuperAdminAuth() {
  * Tab Navigation
  */
 function initTabNavigation() {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
             const tabName = btn.getAttribute('data-tab');
             switchTab(tabName);
@@ -68,7 +68,7 @@ function initTabNavigation() {
 
 function switchTab(tabName) {
     // Update Sidebar
-    document.querySelectorAll('.nav-btn').forEach(b => {
+    document.querySelectorAll('.nav-btn').forEach((b) => {
         b.classList.remove('nav-active', 'text-white');
         b.classList.add('text-slate-400');
         const icon = b.querySelector('i');
@@ -84,8 +84,8 @@ function switchTab(tabName) {
     }
 
     // Update View
-    document.querySelectorAll('.section-view').forEach(v => v.classList.remove('section-active'));
-    
+    document.querySelectorAll('.section-view').forEach((v) => v.classList.remove('section-active'));
+
     // Handle mapping for IDs with spaces
     const targetId = `view-${tabName.replace(/\s+/g, '-')}`;
     const targetView = document.getElementById(targetId);
@@ -101,7 +101,7 @@ function switchTab(tabName) {
  */
 function initCharts() {
     const ctx = document.getElementById('growthChart').getContext('2d');
-    
+
     // Gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
@@ -111,19 +111,21 @@ function initCharts() {
         type: 'line',
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Student Enrollment',
-                data: [45000, 52000, 48000, 61000, 75000, 82000],
-                borderColor: '#3b82f6',
-                borderWidth: 3,
-                fill: true,
-                backgroundColor: gradient,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 2,
-                pointBorderColor: '#3b82f6'
-            }]
+            datasets: [
+                {
+                    label: 'Student Enrollment',
+                    data: [45000, 52000, 48000, 61000, 75000, 82000],
+                    borderColor: '#3b82f6',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointBorderColor: '#3b82f6',
+                },
+            ],
         },
         options: {
             responsive: true,
@@ -131,9 +133,9 @@ function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-            }
-        }
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            },
+        },
     });
 }
 
@@ -149,13 +151,17 @@ async function loadStats() {
     try {
         const schools = await db.collection('schools').get();
         const students = await db.collection('students').get();
-        
+
         document.getElementById('stat-totalSchools').innerText = schools.size;
         document.getElementById('stat-totalStudents').innerText = (students.size / 1000).toFixed(1) + 'k';
-        document.getElementById('stat-activeSchools').innerText = schools.docs.filter(d => d.data().status === 'active').length;
-        document.getElementById('stat-premiumSchools').innerText = schools.docs.filter(d => d.data().stage >= 5).length;
+        document.getElementById('stat-activeSchools').innerText = schools.docs.filter(
+            (d) => d.data().status === 'active'
+        ).length;
+        document.getElementById('stat-premiumSchools').innerText = schools.docs.filter(
+            (d) => d.data().stage >= 5
+        ).length;
     } catch (e) {
-        console.error("Stats Error:", e);
+        console.error('Stats Error:', e);
     }
 }
 
@@ -164,17 +170,20 @@ async function loadSchools() {
     if (!tableBody) return;
 
     try {
-        const snap = await db.collection('schools').orderBy('createdDate', 'desc').get();
-        allSchools = snap.docs.map(doc => doc.data());
+        // Using a more reliable order (schoolId) to ensure all schools appear even if createdDate is missing
+        const snap = await db.collection('schools').orderBy('schoolId', 'asc').get();
+        allSchools = snap.docs.map((doc) => doc.data());
         renderSchoolsTable(allSchools);
     } catch (e) {
-        console.error("Load Schools Error:", e);
+        console.error('Load Schools Error:', e);
     }
 }
 
 function renderSchoolsTable(schools) {
     const body = document.getElementById('schoolProTableBody');
-    body.innerHTML = schools.map(s => `
+    body.innerHTML = schools
+        .map(
+            (s) => `
         <tr class="group hover:bg-white/5 transition-all">
             <td class="py-4 text-sm font-mono text-blue-400">${s.schoolId}</td>
             <td class="py-4 text-sm font-semibold text-white">${s.schoolName}</td>
@@ -198,7 +207,9 @@ function renderSchoolsTable(schools) {
                 </div>
             </td>
         </tr>
-    `).join('');
+    `
+        )
+        .join('');
     lucide.createIcons();
 }
 
@@ -206,9 +217,10 @@ function renderSchoolsTable(schools) {
  * Filter Schools
  */
 function filterSchools(term) {
-    const filtered = allSchools.filter(s => 
-        s.schoolName.toLowerCase().includes(term.toLowerCase()) || 
-        s.schoolId.toLowerCase().includes(term.toLowerCase())
+    const filtered = allSchools.filter(
+        (s) =>
+            s.schoolName.toLowerCase().includes(term.toLowerCase()) ||
+            s.schoolId.toLowerCase().includes(term.toLowerCase())
     );
     renderSchoolsTable(filtered);
 }
@@ -219,22 +231,29 @@ function filterSchools(term) {
 async function handleAddSchool(e) {
     e.preventDefault();
     const name = document.getElementById('proSchoolName').value;
-    const subdomain = document.getElementById('proSubdomain').value.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const subdomain = document
+        .getElementById('proSubdomain')
+        .value.toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
     const stage = parseInt(document.getElementById('proSchoolStage').value);
     const email = document.getElementById('proAdminEmail').value;
 
     try {
         showOverlay(true);
-        const schoolId = "SCH" + String(allSchools.length + 1).padStart(3, '0');
+        const schoolId = 'SCH' + String(allSchools.length + 1).padStart(3, '0');
 
         await db.collection('schools').doc(schoolId).set({
-            schoolId, schoolName: name, subdomain, 
-            stage, adminEmail: email, status: 'active',
-            createdDate: firebase.firestore.FieldValue.serverTimestamp()
+            schoolId,
+            schoolName: name,
+            subdomain,
+            stage,
+            adminEmail: email,
+            status: 'active',
+            createdDate: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
-        await logSuperActivity("COMMISSION", `Provisioned new school: ${name}`);
-        alert("School instance provisioned successfully!");
+        await logSuperActivity('COMMISSION', `Provisioned new school: ${name}`);
+        alert('School instance provisioned successfully!');
         e.target.reset();
         await refreshData();
         switchTab('Schools');
@@ -249,13 +268,13 @@ async function handleAddSchool(e) {
  * Edit School
  */
 function openProEditModal(id) {
-    const s = allSchools.find(sc => sc.schoolId === id);
+    const s = allSchools.find((sc) => sc.schoolId === id);
     if (!s) return;
 
     document.getElementById('editSchoolId').value = s.schoolId;
     document.getElementById('editSchoolName').value = s.schoolName;
     document.getElementById('editSchoolStage').value = s.stage;
-    
+
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editModal').classList.add('flex');
 }
@@ -269,7 +288,7 @@ async function handleUpdateSchool(e) {
     try {
         showOverlay(true);
         await db.collection('schools').doc(id).update({ schoolName: name, stage });
-        await logSuperActivity("UPDATE", `Modified school settings: ${id}`);
+        await logSuperActivity('UPDATE', `Modified school settings: ${id}`);
         closeModal('editModal');
         await refreshData();
     } catch (e) {
@@ -288,8 +307,11 @@ async function toggleSchoolStatus(id, current) {
 
     try {
         showOverlay(true);
-        await db.collection('schools').doc(id).update({ status: current === 'active' ? 'suspended' : 'active' });
-        await logSuperActivity("STATUS", `${action} school: ${id}`);
+        await db
+            .collection('schools')
+            .doc(id)
+            .update({ status: current === 'active' ? 'suspended' : 'active' });
+        await logSuperActivity('STATUS', `${action} school: ${id}`);
         await refreshData();
     } catch (e) {
         alert(e.message);
@@ -303,7 +325,8 @@ async function toggleSchoolStatus(id, current) {
  */
 function renderStagesGrid() {
     const grid = document.getElementById('stagesGrid');
-    grid.innerHTML = STAGES.map(s => `
+    grid.innerHTML = STAGES.map(
+        (s) => `
         <div class="glass-card p-6 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer">
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold">${s.id}</div>
@@ -314,7 +337,8 @@ function renderStagesGrid() {
             </div>
             <p class="text-[11px] text-slate-400 leading-relaxed">${s.desc}</p>
         </div>
-    `).join('');
+    `
+    ).join('');
 }
 
 /**
@@ -323,7 +347,7 @@ function renderStagesGrid() {
 async function saveAppearance() {
     const name = document.getElementById('configName').value;
     const color = document.getElementById('configAccent').value;
-    
+
     // Local Update
     document.documentElement.style.setProperty('--brand-accent', color);
     document.getElementById('brandIcon').style.backgroundColor = color;
@@ -331,8 +355,10 @@ async function saveAppearance() {
 
     try {
         await db.collection('settings_super').doc('appearance').set({ name, accentColor: color });
-        alert("Platform appearance updated!");
-    } catch (e) { console.error(e); }
+        alert('Platform appearance updated!');
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
@@ -347,10 +373,11 @@ async function loadActivityLog() {
             return;
         }
 
-        container.innerHTML = snap.docs.map(doc => {
-            const l = doc.data();
-            const time = l.timestamp ? new Date(l.timestamp.seconds * 1000).toLocaleTimeString() : 'Recent';
-            return `
+        container.innerHTML = snap.docs
+            .map((doc) => {
+                const l = doc.data();
+                const time = l.timestamp ? new Date(l.timestamp.seconds * 1000).toLocaleTimeString() : 'Recent';
+                return `
                 <div class="flex items-center justify-between p-4 glass-card">
                     <div class="flex items-center gap-4 text-[13px]">
                         <span class="text-slate-500 font-mono text-[11px]">${time}</span>
@@ -360,8 +387,11 @@ async function loadActivityLog() {
                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-500/10 text-blue-400">${l.type}</span>
                 </div>
             `;
-        }).join('');
-    } catch (e) { console.error(e); }
+            })
+            .join('');
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
@@ -370,20 +400,26 @@ async function loadActivityLog() {
 async function logSuperActivity(type, detail) {
     try {
         await db.collection('logs_super').add({
-            type, detail, timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            admin: auth.currentUser?.email || 'System'
+            type,
+            detail,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            admin: auth.currentUser?.email || 'System',
         });
-    } catch (e) { console.warn(e); }
+    } catch (e) {
+        console.warn(e);
+    }
 }
 
-function showOverlay(show) { 
+function showOverlay(show) {
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = show ? 'flex' : 'none'; 
+    if (overlay) overlay.style.display = show ? 'flex' : 'none';
 }
 
-function hideOverlay() { showOverlay(false); }
+function hideOverlay() {
+    showOverlay(false);
+}
 
-function closeModal(id) { 
+function closeModal(id) {
     const m = document.getElementById(id);
     if (m) {
         m.classList.remove('flex');
@@ -397,4 +433,4 @@ window.openProEditModal = openProEditModal;
 window.closeModal = closeModal;
 window.toggleSchoolStatus = toggleSchoolStatus;
 window.saveAppearance = saveAppearance;
-window.logoutAdmin = () => auth.signOut().then(() => window.location.href = 'admin-login.html');
+window.logoutAdmin = () => auth.signOut().then(() => (window.location.href = 'admin-login.html'));

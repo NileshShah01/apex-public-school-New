@@ -1,285 +1,329 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Public School | Anjani Bazar</title>
-    <meta name="description" content="Apex Public School located in Anjani Bazar provides quality education from Play Group to Class 8. Admissions open for 2026 to 2027.">
-    <meta property="og:title" content="Apex Public School | Anjani Bazar">
-    <meta property="og:description" content="Admissions open for 2026 to 2027. Quality education with discipline.">
-    <meta property="og:image" content="https://nileshshah01.github.io/Apex-public-school-test-01/images/site-preview.jpg">
-    <meta property="og:url" content="https://nileshshah01.github.io/Apex-public-school-test-01/">
-    <link rel="icon" href="images/favicon.png">
-    
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-    
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Apex Public School | Anjani Bazar</title>
+        <meta
+            name="description"
+            content="Apex Public School located in Anjani Bazar provides quality education from Play Group to Class 8. Admissions open for 2026 to 2027."
+        />
+        <meta property="og:title" content="Apex Public School | Anjani Bazar" />
+        <meta
+            property="og:description"
+            content="Admissions open for 2026 to 2027. Quality education with discipline."
+        />
+        <meta
+            property="og:image"
+            content="https://nileshshah01.github.io/Apex-public-school-test-01/images/site-preview.jpg"
+        />
+        <meta property="og:url" content="https://nileshshah01.github.io/Apex-public-school-test-01/" />
+        <link rel="icon" href="images/favicon.png" />
 
-<div id="header"></div>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+    </head>
 
-<!-- 1. HERO BANNER -->
-<section class="homepage-hero">
-    <div class="slider" id="heroSlider">
-        <!-- Dynamically loaded from loadHeroSlider in cms-settings.js -->
-        <p style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; z-index:10;">Loading...</p>
-    </div>
-    <div class="hero-content">
-        <h1 id="homeHeroTitle">Welcome to Apex Public School</h1>
-        <p id="homeHeroSubtitle">Quality Education • Discipline • Character Building</p>
-        <span id="admissionBadge" style="display:inline-block; background:#10b981; color:white; padding:0.3rem 1rem; border-radius:2rem; font-size:0.85rem; font-weight:700; margin-bottom:1rem;">✅ Admission Open</span>
-        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:0.5rem;">
-            <a href="admissions.html" class="btn-primary" id="heroAdmissionBtn">Admission Open 2026-27</a>
-            <a href="inquiry.html" class="btn-secondary">Inquiry Now</a>
-        </div>
-    </div>
-    <div class="slider-dots" id="heroSliderDots">
-        <!-- Dynamically generated -->
-    </div>
-</section>
+    <body>
+        <div id="header"></div>
 
-<!-- 2. NOTICE BOARD -->
-<section class="notice-board">
-    <marquee id="dyn-marquee">Admission Open for Session 2026-2027 • Contact School Office for Enquiry</marquee>
-</section>
+        <!-- 1. HERO BANNER -->
+        <section class="homepage-hero">
+            <div class="slider" id="heroSlider">
+                <!-- Dynamically loaded from loadHeroSlider in cms-settings.js -->
+                <p class="hero-loading-text">Loading...</p>
+            </div>
+            <div class="hero-content">
+                <h1 id="homeHeroTitle">Welcome to Apex Public School</h1>
+                <p id="homeHeroSubtitle">Quality Education • Discipline • Character Building</p>
+                <span id="admissionBadge" class="badge-success mb-1">✅ Admission Open</span>
+                <div class="flex gap-1 justify-center flex-wrap mt-05">
+                    <a href="admissions.html" class="btn-primary" id="heroAdmissionBtn">Admission Open 2026-27</a>
+                    <a href="inquiry.html" class="btn-secondary">Inquiry Now</a>
+                </div>
+            </div>
+            <div class="slider-dots" id="heroSliderDots">
+                <!-- Dynamically generated -->
+            </div>
+        </section>
 
-<!-- 2.0 SCHOOL INTRODUCTION -->
-<section class="intro-section reveal" style="background: linear-gradient(180deg, var(--white), var(--bg-gray)); border-radius: 2rem; margin-top: 2rem;">
-    <div class="intro-image">
-        <img src="images/School-Building.jpeg" alt="Apex Public School Building">
-    </div>
-    <div class="intro-text">
-        <h2 id="homeIntroTitle">About Apex Public School</h2>
-        <p id="homeIntroText">Apex Public School located in Anjani Bazar provides quality education from Play Group to Class 8. The school focuses on discipline, moral values and academic excellence.</p>
-        <p id="homeIntroSubtext" style="margin-top: 1rem; color: var(--text-muted); font-size: 1rem; font-weight: 500;">Join us in nurturing the leaders of tomorrow in a safe and supportive learning environment.</p>
-    </div>
-</section>
+        <!-- 2. NOTICE BOARD -->
+        <section class="notice-board">
+            <marquee id="dyn-marquee">Admission Open for Session 2026-2027 • Contact School Office for Enquiry</marquee>
+        </section>
 
-<!-- 2.1 BIRTHDAY SECTION -->
-<section class="reveal" id="birthdaySection" style="display: none;">
-    <h2 class="section-title">🎉 Happy Birthday 🎉</h2>
-    <div class="card-grid" id="birthdayContainer">
-        <!-- Loaded dynamically via js/cms-settings.js (birthdays matching today) -->
-    </div>
-</section>
+        <!-- 2.0 SCHOOL INTRODUCTION -->
+        <section class="intro-section reveal mt-2">
+            <div class="intro-image">
+                <img src="images/School-Building.jpeg" alt="Apex Public School Building" />
+            </div>
+            <div class="intro-text">
+                <h2 id="homeIntroTitle">About Apex Public School</h2>
+                <p id="homeIntroText">
+                    Apex Public School located in Anjani Bazar provides quality education from Play Group to Class 8.
+                    The school focuses on discipline, moral values and academic excellence.
+                </p>
+                <p id="homeIntroSubtext" class="intro-subtext">
+                    Join us in nurturing the leaders of tomorrow in a safe and supportive learning environment.
+                </p>
+            </div>
+        </section>
 
-<!-- 2.2 CALENDAR SECTION -->
-<section class="reveal">
-    <h2 class="section-title">📅 Upcoming Events</h2>
-    <div class="card-grid" id="eventsContainer">
-        <!-- Loaded from Firestore -->
-        <div class="premium-card"><i class="fas fa-calendar-day"></i><h3>Final Exams 2025-26</h3><p>Starting March 23, 2026</p></div>
-        <div class="premium-card"><i class="fas fa-hand-holding-heart"></i><h3>Annual Function</h3><p>March 30, 2026</p></div>
-        <div class="premium-card"><i class="fas fa-door-open"></i><h3>New Session</h3><p>April 02, 2026</p></div>
-    </div>
-</section>
+        <!-- 2.1 BIRTHDAY SECTION -->
+        <section class="reveal hidden" id="birthdaySection">
+            <h2 class="section-title">🎉 Happy Birthday 🎉</h2>
+            <div class="card-grid" id="birthdayContainer">
+                <!-- Loaded dynamically via js/cms-settings.js (birthdays matching today) -->
+            </div>
+        </section>
 
-<!-- 3. QUICK STATS -->
-<section class="section reveal">
-    <h2 class="section-title">Academic Strength</h2>
-    <div class="stats-bar">
-        <div class="stat">
-            <h2 class="counter" id="stat_students" data-target="300">0</h2>
-            <p>Students</p>
-        </div>
-        <div class="stat">
-            <h2 class="counter" id="stat_teachers" data-target="15">0</h2>
-            <p>Teachers</p>
-        </div>
-        <div class="stat">
-            <h2 class="counter" id="stat_classrooms" data-target="12">0</h2>
-            <p>Classrooms</p>
-        </div>
-        <div class="stat">
-            <h2 class="counter" id="stat_years" data-target="8">0</h2>
-            <p>Years of Excellence</p>
-        </div>
-    </div>
-</section>
-<!-- 3. QUICK NAVIGATION -->
-<section class="reveal">
-    <h2 class="section-title">Quick Links</h2>
-    <div class="card-grid">
-        <a href="about.html" class="nav-card">
-            <i class="fas fa-info-circle"></i>
-            <h3>About Us</h3>
-            <p>Know our history & mission</p>
-        </a>
-        <a href="academics.html" class="nav-card">
-            <i class="fas fa-book-reader"></i>
-            <h3>Academics</h3>
-            <p>Our curriculum & classes</p>
-        </a>
-        <a href="facilities.html" class="nav-card">
-            <i class="fas fa-microscope"></i>
-            <h3>Facilities</h3>
-            <p>Modern campus features</p>
-        </a>
-        <a href="gallery.html" class="nav-card">
-            <i class="fas fa-images"></i>
-            <h3>Gallery</h3>
-            <p>School life in photos</p>
-        </a>
-        <a href="admissions.html" class="nav-card">
-            <i class="fas fa-user-plus"></i>
-            <h3>Admissions</h3>
-            <p>Apply for session 2026-27</p>
-        </a>
-        <a href="contact.html" class="nav-card">
-            <i class="fas fa-envelope-open-text"></i>
-            <h3>Contact Us</h3>
-            <p>Get in touch with us</p>
-        </a>
-        <a href="inquiry.html" class="nav-card">
-            <i class="fas fa-question-circle"></i>
-            <h3>Inquiry Now</h3>
-            <p>Ask us any questions</p>
-        </a>
-        <a href="portal/student-login.html" class="nav-card">
-            <i class="fas fa-user-graduate"></i>
-            <h3>Student Portal</h3>
-            <p>Login to your dashboard</p>
-        </a>
-    </div>
-</section>
+        <!-- 2.2 CALENDAR SECTION -->
+        <section class="reveal">
+            <h2 class="section-title">📅 Upcoming Events</h2>
+            <div class="card-grid" id="eventsContainer">
+                <!-- Loaded from Firestore -->
+                <div class="premium-card">
+                    <i class="fas fa-calendar-day"></i>
+                    <h3>Final Exams 2025-26</h3>
+                    <p>Starting March 23, 2026</p>
+                </div>
+                <div class="premium-card">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <h3>Annual Function</h3>
+                    <p>March 30, 2026</p>
+                </div>
+                <div class="premium-card">
+                    <i class="fas fa-door-open"></i>
+                    <h3>New Session</h3>
+                    <p>April 02, 2026</p>
+                </div>
+            </div>
+        </section>
 
-<!-- 4. PRINCIPAL MESSAGE -->
-<section class="reveal">
-    <h2 class="section-title">Principal's Message</h2>
-    <div class="card" style="max-width: 900px; margin: 0 auto;">
-        <p style="font-size: 1.125rem; font-style: italic; margin-bottom: 2rem;">"Education builds confidence, discipline and strong character. Our goal is to provide equal learning opportunities to every child, especially from economically weaker families."</p>
-        <p style="font-size: 1.125rem; font-weight: 700; color: var(--primary);">Baby Kumari</p>
-        <p class="text-muted">Principal, Apex Public School</p>
-    </div>
-</section>
+        <!-- 3. QUICK STATS -->
+        <section class="section reveal">
+            <h2 class="section-title">Academic Strength</h2>
+            <div class="stats-bar">
+                <div class="stat">
+                    <h2 class="counter" id="stat_students" data-target="300">0</h2>
+                    <p>Students</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_teachers" data-target="15">0</h2>
+                    <p>Teachers</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_classrooms" data-target="12">0</h2>
+                    <p>Classrooms</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_years" data-target="8">0</h2>
+                    <p>Years of Excellence</p>
+                </div>
+            </div>
+        </section>
+        <!-- 3. QUICK NAVIGATION -->
+        <section class="reveal">
+            <h2 class="section-title">Quick Links</h2>
+            <div class="card-grid">
+                <a href="about.html" class="nav-card">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>About Us</h3>
+                    <p>Know our history & mission</p>
+                </a>
+                <a href="academics.html" class="nav-card">
+                    <i class="fas fa-book-reader"></i>
+                    <h3>Academics</h3>
+                    <p>Our curriculum & classes</p>
+                </a>
+                <a href="facilities.html" class="nav-card">
+                    <i class="fas fa-microscope"></i>
+                    <h3>Facilities</h3>
+                    <p>Modern campus features</p>
+                </a>
+                <a href="gallery.html" class="nav-card">
+                    <i class="fas fa-images"></i>
+                    <h3>Gallery</h3>
+                    <p>School life in photos</p>
+                </a>
+                <a href="admissions.html" class="nav-card">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Admissions</h3>
+                    <p>Apply for session 2026-27</p>
+                </a>
+                <a href="contact.html" class="nav-card">
+                    <i class="fas fa-envelope-open-text"></i>
+                    <h3>Contact Us</h3>
+                    <p>Get in touch with us</p>
+                </a>
+                <a href="inquiry.html" class="nav-card">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>Inquiry Now</h3>
+                    <p>Ask us any questions</p>
+                </a>
+                <a href="portal/student-login.html" class="nav-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Student Portal</h3>
+                    <p>Login to your dashboard</p>
+                </a>
+            </div>
+        </section>
 
-<!-- 5. FACILITIES SLIDER -->
-<section class="reveal">
-    <h2 class="section-title">Our Modern Facilities</h2>
-    <div class="facilities-slider">
-        <div class="slider-track" id="homeFacilitiesTrack">
-            <!-- Dynamically loaded from Firestore (loadHomeFacilities in cms-settings.js) -->
-            <p class="text-muted" style="text-align:center; width:100%;">Loading facilities...</p>
-        </div>
-    </div>
-    <div style="text-align: center; margin-top: 2rem;">
-        <a href="facilities.html" class="btn-primary">View All Facilities</a>
-    </div>
-</section>
+        <!-- 4. PRINCIPAL MESSAGE -->
+        <section class="reveal">
+            <h2 class="section-title">Principal's Message</h2>
+            <div class="card principal-message-card">
+                <p class="testimonial-text">
+                    "Education builds confidence, discipline and strong character. Our goal is to provide equal learning
+                    opportunities to every child, especially from economically weaker families."
+                </p>
+                <p class="principal-name">Baby Kumari</p>
+                <p class="text-muted">Principal, Apex Public School</p>
+            </div>
+        </section>
 
-<section class="reveal">
-    <h2 class="section-title">Student Activities</h2>
-    <div class="grid">
-        <div class="card">
-            <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
-            <h3>Sports Excellence</h3>
-            <p>Students participate in various outdoor sports and national competitions.</p>
-        </div>
-        <div class="card">
-            <img src="images/Republic-Day-img1.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
-            <h3>Cultural Growth</h3>
-            <p>We celebrate diversity through music, dance, and cultural festivals.</p>
-        </div>
-        <div class="card">
-            <img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 1rem; margin-bottom: 1.5rem;">
-            <h3>Scientific Inquiry</h3>
-            <p>Educational trips to science centers and museums for hands-on learning.</p>
-        </div>
-    </div>
-</section>
+        <!-- 5. FACILITIES SLIDER -->
+        <section class="reveal">
+            <h2 class="section-title">Our Modern Facilities</h2>
+            <div class="facilities-slider">
+                <div class="slider-track" id="homeFacilitiesTrack">
+                    <!-- Dynamically loaded from Firestore (loadHomeFacilities in cms-settings.js) -->
+                    <p class="text-muted text-center w-full">Loading facilities...</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem">
+                <a href="facilities.html" class="btn-primary">View All Facilities</a>
+            </div>
+        </section>
 
-<section class="reveal">
-    <h2 class="section-title">Safe & Supportive Campus</h2>
-    <div class="grid">
-        <div class="card">
-            <i class="fas fa-video"></i>
-            <h3>CCTV Security</h3>
-            <p>24/7 surveillance for student safety across the premises.</p>
-        </div>
-        <div class="card">
-            <i class="fas fa-user-shield"></i>
-            <h3>Constant Supervision</h3>
-            <p>Dedicated staff monitoring during study and play hours.</p>
-        </div>
-        <div class="card">
-            <i class="fas fa-first-aid"></i>
-            <h3>Medical Room</h3>
-            <p>Equipped to handle minor health needs and emergencies.</p>
-        </div>
-    </div>
-</section>
-   
-    <!-- 6. GALLERY PREVIEW -->
-<section class="home-gallery reveal">
-    <h2>School Memories</h2>
-    <div class="gallery-grid" id="homeMemoriesGrid">
-        <!-- Dynamically loaded from Firestore (loadHomeMemories in cms-settings.js) -->
-        <p style="text-align:center; width:100%; color:var(--text-muted); padding:2rem;">Loading memories...</p>
-        <!-- Static Fallback (Hidden) -->
-        <div style="display:none;">
-            <img src="images/Bihar-Museum-img1.jpeg">
-            <img src="images/Science-centre-Patna-img3.jpeg">
-            <img src="images/Republic-Day-img1.jpeg">
-            <img src="images/Sports-Event-Prize-Distribution-img1.jpeg">
-            <img src="images/Bihar-Museum-img4.jpeg">
-            <img src="images/Bihar-Museum-img7.jpeg">
-            <img src="images/Science-centre-Patna-img1.jpeg">
-            <img src="images/Republic-Day-img2.jpeg">
-        </div>
-    </div>
-    <a href="gallery.html" class="btn-secondary">View Full Gallery</a>
-</section>
+        <section class="reveal">
+            <h2 class="section-title">Student Activities</h2>
+            <div class="grid">
+                <div class="card">
+                    <img
+                        src="images/Sports-Event-Prize-Distribution-img1.jpeg"
+                        alt="Students receiving prizes at sports event"
+                        loading="lazy"
+                        class="card-img-top"
+                    />
+                    <h3>Sports Excellence</h3>
+                    <p>Students participate in various outdoor sports and national competitions.</p>
+                </div>
+                <div class="card">
+                    <img
+                        src="images/Republic-Day-img1.jpeg"
+                        alt="Republic Day celebration at school"
+                        loading="lazy"
+                        class="card-img-top"
+                    />
+                    <h3>Cultural Growth</h3>
+                    <p>We celebrate diversity through music, dance, and cultural festivals.</p>
+                </div>
+                <div class="card">
+                    <img
+                        src="images/Science-centre-Patna-img3.jpeg"
+                        alt="Students exploring science exhibits"
+                        loading="lazy"
+                        class="card-img-top"
+                    />
+                    <h3>Scientific Inquiry</h3>
+                    <p>Educational trips to science centers and museums for hands-on learning.</p>
+                </div>
+            </div>
+        </section>
 
+        <section class="reveal">
+            <h2 class="section-title">Safe & Supportive Campus</h2>
+            <div class="grid">
+                <div class="card">
+                    <i class="fas fa-video"></i>
+                    <h3>CCTV Security</h3>
+                    <p>24/7 surveillance for student safety across the premises.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Constant Supervision</h3>
+                    <p>Dedicated staff monitoring during study and play hours.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-first-aid"></i>
+                    <h3>Medical Room</h3>
+                    <p>Equipped to handle minor health needs and emergencies.</p>
+                </div>
+            </div>
+        </section>
 
-<!-- 5.5 RECENT ACHIEVEMENTS -->
-<section class="reveal">
-    <h2 class="section-title">Our Achievements</h2>
-    <div class="card-grid" id="achievementsContainer">
-        <!-- Loaded from Firestore (fallbacks below) -->
-        <div class="premium-card"><i class="fas fa-trophy" style="color:#f1c40f; font-size:2.5rem; background:rgba(241,196,15,0.1); width:80px; height:80px; line-height:80px; border-radius:50%;"></i><h3>100% Academic Excellence</h3><p>Consecutive years of outstanding academic performance.</p></div>
-        <div class="premium-card"><i class="fas fa-medal" style="color:#e67e22; font-size:2.5rem; background:rgba(230,126,34,0.1); width:80px; height:80px; line-height:80px; border-radius:50%;"></i><h3>Statewide Sports</h3><p>Gold medalists in District Sports Meet 2025.</p></div>
-        <div class="premium-card"><i class="fas fa-star" style="color:#3498db; font-size:2.5rem; background:rgba(52,152,219,0.1); width:80px; height:80px; line-height:80px; border-radius:50%;"></i><h3>Top Disciplined School</h3><p>Awarded for best discipline and student conduct.</p></div>
-    </div>
-</section>
+        <!-- 6. GALLERY PREVIEW -->
+        <section class="home-gallery reveal">
+            <h2>School Memories</h2>
+            <div class="gallery-grid" id="homeMemoriesGrid">
+                <!-- Dynamically loaded from Firestore (loadHomeMemories in cms-settings.js) -->
+                <p class="text-center w-full text-muted p-2">Loading memories...</p>
+                <!-- Static Fallback (Hidden) -->
+                <div class="hidden">
+                    <img src="images/Bihar-Museum-img1.jpeg" alt="Students at Bihar Museum" />
+                    <img src="images/Science-centre-Patna-img3.jpeg" alt="Science Center exhibits" />
+                    <img src="images/Republic-Day-img1.jpeg" alt="Republic Day celebrations" />
+                    <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" alt="Sports prize distribution" />
+                    <img src="images/Bihar-Museum-img4.jpeg" alt="Artifacts at Bihar Museum" />
+                    <img src="images/Bihar-Museum-img7.jpeg" alt="Museum corridors" />
+                    <img src="images/Science-centre-Patna-img1.jpeg" alt="Science center entrance" />
+                    <img src="images/Republic-Day-img2.jpeg" alt="Flag hoisting ceremony" />
+                </div>
+            </div>
+            <a href="gallery.html" class="btn-secondary">View Full Gallery</a>
+        </section>
 
-<!-- 5.6 TESTIMONIALS -->
-<section class="reveal" id="testimonialsSection" style="display:none;">
-    <h2 class="section-title">What Parents Say</h2>
-    <div class="card-grid" id="testimonialsContainer"></div>
-</section>
-<section class="cta">
-    <h2>Admission Open 2026 to 2027</h2>
-    <p>Join Apex Public School for quality education</p>
-    <button onclick="location.href='contact.html'">Admission Inquiry</button>
-</section>
-</section>
+        <!-- 5.5 RECENT ACHIEVEMENTS -->
+        <section class="reveal">
+            <h2 class="section-title">Our Achievements</h2>
+            <div class="card-grid" id="achievementsContainer">
+                <!-- Loaded from Firestore (fallbacks below) -->
+                <div class="premium-card">
+                    <i class="fas fa-trophy achievement-icon bg-gold-light"></i>
+                    <h3>100% Academic Excellence</h3>
+                    <p>Consecutive years of outstanding academic performance.</p>
+                </div>
+                <div class="premium-card">
+                    <i class="fas fa-medal achievement-icon bg-orange-light"></i>
+                    <h3>Statewide Sports</h3>
+                    <p>Gold medalists in District Sports Meet 2025.</p>
+                </div>
+                <div class="premium-card">
+                    <i class="fas fa-star achievement-icon bg-blue-light"></i>
+                    <h3>Top Disciplined School</h3>
+                    <p>Awarded for best discipline and student conduct.</p>
+                </div>
+            </div>
+        </section>
 
-<div id="footer"></div>
+        <!-- 5.6 TESTIMONIALS -->
+        <section class="reveal hidden" id="testimonialsSection">
+            <h2 class="section-title">What Parents Say</h2>
+            <div class="card-grid" id="testimonialsContainer"></div>
+        </section>
+        <section class="cta">
+            <h2>Admission Open 2026 to 2027</h2>
+            <p>Join Apex Public School for quality education</p>
+            <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
+        </section>
 
-<!-- NEW FLOATING BUTTONS CONTAINER -->
-<div id="floating-button"></div>
+        <div id="footer"></div>
 
-<script src="script.js"></script>
-<!-- Firebase SDK for CMS Settings -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/cms-settings.js"></script>
-</body>
+        <!-- NEW FLOATING BUTTONS CONTAINER -->
+        <div id="floating-button"></div>
+
+        <script src="script.js"></script>
+        <!-- Firebase SDK for CMS Settings -->
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="js/firebase-config.js"></script>
+        <script src="js/cms-settings.js"></script>
+    </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-

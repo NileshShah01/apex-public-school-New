@@ -1,291 +1,211 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Academics | Apex Public School</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-        body {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url("https://images.unsplash.com/photo-1523240795612-9a054b0db644");
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-        }
-
-        .page-header {
-            text-align: center;
-            padding: 5rem 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .page-header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .curriculum-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .curriculum-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-        }
-
-        .curriculum-table td {
-            padding: 12px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .subject-icons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 20px;
-        }
-
-        .subject {
-            text-align: center;
-        }
-
-        .subject i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline {
-            max-width: 700px;
-            margin: auto;
-        }
-
-        .timeline-item {
-            background: var(--bg-gray);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 5px solid var(--primary);
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
-        }
-    </style>
-</head>
-
-<body>
-
-<div id="header"></div>
-
-<section class="page-header">
-
-<h1>Academics</h1>
-
-<p id="academicsHeaderSubtitle">Quality education from Play Group to Class 8</p>
-
-</section>
-
-<section class="section">
-
-<h2>Class Structure</h2>
-
-<div class="grid">
-
-<div class="card"><i class="fa-solid fa-baby"></i>Play Group</div>
-<div class="card"><i class="fa-solid fa-child"></i>Nursery</div>
-<div class="card"><i class="fa-solid fa-book-open"></i>LKG</div>
-<div class="card"><i class="fa-solid fa-book"></i>UKG</div>
-<div class="card"><i class="fa-solid fa-school"></i>Class 1 to 5</div>
-<div class="card"><i class="fa-solid fa-graduation-cap"></i>Class 6 to 8</div>
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>Subjects Offered</h2>
-
-<div class="subject-icons">
-
-<div class="subject"><i class="fa-solid fa-language"></i><p>English</p></div>
-<div class="subject"><i class="fa-solid fa-pen"></i><p>Hindi</p></div>
-<div class="subject"><i class="fa-solid fa-calculator"></i><p>Mathematics</p></div>
-<div class="subject"><i class="fa-solid fa-flask"></i><p>Science</p></div>
-<div class="subject"><i class="fa-solid fa-earth-asia"></i><p>Social Science</p></div>
-<div class="subject"><i class="fa-solid fa-computer"></i><p>Computer</p></div>
-<div class="subject"><i class="fa-solid fa-brain"></i><p>General Knowledge</p></div>
-<div class="subject"><i class="fa-solid fa-heart"></i><p>Moral Education</p></div>
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>Teaching Methodology</h2>
-
-<div class="grid">
-
-<div class="card">Activity Based Learning</div>
-<div class="card">Concept Based Teaching</div>
-<div class="card">Interactive Classroom</div>
-<div class="card">Student Participation</div>
-<div class="card">Smart Class Learning</div>
-<div class="card">Digital Presentations</div>
-
-</div>
-
-</section>
-
-<section class="section reveal">
-    <h2 class="section-title">Academic Strength</h2>
-    <div class="stats-bar">
-        <div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
-        <div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
-        <div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
-        <div class="stat"><h2 class="counter" id="stat_years" data-target="8">0</h2><p>Years of Excellence</p></div>
-    </div>
-</section>
-
-<section class="section">
-
-<h2>Curriculum Overview</h2>
-
-<table class="curriculum-table">
-
-<tr>
-
-<th>Class Level</th>
-<th>Focus Area</th>
-
-</tr>
-
-<tr>
-
-<td>Play Group</td>
-<td id="academicsFocusPlay">Basic skills, creativity and social learning</td>
-
-</tr>
-
-<tr>
-
-<td>Primary Classes</td>
-<td id="academicsFocusPrimary">Reading, writing, arithmetic and activities</td>
-
-</tr>
-
-<tr>
-
-<td>Middle Classes</td>
-<td id="academicsFocusMiddle">Advanced subjects and conceptual learning</td>
-
-</tr>
-
-</table>
-
-</section>
-
-<section class="section">
-
-<h2>Examination System</h2>
-
-<div class="grid">
-
-<div class="card">Monthly Tests</div>
-<div class="card">Half Yearly Exams</div>
-<div class="card">Annual Exams</div>
-<div class="card">Continuous Assessment</div>
-
-</div>
-
-</section>
-
-<section class="section">
-
-<h2>School Academic Journey</h2>
-
-<div class="timeline">
-
-<div class="timeline-item">2018 – School Established</div>
-<div class="timeline-item">2020 – Smart Classrooms Introduced</div>
-<div class="timeline-item">2023 – Computer Lab Established</div>
-
-</div>
-
-</section>
-
-<section class="section">
-    <h2>Educational Activities</h2>
-    <div class="grid">
-        <div class="card">Science Exhibitions</div>
-        <div class="card">Quiz Competitions</div>
-        <div class="card">Educational Tours</div>
-        <div class="card">Sports Activities</div>
-        <div class="card">Cultural Programs</div>
-    </div>
-</section>
-
-<!-- Holiday List (Dynamic from CMS) -->
-<section class="section" id="holidaysSection" style="display:none;">
-    <h2>School Holiday Calendar</h2>
-    <div id="holidaysListAdmin" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem;">
-        <!-- Loaded via CMS -->
-    </div>
-</section>
-
-<section class="cta">
-
-<h2>Admission Open 2026 to 2027</h2>
-
-<p>Join Apex Public School for quality education</p>
-
-<button onclick="location.href='contact.html'">Admission Inquiry</button>
-
-</section>
-
-<div id="footer"></div>
-<!-- NEW FLOATING BUTTONS CONTAINER -->
-       <div id="floating-button"></div>
-  
-<script src="script.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/cms-settings.js"></script>
-<script>
-    document.querySelectorAll(".counter").forEach(counter => {
-        counter.innerText = "0"
-        const update = () => {
-            const target = +counter.getAttribute("data-target")
-            const count = +counter.innerText
-            const inc = target / 80
-            if(count < target) {
-                counter.innerText = Math.ceil(count + inc)
-                setTimeout(update, 20)
-            } else {
-                counter.innerText = target
-            }
-        }
-        update()
-    })
-</script>
-</body>
-
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Academics | Apex Public School</title>
+
+        <link rel="stylesheet" href="style.css" />
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    </head>
+
+    <body>
+        <div id="header"></div>
+
+        <section class="page-header">
+            <h1>Academics</h1>
+
+            <p id="academicsHeaderSubtitle">Quality education from Play Group to Class 8</p>
+        </section>
+
+        <section class="section">
+            <h2>Class Structure</h2>
+
+            <div class="grid">
+                <div class="card"><i class="fa-solid fa-baby"></i>Play Group</div>
+                <div class="card"><i class="fa-solid fa-child"></i>Nursery</div>
+                <div class="card"><i class="fa-solid fa-book-open"></i>LKG</div>
+                <div class="card"><i class="fa-solid fa-book"></i>UKG</div>
+                <div class="card"><i class="fa-solid fa-school"></i>Class 1 to 5</div>
+                <div class="card"><i class="fa-solid fa-graduation-cap"></i>Class 6 to 8</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Subjects Offered</h2>
+
+            <div class="subject-icons">
+                <div class="subject-card">
+                    <i class="fa-solid fa-language"></i>
+                    <p>English</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-pen"></i>
+                    <p>Hindi</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-calculator"></i>
+                    <p>Mathematics</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-flask"></i>
+                    <p>Science</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-earth-asia"></i>
+                    <p>Social Science</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-computer"></i>
+                    <p>Computer</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-brain"></i>
+                    <p>General Knowledge</p>
+                </div>
+                <div class="subject-card">
+                    <i class="fa-solid fa-heart"></i>
+                    <p>Moral Education</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Teaching Methodology</h2>
+
+            <div class="grid">
+                <div class="card">Activity Based Learning</div>
+                <div class="card">Concept Based Teaching</div>
+                <div class="card">Interactive Classroom</div>
+                <div class="card">Student Participation</div>
+                <div class="card">Smart Class Learning</div>
+                <div class="card">Digital Presentations</div>
+            </div>
+        </section>
+
+        <section class="section reveal">
+            <h2 class="section-title">Academic Strength</h2>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <h2 class="counter counter-text" id="stat_students" data-target="300">0</h2>
+                    <p>Students</p>
+                </div>
+                <div class="stat-item">
+                    <h2 class="counter counter-text" id="stat_teachers" data-target="15">0</h2>
+                    <p>Teachers</p>
+                </div>
+                <div class="stat-item">
+                    <h2 class="counter counter-text" id="stat_classrooms" data-target="12">0</h2>
+                    <p>Classrooms</p>
+                </div>
+                <div class="stat-item">
+                    <h2 class="counter counter-text" id="stat_years" data-target="8">0</h2>
+                    <p>Years of Excellence</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Curriculum Overview</h2>
+
+            <table class="curriculum-table">
+                <tr>
+                    <th>Class Level</th>
+                    <th>Focus Area</th>
+                </tr>
+
+                <tr>
+                    <td>Play Group</td>
+                    <td id="academicsFocusPlay">Basic skills, creativity and social learning</td>
+                </tr>
+
+                <tr>
+                    <td>Primary Classes</td>
+                    <td id="academicsFocusPrimary">Reading, writing, arithmetic and activities</td>
+                </tr>
+
+                <tr>
+                    <td>Middle Classes</td>
+                    <td id="academicsFocusMiddle">Advanced subjects and conceptual learning</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>Examination System</h2>
+
+            <div class="grid">
+                <div class="card">Monthly Tests</div>
+                <div class="card">Half Yearly Exams</div>
+                <div class="card">Annual Exams</div>
+                <div class="card">Continuous Assessment</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>School Academic Journey</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">2018 – School Established</div>
+                <div class="timeline-item">2020 – Smart Classrooms Introduced</div>
+                <div class="timeline-item">2023 – Computer Lab Established</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Educational Activities</h2>
+            <div class="grid">
+                <div class="card">Science Exhibitions</div>
+                <div class="card">Quiz Competitions</div>
+                <div class="card">Educational Tours</div>
+                <div class="card">Sports Activities</div>
+                <div class="card">Cultural Programs</div>
+            </div>
+        </section>
+
+        <!-- Holiday List (Dynamic from CMS) -->
+        <section class="section hidden" id="holidaysSection">
+            <h2>School Holiday Calendar</h2>
+            <div id="holidaysListAdmin" class="grid-3">
+                <!-- Loaded via CMS -->
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Admission Open 2026 to 2027</h2>
+
+            <p>Join Apex Public School for quality education</p>
+
+            <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
+        </section>
+
+        <div id="footer"></div>
+        <!-- NEW FLOATING BUTTONS CONTAINER -->
+        <div id="floating-button"></div>
+
+        <script src="script.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="js/firebase-config.js"></script>
+        <script src="js/cms-settings.js"></script>
+        <script>
+            document.querySelectorAll('.counter').forEach((counter) => {
+                counter.innerText = '0';
+                const update = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const inc = target / 80;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(update, 20);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                update();
+            });
+        </script>
+    </body>
 </html>
-
-
-

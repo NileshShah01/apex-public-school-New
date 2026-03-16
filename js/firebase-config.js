@@ -1,11 +1,11 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCe44RwdP6C3MuxgzoZ320IUjRzZy37ShY",
-  authDomain: "apex-public-school-portal.firebaseapp.com",
-  projectId: "apex-public-school-portal",
-  storageBucket: "apex-public-school-portal.firebasestorage.app",
-  messagingSenderId: "808587286874",
-  appId: "1:808587286874:web:0a59a9d2c23d24be55fb63"
+    apiKey: 'AIzaSyCe44RwdP6C3MuxgzoZ320IUjRzZy37ShY',
+    authDomain: 'apex-public-school-portal.firebaseapp.com',
+    projectId: 'apex-public-school-portal',
+    storageBucket: 'apex-public-school-portal.firebasestorage.app',
+    messagingSenderId: '808587286874',
+    appId: '1:808587286874:web:0a59a9d2c23d24be55fb63',
 };
 
 // Initialize Firebase
@@ -22,12 +22,12 @@ var auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
 function getSchoolIdFromURL() {
     const host = window.location.hostname;
     const parts = host.split('.');
-    
+
     // Logic for subdomains like 'apex.snredu.in' or 'apex.localhost'
     if (parts.length >= 3 || (host.includes('localhost') && parts.length >= 2)) {
-        return parts[0].toUpperCase(); 
+        return parts[0].toUpperCase();
     }
-    return "SCH001"; // Default to Apex Public School during migration
+    return 'SCH001'; // Default to Apex Public School during migration
 }
 
 const CURRENT_SCHOOL_ID = getSchoolIdFromURL();
@@ -38,30 +38,46 @@ function schoolData(collectionName) {
     return db.collection(collectionName).where('schoolId', '==', CURRENT_SCHOOL_ID);
 }
 
+// Helper for single document access within a school context
+function schoolDoc(collectionName, docId) {
+    if (!db) return null;
+    return db.collection(collectionName).doc(docId);
+}
+
 // Helper to add schoolId to new documents automatically
 function withSchool(data) {
-    return { ...data, schoolId: CURRENT_SCHOOL_ID, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    return {
+        ...data,
+        schoolId: CURRENT_SCHOOL_ID,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
 }
 
 // ===================== GLOBAL THEME CONTROL =====================
 async function applyGlobalTheme() {
     if (!db) return;
     try {
-        const doc = await db.collection('settings').doc('theme').get();
-        if (doc.exists) {
-            const theme = doc.data();
+        // Theme settings should ideally be school-specific now
+        let themeDoc = await db.collection('schools').doc(CURRENT_SCHOOL_ID).collection('settings').doc('theme').get();
+
+        // Fallback to global if school-specific doesn't exist
+        if (!themeDoc.exists) {
+            themeDoc = await db.collection('settings').doc('theme').get();
+        }
+
+        if (themeDoc.exists) {
+            const theme = themeDoc.data();
             const root = document.documentElement;
-            
+
             if (theme.primaryColor) {
                 root.style.setProperty('--primary', theme.primaryColor);
-                // Also update related variables for main site
-                root.style.setProperty('--primary-light', theme.primaryColor + 'cc'); // 80% opacity for light variant
+                root.style.setProperty('--primary-light', theme.primaryColor + 'cc');
             }
             if (theme.sidebarColor) {
                 root.style.setProperty('--secondary', theme.sidebarColor);
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.warn('Theme apply failed:', e.message);
     }
 }

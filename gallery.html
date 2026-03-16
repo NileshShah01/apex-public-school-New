@@ -1,342 +1,319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
+        <title>Gallery | Apex Public School</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<title>Gallery | Apex Public School</title>
+        <style>
+            body {
+                background: var(--bg-gray);
+                color: var(--text-main);
+            }
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+            .page-header {
+                text-align: center;
+                padding: 5rem 2rem;
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                margin-bottom: 2rem;
+            }
 
-    <style>
-        body {
-            background: var(--bg-gray);
-            color: var(--text-main);
-        }
+            .page-header h1 {
+                font-size: 3.5rem;
+                font-weight: 800;
+                color: var(--primary);
+                margin-bottom: 1rem;
+            }
 
-        .page-header {
-            text-align: center;
-            padding: 5rem 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
+            .filter-btn {
+                padding: 0.75rem 1.75rem;
+                border-radius: 999px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                color: var(--text-muted);
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                font-size: 0.95rem;
+            }
 
-        .page-header h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
+            .filter-btn:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+                transform: translateY(-2px);
+            }
 
-        .filter-btn {
-            padding: 0.75rem 1.75rem;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: var(--white);
-            color: var(--text-muted);
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
+            .filter-btn.active {
+                background: var(--primary);
+                color: var(--white);
+                border-color: var(--primary);
+                box-shadow: var(--shadow-lg);
+            }
 
-        .filter-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-        }
+            /* GALLERY FIXED CARD GRID */
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2.5rem;
+                width: 100%;
+                padding: 2rem 0;
+            }
 
-        .filter-btn.active {
-            background: var(--primary);
-            color: var(--white);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-lg);
-        }
+            .gallery-card {
+                background: var(--white);
+                border-radius: 1.5rem;
+                overflow: hidden;
+                box-shadow: var(--shadow);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                cursor: pointer;
+                position: relative;
+                aspect-ratio: 4 / 3; /* Fixed Aspect Ratio */
+                border: 1px solid var(--border);
+            }
 
-        /* GALLERY FIXED CARD GRID */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2.5rem;
-            width: 100%;
-            padding: 2rem 0;
-        }
+            .gallery-card:hover {
+                transform: translateY(-10px);
+                box-shadow: var(--shadow-hover);
+                border-color: var(--primary-light);
+            }
 
-        .gallery-card {
-            background: var(--white);
-            border-radius: 1.5rem;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            aspect-ratio: 4 / 3; /* Fixed Aspect Ratio */
-            border: 1px solid var(--border);
-        }
+            .gallery-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* Professional Fill */
+                transition: transform 0.6s ease;
+            }
 
-        .gallery-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary-light);
-        }
+            .gallery-card:hover img {
+                transform: scale(1.1);
+            }
 
-        .gallery-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Professional Fill */
-            transition: transform 0.6s ease;
-        }
+            .gallery-card .card-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent 70%);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                padding: 1.8rem;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                z-index: 5;
+            }
 
-        .gallery-card:hover img {
-            transform: scale(1.1);
-        }
+            .gallery-card:hover .card-overlay {
+                opacity: 1;
+            }
 
-        .gallery-card .card-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent 70%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 1.8rem;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: 5;
-        }
+            .gallery-card .card-caption {
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                margin-bottom: 0.25rem;
+                transform: translateY(15px);
+                transition: transform 0.4s ease;
+            }
 
-        .gallery-card:hover .card-overlay {
-            opacity: 1;
-        }
+            .gallery-card:hover .card-caption {
+                transform: translateY(0);
+            }
 
-        .gallery-card .card-caption {
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-            transform: translateY(15px);
-            transition: transform 0.4s ease;
-        }
+            .gallery-card .card-category {
+                position: absolute;
+                top: 1.25rem;
+                right: 1.25rem;
+                background: var(--primary);
+                color: white;
+                font-size: 0.75rem;
+                padding: 0.4rem 1rem;
+                border-radius: 2rem;
+                font-weight: 700;
+                z-index: 10;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        .gallery-card:hover .card-caption {
-            transform: translateY(0);
-        }
+            /* LIGHTBOX */
+            #lightbox {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(15, 23, 42, 0.95);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                z-index: 9999;
+                backdrop-filter: blur(10px);
+            }
 
-        .gallery-card .card-category {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background: var(--primary);
-            color: white;
-            font-size: 0.75rem;
-            padding: 0.4rem 1rem;
-            border-radius: 2rem;
-            font-weight: 700;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+            #lightbox img {
+                max-width: 90%;
+                max-height: 80vh;
+                border-radius: 1rem;
+                box-shadow: var(--shadow-lg);
+                margin-bottom: 2rem;
+            }
 
-        /* LIGHTBOX */
-        #lightbox {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 9999;
-            backdrop-filter: blur(10px);
-        }
+            .lightbox-buttons {
+                display: flex;
+                gap: 1rem;
+            }
 
-        #lightbox img {
-            max-width: 90%;
-            max-height: 80vh;
-            border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 2rem;
-        }
+            .lightbox-buttons button {
+                padding: 0.85rem 2.5rem;
+                border: none;
+                background: var(--primary);
+                color: var(--white);
+                cursor: pointer;
+                border-radius: 0.75rem;
+                font-weight: 700;
+                transition: 0.3s;
+                box-shadow: var(--shadow);
+            }
 
-        .lightbox-buttons {
-            display: flex;
-            gap: 1rem;
-        }
+            .lightbox-buttons button:hover {
+                background: var(--secondary);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+            }
 
-        .lightbox-buttons button {
-            padding: 0.85rem 2.5rem;
-            border: none;
-            background: var(--primary);
-            color: var(--white);
-            cursor: pointer;
-            border-radius: 0.75rem;
-            font-weight: 700;
-            transition: 0.3s;
-            box-shadow: var(--shadow);
-        }
+            .close-btn {
+                position: absolute;
+                top: 2rem;
+                right: 2rem;
+                font-size: 3rem;
+                color: var(--white);
+                cursor: pointer;
+                opacity: 0.8;
+                transition: 0.3s;
+            }
 
-        .lightbox-buttons button:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
+            .close-btn:hover {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        </style>
+    </head>
 
-        .close-btn {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            font-size: 3rem;
-            color: var(--white);
-            cursor: pointer;
-            opacity: 0.8;
-            transition: 0.3s;
-        }
+    <body>
+        <div id="header"></div>
 
-        .close-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-    </style>
-</head>
+        <section class="page-header">
+            <h1 id="galleryHeaderTitle">School Gallery</h1>
+            <p id="galleryHeaderSubtitle">Memories from school events and activities</p>
+        </section>
 
+        <section class="reveal">
+            <h2 class="section-title">Photo Gallery</h2>
 
-<body>
+            <!-- Dynamic Category Filters -->
+            <div
+                id="galleryFilters"
+                style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 3rem"
+            >
+                <button class="filter-btn active" data-filter="Sports">Sports</button>
+                <button class="filter-btn" data-filter="Events">Events</button>
+                <button class="filter-btn" data-filter="Museum">Bihar Museum</button>
+                <button class="filter-btn" data-filter="Science">Science Center</button>
+                <button class="filter-btn" data-filter="Trip">School Trip</button>
+                <button class="filter-btn" data-filter="Functions">Functions</button>
+                <button class="filter-btn" data-filter="Awards">Awards</button>
+                <button class="filter-btn" data-filter="Facilities">Facilities</button>
+                <button class="filter-btn" data-filter="Others">Others</button>
+            </div>
 
-<div id="header"></div>
+            <div class="grid" id="galleryDynamicGrid">
+                <!-- Loaded automatically by CMS -->
+                <p class="text-muted" style="text-align: center; padding: 5rem; width: 100%">
+                    Loading school gallery...
+                </p>
+            </div>
+        </section>
 
+        <div id="lightbox">
+            <span class="close-btn" onclick="closeLightbox()">×</span>
 
-<section class="page-header">
-    <h1 id="galleryHeaderTitle">School Gallery</h1>
-    <p id="galleryHeaderSubtitle">Memories from school events and activities</p>
-</section>
+            <img id="lightbox-img" />
 
+            <div class="lightbox-buttons">
+                <button onclick="downloadImage()">Download</button>
 
-<section class="reveal">
-    <h2 class="section-title">Photo Gallery</h2>
-    
-    <!-- Dynamic Category Filters -->
-    <div id="galleryFilters" style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap; margin-bottom:3rem;">
-        <button class="filter-btn active" data-filter="Sports">Sports</button>
-        <button class="filter-btn" data-filter="Events">Events</button>
-        <button class="filter-btn" data-filter="Museum">Bihar Museum</button>
-        <button class="filter-btn" data-filter="Science">Science Center</button>
-        <button class="filter-btn" data-filter="Trip">School Trip</button>
-        <button class="filter-btn" data-filter="Functions">Functions</button>
-        <button class="filter-btn" data-filter="Awards">Awards</button>
-        <button class="filter-btn" data-filter="Facilities">Facilities</button>
-        <button class="filter-btn" data-filter="Others">Others</button>
-    </div>
+                <button onclick="closeLightbox()">Close</button>
+            </div>
+        </div>
 
-    <div class="grid" id="galleryDynamicGrid">
-        <!-- Loaded automatically by CMS -->
-        <p class="text-muted" style="text-align:center; padding:5rem; width:100%;">Loading school gallery...</p>
-    </div>
-</section>
+        <div id="footer"></div>
+        <!-- NEW FLOATING BUTTONS CONTAINER -->
+        <div id="floating-button"></div>
 
+        <script src="script.js"></script>
+        <!-- Firebase SDK for CMS -->
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="js/firebase-config.js"></script>
+        <script src="js/cms-settings.js"></script>
 
-<div id="lightbox">
+        <script>
+            let currentImage = '';
 
-<span class="close-btn" onclick="closeLightbox()">×</span>
+            function openLightbox(img) {
+                // Handle both HTML element and object {src: '...'}
+                currentImage = img.src || img;
+                const lightboxImg = document.getElementById('lightbox-img');
+                if (!lightboxImg) return;
 
-<img id="lightbox-img">
+                lightboxImg.src = currentImage;
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox) {
+                    lightbox.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // Prevent scroll
+                }
+            }
 
-<div class="lightbox-buttons">
+            function closeLightbox() {
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox) {
+                    lightbox.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
 
-<button onclick="downloadImage()">Download</button>
+            async function downloadImage() {
+                if (!currentImage) return;
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = 'Downloading...';
+                btn.disabled = true;
 
-<button onclick="closeLightbox()">Close</button>
-
-</div>
-
-</div>
-
-
-<div id="footer"></div>
-<!-- NEW FLOATING BUTTONS CONTAINER -->
-<div id="floating-button"></div>
-
-
-
-<script src="script.js"></script>
-<!-- Firebase SDK for CMS -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/cms-settings.js"></script>
-
-
-<script>
-
-let currentImage = ""
-
-function openLightbox(img) {
-    // Handle both HTML element and object {src: '...'}
-    currentImage = img.src || img;
-    const lightboxImg = document.getElementById("lightbox-img");
-    if (!lightboxImg) return;
-    
-    lightboxImg.src = currentImage;
-    const lightbox = document.getElementById("lightbox");
-    if (lightbox) {
-        lightbox.style.display = "flex";
-        document.body.style.overflow = "hidden"; // Prevent scroll
-    }
-}
-
-function closeLightbox() {
-    const lightbox = document.getElementById("lightbox");
-    if (lightbox) {
-        lightbox.style.display = "none";
-        document.body.style.overflow = "auto";
-    }
-}
-
-async function downloadImage() {
-    if (!currentImage) return;
-    const btn = event.target;
-    const originalText = btn.innerText;
-    btn.innerText = "Downloading...";
-    btn.disabled = true;
-
-    try {
-        const response = await fetch(currentImage);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "apex-gallery-" + Date.now() + ".jpg";
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-    } catch (e) {
-        console.error("Download failed:", e);
-        // Fallback: open in new tab
-        window.open(currentImage, '_blank');
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
-}
-
-
-
-</script>
-
-</body>
-
+                try {
+                    const response = await fetch(currentImage);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'apex-gallery-' + Date.now() + '.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                } catch (e) {
+                    console.error('Download failed:', e);
+                    // Fallback: open in new tab
+                    window.open(currentImage, '_blank');
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }
+        </script>
+    </body>
 </html>
-
-
-
-
-
-
-

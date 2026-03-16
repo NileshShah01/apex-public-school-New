@@ -2,16 +2,16 @@
  * ERP ADMISSION ENQUIRY MODULE
  */
 
-const db = firebase.firestore();
+// db is provided globally by firebase-config.js
 
 async function initERPAdmission() {
-    console.log("Initializing ERP Admission...");
+    console.log('Initializing ERP Admission...');
     await loadEnquiries();
 }
 
 async function saveEnquiry(event) {
     event.preventDefault();
-    
+
     const data = {
         name: document.getElementById('enq_name').value,
         fatherName: document.getElementById('enq_father').value,
@@ -21,18 +21,18 @@ async function saveEnquiry(event) {
         followupDate: document.getElementById('enq_followup').value,
         remarks: document.getElementById('enq_remarks').value,
         status: 'Open',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
     try {
         setLoading(true);
-        await db.collection('enquiries').add(data);
-        showToast("Enquiry Saved Successfully", "success");
+        await schoolData('enquiries').add(withSchool(data));
+        showToast('Enquiry Saved Successfully', 'success');
         document.getElementById('enquiryForm').reset();
         await loadEnquiries();
     } catch (e) {
         console.error(e);
-        showToast("Failed to save enquiry", "error");
+        showToast('Failed to save enquiry', 'error');
     } finally {
         setLoading(false);
     }
@@ -43,16 +43,17 @@ async function loadEnquiries() {
     if (!body) return;
 
     try {
-        const snap = await db.collection('enquiries').orderBy('createdAt', 'desc').limit(50).get();
+        const snap = await schoolData('enquiries').orderBy('createdAt', 'desc').limit(50).get();
         if (snap.empty) {
             body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No enquiries found.</td></tr>';
             return;
         }
 
-        body.innerHTML = snap.docs.map(doc => {
-            const enq = doc.data();
-            const date = enq.createdAt ? new Date(enq.createdAt.seconds * 1000).toLocaleDateString() : '-';
-            return `
+        body.innerHTML = snap.docs
+            .map((doc) => {
+                const enq = doc.data();
+                const date = enq.createdAt ? new Date(enq.createdAt.seconds * 1000).toLocaleDateString() : '-';
+                return `
                 <tr>
                     <td>${date}</td>
                     <td><strong>${enq.name}</strong><br><small>${enq.fatherName}</small></td>
@@ -65,7 +66,8 @@ async function loadEnquiries() {
                     </td>
                 </tr>
             `;
-        }).join('');
+            })
+            .join('');
     } catch (e) {
         console.error(e);
     }
@@ -73,8 +75,8 @@ async function loadEnquiries() {
 
 async function updateEnquiryStatus(id, status) {
     try {
-        await db.collection('enquiries').doc(id).update({ status });
-        showToast("Enquiry Updated", "success");
+        await schoolDoc('enquiries', id).update({ status });
+        showToast('Enquiry Updated', 'success');
         await loadEnquiries();
     } catch (e) {
         console.error(e);

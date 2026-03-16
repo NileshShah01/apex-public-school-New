@@ -2,8 +2,12 @@
 .id-card-wrapper {
     position: relative;
     background: #fff;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    font-family:
+        'Inter',
+        system-ui,
+        -apple-system,
+        sans-serif;
     color: #1e293b;
 }
 
@@ -17,7 +21,11 @@
     z-index: 1;
 }
 
-.photo-frame img, .photo-box img, .photo-circle img, .photo-container img, .photo-ring img {
+.photo-frame img,
+.photo-box img,
+.photo-circle img,
+.photo-container img,
+.photo-ring img {
     background-color: #f1f5f9;
 }
 
@@ -33,7 +41,8 @@
 
 /* Glassmorphism for specific elements */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.4);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }

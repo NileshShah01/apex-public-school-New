@@ -1,348 +1,346 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
+        <title>Contact | Apex Public School</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css" />
 
-<title>Contact | Apex Public School</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<link rel="stylesheet" href="style.css">
+        <style>
+            body {
+                background: var(--bg-gray);
+                color: var(--text-main);
+            }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+            .page-header {
+                text-align: center;
+                padding: 5rem 2rem;
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                margin-bottom: 2rem;
+            }
 
-    <style>
-        body {
-            background: var(--bg-gray);
-            color: var(--text-main);
-        }
+            .page-header h1 {
+                font-size: 3rem;
+                font-weight: 800;
+                color: var(--primary);
+            }
 
-        .page-header {
-            text-align: center;
-            padding: 5rem 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
+            /* General section styling, if not already in style.css */
+            .section {
+                max-width: 1100px;
+                margin: auto;
+                padding: 50px 20px;
+                background: rgba(
+                    255,
+                    255,
+                    255,
+                    0.95
+                ); /* Using a specific rgba for consistency with old style, can be replaced by var(--white) or var(--glass-bg) if desired */
+                border-radius: 6px;
+                margin-bottom: 30px;
+            }
 
-        .page-header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
+            .section-title {
+                text-align: center;
+                font-size: 2.25rem;
+                font-weight: 700;
+                color: var(--primary);
+                margin-bottom: 2.5rem;
+            }
 
-        /* General section styling, if not already in style.css */
-        .section {
-            max-width: 1100px;
-            margin: auto;
-            padding: 50px 20px;
-            background: rgba(255,255,255,0.95); /* Using a specific rgba for consistency with old style, can be replaced by var(--white) or var(--glass-bg) if desired */
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
+            .contact-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin-bottom: 4rem;
+            }
 
-        .section-title {
-            text-align: center;
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 2.5rem;
-        }
+            .card {
+                background: var(--white);
+                padding: 25px;
+                text-align: center;
+                border-radius: 6px;
+                box-shadow: var(--shadow); /* Using a global shadow variable */
+                transition: all 0.3s ease;
+            }
 
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
-        }
+            .card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--shadow-md); /* Slightly more pronounced shadow on hover */
+            }
 
-        .card {
-            background: var(--white);
-            padding: 25px;
-            text-align: center;
-            border-radius: 6px;
-            box-shadow: var(--shadow); /* Using a global shadow variable */
-            transition: all 0.3s ease;
-        }
+            .card i {
+                font-size: 36px;
+                color: var(--primary);
+                margin-bottom: 10px;
+            }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-md); /* Slightly more pronounced shadow on hover */
-        }
+            .card h3 {
+                font-size: 1.5rem;
+                color: var(--text-main);
+                margin-bottom: 0.5rem;
+            }
 
-        .card i {
-            font-size: 36px;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
+            .card p {
+                font-size: 1rem;
+                color: var(--text-secondary);
+            }
 
-        .card h3 {
-            font-size: 1.5rem;
-            color: var(--text-main);
-            margin-bottom: 0.5rem;
-        }
+            .social-links {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                margin-top: 2rem;
+            }
 
-        .card p {
-            font-size: 1rem;
-            color: var(--text-secondary);
-        }
+            .social-links a {
+                font-size: 2rem;
+                color: var(--primary);
+                transition: all 0.3s ease;
+            }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
+            .social-links a:hover {
+                color: var(--secondary);
+                transform: translateY(-5px);
+            }
 
-        .social-links a {
-            font-size: 2rem;
-            color: var(--primary);
-            transition: all 0.3s ease;
-        }
+            .form-container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: var(--white);
+                padding: 3rem;
+                border-radius: 1.5rem;
+                box-shadow: var(--shadow-lg);
+            }
 
-        .social-links a:hover {
-            color: var(--secondary);
-            transform: translateY(-5px);
-        }
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
 
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--white);
-            padding: 3rem;
-            border-radius: 1.5rem;
-            box-shadow: var(--shadow-lg);
-        }
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: var(--text-main);
+            }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+            .form-control {
+                width: 100%;
+                padding: 1rem;
+                border: 1px solid var(--border);
+                border-radius: 0.75rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: var(--bg-gray);
+            }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary);
+                background: var(--white);
+                box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+            }
 
-        .form-control {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: var(--bg-gray);
-        }
+            .btn-submit {
+                width: 100%;
+                padding: 1.25rem;
+                background: var(--primary);
+                color: var(--white);
+                border: none;
+                border-radius: 0.75rem;
+                font-size: 1.1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+            }
 
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-        }
+            .btn-submit:hover {
+                background: var(--secondary);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow);
+            }
+        </style>
+    </head>
 
-        .btn-submit {
-            width: 100%;
-            padding: 1.25rem;
-            background: var(--primary);
-            color: var(--white);
-            border: none;
-            border-radius: 0.75rem;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-        }
+    <body>
+        <div id="header"></div>
 
-        .btn-submit:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-    </style>
+        <section class="page-header">
+            <h1 id="contactHeaderTitle">Contact Apex Public School</h1>
 
-</head>
+            <p id="contactHeaderSubtitle">Anjani Bazar, Parsa, Saran</p>
+        </section>
 
-
-<body>
-
-<div id="header"></div>
-
-
-<section class="page-header">
-
-<h1 id="contactHeaderTitle">Contact Apex Public School</h1>
-
-<p id="contactHeaderSubtitle">Anjani Bazar, Parsa, Saran</p>
-
-</section>
-
-
-
-<section class="reveal">
-    <h2 class="section-title">Contact Information</h2>
-    <div class="grid">
-        <div class="card">
-            <i class="fa-solid fa-phone"></i>
-            <h3>Phone</h3>
-            <p>8084243031</p>
-        </div>
-
-        <div class="card">
-            <i class="fa-solid fa-envelope"></i>
-            <h3>Email</h3>
-            <p>Apexpublicschool61@gmail.com</p>
-        </div>
-
-        <div class="card">
-            <i class="fa-solid fa-location-dot"></i>
-            <h3>Address</h3>
-            <p id="contactAddress">
-                Anjani Bazar<br>
-                Near SBI Branch<br>
-                Parsa, Saran<br>
-                Bihar 841219
-            </p>
-        </div>
-
-        <div class="card">
-            <i class="fa-solid fa-clock"></i>
-            <h3>Office Hours</h3>
-            <p>
-                Monday – Saturday<br>
-                9:00 AM – 2:30 PM
-            </p>
-        </div>
-    </div>
-</section>
-
-
-
-<section class="reveal">
-    <h2 class="section-title">Send Inquiry</h2>
-    <div class="form-container">
-        <form id="contactForm">
-            <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Name <span class="text-secondary">*</span></label>
-                    <input type="text" id="con_name" class="form-control" required placeholder="Your name">
+        <section class="reveal">
+            <h2 class="section-title">Contact Information</h2>
+            <div class="grid">
+                <div class="card">
+                    <i class="fa-solid fa-phone"></i>
+                    <h3>Phone</h3>
+                    <p>8084243031</p>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Mobile Number <span class="text-secondary">*</span></label>
-                    <input type="tel" id="con_mobile" class="form-control" required placeholder="10-digit number" maxlength="10">
+
+                <div class="card">
+                    <i class="fa-solid fa-envelope"></i>
+                    <h3>Email</h3>
+                    <p>Apexpublicschool61@gmail.com</p>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <h3>Address</h3>
+                    <p id="contactAddress">
+                        Anjani Bazar<br />
+                        Near SBI Branch<br />
+                        Parsa, Saran<br />
+                        Bihar 841219
+                    </p>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-clock"></i>
+                    <h3>Office Hours</h3>
+                    <p>
+                        Monday – Saturday<br />
+                        9:00 AM – 2:30 PM
+                    </p>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Message / Inquiry <span class="text-secondary">*</span></label>
-                <textarea id="con_message" class="form-control" required rows="4" placeholder="How can we help you?"></textarea>
+        </section>
+
+        <section class="reveal">
+            <h2 class="section-title">Send Inquiry</h2>
+            <div class="form-container">
+                <form id="contactForm">
+                    <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem">
+                        <div class="form-group" style="margin-bottom: 0">
+                            <label>Name <span class="text-secondary">*</span></label>
+                            <input type="text" id="con_name" class="form-control" required placeholder="Your name" />
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0">
+                            <label>Mobile Number <span class="text-secondary">*</span></label>
+                            <input
+                                type="tel"
+                                id="con_mobile"
+                                class="form-control"
+                                required
+                                placeholder="10-digit number"
+                                maxlength="10"
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Message / Inquiry <span class="text-secondary">*</span></label>
+                        <textarea
+                            id="con_message"
+                            class="form-control"
+                            required
+                            rows="4"
+                            placeholder="How can we help you?"
+                        ></textarea>
+                    </div>
+                    <div
+                        id="con_status"
+                        style="
+                            display: none;
+                            padding: 1rem;
+                            border-radius: 0.75rem;
+                            font-weight: 600;
+                            text-align: center;
+                            margin-bottom: 1.5rem;
+                        "
+                    ></div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
             </div>
-            <div id="con_status" style="display:none; padding:1rem; border-radius:0.75rem; font-weight:600; text-align:center; margin-bottom:1.5rem;"></div>
-            <button type="submit" class="btn-submit">
-                <i class="fa-solid fa-paper-plane"></i> Send Message
-            </button>
-        </form>
-    </div>
-</section>
+        </section>
 
+        <section class="reveal">
+            <h2 class="section-title">Follow Us</h2>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </section>
 
+        <div id="footer"></div>
 
-<section class="reveal">
-    <h2 class="section-title">Follow Us</h2>
-    <div class="social-links">
-        <a href="#"><i class="fa-brands fa-facebook"></i></a>
-        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#"><i class="fa-brands fa-youtube"></i></a>
-    </div>
-</section>
+        <!-- NEW FLOATING BUTTONS CONTAINER -->
+        <script src="script.js"></script>
 
+        <!-- Firebase SDK for Inquiry Sync -->
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="js/firebase-config.js"></script>
+        <script>
+            document.getElementById('contactForm')?.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const status = document.getElementById('con_status');
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+                status.style.display = 'none';
 
+                const mobile = document.getElementById('con_mobile').value.trim();
+                if (mobile.length !== 10 || isNaN(mobile)) {
+                    status.style.display = 'block';
+                    status.style.background = '#fff1f2';
+                    status.style.color = '#be123c';
+                    status.textContent = 'Please enter a valid 10-digit mobile number.';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+                    return;
+                }
 
-<div id="footer"></div>
+                try {
+                    await db.collection('inquiries').add({
+                        parent: document.getElementById('con_name').value.trim(),
+                        student: 'N/A (General Contact)',
+                        mobile: mobile,
+                        class: 'N/A',
+                        village: 'N/A',
+                        message: document.getElementById('con_message').value.trim(),
+                        status: 'New',
+                        submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                    status.style.display = 'block';
+                    status.style.background = '#ecfdf5';
+                    status.style.color = '#065f46';
+                    status.textContent = '✅ Message sent successfully! We will contact you soon.';
+                    this.reset();
+                } catch (err) {
+                    status.style.display = 'block';
+                    status.style.background = '#fff1f2';
+                    status.style.color = '#be123c';
+                    status.textContent = 'Failed to send message. Please try calling us instead.';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
+                }
+            });
+        </script>
 
+        <script>
+            /* BACKGROUND MOUSE MOVEMENT */
 
-<!-- NEW FLOATING BUTTONS CONTAINER -->
-<script src="script.js"></script>
+            document.addEventListener('mousemove', (e) => {
+                let x = e.clientX / window.innerWidth;
+                let y = e.clientY / window.innerHeight;
 
-<!-- Firebase SDK for Inquiry Sync -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script>
-document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button[type="submit"]');
-    const status = document.getElementById('con_status');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-    status.style.display = 'none';
-
-    const mobile = document.getElementById('con_mobile').value.trim();
-    if (mobile.length !== 10 || isNaN(mobile)) {
-        status.style.display = 'block';
-        status.style.background = '#fff1f2';
-        status.style.color = '#be123c';
-        status.textContent = 'Please enter a valid 10-digit mobile number.';
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
-        return;
-    }
-
-    try {
-        await db.collection('inquiries').add({
-            parent: document.getElementById('con_name').value.trim(),
-            student: 'N/A (General Contact)',
-            mobile: mobile,
-            class: 'N/A',
-            village: 'N/A',
-            message: document.getElementById('con_message').value.trim(),
-            status: 'New',
-            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        status.style.display = 'block';
-        status.style.background = '#ecfdf5';
-        status.style.color = '#065f46';
-        status.textContent = '✅ Message sent successfully! We will contact you soon.';
-        this.reset();
-    } catch(err) {
-        status.style.display = 'block';
-        status.style.background = '#fff1f2';
-        status.style.color = '#be123c';
-        status.textContent = 'Failed to send message. Please try calling us instead.';
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
-    }
-});
-</script>
-
-
-<script>
-
-/* BACKGROUND MOUSE MOVEMENT */
-
-document.addEventListener("mousemove", e => {
-
-let x = e.clientX / window.innerWidth
-let y = e.clientY / window.innerHeight
-
-document.body.style.backgroundPosition = `${x*70}px ${y*70}px`
-
-})
-
-</script>
-
-
-</body>
-
+                document.body.style.backgroundPosition = `${x * 70}px ${y * 70}px`;
+            });
+        </script>
+    </body>
 </html>
-
-
-
-
-

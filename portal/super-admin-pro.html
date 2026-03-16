@@ -1,431 +1,594 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNR World | Super Admin PRO</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Styles -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --brand-accent: #3b82f6;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #030303;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        .bg-mesh {
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            background-attachment: fixed;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.25rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            transition: all 0.3s ease;
-        }
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-        .glow-blue {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-        .nav-active {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .section-view { display: none; }
-        .section-active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-        
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid var(--brand-accent);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SNR World | Super Admin PRO</title>
+        <!-- Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <!-- Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <!-- Styles -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            :root {
+                --brand-accent: #3b82f6;
+            }
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #030303;
+                color: #e2e8f0;
+                overflow-x: hidden;
+            }
+            .bg-mesh {
+                background-image:
+                    radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+                background-attachment: fixed;
+            }
+            .glass-panel {
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 1.25rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+            .glass-card {
+                background: rgba(255, 255, 255, 0.03);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 1rem;
+                transition: all 0.3s ease;
+            }
+            .glass-card:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
+            }
+            .glow-blue {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+            .nav-active {
+                background: rgba(255, 255, 255, 0.08);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .section-view {
+                display: none;
+            }
+            .section-active {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
 
-        /* Stage Badges */
-        .badge-stage {
-            padding: 0.15rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(139, 92, 246, 0.1);
-            color: #a78bfa;
-            border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-    </style>
-</head>
-<body class="bg-mesh h-screen flex overflow-hidden">
+            /* Loading Spinner */
+            .spinner {
+                border: 3px solid rgba(255, 255, 255, 0.1);
+                border-top: 3px solid var(--brand-accent);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 z-[100] bg-[#030303]/90 flex flex-col items-center justify-center">
-        <div class="spinner mb-4"></div>
-        <p class="text-slate-400 font-medium animate-pulse">Initializing SNR World Pro Dashboard...</p>
-    </div>
-
-    <!-- Sidebar -->
-    <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex">
-        <div class="p-8 flex items-center gap-3">
-            <div id="brandIcon" class="w-10 h-10 rounded-xl flex items-center justify-center glow-blue bg-blue-600 transition-all duration-500">
-                <i data-lucide="globe" class="text-white w-6 h-6"></i>
-            </div>
-            <h1 id="brandName" class="text-2xl font-bold tracking-tighter text-white">SNR World</h1>
+            /* Stage Badges */
+            .badge-stage {
+                padding: 0.15rem 0.5rem;
+                border-radius: 9999px;
+                font-size: 0.7rem;
+                font-weight: 700;
+                background: rgba(139, 92, 246, 0.1);
+                color: #a78bfa;
+                border: 1px solid rgba(139, 92, 246, 0.2);
+            }
+        </style>
+    </head>
+    <body class="bg-mesh h-screen flex overflow-hidden">
+        <!-- Loading Overlay -->
+        <div
+            id="loadingOverlay"
+            class="fixed inset-0 z-[100] bg-[#030303]/90 flex flex-col items-center justify-center"
+        >
+            <div class="spinner mb-4"></div>
+            <p class="text-slate-400 font-medium animate-pulse">Initializing SNR World Pro Dashboard...</p>
         </div>
 
-        <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-            <button data-tab="Dashboard" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-white nav-active">
-                <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-500"></i>
-                <span class="font-medium text-sm">Dashboard</span>
-            </button>
-            <button data-tab="Schools" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="school" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Schools</span>
-            </button>
-            <button data-tab="Add School" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="plus-circle" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Add School</span>
-            </button>
-            <button data-tab="Analytics" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="bar-chart-3" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Analytics Hub</span>
-            </button>
-            <button data-tab="Stages" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="layers" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Stage Management</span>
-            </button>
-            <button data-tab="Subscriptions" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="credit-card" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Subscriptions</span>
-            </button>
-            <button data-tab="Appearance" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="zap" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Appearance</span>
-            </button>
-            <button data-tab="Settings" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="settings" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">System Settings</span>
-            </button>
-            <button data-tab="Health" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="activity" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">System Health</span>
-            </button>
-            <button data-tab="Logs" class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200">
-                <i data-lucide="history" class="w-5 h-5 group-hover:text-blue-300"></i>
-                <span class="font-medium text-sm">Logs</span>
-            </button>
-        </nav>
-
-        <div class="p-4 mt-auto">
-            <button onclick="logoutAdmin()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-all">
-                <i data-lucide="log-out" class="w-5 h-5"></i>
-                <span class="font-medium">Logout</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col overflow-hidden relative">
-        <!-- Top Navigation -->
-        <header class="h-20 glass-panel m-4 flex items-center justify-between px-8">
-            <div class="flex-1 max-w-xl">
-                <div class="relative group">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
-                    <input id="globalSearch" type="text" placeholder="Search schools, subdomains, or analytics..." 
-                        class="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+        <!-- Sidebar -->
+        <aside class="w-72 glass-panel m-4 flex flex-col hidden lg:flex">
+            <div class="p-8 flex items-center gap-3">
+                <div
+                    id="brandIcon"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center glow-blue bg-blue-600 transition-all duration-500"
+                >
+                    <i data-lucide="globe" class="text-white w-6 h-6"></i>
                 </div>
+                <h1 id="brandName" class="text-2xl font-bold tracking-tighter text-white">SNR World</h1>
             </div>
 
-            <div class="flex items-center gap-6">
-                <button class="relative p-2 rounded-full hover:bg-white/5 transition-all">
-                    <i data-lucide="bell" class="w-6 h-6 text-slate-400"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#030303]"></span>
+            <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+                <button
+                    data-tab="Dashboard"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-white nav-active"
+                >
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-500"></i>
+                    <span class="font-medium text-sm">Dashboard</span>
                 </button>
-                <div class="flex items-center gap-3 pl-6 border-l border-white/10">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-semibold text-white">Nilesh Shah</p>
-                        <p class="text-xs text-slate-500">Super Admin</p>
-                    </div>
-                </div>
+                <button
+                    data-tab="Schools"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="school" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Schools</span>
+                </button>
+                <button
+                    data-tab="Add School"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="plus-circle" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Add School</span>
+                </button>
+                <button
+                    data-tab="Analytics"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Analytics Hub</span>
+                </button>
+                <button
+                    data-tab="Stages"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="layers" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Stage Management</span>
+                </button>
+                <button
+                    data-tab="Subscriptions"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="credit-card" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Subscriptions</span>
+                </button>
+                <button
+                    data-tab="Appearance"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="zap" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Appearance</span>
+                </button>
+                <button
+                    data-tab="Settings"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="settings" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">System Settings</span>
+                </button>
+                <button
+                    data-tab="Health"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="activity" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">System Health</span>
+                </button>
+                <button
+                    data-tab="Logs"
+                    class="nav-btn w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                >
+                    <i data-lucide="history" class="w-5 h-5 group-hover:text-blue-300"></i>
+                    <span class="font-medium text-sm">Logs</span>
+                </button>
+            </nav>
+
+            <div class="p-4 mt-auto">
+                <button
+                    onclick="logoutAdmin()"
+                    class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-all"
+                >
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <span class="font-medium">Logout</span>
+                </button>
             </div>
-        </header>
+        </aside>
 
-        <!-- Dynamic Content Body -->
-        <div id="contentArea" class="flex-1 overflow-y-auto p-8 pr-12 space-y-8 custom-scrollbar">
-            
-            <!-- VIEW: DASHBOARD -->
-            <div id="view-Dashboard" class="section-view section-active space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 rounded-xl bg-blue-400/10"><i data-lucide="school" class="w-6 h-6 text-blue-400"></i></div>
-                            <div class="flex items-center gap-1 text-xs font-medium text-emerald-400"><i data-lucide="trending-up" class="w-3 h-3"></i> +12%</div>
-                        </div>
-                        <h3 class="text-slate-400 text-sm font-medium">Total Schools</h3>
-                        <p id="stat-totalSchools" class="text-3xl font-bold text-white mt-1">0</p>
-                    </div>
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 rounded-xl bg-yellow-400/10"><i data-lucide="zap" class="w-6 h-6 text-yellow-400"></i></div>
-                            <div class="flex items-center gap-1 text-xs font-medium text-emerald-400"><i data-lucide="trending-up" class="w-3 h-3"></i> +8%</div>
-                        </div>
-                        <h3 class="text-slate-400 text-sm font-medium">Active Schools</h3>
-                        <p id="stat-activeSchools" class="text-3xl font-bold text-white mt-1">0</p>
-                    </div>
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 rounded-xl bg-purple-400/10"><i data-lucide="users" class="w-6 h-6 text-purple-400"></i></div>
-                            <div class="flex items-center gap-1 text-xs font-medium text-emerald-400"><i data-lucide="trending-up" class="w-3 h-3"></i> +24%</div>
-                        </div>
-                        <h3 class="text-slate-400 text-sm font-medium">Total Students</h3>
-                        <p id="stat-totalStudents" class="text-3xl font-bold text-white mt-1">0</p>
-                    </div>
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 rounded-xl bg-emerald-400/10"><i data-lucide="credit-card" class="w-6 h-6 text-emerald-400"></i></div>
-                            <div class="flex items-center gap-1 text-xs font-medium text-emerald-400"><i data-lucide="trending-up" class="w-3 h-3"></i> +15%</div>
-                        </div>
-                        <h3 class="text-slate-400 text-sm font-medium">Premium Instances</h3>
-                        <p id="stat-premiumSchools" class="text-3xl font-bold text-white mt-1">0</p>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- Top Navigation -->
+            <header class="h-20 glass-panel m-4 flex items-center justify-between px-8">
+                <div class="flex-1 max-w-xl">
+                    <div class="relative group">
+                        <i
+                            data-lucide="search"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors"
+                        ></i>
+                        <input
+                            id="globalSearch"
+                            type="text"
+                            placeholder="Search schools, subdomains, or analytics..."
+                            class="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        />
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                    <div class="xl:col-span-3 glass-panel p-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <div>
-                                <h2 class="text-xl font-bold text-white">Enrollment Growth</h2>
-                                <p class="text-sm text-slate-500">Platform-wide growth over 6 months</p>
+                <div class="flex items-center gap-6">
+                    <button class="relative p-2 rounded-full hover:bg-white/5 transition-all">
+                        <i data-lucide="bell" class="w-6 h-6 text-slate-400"></i>
+                        <span
+                            class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#030303]"
+                        ></span>
+                    </button>
+                    <div class="flex items-center gap-3 pl-6 border-l border-white/10">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-white">Nilesh Shah</p>
+                            <p class="text-xs text-slate-500">Super Admin</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Body -->
+            <div id="contentArea" class="flex-1 overflow-y-auto p-8 pr-12 space-y-8 custom-scrollbar">
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-Dashboard" class="section-view section-active space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass-card p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-3 rounded-xl bg-blue-400/10">
+                                    <i data-lucide="school" class="w-6 h-6 text-blue-400"></i>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i> +12%
+                                </div>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Total Schools</h3>
+                            <p id="stat-totalSchools" class="text-3xl font-bold text-white mt-1">0</p>
+                        </div>
+                        <div class="glass-card p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-3 rounded-xl bg-yellow-400/10">
+                                    <i data-lucide="zap" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i> +8%
+                                </div>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Active Schools</h3>
+                            <p id="stat-activeSchools" class="text-3xl font-bold text-white mt-1">0</p>
+                        </div>
+                        <div class="glass-card p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-3 rounded-xl bg-purple-400/10">
+                                    <i data-lucide="users" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i> +24%
+                                </div>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Total Students</h3>
+                            <p id="stat-totalStudents" class="text-3xl font-bold text-white mt-1">0</p>
+                        </div>
+                        <div class="glass-card p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-3 rounded-xl bg-emerald-400/10">
+                                    <i data-lucide="credit-card" class="w-6 h-6 text-emerald-400"></i>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i> +15%
+                                </div>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Premium Instances</h3>
+                            <p id="stat-premiumSchools" class="text-3xl font-bold text-white mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                        <div class="xl:col-span-3 glass-panel p-8">
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h2 class="text-xl font-bold text-white">Enrollment Growth</h2>
+                                    <p class="text-sm text-slate-500">Platform-wide growth over 6 months</p>
+                                </div>
+                            </div>
+                            <div class="h-[300px] w-full" id="enrollmentChart">
+                                <!-- Chart.js will hook here -->
+                                <canvas id="growthChart"></canvas>
                             </div>
                         </div>
-                        <div class="h-[300px] w-full" id="enrollmentChart">
-                            <!-- Chart.js will hook here -->
-                            <canvas id="growthChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="xl:col-span-1 space-y-6">
-                        <div class="glass-panel p-6">
-                            <h2 class="text-lg font-bold text-white mb-6">Quick Actions</h2>
-                            <div class="space-y-3">
-                                <button onclick="switchTab('Add School')" class="w-full flex items-center justify-between p-4 glass-card group">
-                                    <div class="flex items-center gap-3">
-                                        <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                        <div class="xl:col-span-1 space-y-6">
+                            <div class="glass-panel p-6">
+                                <h2 class="text-lg font-bold text-white mb-6">Quick Actions</h2>
+                                <div class="space-y-3">
+                                    <button
+                                        onclick="switchTab('Add School')"
+                                        class="w-full flex items-center justify-between p-4 glass-card group"
+                                    >
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="p-2 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all"
+                                            >
+                                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                            </div>
+                                            <span class="text-sm font-medium">Provision School</span>
                                         </div>
-                                        <span class="text-sm font-medium">Provision School</span>
-                                    </div>
-                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600"></i>
-                                </button>
-                                <button onclick="switchTab('Health')" class="w-full flex items-center justify-between p-4 glass-card group">
-                                    <div class="flex items-center gap-3">
-                                        <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                                            <i data-lucide="activity" class="w-5 h-5"></i>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600"></i>
+                                    </button>
+                                    <button
+                                        onclick="switchTab('Health')"
+                                        class="w-full flex items-center justify-between p-4 glass-card group"
+                                    >
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all"
+                                            >
+                                                <i data-lucide="activity" class="w-5 h-5"></i>
+                                            </div>
+                                            <span class="text-sm font-medium">System Health</span>
                                         </div>
-                                        <span class="text-sm font-medium">System Health</span>
-                                    </div>
-                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW: SCHOOLS -->
-            <div id="view-Schools" class="section-view space-y-8">
-                <div class="glass-panel p-8">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                        <h2 class="text-xl font-bold text-white">School Management</h2>
-                        <div class="flex gap-2">
-                             <input type="text" id="schoolFilter" placeholder="Filter by Name/ID..." 
-                                class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                             <button class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-500">Export CSV</button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-white/10 text-slate-500 text-sm">
-                                    <th class="pb-4 font-medium">School ID</th>
-                                    <th class="pb-4 font-medium">School Name</th>
-                                    <th class="pb-4 font-medium">Subdomain</th>
-                                    <th class="pb-4 font-medium">Stage</th>
-                                    <th class="pb-4 font-medium">Students</th>
-                                    <th class="pb-4 font-medium">Status</th>
-                                    <th class="pb-4 font-medium text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="schoolProTableBody" class="divide-y divide-white/5">
-                                <!-- Dynamic Schools -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW: ADD SCHOOL -->
-            <div id="view-Add-School" class="section-view space-y-8">
-                <div class="max-w-2xl mx-auto glass-panel p-8">
-                    <h2 class="text-2xl font-bold text-white mb-6">Register New School</h2>
-                    <form id="proAddSchoolForm" class="space-y-6">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-sm text-slate-400">School Name</label>
-                                <input type="text" id="proSchoolName" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Harvard Academy" required>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-sm text-slate-400">Subdomain</label>
-                                <div class="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
-                                    <input type="text" id="proSubdomain" class="bg-transparent text-white outline-none flex-1" placeholder="harvard" required>
-                                    <span class="text-slate-500">.snredu.in</span>
+                                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm text-slate-400">Activation Stage</label>
-                            <select id="proSchoolStage" class="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none">
-                                <option value="1">Stage 1: Static Site</option>
-                                <option value="2">Stage 2: CMS Admin</option>
-                                <option value="3">Stage 3: Student Portal</option>
-                                <option value="4">Stage 4: ERP Tools</option>
-                                <option value="5">Stage 5: Custom Tools</option>
-                                <option value="6">Stage 6: Full ERP Suite</option>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm text-slate-400">Admin Email</label>
-                            <input type="email" id="proAdminEmail" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="admin@school.com" required>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-blue-600 rounded-xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">
-                            Provision School Instance
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- VIEW: STAGES -->
-            <div id="view-Stages" class="section-view space-y-8">
-                <div class="glass-panel p-8">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 class="text-xl font-bold text-white">Stage Configuration</h2>
-                            <p class="text-sm text-slate-500">Define available modules and feature-sets for each level.</p>
-                        </div>
-                    </div>
-                    <div id="stagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Dynamic Stages from App.tsx logic -->
                     </div>
                 </div>
-            </div>
 
-            <!-- VIEW: APPEARANCE -->
-            <div id="view-Appearance" class="section-view space-y-8">
-                <div class="max-w-4xl mx-auto glass-panel p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-white">Platform Appearance</h2>
-                        <button onclick="saveAppearance()" class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-500">Save Changes</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-4">
-                            <label class="text-sm font-medium text-slate-400">Dashboard Branding</label>
-                            <input type="text" id="configName" value="SNR World" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none">
+                <!-- VIEW: SCHOOLS -->
+                <div id="view-Schools" class="section-view space-y-8">
+                    <div class="glass-panel p-8">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                            <h2 class="text-xl font-bold text-white">School Management</h2>
+                            <div class="flex gap-2">
+                                <input
+                                    type="text"
+                                    id="schoolFilter"
+                                    placeholder="Filter by Name/ID..."
+                                    class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                <button
+                                    class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-500"
+                                >
+                                    Export CSV
+                                </button>
+                            </div>
                         </div>
-                        <div class="space-y-4">
-                            <label class="text-sm font-medium text-slate-400">Accent Color</label>
-                            <div class="flex gap-4">
-                                <input type="color" id="configAccent" class="w-12 h-12 bg-transparent border-none cursor-pointer">
-                                <span class="text-slate-500 self-center">Choose brand color</span>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-500 text-sm">
+                                        <th class="pb-4 font-medium">School ID</th>
+                                        <th class="pb-4 font-medium">School Name</th>
+                                        <th class="pb-4 font-medium">Subdomain</th>
+                                        <th class="pb-4 font-medium">Stage</th>
+                                        <th class="pb-4 font-medium">Students</th>
+                                        <th class="pb-4 font-medium">Status</th>
+                                        <th class="pb-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schoolProTableBody" class="divide-y divide-white/5">
+                                    <!-- Dynamic Schools -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: ADD SCHOOL -->
+                <div id="view-Add-School" class="section-view space-y-8">
+                    <div class="max-w-2xl mx-auto glass-panel p-8">
+                        <h2 class="text-2xl font-bold text-white mb-6">Register New School</h2>
+                        <form id="proAddSchoolForm" class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">School Name</label>
+                                    <input
+                                        type="text"
+                                        id="proSchoolName"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="e.g. Harvard Academy"
+                                        required
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">Subdomain</label>
+                                    <div
+                                        class="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2.5"
+                                    >
+                                        <input
+                                            type="text"
+                                            id="proSubdomain"
+                                            class="bg-transparent text-white outline-none flex-1"
+                                            placeholder="harvard"
+                                            required
+                                        />
+                                        <span class="text-slate-500">.snredu.in</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-slate-400">Activation Stage</label>
+                                <select
+                                    id="proSchoolStage"
+                                    class="w-full bg-[#0d1117] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none"
+                                >
+                                    <option value="1">Stage 1: Static Site</option>
+                                    <option value="2">Stage 2: CMS Admin</option>
+                                    <option value="3">Stage 3: Student Portal</option>
+                                    <option value="4">Stage 4: ERP Tools</option>
+                                    <option value="5">Stage 5: Custom Tools</option>
+                                    <option value="6">Stage 6: Full ERP Suite</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-slate-400">Admin Email</label>
+                                <input
+                                    type="email"
+                                    id="proAdminEmail"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="admin@school.com"
+                                    required
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                class="w-full py-3 bg-blue-600 rounded-xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+                            >
+                                Provision School Instance
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- VIEW: STAGES -->
+                <div id="view-Stages" class="section-view space-y-8">
+                    <div class="glass-panel p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Stage Configuration</h2>
+                                <p class="text-sm text-slate-500">
+                                    Define available modules and feature-sets for each level.
+                                </p>
+                            </div>
+                        </div>
+                        <div id="stagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Dynamic Stages from App.tsx logic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: APPEARANCE -->
+                <div id="view-Appearance" class="section-view space-y-8">
+                    <div class="max-w-4xl mx-auto glass-panel p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-bold text-white">Platform Appearance</h2>
+                            <button
+                                onclick="saveAppearance()"
+                                class="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-500"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <label class="text-sm font-medium text-slate-400">Dashboard Branding</label>
+                                <input
+                                    type="text"
+                                    id="configName"
+                                    value="SNR World"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none"
+                                />
+                            </div>
+                            <div class="space-y-4">
+                                <label class="text-sm font-medium text-slate-400">Accent Color</label>
+                                <div class="flex gap-4">
+                                    <input
+                                        type="color"
+                                        id="configAccent"
+                                        class="w-12 h-12 bg-transparent border-none cursor-pointer"
+                                    />
+                                    <span class="text-slate-500 self-center">Choose brand color</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- VIEW: LOGS -->
-            <div id="view-Logs" class="section-view space-y-8">
-                 <div class="glass-panel p-8">
-                    <h2 class="text-xl font-bold text-white mb-6">Global Platform Logs</h2>
-                    <div id="logsContainer" class="space-y-4 text-sm">
-                        <!-- Dynamic Logs -->
-                        <p class="text-slate-500 text-center py-4">Loading audit logs...</p>
+                <!-- VIEW: LOGS -->
+                <div id="view-Logs" class="section-view space-y-8">
+                    <div class="glass-panel p-8">
+                        <h2 class="text-xl font-bold text-white mb-6">Global Platform Logs</h2>
+                        <div id="logsContainer" class="space-y-4 text-sm">
+                            <!-- Dynamic Logs -->
+                            <p class="text-slate-500 text-center py-4">Loading audit logs...</p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </main>
 
+        <!-- Modal: Edit School -->
+        <div
+            id="editModal"
+            class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4"
+        >
+            <div class="glass-panel max-w-md w-full p-8 border-white/20 shadow-2xl">
+                <h3 class="text-xl font-bold text-white mb-6">Modify School Instance</h3>
+                <form id="editSchoolForm" class="space-y-4">
+                    <input type="hidden" id="editSchoolId" />
+                    <div>
+                        <label class="text-sm text-slate-400">School Name</label>
+                        <input
+                            type="text"
+                            id="editSchoolName"
+                            class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                        />
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-400">Activation Stage</label>
+                        <select
+                            id="editSchoolStage"
+                            class="w-full bg-[#0d1117] border border-white/10 rounded-lg px-4 py-2 text-white"
+                        >
+                            <option value="1">Stage 1</option>
+                            <option value="2">Stage 2</option>
+                            <option value="3">Stage 3</option>
+                            <option value="4">Stage 4</option>
+                            <option value="5">Stage 5</option>
+                            <option value="6">Stage 6</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-3 mt-6">
+                        <button
+                            type="button"
+                            onclick="closeModal('editModal')"
+                            class="flex-1 py-2 bg-white/5 border border-white/10 rounded-xl text-slate-300"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 py-2 bg-blue-600 rounded-xl text-white font-bold">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </main>
 
-    <!-- Modal: Edit School -->
-    <div id="editModal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="glass-panel max-w-md w-full p-8 border-white/20 shadow-2xl">
-            <h3 class="text-xl font-bold text-white mb-6">Modify School Instance</h3>
-            <form id="editSchoolForm" class="space-y-4">
-                <input type="hidden" id="editSchoolId">
-                <div>
-                    <label class="text-sm text-slate-400">School Name</label>
-                    <input type="text" id="editSchoolName" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white">
-                </div>
-                <div>
-                    <label class="text-sm text-slate-400">Activation Stage</label>
-                    <select id="editSchoolStage" class="w-full bg-[#0d1117] border border-white/10 rounded-lg px-4 py-2 text-white">
-                        <option value="1">Stage 1</option>
-                        <option value="2">Stage 2</option>
-                        <option value="3">Stage 3</option>
-                        <option value="4">Stage 4</option>
-                        <option value="5">Stage 5</option>
-                        <option value="6">Stage 6</option>
-                    </select>
-                </div>
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeModal('editModal')" class="flex-1 py-2 bg-white/5 border border-white/10 rounded-xl text-slate-300">Cancel</button>
-                    <button type="submit" class="flex-1 py-2 bg-blue-600 rounded-xl text-white font-bold">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <!-- Firebase SDKs -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+        <!-- Charts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <!-- Charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/super-admin-pro.js"></script>
-</body>
+        <script src="../js/firebase-config.js"></script>
+        <script src="../js/super-admin-pro.js"></script>
+    </body>
 </html>

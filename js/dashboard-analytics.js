@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initAnalytics() {
-    console.log("Initializing SNR World Analytics...");
-    
+    console.log('Initializing SNR World Analytics...');
+
     // 1. Fee Collection Trend (Last 6 Months)
     initFeeChart();
-    
+
     // 2. Student Enrollment Growth (Academic Years)
     initEnrollmentChart();
 }
@@ -22,7 +22,7 @@ async function initAnalytics() {
  */
 async function initFeeChart() {
     const ctx = document.getElementById('feeChart').getContext('2d');
-    
+
     // In a production environment, we would aggregate 'payments' collection by Month
     // For now, we use a beautiful gradient representation
     const blueGradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -33,26 +33,28 @@ async function initFeeChart() {
         type: 'bar',
         data: {
             labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-            datasets: [{
-                label: 'Collection (₹)',
-                data: [45000, 52000, 48000, 61000, 58000, 75000],
-                backgroundColor: blueGradient,
-                borderColor: '#3b82f6',
-                borderWidth: 2,
-                borderRadius: 8,
-                barThickness: 25
-            }]
+            datasets: [
+                {
+                    label: 'Collection (₹)',
+                    data: [45000, 52000, 48000, 61000, 58000, 75000],
+                    backgroundColor: blueGradient,
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barThickness: 25,
+                },
+            ],
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
             },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+                x: { grid: { display: false } },
+            },
+        },
     });
 }
 
@@ -61,7 +63,7 @@ async function initFeeChart() {
  */
 async function initEnrollmentChart() {
     const ctx = document.getElementById('enrollmentChart').getContext('2d');
-    
+
     const greenGradient = ctx.createLinearGradient(0, 0, 0, 400);
     greenGradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
     greenGradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
@@ -70,28 +72,30 @@ async function initEnrollmentChart() {
         type: 'line',
         data: {
             labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
-            datasets: [{
-                label: 'Total Students',
-                data: [120, 150, 190, 280, 420, 550],
-                fill: true,
-                backgroundColor: greenGradient,
-                borderColor: '#10b981',
-                borderWidth: 3,
-                tension: 0.4,
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 4
-            }]
+            datasets: [
+                {
+                    label: 'Total Students',
+                    data: [120, 150, 190, 280, 420, 550],
+                    fill: true,
+                    backgroundColor: greenGradient,
+                    borderColor: '#10b981',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                },
+            ],
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
             },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+                x: { grid: { display: false } },
+            },
+        },
     });
 }

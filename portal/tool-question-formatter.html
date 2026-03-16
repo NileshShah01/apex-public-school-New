@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ExamCraft AI | Question Formatter</title>
+        <!-- Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <!-- Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <!-- Styles -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #f9f9fb;
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 5px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #e2e8f0;
+                border-radius: 10px;
+            }
+
+            /* Print Styles */
+            @media print {
+                .no-print {
+                    display: none !important;
+                }
+                body {
+                    background: white;
+                    margin: 0;
+                    padding: 0;
+                }
+                .print-container {
+                    width: 100% !important;
+                    margin: 0 !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    padding: 0 !important;
+                }
+                .page-break {
+                    page-break-before: always;
+                }
+            }
+
+            /* Preview Container */
+            .preview-paper {
+                width: 210mm; /* A4 Width */
+                min-height: 297mm;
+                background: white;
+                padding: 20mm 15mm;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+                margin: auto;
+                border: 1px solid #e2e8f0;
+            }
+
+            .spinner {
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top: 2px solid white;
+                border-radius: 50%;
+                width: 16px;
+                height: 16px;
+                animation: spin 0.8s linear infinite;
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body class="h-screen overflow-hidden flex flex-col lg:flex-row">
+        <!-- Left Panel: Editor -->
+        <div class="w-full lg:w-1/2 p-6 bg-white border-r border-slate-200 overflow-y-auto no-print custom-scrollbar">
+            <div class="max-w-2xl mx-auto space-y-8 pb-20">
+                <header class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-slate-900 rounded-lg">
+                            <i data-lucide="file-text" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight">ExamCraft AI</h1>
+                            <p class="text-sm text-slate-500 italic">Formatting Simplified</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- AI Extractor Box -->
+                <section class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl space-y-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+                        <h2 class="text-lg font-semibold">AI Question Extractor</h2>
+                    </div>
+                    <p class="text-slate-400 text-sm">
+                        Upload handwritten paper photos. AI transcribes them instantly.
+                    </p>
+
+                    <div class="flex gap-4">
+                        <label
+                            class="flex-1 flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed border-slate-700 rounded-xl hover:border-slate-500 transition-colors cursor-pointer bg-slate-800/50"
+                        >
+                            <i data-lucide="upload" class="w-6 h-6 text-slate-400"></i>
+                            <span class="text-xs font-medium">Upload Photos</span>
+                            <input type="file" id="handwrittenUpload" multiple accept="image/*" class="hidden" />
+                        </label>
+                        <button
+                            id="btnExtractAI"
+                            disabled
+                            class="flex-[1.5] flex flex-col items-center justify-center gap-2 p-4 bg-amber-500 text-slate-900 rounded-xl hover:bg-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+                        >
+                            <i data-lucide="zap" class="w-6 h-6"></i>
+                            <span id="extractBtnText" class="text-xs">Extract with AI</span>
+                        </button>
+                    </div>
+                    <div id="uploadPreview" class="flex gap-2 overflow-x-auto py-2"></div>
+                </section>
+
+                <!-- General Info Form -->
+                <section class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                        General Information
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >School Name</label
+                            >
+                            <input
+                                type="text"
+                                id="inputSchoolName"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Exam Name</label
+                            >
+                            <input
+                                type="text"
+                                id="inputExamName"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Subject</label
+                            >
+                            <input
+                                type="text"
+                                id="inputSubject"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section Builder -->
+                <section class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                            Question Sections
+                        </h2>
+                        <button
+                            id="btnAddSection"
+                            class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors text-sm font-medium"
+                        >
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Section
+                        </button>
+                    </div>
+
+                    <div id="questionsContainer" class="space-y-6">
+                        <!-- Sections will be injected here -->
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Right Panel: Live Preview -->
+        <div class="flex-1 bg-slate-100 overflow-y-auto p-12 custom-scrollbar">
+            <!-- Floating Actions -->
+            <div class="fixed top-8 right-12 z-50 flex gap-3 no-print">
+                <button
+                    onclick="window.print()"
+                    class="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold shadow-xl hover:bg-slate-50 transition-all"
+                >
+                    <i data-lucide="printer" class="w-4 h-4 text-slate-600"></i> Print
+                </button>
+                <button
+                    id="btnDownloadPDF"
+                    class="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-2xl text-sm font-bold shadow-xl hover:bg-slate-800 transition-all"
+                >
+                    <i data-lucide="download" class="w-4 h-4"></i> Download PDF
+                </button>
+            </div>
+
+            <!-- The Paper -->
+            <div id="printArea" class="preview-paper print-container">
+                <!-- Header -->
+                <div class="text-center mb-10 space-y-2">
+                    <h1
+                        id="paperSchoolName"
+                        class="text-2xl font-black uppercase tracking-tight border-b-4 border-black inline-block pb-1"
+                    >
+                        APEX PUBLIC SCHOOL
+                    </h1>
+                    <p id="paperExamName" class="text-lg font-bold">ANNUAL EXAMINATION - 2026</p>
+                    <div class="flex justify-between items-center text-sm font-bold border-y-2 border-black py-2 mt-4">
+                        <span id="paperSubject">Subject: G.K</span>
+                        <span id="paperClass">Class: 3rd</span>
+                        <span id="paperFullMarks">F.M: 40</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Sections Content -->
+                <div id="paperContent" class="space-y-8">
+                    <!-- Data rendered from JS -->
+                </div>
+
+                <!-- Instructions Footer -->
+                <div
+                    class="mt-20 pt-8 border-t border-slate-200 text-center text-[10px] text-slate-400 font-medium no-print"
+                >
+                    Generated via SNR World ExamCraft AI
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool Scripts -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+        <!-- pdf libraries -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+        <script src="../js/firebase-config.js"></script>
+        <script src="../js/tool-question-formatter.js"></script>
+    </body>
+</html>

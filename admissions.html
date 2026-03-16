@@ -1,352 +1,399 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
+        <title>Admissions | Apex Public School</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css" />
 
-<title>Admissions | Apex Public School</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<link rel="stylesheet" href="style.css">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-        body {
-            background: var(--bg-gray);
-            color: var(--text-main);
-        }
-
-        .page-header {
-            text-align: center;
-            padding: 5rem 2rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .page-header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .ad-banner-row {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            margin: 2rem 0;
-        }
-
-        .ad-banner {
-            width: 100%;
-            max-width: 450px;
-            border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
-            transition: transform 0.3s ease;
-        }
-
-        .ad-banner:hover {
-            transform: scale(1.02);
-        }
-
-        .fee-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            background: var(--white);
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        .fee-table th {
-            background: var(--primary);
-            color: var(--white);
-            padding: 1rem;
-        }
-
-        .fee-table td {
-            border: 1px solid var(--border);
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .faq-item {
-            margin-bottom: 1rem;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: var(--white);
-        }
-
-        .faq-question {
-            padding: 1.25rem;
-            background: var(--bg-gray);
-            color: var(--primary);
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s;
-        }
-
-        .faq-question:hover {
-            background: var(--border);
-        }
-
-        .faq-answer {
-            display: none;
-            padding: 1.25rem;
-            background: var(--white);
-            color: var(--text-main);
-            border-top: 1px solid var(--border);
-        }
-    </style>
-
-</head>
-
-<body>
-
-<div id="header"></div>
-
-<section class="page-header">
-
-<h1 id="admissionsHeaderTitle">Admissions Open 2026-2027</h1>
-
-<p id="admissionsHeaderSubtitle">Play Group to Class 8</p>
-
-</section>
-
-
-<section class="reveal">
-    <div class="ad-banner-row">
-        <img src="images/Admission Banner 1.png" class="ad-banner" alt="Admission Banner 1">
-        <img src="images/Admission Banner.png" class="ad-banner" alt="Admission Banner 2">
-    </div>
-</section>
-
-<section class="reveal">
-    <h2 class="section-title">Admission Process</h2>
-    <div class="grid">
-        <a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card">
-            <i class="fa-solid fa-school"></i>
-            <h3>Visit School</h3>
-            <p id="admissionsVisitText">Visit Apex Public School office for enquiry<br>Open location in Google Maps</p>
-        </a>
-
-        <div class="card" onclick="location.href='inquiry.html'">
-            <i class="fa-solid fa-file"></i>
-            <h3>Fill Form</h3>
-            <p>Fill the admission form with student details</p>
-        </div>
-
-        <div class="card">
-            <i class="fa-solid fa-folder-open"></i>
-            <h3>Submit Documents</h3>
-            <p>Provide required admission documents</p>
-        </div>
-
-        <div class="card">
-            <i class="fa-solid fa-money-bill"></i>
-            <h3>Pay Fees</h3>
-            <p>Pay admission and registration fees</p>
-        </div>
-    </div>
-</section>
-
-<section class="reveal">
-    <h2 class="section-title">Required Documents</h2>
-    <div class="grid">
-        <div class="card" id="admissionsDoc1">Aadhar Card</div>
-        <div class="card" id="admissionsDoc2">Birth Certificate</div>
-        <div class="card" id="admissionsDoc3">Passport Size Photos</div>
-        <div class="card" id="admissionsDoc4">Transfer Certificate</div>
-    </div>
-</section>
-
-
-<section class="reveal">
-    <h2 class="section-title">Fee Structure</h2>
-    <div id="feesListAdmin" style="overflow-x:auto;">
-        <!-- Loaded via CMS -->
-        <table class="fee-table">
-            <thead>
-                <tr>
-                    <th>Class</th>
-                    <th>Monthly Fee (₹)</th>
-                    <th>Annual Fee (₹)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="3" class="text-muted" style="padding:2rem; text-align:center;">Loading fee structure...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
-
-
-<section class="reveal">
-    <h2 class="section-title">Facilities for Students</h2>
-    <p class="text-muted" style="text-align:center; margin-bottom:3rem;">Click on any facility to see photos</p>
-
-    <div class="grid" id="admissionsFacilitiesGrid">
-        <div class="card" onclick="toggleFacilityPanel(this)">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <h3>Smart Classrooms</h3>
-            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
-                <div id="facility_smart_class" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" onclick="toggleFacilityPanel(this)">
-            <i class="fas fa-laptop-code"></i>
-            <h3>Computer Lab</h3>
-            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
-                <div id="facility_computer_lab" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" onclick="toggleFacilityPanel(this)">
-            <i class="fas fa-futbol"></i>
-            <h3>Sports & Playground</h3>
-            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
-                <div id="facility_sports" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" onclick="toggleFacilityPanel(this)">
-            <i class="fas fa-shield-alt"></i>
-            <h3>CCTV Security</h3>
-            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
-                <div id="facility_security" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" onclick="toggleFacilityPanel(this)">
-            <i class="fas fa-bus"></i>
-            <h3>Transport</h3>
-            <div class="facility-panel" style="max-height:0; overflow:hidden; transition:max-height 0.5s ease-out; background:var(--bg-gray); border-radius:1rem; margin-top:1rem;">
-                <div id="facility_transport" class="facility-images" style="padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                    <p class="text-muted" style="grid-column:1/-1; font-size:0.9rem; text-align:center;">Loading photos...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleFacilityPanel(el) {
-            const panel = el.querySelector('.facility-panel');
-            const isOpen = panel.style.maxHeight !== '0px' && panel.style.maxHeight !== '';
-            document.querySelectorAll('.facility-panel').forEach(p => p.style.maxHeight = '0px');
-            if (!isOpen) {
-                panel.style.maxHeight = '1000px';
+        <style>
+            body {
+                background: var(--bg-gray);
+                color: var(--text-main);
             }
-        }
-    </script>
-</section>
 
+            .page-header {
+                text-align: center;
+                padding: 5rem 2rem;
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                margin-bottom: 2rem;
+            }
 
-<section class="reveal">
-    <h2 class="section-title">Admission FAQ</h2>
-    <div class="faq">
-        <div class="faq-item">
-            <div class="faq-question">When does admission start? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Admissions start from late March for the new academic session.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question">Which classes are available? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Play Group to Class 8.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question">Is transport available? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Yes transport facility is available for students from nearby areas.</div>
-        </div>
-    </div>
-</section>
-<section class="cta reveal">
-    <h2>Admission Open 2026 to 2027</h2>
-    <p>Join Apex Public School for quality education</p>
-    <button onclick="location.href='contact.html'">Admission Inquiry</button>
-</section>
+            .page-header h1 {
+                font-size: 3rem;
+                font-weight: 800;
+                color: var(--primary);
+            }
 
+            .ad-banner-row {
+                display: flex;
+                gap: 2rem;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                margin: 2rem 0;
+            }
 
+            .ad-banner {
+                width: 100%;
+                max-width: 450px;
+                border-radius: 1rem;
+                box-shadow: var(--shadow-lg);
+                transition: transform 0.3s ease;
+            }
 
-<div id="footer"></div>
-<!-- NEW FLOATING BUTTONS CONTAINER -->
-<div id="floating-button"></div>
+            .ad-banner:hover {
+                transform: scale(1.02);
+            }
 
-<script src="script.js"></script>
+            .fee-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 2rem;
+                background: var(--white);
+                border-radius: 0.5rem;
+                overflow: hidden;
+            }
 
-<!-- Firebase SDK for CMS -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/cms-settings.js"></script>
+            .fee-table th {
+                background: var(--primary);
+                color: var(--white);
+                padding: 1rem;
+            }
 
-<script>
+            .fee-table td {
+                border: 1px solid var(--border);
+                padding: 1rem;
+                text-align: center;
+            }
 
-/* FAQ */
+            .faq-item {
+                margin-bottom: 1rem;
+                border-radius: 0.75rem;
+                overflow: hidden;
+                border: 1px solid var(--border);
+                background: var(--white);
+            }
 
-document.querySelectorAll(".faq-question").forEach(q => {
+            .faq-question {
+                padding: 1.25rem;
+                background: var(--bg-gray);
+                color: var(--primary);
+                font-weight: 700;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: background 0.3s;
+            }
 
-q.addEventListener("click", () => {
+            .faq-question:hover {
+                background: var(--border);
+            }
 
-let ans = q.nextElementSibling
+            .faq-answer {
+                display: none;
+                padding: 1.25rem;
+                background: var(--white);
+                color: var(--text-main);
+                border-top: 1px solid var(--border);
+            }
+        </style>
+    </head>
 
-if(ans.style.display === "block")
-{
-ans.style.display = "none"
-}
-else
-{
-ans.style.display = "block"
-}
+    <body>
+        <div id="header"></div>
 
-})
+        <section class="page-header">
+            <h1 id="admissionsHeaderTitle">Admissions Open 2026-2027</h1>
 
-})
-/* MOUSE PARALLAX BACKGROUND */
+            <p id="admissionsHeaderSubtitle">Play Group to Class 8</p>
+        </section>
 
-document.addEventListener("mousemove", e => {
+        <section class="reveal">
+            <div class="ad-banner-row">
+                <img src="images/Admission Banner 1.png" class="ad-banner" alt="Admission Banner 1" />
+                <img src="images/Admission Banner.png" class="ad-banner" alt="Admission Banner 2" />
+            </div>
+        </section>
 
-let x = e.clientX / window.innerWidth
+        <section class="reveal">
+            <h2 class="section-title">Admission Process</h2>
+            <div class="grid">
+                <a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card">
+                    <i class="fa-solid fa-school"></i>
+                    <h3>Visit School</h3>
+                    <p id="admissionsVisitText">
+                        Visit Apex Public School office for enquiry<br />Open location in Google Maps
+                    </p>
+                </a>
 
-let y = e.clientY / window.innerHeight
+                <div class="card" onclick="location.href = 'inquiry.html'">
+                    <i class="fa-solid fa-file"></i>
+                    <h3>Fill Form</h3>
+                    <p>Fill the admission form with student details</p>
+                </div>
 
-document.body.style.backgroundPosition = `${x*40}px ${y*40}px`
+                <div class="card">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <h3>Submit Documents</h3>
+                    <p>Provide required admission documents</p>
+                </div>
 
-})
+                <div class="card">
+                    <i class="fa-solid fa-money-bill"></i>
+                    <h3>Pay Fees</h3>
+                    <p>Pay admission and registration fees</p>
+                </div>
+            </div>
+        </section>
 
-</script>
+        <section class="reveal">
+            <h2 class="section-title">Required Documents</h2>
+            <div class="grid">
+                <div class="card" id="admissionsDoc1">Aadhar Card</div>
+                <div class="card" id="admissionsDoc2">Birth Certificate</div>
+                <div class="card" id="admissionsDoc3">Passport Size Photos</div>
+                <div class="card" id="admissionsDoc4">Transfer Certificate</div>
+            </div>
+        </section>
 
-</body>
+        <section class="reveal">
+            <h2 class="section-title">Fee Structure</h2>
+            <div id="feesListAdmin" style="overflow-x: auto">
+                <!-- Loaded via CMS -->
+                <table class="fee-table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Monthly Fee (₹)</th>
+                            <th>Annual Fee (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" class="text-muted" style="padding: 2rem; text-align: center">
+                                Loading fee structure...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
+        <section class="reveal">
+            <h2 class="section-title">Facilities for Students</h2>
+            <p class="text-muted" style="text-align: center; margin-bottom: 3rem">
+                Click on any facility to see photos
+            </p>
+
+            <div class="grid" id="admissionsFacilitiesGrid">
+                <div class="card" onclick="toggleFacilityPanel(this)">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>Smart Classrooms</h3>
+                    <div
+                        class="facility-panel"
+                        style="
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.5s ease-out;
+                            background: var(--bg-gray);
+                            border-radius: 1rem;
+                            margin-top: 1rem;
+                        "
+                    >
+                        <div
+                            id="facility_smart_class"
+                            class="facility-images"
+                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+                        >
+                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                                Loading photos...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleFacilityPanel(this)">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>Computer Lab</h3>
+                    <div
+                        class="facility-panel"
+                        style="
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.5s ease-out;
+                            background: var(--bg-gray);
+                            border-radius: 1rem;
+                            margin-top: 1rem;
+                        "
+                    >
+                        <div
+                            id="facility_computer_lab"
+                            class="facility-images"
+                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+                        >
+                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                                Loading photos...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleFacilityPanel(this)">
+                    <i class="fas fa-futbol"></i>
+                    <h3>Sports & Playground</h3>
+                    <div
+                        class="facility-panel"
+                        style="
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.5s ease-out;
+                            background: var(--bg-gray);
+                            border-radius: 1rem;
+                            margin-top: 1rem;
+                        "
+                    >
+                        <div
+                            id="facility_sports"
+                            class="facility-images"
+                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+                        >
+                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                                Loading photos...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleFacilityPanel(this)">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>CCTV Security</h3>
+                    <div
+                        class="facility-panel"
+                        style="
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.5s ease-out;
+                            background: var(--bg-gray);
+                            border-radius: 1rem;
+                            margin-top: 1rem;
+                        "
+                    >
+                        <div
+                            id="facility_security"
+                            class="facility-images"
+                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+                        >
+                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                                Loading photos...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleFacilityPanel(this)">
+                    <i class="fas fa-bus"></i>
+                    <h3>Transport</h3>
+                    <div
+                        class="facility-panel"
+                        style="
+                            max-height: 0;
+                            overflow: hidden;
+                            transition: max-height 0.5s ease-out;
+                            background: var(--bg-gray);
+                            border-radius: 1rem;
+                            margin-top: 1rem;
+                        "
+                    >
+                        <div
+                            id="facility_transport"
+                            class="facility-images"
+                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+                        >
+                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                                Loading photos...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function toggleFacilityPanel(el) {
+                    const panel = el.querySelector('.facility-panel');
+                    const isOpen = panel.style.maxHeight !== '0px' && panel.style.maxHeight !== '';
+                    document.querySelectorAll('.facility-panel').forEach((p) => (p.style.maxHeight = '0px'));
+                    if (!isOpen) {
+                        panel.style.maxHeight = '1000px';
+                    }
+                }
+            </script>
+        </section>
+
+        <section class="reveal">
+            <h2 class="section-title">Admission FAQ</h2>
+            <div class="faq">
+                <div class="faq-item">
+                    <div class="faq-question">When does admission start? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Admissions start from late March for the new academic session.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Which classes are available? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Play Group to Class 8.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Is transport available? <i class="fas fa-chevron-down"></i></div>
+                    <div class="faq-answer">Yes transport facility is available for students from nearby areas.</div>
+                </div>
+            </div>
+        </section>
+        <section class="cta reveal">
+            <h2>Admission Open 2026 to 2027</h2>
+            <p>Join Apex Public School for quality education</p>
+            <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
+        </section>
+
+        <div id="footer"></div>
+        <!-- NEW FLOATING BUTTONS CONTAINER -->
+        <div id="floating-button"></div>
+
+        <script src="script.js"></script>
+
+        <!-- Firebase SDK for CMS -->
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="js/firebase-config.js"></script>
+        <script src="js/cms-settings.js"></script>
+
+        <script>
+            /* FAQ */
+
+            document.querySelectorAll('.faq-question').forEach((q) => {
+                q.addEventListener('click', () => {
+                    let ans = q.nextElementSibling;
+
+                    if (ans.style.display === 'block') {
+                        ans.style.display = 'none';
+                    } else {
+                        ans.style.display = 'block';
+                    }
+                });
+            });
+            /* MOUSE PARALLAX BACKGROUND */
+
+            document.addEventListener('mousemove', (e) => {
+                let x = e.clientX / window.innerWidth;
+
+                let y = e.clientY / window.innerHeight;
+
+                document.body.style.backgroundPosition = `${x * 40}px ${y * 40}px`;
+            });
+        </script>
+    </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

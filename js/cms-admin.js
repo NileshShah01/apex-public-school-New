@@ -5,28 +5,28 @@
 async function applyStagePermissions() {
     console.log(`Checking permissions for: ${CURRENT_SCHOOL_ID}`);
     try {
-        const schoolDoc = await db.collection('schools').doc(CURRENT_SCHOOL_ID).get();
-        if (!schoolDoc.exists) {
-            console.warn("School record not found. Defaulting to full access (Development Mode).");
+        const schoolDocSnap = await schoolDoc('schools', CURRENT_SCHOOL_ID).get();
+        if (!schoolDocSnap.exists) {
+            console.warn('School record not found. Defaulting to full access (Development Mode).');
             return;
         }
 
-        const stage = schoolDoc.data().stage || 1;
+        const stage = schoolDocSnap.data().stage || 1;
         console.log(`SaaS Level: Stage ${stage}`);
 
         // Sidebar Elements Mapping
         const modules = {
-            'navAdmission': 4, // Needs Stage 4+
-            'navExams': 5,     // Needs Stage 5
-            'navResults': 5,   // Needs Stage 5
-            'navFees': 4,      // Needs Stage 4+
-            'navEmployee': 5,  // Needs Stage 5
-            'navClass': 4,     // Needs Stage 4+
-            'navTimeTable': 4  // Needs Stage 4+
+            navAdmission: 4, // Needs Stage 4+
+            navExams: 5, // Needs Stage 5
+            navResults: 5, // Needs Stage 5
+            navFees: 4, // Needs Stage 4+
+            navEmployee: 5, // Needs Stage 5
+            navClass: 4, // Needs Stage 4+
+            navTimeTable: 4, // Needs Stage 4+
         };
 
         // Website CMS and Page Content are usually Stage 2+ (Included by default for Admin Panel)
-        
+
         for (const [id, minStage] of Object.entries(modules)) {
             const el = document.getElementById(id);
             if (el) {
@@ -39,7 +39,7 @@ async function applyStagePermissions() {
             }
         }
     } catch (e) {
-        console.error("Permission check failed:", e);
+        console.error('Permission check failed:', e);
     }
 }
 
@@ -52,44 +52,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===================== SHOW SECTION ROUTING =====================
 const CMS_SECTIONS = {
-    'cmsStats': { load: loadCmsStats },
-    'cmsEvents': { load: () => loadCmsList('events', 'eventsListAdmin', renderEventItem) },
-    'cmsAchievements': { load: () => loadCmsList('achievements', 'achievementsListAdmin', renderAchievementItem) },
-    'cmsTestimonials': { load: () => loadCmsList('testimonials', 'testimonialsListAdmin', renderTestimonialItem) },
-    'cmsAdmission': { load: loadAdmissionStatus },
-    'cmsHolidays': { load: () => loadCmsList('holidays', 'holidaysListAdmin', renderHolidayItem) },
-    'cmsGallery': { load: () => loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem) },
-    'cmsStaff': { load: () => loadCmsList('staff', 'staffListAdmin', renderStaffItem) },
-    'cmsTimetable': { load: loadTimetableSection },
-    'cmsFees': { load: loadFeeStructure },
-    'cmsHero': { load: loadHeroSlider },
-    'cmsTheme': { load: loadCmsTheme },
-    'cmsStudentDashboard': { load: loadCmsStudentDashboard },
-    'cmsImgGallery': { load: () => {} },
-    'cmsImgAdmissions': { load: loadImgAdmissions },
-    'cmsImgHomeFacilities': { load: loadImgHomeFacilities },
-    'cmsImgHomeMemories': { load: loadImgHomeMemories },
-    'cmsImgHomeHero': { load: loadImgHomeHero },
-    'cmsImgAboutHero': { load: loadImgAboutHero },
-    'cmsImgFacilities': { load: loadImgFacilities },
-    'cmsGlobalStats': { load: loadGlobalStatsAdmin },
-    'cmsTextHome': { load: () => loadPageTextAdmin('home') },
-    'cmsTextAbout': { load: () => loadPageTextAdmin('about') },
-    'cmsTextAcademics': { load: () => loadPageTextAdmin('academics') },
-    'cmsTextAdmissions': { load: () => loadPageTextAdmin('admissions') },
-    'cmsTextFacilities': { load: () => loadPageTextAdmin('facilities') },
-    'cmsTextGallery': { load: () => loadPageTextAdmin('gallery') },
-    'cmsTextContact': { load: () => loadPageTextAdmin('contact') },
-    'cmsTextInquiry': { load: () => loadPageTextAdmin('inquiry') },
-    'cmsFeeTools': { load: () => { window.feeResultData = null; document.getElementById('fee_resultsArea').style.display='none'; } }
+    cmsStats: { load: loadCmsStats },
+    cmsEvents: { load: () => loadCmsList('events', 'eventsListAdmin', renderEventItem) },
+    cmsAchievements: { load: () => loadCmsList('achievements', 'achievementsListAdmin', renderAchievementItem) },
+    cmsTestimonials: { load: () => loadCmsList('testimonials', 'testimonialsListAdmin', renderTestimonialItem) },
+    cmsAdmission: { load: loadAdmissionStatus },
+    cmsHolidays: { load: () => loadCmsList('holidays', 'holidaysListAdmin', renderHolidayItem) },
+    cmsGallery: { load: () => loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem) },
+    cmsStaff: { load: () => loadCmsList('staff', 'staffListAdmin', renderStaffItem) },
+    cmsTimetable: { load: loadTimetableSection },
+    cmsFees: { load: loadFeeStructure },
+    cmsHero: { load: loadHeroSlider },
+    cmsTheme: { load: loadCmsTheme },
+    cmsStudentDashboard: { load: loadCmsStudentDashboard },
+    cmsImgGallery: { load: () => {} },
+    cmsImgAdmissions: { load: loadImgAdmissions },
+    cmsImgHomeFacilities: { load: loadImgHomeFacilities },
+    cmsImgHomeMemories: { load: loadImgHomeMemories },
+    cmsImgHomeHero: { load: loadImgHomeHero },
+    cmsImgAboutHero: { load: loadImgAboutHero },
+    cmsImgFacilities: { load: loadImgFacilities },
+    cmsGlobalStats: { load: loadGlobalStatsAdmin },
+    cmsTextHome: { load: () => loadPageTextAdmin('home') },
+    cmsTextAbout: { load: () => loadPageTextAdmin('about') },
+    cmsTextAcademics: { load: () => loadPageTextAdmin('academics') },
+    cmsTextAdmissions: { load: () => loadPageTextAdmin('admissions') },
+    cmsTextFacilities: { load: () => loadPageTextAdmin('facilities') },
+    cmsTextGallery: { load: () => loadPageTextAdmin('gallery') },
+    cmsTextContact: { load: () => loadPageTextAdmin('contact') },
+    cmsTextInquiry: { load: () => loadPageTextAdmin('inquiry') },
+    cmsFeeTools: {
+        load: () => {
+            window.feeResultData = null;
+            document.getElementById('fee_resultsArea').style.display = 'none';
+        },
+    },
 };
 
-// Hook into existing showSection 
+// Hook into existing showSection
 const _origShowSection = window.showSection;
-window.showSection = function(id) {
+window.showSection = function (id) {
     _origShowSection(id);
     if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
-    
+
     // Close mobile sidebar if open
     const sidebar = document.getElementById('adminSidebar');
     if (sidebar && sidebar.classList.contains('mobile-open')) {
@@ -100,7 +105,7 @@ window.showSection = function(id) {
 // ===================== STATS =====================
 async function loadCmsStats() {
     try {
-        const doc = await db.collection('settings').doc('general').get();
+        const doc = await schoolDoc('settings', 'general').get();
         if (doc.exists) {
             const d = doc.data();
             document.getElementById('stat_students').value = d.stat_students || '';
@@ -108,92 +113,124 @@ async function loadCmsStats() {
             document.getElementById('stat_classrooms').value = d.stat_classrooms || '';
             document.getElementById('stat_years').value = d.stat_years || '';
         }
-    } catch(e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('cmsStatsForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsStatsForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         try {
-            await db.collection('settings').doc('general').set({
-                stat_students: parseInt(document.getElementById('stat_students').value) || 0,
-                stat_teachers: parseInt(document.getElementById('stat_teachers').value) || 0,
-                stat_classrooms: parseInt(document.getElementById('stat_classrooms').value) || 0,
-                stat_years: parseInt(document.getElementById('stat_years').value) || 0
-            }, { merge: true });
+            await schoolDoc('settings', 'general').set(
+                withSchool({
+                    stat_students: parseInt(document.getElementById('stat_students').value) || 0,
+                    stat_teachers: parseInt(document.getElementById('stat_teachers').value) || 0,
+                    stat_classrooms: parseInt(document.getElementById('stat_classrooms').value) || 0,
+                    stat_years: parseInt(document.getElementById('stat_years').value) || 0,
+                }),
+                { merge: true }
+            );
             showToast('Stats updated live!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 
-    document.getElementById('cmsHeroForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsHeroForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         try {
-            await db.collection('settings').doc('general').set({
-                hero_1: document.getElementById('hero_1').value.trim(),
-                hero_2: document.getElementById('hero_2').value.trim(),
-                hero_3: document.getElementById('hero_3').value.trim(),
-                hero_4: document.getElementById('hero_4').value.trim()
-            }, { merge: true });
+            await schoolDoc('settings', 'general').set(
+                withSchool({
+                    hero_1: document.getElementById('hero_1').value.trim(),
+                    hero_2: document.getElementById('hero_2').value.trim(),
+                    hero_3: document.getElementById('hero_3').value.trim(),
+                    hero_4: document.getElementById('hero_4').value.trim(),
+                }),
+                { merge: true }
+            );
             showToast('Hero slider images updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 
-    document.getElementById('cmsStudentDashboardForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsStudentDashboardForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        // Collect links
+        const links = [];
+        document.querySelectorAll('.cms-link-item').forEach((item) => {
+            const title = item.querySelector('.link-title').value.trim();
+            const url = item.querySelector('.link-url').value.trim();
+            if (title && url) links.push({ title, url });
+        });
+
         const config = {
             examHeading: document.getElementById('cms_examHeading').value.trim(),
             examNotice: document.getElementById('cms_examNotice').value.trim(),
-            showQuickActions: document.getElementById('cms_showQuickActions').checked,
+            // Module visibility
+            showHomework: document.getElementById('cms_showHomework').checked,
+            showFees: document.getElementById('cms_showFees').checked,
+            showExams: document.getElementById('cms_showExams').checked,
+            showMaterials: document.getElementById('cms_showMaterials').checked,
+            // Widget visibility
             showAttendance: document.getElementById('cms_showAttendance').checked,
-            showTimings: document.getElementById('cms_showTimings').checked,
             showPrincipalMessage: document.getElementById('cms_showPrincipalMessage').checked,
-            schoolTimings: document.getElementById('cms_schoolTimings').value.trim(),
-            principalMessage: document.getElementById('cms_principalMessage').value.trim()
+            // Content
+            principalMessage: document.getElementById('cms_principalMessage').value.trim(),
+            importantLinks: links,
         };
 
         try {
-            await db.collection('settings').doc('dashboardConfig').set(config, { merge: true });
+            await schoolDoc('settings', 'studentPortal').set(withSchool(config), { merge: true });
             showToast('Student Dashboard configuration updated live!');
             // Update preview for banner
             const previewTitle = document.getElementById('previewTitle');
             const previewNotice = document.getElementById('previewNotice');
             if (previewTitle) previewTitle.textContent = config.examHeading || '(No Heading Set)';
             if (previewNotice) previewNotice.textContent = config.examNotice;
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 
     // Live preview sync
-    document.getElementById('cms_examHeading')?.addEventListener('input', function() {
+    document.getElementById('cms_examHeading')?.addEventListener('input', function () {
         document.getElementById('previewTitle').textContent = this.value || 'Final Examination March, 2026';
     });
-    document.getElementById('cms_examNotice')?.addEventListener('input', function() {
+    document.getElementById('cms_examNotice')?.addEventListener('input', function () {
         document.getElementById('previewNotice').textContent = this.value;
     });
 
     // Theme Form Submission
-    document.getElementById('cmsThemeForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsThemeForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const primary = document.getElementById('theme_primary').value;
         const secondary = document.getElementById('theme_secondary').value;
-        
+
         try {
-            await db.collection('settings').doc('theme').set({
-                primaryColor: primary,
-                sidebarColor: secondary,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-            
+            await schoolDoc('settings', 'theme').set(
+                withSchool({
+                    primaryColor: primary,
+                    sidebarColor: secondary,
+                }),
+                { merge: true }
+            );
+
             showToast('Global theme updated and applied live!');
             applyGlobalTheme(); // Immediately apply in admin panel
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 
     // Theme Picker Sync
-    ['primary', 'secondary'].forEach(type => {
+    ['primary', 'secondary'].forEach((type) => {
         const picker = document.getElementById(`theme_${type}`);
         const text = document.getElementById(`theme_${type}_text`);
         if (picker && text) {
-            picker.addEventListener('input', () => text.value = picker.value);
+            picker.addEventListener('input', () => (text.value = picker.value));
             text.addEventListener('input', () => {
                 if (/^#[0-9A-F]{6}$/i.test(text.value)) picker.value = text.value;
             });
@@ -204,10 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('adminSidebarCollapsed') === 'true') {
         document.getElementById('adminSidebar')?.classList.add('collapsed');
         const icon = document.getElementById('toggleIcon');
-        if (icon) { icon.className = 'fas fa-chevron-right'; }
+        if (icon) {
+            icon.className = 'fas fa-chevron-right';
+        }
     }
 
-    document.getElementById('cmsFacilityImagesForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsFacilityImagesForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const saveBtn = document.getElementById('cmsAdmissionsImgSaveBtn');
         const loading = document.getElementById('cmsAdmissionsImgLoading');
@@ -215,14 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loading) loading.style.display = 'block';
 
         try {
-            const current = (await db.collection('settings').doc('admissions').get()).data() || {};
+            const current = (await schoolDoc('settings', 'admissions').get()).data() || {};
             const processGroup = async (prefix, count, currentUrls) => {
                 const urls = [...(currentUrls || [])];
                 for (let i = 1; i <= count; i++) {
                     const file = document.getElementById(`${prefix}_${i}`).files[0];
-                    if (file) urls[i-1] = await processCmsImage(file);
+                    if (file) urls[i - 1] = await processCmsImage(file);
                 }
-                return urls.filter(u => u);
+                return urls.filter((u) => u);
             };
 
             const data = {
@@ -231,33 +270,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 sports_urls: await processGroup('f_sports', 2, current.sports_urls),
                 security_urls: await processGroup('f_security', 2, current.security_urls),
                 transport_urls: await processGroup('f_transport', 2, current.transport_urls),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            await db.collection('settings').doc('admissions').set(data, { merge: true });
+            await schoolDoc('settings', 'admissions').set(withSchool(data), { merge: true });
             showToast('Admissions media updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally {
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
             if (saveBtn) saveBtn.disabled = false;
             if (loading) loading.style.display = 'none';
         }
     });
 
-    document.getElementById('cmsHomeFacilitiesForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsHomeFacilitiesForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const saveBtn = e.target.querySelector('button[type="submit"]');
         if (saveBtn) saveBtn.disabled = true;
 
         try {
-            const current = (await db.collection('settings').doc('homeFacilities').get()).data() || {};
+            const current = (await schoolDoc('settings', 'homeFacilities').get()).data() || {};
             const facilities = [...(current.facilities || [])];
             const items = document.querySelectorAll('.facility-cms-item');
-            
+
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const name = item.querySelector('.f-name').value.trim();
                 const file = item.querySelector('.f-file').files[0];
-                
+
                 if (name) {
                     if (!facilities[i]) facilities[i] = { name: '', url: '' };
                     facilities[i].name = name;
@@ -265,97 +304,113 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            await db.collection('settings').doc('homeFacilities').set({
-                facilities: facilities.filter(f => f.name),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await schoolDoc('settings', 'homeFacilities').set(
+                withSchool({
+                    facilities: facilities.filter((f) => f.name),
+                })
+            );
             showToast('Home page facilities updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally { if (saveBtn) saveBtn.disabled = false; }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
+        }
     });
 
-    document.getElementById('cmsHomeMemoriesForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsHomeMemoriesForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const saveBtn = e.target.querySelector('button[type="submit"]');
         if (saveBtn) saveBtn.disabled = true;
 
         try {
-            const current = (await db.collection('settings').doc('homeMemories').get()).data() || {};
+            const current = (await schoolDoc('settings', 'homeMemories').get()).data() || {};
             const urls = [...(current.urls || [])];
             const files = e.target.querySelectorAll('.mem-file');
-            
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i].files[0];
                 if (file) urls[i] = await processCmsImage(file);
             }
-            
-            await db.collection('settings').doc('homeMemories').set({
-                urls: urls.filter(u => u),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+
+            await schoolDoc('settings', 'homeMemories').set(
+                withSchool({
+                    urls: urls.filter((u) => u),
+                })
+            );
             showToast('School Memories updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally { if (saveBtn) saveBtn.disabled = false; }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
+        }
     });
 
-    document.getElementById('cmsHomeHeroForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsHomeHeroForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const saveBtn = e.target.querySelector('button[type="submit"]');
         if (saveBtn) saveBtn.disabled = true;
 
         try {
-            const current = (await db.collection('settings').doc('homeHero').get()).data() || {};
+            const current = (await schoolDoc('settings', 'homeHero').get()).data() || {};
             const urls = [...(current.urls || [])];
             const files = e.target.querySelectorAll('.hero-file');
-            
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i].files[0];
                 if (file) urls[i] = await processCmsImage(file);
             }
-            
-            await db.collection('settings').doc('homeHero').set({
-                urls: urls.filter(u => u),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+
+            await schoolDoc('settings', 'homeHero').set(
+                withSchool({
+                    urls: urls.filter((u) => u),
+                })
+            );
             showToast('Home Hero Slider updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally { if (saveBtn) saveBtn.disabled = false; }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
+        }
     });
 
-    document.getElementById('cmsAboutHeroForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsAboutHeroForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const file = document.getElementById('aboutHeroUrl').files[0];
         const saveBtn = e.target.querySelector('button[type="submit"]');
-        
+
         try {
-            let heroUrl = (await db.collection('settings').doc('aboutPage').get()).data()?.heroUrl || '';
+            let heroUrl = (await schoolDoc('settings', 'aboutPage').get()).data()?.heroUrl || '';
             if (file) {
                 if (saveBtn) saveBtn.disabled = true;
                 heroUrl = await processCmsImage(file);
             }
 
-            await db.collection('settings').doc('aboutPage').set({
-                heroUrl,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            await schoolDoc('settings', 'aboutPage').set(
+                withSchool({
+                    heroUrl,
+                }),
+                { merge: true }
+            );
             showToast('About page banner updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally { if (saveBtn) saveBtn.disabled = false; }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
+        }
     });
 
-    document.getElementById('cmsFacilitiesForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsFacilitiesForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const saveBtn = e.target.querySelector('button[type="submit"]');
         if (saveBtn) saveBtn.disabled = true;
 
         try {
-            const current = (await db.collection('settings').doc('facilitiesPage').get()).data() || {};
+            const current = (await schoolDoc('settings', 'facilitiesPage').get()).data() || {};
             const data = {
                 heroUrl: current.heroUrl || '',
                 sliderUrls: current.sliderUrls || [],
                 featureUrls: current.featureUrls || [],
                 galleryUrls: current.galleryUrls || [],
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             const heroFile = document.getElementById('facHeroUrl').files[0];
@@ -369,44 +424,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     const file = inputs[i].files[0];
                     if (file) newList[i] = await processCmsImage(file);
                 }
-                return newList.filter(u => u);
+                return newList.filter((u) => u);
             };
 
             data.sliderUrls = await processList('.fac-slider-file', data.sliderUrls);
             data.featureUrls = await processList('.fac-feature-file', data.featureUrls);
             data.galleryUrls = await processList('.fac-gallery-file', data.galleryUrls);
 
-            await db.collection('settings').doc('facilitiesPage').set(data);
+            await schoolDoc('settings', 'facilitiesPage').set(withSchool(data));
             showToast('Facilities Page imagery updated!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        finally { if (saveBtn) saveBtn.disabled = false; }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
+        }
     });
 
-    document.getElementById('cmsGlobalStatsForm')?.addEventListener('submit', async function(e) {
+    document.getElementById('cmsGlobalStatsForm')?.addEventListener('submit', async function (e) {
         e.preventDefault();
         const data = {
             students: parseInt(document.getElementById('statsStudents').value) || 0,
             teachers: parseInt(document.getElementById('statsTeachers').value) || 0,
             classrooms: parseInt(document.getElementById('statsClassrooms').value) || 0,
             years: parseInt(document.getElementById('statsYears').value) || 0,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         };
 
         try {
-            await db.collection('settings').doc('globalStats').set(data);
+            await schoolDoc('settings', 'globalStats').set(withSchool(data));
             showToast('Global Statistics updated across all pages!');
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 });
 
 // ===================== WEBSITE IMAGES CMS =====================
 async function loadImgAdmissions() {
     try {
-        const doc = await db.collection('settings').doc('admissions').get();
+        const doc = await schoolDoc('settings', 'admissions').get();
         if (doc.exists) {
             const d = doc.data();
             const setG = (p, urls) => {
-                (urls || []).forEach((u, i) => setMiniPreview(`${p}_${i+1}_preview`, u));
+                (urls || []).forEach((u, i) => setMiniPreview(`${p}_${i + 1}_preview`, u));
             };
             setG('f_smart', d.smart_class_urls);
             setG('f_computer', d.computer_lab_urls);
@@ -414,73 +474,85 @@ async function loadImgAdmissions() {
             setG('f_security', d.security_urls);
             setG('f_transport', d.transport_urls);
         }
-    } catch(e) { console.error('loadImgAdmissions error:', e); }
+    } catch (e) {
+        console.error('loadImgAdmissions error:', e);
+    }
 }
 
 async function loadImgHomeFacilities() {
     try {
-        const doc = await db.collection('settings').doc('homeFacilities').get();
+        const doc = await schoolDoc('settings', 'homeFacilities').get();
         if (doc.exists) {
             const facilities = doc.data().facilities || [];
             const items = document.querySelectorAll('.facility-cms-item');
             items.forEach((item, i) => {
                 if (facilities[i]) {
                     item.querySelector('.f-name').value = facilities[i].name || '';
-                    setMiniPreview(`f_home_${i+1}_preview`, facilities[i].url);
+                    setMiniPreview(`f_home_${i + 1}_preview`, facilities[i].url);
                 }
             });
         }
-    } catch(e) { console.error('loadImgHomeFacilities error:', e); }
+    } catch (e) {
+        console.error('loadImgHomeFacilities error:', e);
+    }
 }
 
 async function loadImgHomeMemories() {
     try {
-        const doc = await db.collection('settings').doc('homeMemories').get();
+        const doc = await schoolDoc('settings', 'homeMemories').get();
         if (doc.exists) {
             const urls = doc.data().urls || [];
-            urls.forEach((url, i) => setMiniPreview(`mem_${i+1}_preview`, url));
+            urls.forEach((url, i) => setMiniPreview(`mem_${i + 1}_preview`, url));
         }
-    } catch(e) { console.error('loadImgHomeMemories error:', e); }
+    } catch (e) {
+        console.error('loadImgHomeMemories error:', e);
+    }
 }
 
 async function loadImgHomeHero() {
     try {
-        const doc = await db.collection('settings').doc('homeHero').get();
+        const doc = await schoolDoc('settings', 'homeHero').get();
         if (doc.exists) {
             const urls = doc.data().urls || [];
-            urls.forEach((url, i) => setMiniPreview(`hero_img_${i+1}_preview`, url));
+            urls.forEach((url, i) => setMiniPreview(`hero_img_${i + 1}_preview`, url));
         }
-    } catch(e) { console.error('loadImgHomeHero error:', e); }
+    } catch (e) {
+        console.error('loadImgHomeHero error:', e);
+    }
 }
 
 async function loadImgAboutHero() {
     try {
-        const doc = await db.collection('settings').doc('aboutPage').get();
+        const doc = await schoolDoc('settings', 'aboutPage').get();
         if (doc.exists && doc.data().heroUrl) {
             setMiniPreview('aboutHero_preview', doc.data().heroUrl);
         }
-    } catch(e) { console.error('loadImgAboutHero error:', e); }
+    } catch (e) {
+        console.error('loadImgAboutHero error:', e);
+    }
 }
 
 async function loadImgFacilities() {
     try {
-        const doc = await db.collection('settings').doc('facilitiesPage').get();
+        const doc = await schoolDoc('settings', 'facilitiesPage').get();
         if (doc.exists) {
             const data = doc.data();
             if (data.heroUrl) setMiniPreview('facHero_preview', data.heroUrl);
-            
+
             // Populate slider/feature/gallery previews if containers exist
             // This assumes the inputs are already there (they are static in admin-dashboard.html)
-            (data.sliderUrls || []).forEach((u, i) => setMiniPreview(`fac_s_${i+1}_preview`, u));
-            (data.featureUrls || []).forEach((u, i) => setMiniPreview(`fac_f_${i+1}_preview`, u));
-            (data.galleryUrls || []).forEach((u, i) => setMiniPreview(`fac_g_${i+1}_preview`, u));
+            (data.sliderUrls || []).forEach((u, i) => setMiniPreview(`fac_s_${i + 1}_preview`, u));
+            (data.featureUrls || []).forEach((u, i) => setMiniPreview(`fac_f_${i + 1}_preview`, u));
+            (data.galleryUrls || []).forEach((u, i) => setMiniPreview(`fac_g_${i + 1}_preview`, u));
         }
-    } catch(e) { console.error('loadImgFacilities error:', e); }
+    } catch (e) {
+        console.error('loadImgFacilities error:', e);
+    }
 }
 
 async function loadGlobalStatsAdmin() {
     try {
-        const doc = await db.collection('settings').doc('globalStats').get();
+        const doc = await schoolDoc('settings', 'globalStats').get();
         if (doc.exists) {
             const data = doc.data();
             document.getElementById('statsStudents').value = data.students || '';
@@ -488,23 +560,27 @@ async function loadGlobalStatsAdmin() {
             document.getElementById('statsClassrooms').value = data.classrooms || '';
             document.getElementById('statsYears').value = data.years || '';
         }
-    } catch(e) { console.error('loadGlobalStatsAdmin error:', e); }
+    } catch (e) {
+        console.error('loadGlobalStatsAdmin error:', e);
+    }
 }
 
 // ===================== WEBSITE TEXT CMS (GENERIC) =====================
 async function loadPageTextAdmin(pageKey) {
     try {
-        const doc = await db.collection('pageText').doc(pageKey).get();
+        const doc = await schoolDoc('pageText', pageKey).get();
         if (doc.exists) {
             const data = doc.data();
-            const allInputs = document.querySelectorAll(`#cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form [id]`);
-            allInputs.forEach(input => {
+            const allInputs = document.querySelectorAll(
+                `#cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form [id]`
+            );
+            allInputs.forEach((input) => {
                 const id = input.id;
                 // Try several mapping strategies:
                 // 1. Pure key match
                 if (data[id]) {
                     input.value = data[id];
-                } 
+                }
                 // 2. Mapping 'textHomeHeroTitle' -> 'heroTitle'
                 else {
                     const pagePrefix = `text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`;
@@ -512,33 +588,37 @@ async function loadPageTextAdmin(pageKey) {
                     const dbKey = shortKey.charAt(0).toLowerCase() + shortKey.slice(1);
                     if (data[dbKey]) {
                         input.value = data[dbKey];
-                    }
-                    else if (data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)]) {
-                         input.value = data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)];
+                    } else if (data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)]) {
+                        input.value =
+                            data[id.replace('text', '').charAt(0).toLowerCase() + id.replace('text', '').slice(1)];
                     }
                 }
             });
         }
-    } catch(e) { console.error(`loadPageTextAdmin error for ${pageKey}:`, e); }
+    } catch (e) {
+        console.error(`loadPageTextAdmin error for ${pageKey}:`, e);
+    }
 }
 
 function setupTextForm(pageKey) {
     const form = document.getElementById(`cmsText${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}Form`);
     if (!form) return;
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
         const data = { updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
         const inputs = form.querySelectorAll('[id]');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             const key = input.id.replace(`text${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)}`, '');
             const dbKey = key.charAt(0).toLowerCase() + key.slice(1);
             data[dbKey] = input.value.trim();
         });
 
         try {
-            await db.collection('pageText').doc(pageKey).set(data, { merge: true });
+            await schoolDoc('pageText', pageKey).set(withSchool(data), { merge: true });
             showToast(`${pageKey.charAt(0).toUpperCase() + pageKey.slice(1)} Page text updated!`);
-        } catch(e) { showToast('Error: ' + e.message, 'error'); }
+        } catch (e) {
+            showToast('Error: ' + e.message, 'error');
+        }
     });
 }
 
@@ -548,31 +628,80 @@ function setupTextForm(pageKey) {
 // ===================== STUDENT DASHBOARD CMS =====================
 async function loadCmsStudentDashboard() {
     try {
-        const doc = await db.collection('settings').doc('dashboardConfig').get();
+        const doc = await schoolDoc('settings', 'studentPortal').get();
         if (doc.exists) {
             const d = doc.data();
-            if (document.getElementById('cms_examHeading')) document.getElementById('cms_examHeading').value = d.examHeading || '';
-            if (document.getElementById('cms_examNotice')) document.getElementById('cms_examNotice').value = d.examNotice || '';
-            
-            if (document.getElementById('cms_showQuickActions')) document.getElementById('cms_showQuickActions').checked = !!d.showQuickActions;
-            if (document.getElementById('cms_showAttendance')) document.getElementById('cms_showAttendance').checked = !!d.showAttendance;
-            if (document.getElementById('cms_showTimings')) document.getElementById('cms_showTimings').checked = !!d.showTimings;
-            if (document.getElementById('cms_showPrincipalMessage')) document.getElementById('cms_showPrincipalMessage').checked = !!d.showPrincipalMessage;
-            
-            if (document.getElementById('cms_schoolTimings')) document.getElementById('cms_schoolTimings').value = d.schoolTimings || '';
-            if (document.getElementById('cms_principalMessage')) document.getElementById('cms_principalMessage').value = d.principalMessage || '';
+            if (document.getElementById('cms_examHeading'))
+                document.getElementById('cms_examHeading').value = d.examHeading || '';
+            if (document.getElementById('cms_examNotice'))
+                document.getElementById('cms_examNotice').value = d.examNotice || '';
+
+            // Modules
+            if (document.getElementById('cms_showHomework'))
+                document.getElementById('cms_showHomework').checked = d.showHomework !== false;
+            if (document.getElementById('cms_showFees'))
+                document.getElementById('cms_showFees').checked = d.showFees !== false;
+            if (document.getElementById('cms_showExams'))
+                document.getElementById('cms_showExams').checked = d.showExams !== false;
+            if (document.getElementById('cms_showMaterials'))
+                document.getElementById('cms_showMaterials').checked = d.showMaterials !== false;
+
+            // Widgets
+            if (document.getElementById('cms_showAttendance'))
+                document.getElementById('cms_showAttendance').checked = !!d.showAttendance;
+            if (document.getElementById('cms_showPrincipalMessage'))
+                document.getElementById('cms_showPrincipalMessage').checked = !!d.showPrincipalMessage;
+
+            if (document.getElementById('cms_principalMessage'))
+                document.getElementById('cms_principalMessage').value = d.principalMessage || '';
+
+            // Important Links
+            const linksContainer = document.getElementById('cmsImportanLinksList');
+            if (linksContainer) {
+                linksContainer.innerHTML = '';
+                if (d.importantLinks && Array.isArray(d.importantLinks)) {
+                    d.importantLinks.forEach((link) => addCmsImportantLink(link.title, link.url));
+                }
+            }
 
             // Update Preview
-            if (document.getElementById('previewTitle')) document.getElementById('previewTitle').textContent = d.examHeading || 'Final Examination March, 2026';
-            if (document.getElementById('previewNotice')) document.getElementById('previewNotice').textContent = d.examNotice || 'Exams begin on March 23rd. Please carry your Admit Card.';
+            if (document.getElementById('previewTitle'))
+                document.getElementById('previewTitle').textContent = d.examHeading || 'Final Examination March, 2026';
+            if (document.getElementById('previewNotice'))
+                document.getElementById('previewNotice').textContent =
+                    d.examNotice || 'Exams begin on March 23rd. Please carry your Admit Card.';
         }
-    } catch(e) { console.error('loadCmsStudentDashboard error:', e); }
+    } catch (e) {
+        console.error('loadCmsStudentDashboard error:', e);
+    }
+}
+
+function addCmsImportantLink(title = '', url = '') {
+    const container = document.getElementById('cmsImportanLinksList');
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'cms-link-item';
+    div.style.display = 'grid';
+    div.style.gridTemplateColumns = '1fr 1fr auto';
+    div.style.gap = '0.5rem';
+    div.style.alignItems = 'center';
+    div.style.background = '#f1f5f9';
+    div.style.padding = '0.5rem';
+    div.style.borderRadius = '0.4rem';
+
+    div.innerHTML = `
+        <input type="text" placeholder="Title (e.g. Video Library)" class="link-title" value="${title}" style="padding:0.4rem; border:1px solid #cbd5e1; border-radius:0.3rem;">
+        <input type="url" placeholder="URL (https://...)" class="link-url" value="${url}" style="padding:0.4rem; border:1px solid #cbd5e1; border-radius:0.3rem;">
+        <button type="button" onclick="this.parentElement.remove()" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.1rem;"><i class="fas fa-trash-alt"></i></button>
+    `;
+    container.appendChild(div);
 }
 
 // ===================== THEME CMS =====================
 async function loadCmsTheme() {
     try {
-        const doc = await db.collection('settings').doc('theme').get();
+        const doc = await schoolDoc('settings', 'theme').get();
         if (doc.exists) {
             const d = doc.data();
             if (d.primaryColor) {
@@ -584,7 +713,9 @@ async function loadCmsTheme() {
                 document.getElementById('theme_secondary_text').value = d.sidebarColor;
             }
         }
-    } catch(e) { console.error('loadCmsTheme error:', e); }
+    } catch (e) {
+        console.error('loadCmsTheme error:', e);
+    }
 }
 
 async function updateStudentAttendance() {
@@ -599,19 +730,21 @@ async function updateStudentAttendance() {
 
     try {
         const attId = `${studentId}_${month}`;
-        await db.collection('attendance').doc(attId).set({
-            studentId,
-            month,
-            percentage,
-            date: new Date()
-        }, { merge: true });
-        
+        await schoolDoc('attendance', attId).set(
+            withSchool({
+                studentId,
+                month,
+                percentage,
+            }),
+            { merge: true }
+        );
+
         showToast(`Attendance updated for ${studentId} (${month})`);
-        
+
         // Clear inputs except month
         document.getElementById('att_studentId').value = '';
         document.getElementById('att_percent').value = '';
-    } catch(e) {
+    } catch (e) {
         showToast('Error updating attendance: ' + e.message, 'error');
     }
 }
@@ -625,6 +758,34 @@ function toggleSidebar() {
     localStorage.setItem('adminSidebarCollapsed', isCollapsed ? 'true' : 'false');
 }
 
+// ===================== GENERIC COLLECTION LIST LOADER =====================
+async function loadCmsList(collection, containerId, renderFn) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = '<p style="color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+    try {
+        const snap = await schoolData(collection).orderBy('createdAt', 'asc').get();
+        el.innerHTML = snap.empty
+            ? '<p style="color:#94a3b8; text-align:center; padding:2rem;">No items yet. Add one above!</p>'
+            : '';
+        snap.forEach((doc) => {
+            el.innerHTML += renderFn(doc.id, doc.data());
+        });
+    } catch (e) {
+        // Try without orderBy if field missing
+        try {
+            const snap2 = await schoolData(collection).get();
+            el.innerHTML = snap2.empty
+                ? '<p style="color:#94a3b8; text-align:center; padding:2rem;">No items yet.</p>'
+                : '';
+            snap2.forEach((doc) => {
+                el.innerHTML += renderFn(doc.id, doc.data());
+            });
+        } catch (e2) {
+            el.innerHTML = `<p style="color:#ef4444;">Error: ${e2.message}</p>`;
+        }
+    }
+}
+
 // ===================== ACCORDION SIDEBAR =====================
 function toggleCategory(catId) {
     const cat = document.getElementById(catId);
@@ -632,7 +793,7 @@ function toggleCategory(catId) {
     const isOpen = cat.classList.contains('open');
 
     // Close all other categories (optional: comment out if you want multiple open)
-    document.querySelectorAll('.cat-submenu').forEach(el => {
+    document.querySelectorAll('.cat-submenu').forEach((el) => {
         el.classList.remove('open');
         el.previousElementSibling.classList.remove('active');
     });
@@ -647,9 +808,9 @@ function toggleCategory(catId) {
 function toggleMobileSidebar() {
     const sidebar = document.getElementById('adminSidebar');
     const isOpening = !sidebar.classList.contains('mobile-open');
-    
+
     sidebar.classList.toggle('mobile-open');
-    
+
     // Create overlay if not exists
     let overlay = document.querySelector('.sidebar-overlay');
     if (!overlay) {
@@ -658,21 +819,23 @@ function toggleMobileSidebar() {
         overlay.onclick = toggleMobileSidebar;
         document.body.appendChild(overlay);
     }
-    
+
     if (isOpening) {
         overlay.style.display = 'block';
         setTimeout(() => overlay.classList.add('active'), 10);
         document.body.style.overflow = 'hidden';
     } else {
         overlay.classList.remove('active');
-        setTimeout(() => { if(!overlay.classList.contains('active')) overlay.style.display = 'none'; }, 300);
+        setTimeout(() => {
+            if (!overlay.classList.contains('active')) overlay.style.display = 'none';
+        }, 300);
         document.body.style.overflow = '';
     }
 }
 
 // ===================== RESPONSIVE TABLES HELPER =====================
 function initResponsiveTables() {
-    document.querySelectorAll('table').forEach(table => {
+    document.querySelectorAll('table').forEach((table) => {
         if (!table.parentElement.classList.contains('table-responsive')) {
             const wrapper = document.createElement('div');
             wrapper.className = 'table-responsive';
@@ -686,24 +849,6 @@ function initResponsiveTables() {
 document.addEventListener('DOMContentLoaded', () => {
     initResponsiveTables();
 });
-
-// ===================== GENERIC COLLECTION LIST LOADER =====================
-async function loadCmsList(collection, containerId, renderFn) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = '<p style="color:#64748b;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
-    try {
-        const snap = await db.collection(collection).orderBy('createdAt', 'asc').get();
-        el.innerHTML = snap.empty ? '<p style="color:#94a3b8; text-align:center; padding:2rem;">No items yet. Add one above!</p>' : '';
-        snap.forEach(doc => { el.innerHTML += renderFn(doc.id, doc.data()); });
-    } catch(e) {
-        // Try without orderBy if field missing
-        try {
-            const snap2 = await db.collection(collection).get();
-            el.innerHTML = snap2.empty ? '<p style="color:#94a3b8; text-align:center; padding:2rem;">No items yet.</p>' : '';
-            snap2.forEach(doc => { el.innerHTML += renderFn(doc.id, doc.data()); });
-        } catch(e2) { el.innerHTML = `<p style="color:#ef4444;">Error: ${e2.message}</p>`; }
-    }
-}
 
 // ===================== RENDER HELPERS =====================
 function renderEventItem(id, d) {
@@ -736,7 +881,9 @@ function renderHolidayItem(id, d) {
 
 function renderGalleryItem(id, d) {
     const url = d.url || d.imageUrl || '';
-    const catBadge = d.category ? `<span style="position:absolute; top:0.4rem; left:0.4rem; background:#1E40AF; color:white; font-size:0.65rem; padding:0.2rem 0.4rem; border-radius:4px; font-weight:bold;">${d.category}</span>` : '';
+    const catBadge = d.category
+        ? `<span style="position:absolute; top:0.4rem; left:0.4rem; background:#1E40AF; color:white; font-size:0.65rem; padding:0.2rem 0.4rem; border-radius:4px; font-weight:bold;">${d.category}</span>`
+        : '';
     return `<div style="position:relative; border-radius:0.75rem; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
         <img src="${url}" style="width:100%; height:140px; object-fit:cover; display:block;" onerror="this.src='https://via.placeholder.com/180x140?text=Invalid+URL'">
         ${catBadge}
@@ -747,7 +894,7 @@ function renderGalleryItem(id, d) {
 
 function renderStaffItem(id, d) {
     return `<div style="background:white; padding:1.25rem; border-radius:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-align:center; position:relative;">
-        <img src="${d.photo || 'https://ui-avatars.com/api/?name='+encodeURIComponent(d.name||'Staff')+'&background=1e3a8a&color=fff'}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:0.75rem;">
+        <img src="${d.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name || 'Staff') + '&background=1e3a8a&color=fff'}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:0.75rem;">
         <p style="font-weight:700; margin-bottom:0.25rem;">${d.name || ''}</p>
         <p style="color:#64748b; font-size:0.8rem;">${d.subject || ''}</p>
         <button onclick="deleteCmsItem('staff','${id}',loadCmsList.bind(null,'staff','staffListAdmin',renderStaffItem))" style="position:absolute;top:0.5rem;right:0.5rem; background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
@@ -758,66 +905,139 @@ function renderStaffItem(id, d) {
 async function deleteCmsItem(collection, id, reloadFn) {
     if (!confirm('Delete this item?')) return;
     try {
-        await db.collection(collection).doc(id).delete();
+        await schoolDoc(collection, id).delete();
         showToast('Deleted!');
         reloadFn();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    }
 }
 
 // ===================== MODAL SYSTEM =====================
+const cmsActions = {
+    events: {
+        save: async (data) => {
+            await schoolData('events').add(
+                withSchool({ title: data.cms_title, date: data.cms_date, subtitle: data.cms_subtitle })
+            );
+            loadCmsList('events', 'eventsListAdmin', renderEventItem);
+        },
+    },
+    achievements: {
+        save: async (data) => {
+            await schoolData('achievements').add(withSchool({ title: data.cms_title, description: data.cms_desc }));
+            loadCmsList('achievements', 'achievementsListAdmin', renderAchievementItem);
+        },
+    },
+    testimonials: {
+        save: async (data) => {
+            await schoolData('testimonials').add(
+                withSchool({ name: data.cms_name, relation: data.cms_relation, quote: data.cms_quote })
+            );
+            loadCmsList('testimonials', 'testimonialsListAdmin', renderTestimonialItem);
+        },
+    },
+    holidays: {
+        save: async (data) => {
+            await schoolData('holidays').add(withSchool({ name: data.cms_name, date: data.cms_date }));
+            loadCmsList('holidays', 'holidaysListAdmin', renderHolidayItem);
+        },
+    },
+    gallery: {
+        save: async (data) => {
+            await schoolData('gallery').add(
+                withSchool({ url: data.cms_photo, category: data.cms_category, caption: data.cms_caption })
+            );
+            loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem);
+        },
+    },
+    staff: {
+        save: async (data) => {
+            await schoolData('staff').add(
+                withSchool({ name: data.cms_name, subject: data.cms_subject, photo: data.cms_photo })
+            );
+            loadCmsList('staff', 'staffListAdmin', renderStaffItem);
+        },
+    },
+};
+
 const MODAL_CONFIGS = {
     event: {
         title: 'Add Upcoming Event',
         fields: [
             { id: 'cms_title', label: 'Event Title *', type: 'text', required: true },
             { id: 'cms_date', label: 'Date *', type: 'text', placeholder: 'e.g. March 30, 2026', required: true },
-            { id: 'cms_subtitle', label: 'Short Description', type: 'text' }
+            { id: 'cms_subtitle', label: 'Short Description', type: 'text' },
         ],
-        save: async (data) => { await db.collection('events').add({ title: data.cms_title, date: data.cms_date, subtitle: data.cms_subtitle, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('events', 'eventsListAdmin', renderEventItem); }
+        save: cmsActions.events.save,
     },
     achievement: {
         title: 'Add Achievement',
         fields: [
             { id: 'cms_title', label: 'Achievement Title *', type: 'text', required: true },
-            { id: 'cms_desc', label: 'Description', type: 'text' }
+            { id: 'cms_desc', label: 'Description', type: 'text' },
         ],
-        save: async (data) => { await db.collection('achievements').add({ title: data.cms_title, description: data.cms_desc, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('achievements', 'achievementsListAdmin', renderAchievementItem); }
+        save: cmsActions.achievements.save,
     },
     testimonial: {
         title: 'Add Testimonial',
         fields: [
             { id: 'cms_name', label: 'Parent / Student Name *', type: 'text', required: true },
             { id: 'cms_relation', label: 'Relation (e.g. Parent of Class 5)', type: 'text' },
-            { id: 'cms_quote', label: 'Quote / Review *', type: 'textarea', required: true }
+            { id: 'cms_quote', label: 'Quote / Review *', type: 'textarea', required: true },
         ],
-        save: async (data) => { await db.collection('testimonials').add({ name: data.cms_name, relation: data.cms_relation, quote: data.cms_quote, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('testimonials', 'testimonialsListAdmin', renderTestimonialItem); }
+        save: async (data) => {
+            await db
+                .collection('testimonials')
+                .add(withSchool({ name: data.cms_name, relation: data.cms_relation, quote: data.cms_quote }));
+            loadCmsList('testimonials', 'testimonialsListAdmin', renderTestimonialItem);
+        },
     },
     holiday: {
         title: 'Add Holiday',
         fields: [
             { id: 'cms_name', label: 'Holiday Name *', type: 'text', required: true },
-            { id: 'cms_date', label: 'Date (e.g. April 14, 2026) *', type: 'text', required: true }
+            { id: 'cms_date', label: 'Date (e.g. April 14, 2026) *', type: 'text', required: true },
         ],
-        save: async (data) => { await db.collection('holidays').add({ name: data.cms_name, date: data.cms_date, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('holidays', 'holidaysListAdmin', renderHolidayItem); }
+        save: async (data) => {
+            await db.collection('holidays').add(withSchool({ name: data.cms_name, date: data.cms_date }));
+            loadCmsList('holidays', 'holidaysListAdmin', renderHolidayItem);
+        },
     },
     gallery: {
         title: 'Add Gallery Image',
         fields: [
             { id: 'cms_photo', label: 'Choose Image *', type: 'file', required: true },
-            { id: 'cms_category', label: 'Category *', type: 'select', options: ['Sports', 'Events', 'Functions', 'Awards', 'Others'], required: true },
-            { id: 'cms_caption', label: 'Caption (optional)', type: 'text' }
+            {
+                id: 'cms_category',
+                label: 'Category *',
+                type: 'select',
+                options: ['Sports', 'Events', 'Functions', 'Awards', 'Others'],
+                required: true,
+            },
+            { id: 'cms_caption', label: 'Caption (optional)', type: 'text' },
         ],
-        save: async (data) => { await db.collection('gallery').add({ url: data.cms_photo, category: data.cms_category, caption: data.cms_caption, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem); }
+        save: async (data) => {
+            await db
+                .collection('gallery')
+                .add(withSchool({ url: data.cms_photo, category: data.cms_category, caption: data.cms_caption }));
+            loadCmsList('gallery', 'galleryListAdmin', renderGalleryItem);
+        },
     },
     staff: {
         title: 'Add Staff / Teacher',
         fields: [
             { id: 'cms_name', label: 'Full Name *', type: 'text', required: true },
             { id: 'cms_subject', label: 'Subject / Designation', type: 'text' },
-            { id: 'cms_photo', label: 'Choose Photo (optional)', type: 'file' }
+            { id: 'cms_photo', label: 'Choose Photo (optional)', type: 'file' },
         ],
-        save: async (data) => { await db.collection('staff').add({ name: data.cms_name, subject: data.cms_subject, photo: data.cms_photo, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); loadCmsList('staff', 'staffListAdmin', renderStaffItem); }
-    }
+        save: async (data) => {
+            await db
+                .collection('staff')
+                .add(withSchool({ name: data.cms_name, subject: data.cms_subject, photo: data.cms_photo }));
+            loadCmsList('staff', 'staffListAdmin', renderStaffItem);
+        },
+    },
 };
 
 function openCmsModal(type) {
@@ -825,15 +1045,15 @@ function openCmsModal(type) {
     if (!config) return;
     document.getElementById('cmsModalTitle').textContent = config.title;
     let html = '';
-    config.fields.forEach(f => {
+    config.fields.forEach((f) => {
         html += `<div class="form-group" style="margin-bottom:1rem;">
             <label style="font-weight:600; display:block; margin-bottom:0.4rem;">${f.label}</label>`;
-            
+
         if (f.type === 'textarea') {
             html += `<textarea id="${f.id}" ${f.required ? 'required' : ''} rows="3" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;"></textarea>`;
         } else if (f.type === 'select') {
             html += `<select id="${f.id}" ${f.required ? 'required' : ''} style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem; background:white;">`;
-            f.options.forEach(opt => html += `<option value="${opt}">${opt}</option>`);
+            f.options.forEach((opt) => (html += `<option value="${opt}">${opt}</option>`));
             html += `</select>`;
         } else if (f.type === 'file') {
             html += `
@@ -844,7 +1064,7 @@ function openCmsModal(type) {
         } else {
             html += `<input type="${f.type}" id="${f.id}" ${f.required ? 'required' : ''} placeholder="${f.placeholder || ''}" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.5rem;">`;
         }
-        
+
         html += `</div>`;
     });
     html += `<div id="cmsModalLoading" style="display:none; text-align:center; padding:1rem; color:var(--primary);"><i class="fas fa-spinner fa-spin"></i> Processing Image...</div>`;
@@ -875,7 +1095,7 @@ function previewCmsImage(event, previewId) {
     if (!file || !previewContainer) return;
 
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = (e) => {
         previewContainer.innerHTML = `<img src="${e.target.result}" style="width:100%; border-radius:0.5rem; margin-top:0.5rem; border:1px solid #ddd;">`;
         previewContainer.style.display = 'block';
     };
@@ -890,17 +1110,20 @@ async function saveCmsModal(type) {
 
     for (const f of config.fields) {
         const el = document.getElementById(f.id);
-        
+
         if (f.type === 'file') {
             const file = el.files[0];
-            if (f.required && !file) { showToast('Please select an image!', 'error'); return; }
+            if (f.required && !file) {
+                showToast('Please select an image!', 'error');
+                return;
+            }
             if (file) {
                 if (saveBtn) saveBtn.disabled = true;
                 if (loading) loading.style.display = 'block';
-                
+
                 try {
                     data[f.id] = await processCmsImage(file);
-                } catch(e) {
+                } catch (e) {
                     showToast('Error processing image: ' + e.message, 'error');
                     if (saveBtn) saveBtn.disabled = false;
                     if (loading) loading.style.display = 'none';
@@ -910,7 +1133,10 @@ async function saveCmsModal(type) {
                 data[f.id] = '';
             }
         } else {
-            if (f.required && !el.value.trim()) { showToast('Please fill required fields!', 'error'); return; }
+            if (f.required && !el.value.trim()) {
+                showToast('Please fill required fields!', 'error');
+                return;
+            }
             data[f.id] = el.value.trim();
         }
     }
@@ -919,8 +1145,8 @@ async function saveCmsModal(type) {
         await config.save(data);
         closeCmsModal();
         showToast('Added successfully!');
-    } catch(e) { 
-        showToast('Error: ' + e.message, 'error'); 
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
     } finally {
         if (saveBtn) saveBtn.disabled = false;
         if (loading) loading.style.display = 'none';
@@ -930,7 +1156,7 @@ async function saveCmsModal(type) {
 async function processCmsImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
@@ -955,14 +1181,14 @@ async function processCmsImage(file) {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                
+
                 // Compress to stay under 900KB. 0.7 quality usually does the trick for 1000px.
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-                
+
                 // Check size (base64 is ~1.37x file size)
-                const approximateSizeInBytes = (dataUrl.length * (3/4));
+                const approximateSizeInBytes = dataUrl.length * (3 / 4);
                 if (approximateSizeInBytes > 900 * 1024) {
-                    reject(new Error("Image is too large even after compression. Please use a smaller image."));
+                    reject(new Error('Image is too large even after compression. Please use a smaller image.'));
                 } else {
                     resolve(dataUrl);
                 }
@@ -978,12 +1204,14 @@ async function processCmsImage(file) {
 // ===================== ADMISSION STATUS =====================
 async function loadAdmissionStatus() {
     try {
-        const doc = await db.collection('settings').doc('general').get();
-        const status = doc.exists ? (doc.data().admissionStatus || 'open') : 'open';
-        const session = doc.exists ? (doc.data().admissionSession || '2026-2027') : '2026-2027';
+        const doc = await schoolDoc('settings', 'general').get();
+        const status = doc.exists ? doc.data().admissionStatus || 'open' : 'open';
+        const session = doc.exists ? doc.data().admissionSession || '2026-2027' : '2026-2027';
         updateAdmissionBadge(status);
         document.getElementById('admissionSessionYear').value = session;
-    } catch(e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function updateAdmissionBadge(status) {
@@ -1002,30 +1230,47 @@ function updateAdmissionBadge(status) {
 
 async function setAdmissionStatus(status) {
     try {
-        await db.collection('settings').doc('general').set({ admissionStatus: status }, { merge: true });
+        await schoolDoc('settings', 'general').set(withSchool({ admissionStatus: status }), { merge: true });
         updateAdmissionBadge(status);
         showToast(`Admission status set to ${status.toUpperCase()}!`);
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    }
 }
 
 async function saveAdmissionSession() {
     const val = document.getElementById('admissionSessionYear').value.trim();
     if (!val) return;
     try {
-        await db.collection('settings').doc('general').set({ admissionSession: val }, { merge: true });
+        await schoolDoc('settings', 'general').set(withSchool({ admissionSession: val }), { merge: true });
         showToast('Session year saved!');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    }
 }
 
 // ===================== TIMETABLES =====================
-const CLASSES = ['Play Group', 'Nursery', 'LKG', 'UKG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
+const CLASSES = [
+    'Play Group',
+    'Nursery',
+    'LKG',
+    'UKG',
+    'Class 1',
+    'Class 2',
+    'Class 3',
+    'Class 4',
+    'Class 5',
+    'Class 6',
+    'Class 7',
+    'Class 8',
+];
 
 async function loadTimetableSection() {
     const grid = document.getElementById('timetableGrid');
     grid.innerHTML = '';
     for (const cls of CLASSES) {
         const safeId = cls.replace(/\s+/g, '_').toLowerCase();
-        const docRef = await db.collection('timetables').doc(safeId).get();
+        const docRef = await schoolDoc('timetables', safeId).get();
         const exists = docRef.exists;
         grid.innerHTML += `
             <div style="background:#f8fafc; border:1px solid var(--border); border-radius:0.75rem; padding:1rem; text-align:center;">
@@ -1043,20 +1288,30 @@ async function loadTimetableSection() {
 async function uploadTimetable(event, classId) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 900 * 1024) { showToast('File too large! Max 900KB.', 'error'); return; }
+    if (file.size > 900 * 1024) {
+        showToast('File too large! Max 900KB.', 'error');
+        return;
+    }
     setLoading(true);
     try {
-        const base64 = await new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
-        await db.collection('timetables').doc(classId).set({ fileData: base64, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        const base64 = await new Promise((r) => {
+            const reader = new FileReader();
+            reader.onload = (e) => r(e.target.result);
+            reader.readAsDataURL(file);
+        });
+        await schoolDoc('timetables', classId).set(withSchool({ fileData: base64 }));
         showToast('Timetable uploaded!');
         loadTimetableSection();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
-    finally { setLoading(false); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
 }
 
 async function deleteTimetable(classId, className) {
     if (!confirm(`Delete timetable for ${className}?`)) return;
-    await db.collection('timetables').doc(classId).delete();
+    await schoolDoc('timetables', classId).delete();
     showToast('Timetable deleted!');
     loadTimetableSection();
 }
@@ -1066,17 +1321,17 @@ async function loadFeeStructure() {
     const container = document.getElementById('feesTableAdmin');
     let feeData = {};
     try {
-        const doc = await db.collection('settings').doc('fees').get();
+        const doc = await schoolDoc('settings', 'fees').get();
         if (doc.exists) feeData = doc.data();
-    } catch(e) {}
+    } catch (e) {}
 
     let html = '<div style="display:grid; gap:0.75rem;">';
     for (const cls of CLASSES) {
         const safeId = cls.replace(/\s+/g, '_').toLowerCase();
         html += `<div style="display:grid; grid-template-columns:180px 1fr 1fr; gap:1rem; align-items:center; padding:0.75rem; background:#f8fafc; border-radius:0.5rem;">
             <span style="font-weight:700;">${cls}</span>
-            <input type="number" id="fee_monthly_${safeId}" placeholder="Monthly Fee (₹)" value="${feeData[safeId+'_monthly'] || ''}" style="padding:0.5rem; border:1px solid var(--border); border-radius:0.5rem;">
-            <input type="number" id="fee_annual_${safeId}" placeholder="Annual Fee (₹)" value="${feeData[safeId+'_annual'] || ''}" style="padding:0.5rem; border:1px solid var(--border); border-radius:0.5rem;">
+            <input type="number" id="fee_monthly_${safeId}" placeholder="Monthly Fee (₹)" value="${feeData[safeId + '_monthly'] || ''}" style="padding:0.5rem; border:1px solid var(--border); border-radius:0.5rem;">
+            <input type="number" id="fee_annual_${safeId}" placeholder="Annual Fee (₹)" value="${feeData[safeId + '_annual'] || ''}" style="padding:0.5rem; border:1px solid var(--border); border-radius:0.5rem;">
         </div>`;
     }
     html += '</div>';
@@ -1089,20 +1344,22 @@ async function saveFeeStructure() {
         const data = {};
         for (const cls of CLASSES) {
             const safeId = cls.replace(/\s+/g, '_').toLowerCase();
-            data[safeId+'_monthly'] = parseInt(document.getElementById(`fee_monthly_${safeId}`)?.value) || 0;
-            data[safeId+'_annual'] = parseInt(document.getElementById(`fee_annual_${safeId}`)?.value) || 0;
+            data[safeId + '_monthly'] = parseInt(document.getElementById(`fee_monthly_${safeId}`)?.value) || 0;
+            data[safeId + '_annual'] = parseInt(document.getElementById(`fee_annual_${safeId}`)?.value) || 0;
         }
-        data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-        await db.collection('settings').doc('fees').set(data);
+        await schoolDoc('settings', 'fees').set(withSchool(data));
         showToast('Fee structure saved!');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
-    finally { setLoading(false); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
 }
 
 // ===================== HERO SLIDER =====================
 async function loadHeroSlider() {
     try {
-        const doc = await db.collection('settings').doc('general').get();
+        const doc = await schoolDoc('settings', 'general').get();
         if (doc.exists) {
             const d = doc.data();
             document.getElementById('hero_1').value = d.hero_1 || '';
@@ -1110,7 +1367,9 @@ async function loadHeroSlider() {
             document.getElementById('hero_3').value = d.hero_3 || '';
             document.getElementById('hero_4').value = d.hero_4 || '';
         }
-    } catch(e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 // ===================== FEE TOOLS: PARENTS WHO NOT PAID =====================
@@ -1119,62 +1378,77 @@ let feeResultData = null;
 function updateFileName(inputId, statusId) {
     const file = document.getElementById(inputId).files[0];
     if (file) {
-        document.getElementById(statusId).textContent = "✓ " + file.name;
+        document.getElementById(statusId).textContent = '✓ ' + file.name;
     }
 }
 
 const SEARCH_TERMS = {
-    "Student Id": ['studentId', 'student id', 'id', 'admission no', 'adm no', 'id_no', 'student_id', 'scholar no', 'reg no', 'roll no', 'sid', 'id no', 'stuid', 'enrollment'],
-    "Student Name": ['student name', 'name', 'student_name', 'candidate name', 'full name', 'sname', 'student'],
-    "Father Name": ['fatherName', 'father name', 'father_name', 'father', 'guardian name', 'guardian'],
-    "Phone": ['mobile', 'phone', 'contact', 'mobile number', 'phone number', 'whatsapp', 'mob'],
-    "Session": ['admissionYear', 'session', 'year', 'academic year', 'acad_year'],
-    "Class": ['class', 'cls', 'grade', 'standard', 'standard_no'],
-    "Due Amount": ['due amount', 'balance', 'pending', 'dues', 'total due', 'amount due', 'due', 'remain', 'arrear']
+    'Student Id': [
+        'studentId',
+        'student id',
+        'id',
+        'admission no',
+        'adm no',
+        'id_no',
+        'student_id',
+        'scholar no',
+        'reg no',
+        'roll no',
+        'sid',
+        'id no',
+        'stuid',
+        'enrollment',
+    ],
+    'Student Name': ['student name', 'name', 'student_name', 'candidate name', 'full name', 'sname', 'student'],
+    'Father Name': ['fatherName', 'father name', 'father_name', 'father', 'guardian name', 'guardian'],
+    Phone: ['mobile', 'phone', 'contact', 'mobile number', 'phone number', 'whatsapp', 'mob'],
+    Session: ['admissionYear', 'session', 'year', 'academic year', 'acad_year'],
+    Class: ['class', 'cls', 'grade', 'standard', 'standard_no'],
+    'Due Amount': ['due amount', 'balance', 'pending', 'dues', 'total due', 'amount due', 'due', 'remain', 'arrear'],
 };
 
 function findKey(row, keyName) {
     if (!row) return null;
     const searchTerms = SEARCH_TERMS[keyName] || [keyName.toLowerCase()];
     const keys = Object.keys(row);
-    
+
     // Exact match first
     for (const term of searchTerms) {
-        const exact = keys.find(k => k.trim().toLowerCase() === term.toLowerCase());
+        const exact = keys.find((k) => k.trim().toLowerCase() === term.toLowerCase());
         if (exact) return exact;
     }
-    
+
     // Fuzzy match second
     for (const term of searchTerms) {
-        const fuzzy = keys.find(k => k.toLowerCase().includes(term.toLowerCase()));
+        const fuzzy = keys.find((k) => k.toLowerCase().includes(term.toLowerCase()));
         if (fuzzy) return fuzzy;
     }
     return null;
 }
 
 function mapFeeRow(row) {
-    const idKey = findKey(row, "Student Id");
-    const nameKey = findKey(row, "Student Name");
-    const fatherKey = findKey(row, "Father Name");
-    const phoneKey = findKey(row, "Phone");
-    const sessionKey = findKey(row, "Session");
-    const classKey = findKey(row, "Class");
-    const dueKey = findKey(row, "Due Amount");
+    const idKey = findKey(row, 'Student Id');
+    const nameKey = findKey(row, 'Student Name');
+    const fatherKey = findKey(row, 'Father Name');
+    const phoneKey = findKey(row, 'Phone');
+    const sessionKey = findKey(row, 'Session');
+    const classKey = findKey(row, 'Class');
+    const dueKey = findKey(row, 'Due Amount');
 
-    if (!idKey) console.warn("Missing Student Id mapping in row:", row);
+    if (!idKey) console.warn('Missing Student Id mapping in row:', row);
 
     // Clean due amount - handles currency, commas, etc.
-    let rawDue = (dueKey && row[dueKey]) ? String(row[dueKey]) : '0';
+    let rawDue = dueKey && row[dueKey] ? String(row[dueKey]) : '0';
     let cleanDue = Number(rawDue.replace(/[^\d.]/g, '')) || 0;
 
     return {
-        "Student Id": idKey ? String(row[idKey] || '').trim() : '',
-        "Student Name": nameKey ? String(row[nameKey] || '').trim() : '',
-        "Father Name": fatherKey ? String(row[fatherKey] || '').trim() : '',
-        "Phone": phoneKey ? String(row[phoneKey] || '').trim() : '',
-        "Session": sessionKey ? String(row[sessionKey] || '').trim() : '',
-        "Class": classKey ? String(row[classKey] || '').trim() : '',
-        "Due Amount": cleanDue
+        'Student Id': idKey ? String(row[idKey] || '').trim() : '',
+        'Student Name': nameKey ? String(row[nameKey] || '').trim() : '',
+        'Father Name': fatherKey ? String(row[fatherKey] || '').trim() : '',
+        Phone: phoneKey ? String(row[phoneKey] || '').trim() : '',
+        Session: sessionKey ? String(row[sessionKey] || '').trim() : '',
+        Class: classKey ? String(row[classKey] || '').trim() : '',
+        'Due Amount': cleanDue,
     };
 }
 
@@ -1187,41 +1461,43 @@ function readExcelFile(file) {
                 const workbook = XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                
+
                 // First pass: find headers by scanning rows
                 const fullAOA = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                console.log("Full AOA head:", fullAOA.slice(0, 5));
-                
+                console.log('Full AOA head:', fullAOA.slice(0, 5));
+
                 let headerRowIndex = 0;
                 for (let i = 0; i < Math.min(fullAOA.length, 20); i++) {
                     const row = fullAOA[i];
                     if (!row || !Array.isArray(row)) continue;
-                    
+
                     // Count how many expected headers match this row
                     let matches = 0;
                     const combinedTerms = Object.values(SEARCH_TERMS).flat();
-                    
-                    row.forEach(cell => {
-                        const cellStr = String(cell || '').toLowerCase().trim();
-                        if (combinedTerms.some(term => cellStr === term || cellStr.includes(term))) {
+
+                    row.forEach((cell) => {
+                        const cellStr = String(cell || '')
+                            .toLowerCase()
+                            .trim();
+                        if (combinedTerms.some((term) => cellStr === term || cellStr.includes(term))) {
                             matches++;
                         }
                     });
 
                     if (matches >= 3) {
                         headerRowIndex = i;
-                        console.log(`[FeeTool] Detected header at row ${i+1} with ${matches} matches:`, row);
+                        console.log(`[FeeTool] Detected header at row ${i + 1} with ${matches} matches:`, row);
                         break;
                     }
                 }
-                
+
                 // Now parse using the headerRowIndex
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
-                console.log("Final JSON Data sample:", jsonData.slice(0, 2));
+                console.log('Final JSON Data sample:', jsonData.slice(0, 2));
                 resolve(jsonData);
-            } catch (err) { 
-                console.error("Excel Parse error:", err);
-                reject(err); 
+            } catch (err) {
+                console.error('Excel Parse error:', err);
+                reject(err);
             }
         };
         reader.onerror = reject;
@@ -1234,36 +1510,38 @@ async function processFeeData() {
     const paidFile = document.getElementById('fee_paidFile').files[0];
 
     if (!duesFile || !paidFile) {
-        showToast("Please upload both Excel files first.", "error");
+        showToast('Please upload both Excel files first.', 'error');
         return;
     }
 
     try {
-        showToast("Processing data...", "info");
-        
+        showToast('Processing data...', 'info');
+
         const rawDuesData = await readExcelFile(duesFile);
         const rawPaidData = await readExcelFile(paidFile);
 
         if (!rawDuesData.length || !rawPaidData.length) {
-            showToast("One of the files seems empty or invalid.", "error");
+            showToast('One of the files seems empty or invalid.', 'error');
             return;
         }
 
         // Discovery of ID keys for matching
-        const duesIdKey = findKey(rawDuesData[0], "Student Id");
-        const paidIdKey = findKey(rawPaidData[0], "Student Id");
+        const duesIdKey = findKey(rawDuesData[0], 'Student Id');
+        const paidIdKey = findKey(rawPaidData[0], 'Student Id');
 
-        console.log("[FeeTool] Dues ID Key found:", duesIdKey);
-        console.log("[FeeTool] Paid ID Key found:", paidIdKey);
+        console.log('[FeeTool] Dues ID Key found:', duesIdKey);
+        console.log('[FeeTool] Paid ID Key found:', paidIdKey);
 
         if (!duesIdKey || !paidIdKey) {
-            const missing = !duesIdKey ? "Dues File" : "Paid File";
-            showToast(`Could not find 'Student id' column in ${missing}. Check headers.`, "error");
+            const missing = !duesIdKey ? 'Dues File' : 'Paid File';
+            showToast(`Could not find 'Student id' column in ${missing}. Check headers.`, 'error');
             return;
         }
 
         // Get paid IDs set
-        const paidIds = new Set(rawPaidData.map(row => String(row[paidIdKey] || '').trim()).filter(id => id !== ''));
+        const paidIds = new Set(
+            rawPaidData.map((row) => String(row[paidIdKey] || '').trim()).filter((id) => id !== '')
+        );
         console.log(`[FeeTool] Found ${paidIds.size} unique paid student IDs.`);
 
         // Identify non-paying students and map them
@@ -1278,95 +1556,95 @@ async function processFeeData() {
         console.log(`[FeeTool] Identified ${nonPaying.length} students who have not paid.`);
 
         if (nonPaying.length === 0) {
-            showToast("Great news! All students have paid.", "success");
+            showToast('Great news! All students have paid.', 'success');
             return;
         }
 
         // Group by Class and sort by Due Amount Desc
         const grouped = {};
-        nonPaying.forEach(std => {
+        nonPaying.forEach((std) => {
             const cls = std.Class || 'Unclassified';
             if (!grouped[cls]) grouped[cls] = [];
             grouped[cls].push(std);
         });
 
         // Sort each class by Due Amount Descending
-        Object.keys(grouped).forEach(cls => {
-            grouped[cls].sort((a, b) => (b["Due Amount"] || 0) - (a["Due Amount"] || 0));
+        Object.keys(grouped).forEach((cls) => {
+            grouped[cls].sort((a, b) => (b['Due Amount'] || 0) - (a['Due Amount'] || 0));
         });
 
         feeResultData = grouped;
-        
-        document.getElementById('fee_resultsArea').style.display = 'block';
-        document.getElementById('fee_summaryText').textContent = `Found ${nonPaying.length} students across ${Object.keys(grouped).length} classes with pending payments.`;
-        showToast("Analysis complete!", "success");
 
+        document.getElementById('fee_resultsArea').style.display = 'block';
+        document.getElementById('fee_summaryText').textContent =
+            `Found ${nonPaying.length} students across ${Object.keys(grouped).length} classes with pending payments.`;
+        showToast('Analysis complete!', 'success');
     } catch (e) {
         console.error(e);
-        showToast("Error processing files: " + e.message, "error");
+        showToast('Error processing files: ' + e.message, 'error');
     }
 }
 
 function downloadFeeExcel() {
     if (!feeResultData) return;
-    
+
     const wb = XLSX.utils.book_new();
     const sortedClasses = Object.keys(feeResultData).sort();
-    
+
     const dateRange = `(01 Dec, 2023 - ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
     const title = [`Apex Public School | Parents Who Not Paid | ${dateRange}`];
-    const headers = ["Student Id", "Student Name", "Father Name", "Phone", "Session", "Class", "Due Amount"];
+    const headers = ['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Due Amount'];
 
-    sortedClasses.forEach(cls => {
+    sortedClasses.forEach((cls) => {
         const rows = feeResultData[cls];
         const sheetData = [
             title,
             headers,
-            ...rows.map(std => [
-                String(std["Student Id"]), 
-                std["Student Name"], 
-                std["Father Name"], 
-                std["Phone"], 
-                std["Session"], 
-                std["Class"], 
-                std["Due Amount"]
-            ])
+            ...rows.map((std) => [
+                String(std['Student Id']),
+                std['Student Name'],
+                std['Father Name'],
+                std['Phone'],
+                std['Session'],
+                std['Class'],
+                std['Due Amount'],
+            ]),
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(sheetData);
 
         // Styling definitions
         const headerStyle = {
-            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
-            fill: { fgColor: { rgb: "1E3A8A" } }, // Dark Blue
-            alignment: { horizontal: "center", vertical: "center" },
+            font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+            fill: { fgColor: { rgb: '1E3A8A' } }, // Dark Blue
+            alignment: { horizontal: 'center', vertical: 'center' },
             border: {
-                top: { style: "thin", color: { rgb: "000000" } },
-                bottom: { style: "thin", color: { rgb: "000000" } },
-                left: { style: "thin", color: { rgb: "000000" } },
-                right: { style: "thin", color: { rgb: "000000" } }
-            }
+                top: { style: 'thin', color: { rgb: '000000' } },
+                bottom: { style: 'thin', color: { rgb: '000000' } },
+                left: { style: 'thin', color: { rgb: '000000' } },
+                right: { style: 'thin', color: { rgb: '000000' } },
+            },
         };
 
         const titleStyle = {
-            font: { bold: true, sz: 14, color: { rgb: "1E3A8A" } },
-            alignment: { horizontal: "center", vertical: "center" }
+            font: { bold: true, sz: 14, color: { rgb: '1E3A8A' } },
+            alignment: { horizontal: 'center', vertical: 'center' },
         };
 
         const dataStyle = {
             border: {
-                top: { style: "thin", color: { rgb: "E2E8F0" } },
-                bottom: { style: "thin", color: { rgb: "E2E8F0" } },
-                left: { style: "thin", color: { rgb: "E2E8F0" } },
-                right: { style: "thin", color: { rgb: "E2E8F0" } }
+                top: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                bottom: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                left: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                right: { style: 'thin', color: { rgb: 'E2E8F0' } },
             },
-            alignment: { vertical: "center" }
+            alignment: { vertical: 'center' },
         };
 
         const amountStyle = {
             ...dataStyle,
-            alignment: { horizontal: "right", vertical: "center" },
-            numFmt: "#,##0.00"
+            alignment: { horizontal: 'right', vertical: 'center' },
+            numFmt: '#,##0.00',
         };
 
         // Apply formatting
@@ -1375,16 +1653,19 @@ function downloadFeeExcel() {
             for (let C = range.s.c; C <= range.e.c; ++C) {
                 const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
                 if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
-                
-                if (R === 0) { // Title
+
+                if (R === 0) {
+                    // Title
                     ws[cell_ref].s = titleStyle;
-                } else if (R === 1) { // Headers
+                } else if (R === 1) {
+                    // Headers
                     ws[cell_ref].s = headerStyle;
-                } else { // Data
+                } else {
+                    // Data
                     // Alternate row shading
                     let style = C === 6 ? { ...amountStyle } : { ...dataStyle };
                     if (R % 2 === 0) {
-                        style.fill = { fgColor: { rgb: "F8FAFC" } };
+                        style.fill = { fgColor: { rgb: 'F8FAFC' } };
                     }
                     ws[cell_ref].s = style;
                 }
@@ -1392,38 +1673,36 @@ function downloadFeeExcel() {
         }
 
         ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
-        ws['!cols'] = [
-            { wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 }
-        ];
+        ws['!cols'] = [{ wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 }];
 
-        XLSX.utils.book_append_sheet(wb, ws, cls.substring(0, 31)); 
+        XLSX.utils.book_append_sheet(wb, ws, cls.substring(0, 31));
     });
 
-    XLSX.writeFile(wb, "Parents_Who_Not_Paid.xlsx");
+    XLSX.writeFile(wb, 'Parents_Who_Not_Paid.xlsx');
 }
 
 function downloadFeePdf() {
     if (!feeResultData) return;
     try {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4'); 
-        
+        const doc = new jsPDF('p', 'mm', 'a4');
+
         const sortedClasses = Object.keys(feeResultData).sort();
         const dateRange = `(01 Dec, 2023 - ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
 
         sortedClasses.forEach((cls, index) => {
             if (index > 0) doc.addPage();
-            
+
             const rows = feeResultData[cls];
-            const headers = [["Student Id", "Student Name", "Father Name", "Phone", "Session", "Class", "Due Amount"]];
-            const body = rows.map(std => [
-                std["Student Id"], 
-                std["Student Name"], 
-                std["Father Name"], 
-                std["Phone"], 
-                std["Session"], 
-                std["Class"], 
-                Number(std["Due Amount"] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+            const headers = [['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Due Amount']];
+            const body = rows.map((std) => [
+                std['Student Id'],
+                std['Student Name'],
+                std['Father Name'],
+                std['Phone'],
+                std['Session'],
+                std['Class'],
+                Number(std['Due Amount'] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
             ]);
 
             doc.autoTable({
@@ -1438,24 +1717,24 @@ function downloadFeePdf() {
                 columnStyles: {
                     0: { cellWidth: 20 },
                     3: { cellWidth: 25 },
-                    6: { halign: 'right', fontStyle: 'bold' } 
+                    6: { halign: 'right', fontStyle: 'bold' },
                 },
                 didDrawPage: function (data) {
                     // Header on every page
                     doc.setFontSize(14);
                     doc.setTextColor(30, 58, 138); // Darker blue
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`ED | Download Due Payment | ${dateRange}`, 105, 12, { align: 'center' }); 
-                    
+                    doc.text(`ED | Download Due Payment | ${dateRange}`, 105, 12, { align: 'center' });
+
                     doc.setFontSize(10);
                     doc.setTextColor(100);
                     doc.setFont('helvetica', 'normal');
                     doc.text(`Class: ${cls} | Pending Payments Report | Page ${data.pageNumber}`, 14, 20);
-                    
+
                     // Footer line
                     doc.setDrawColor(226, 232, 240);
                     doc.line(14, 22, 196, 22);
-                }
+                },
             });
         });
 
@@ -1464,16 +1743,16 @@ function downloadFeePdf() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = "Parents_Who_Not_Paid.pdf";
+        link.download = 'Parents_Who_Not_Paid.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
-        showToast("PDF report generated successfully!");
+
+        showToast('PDF report generated successfully!');
     } catch (err) {
-        console.error("PDF generation error:", err);
-        showToast("PDF Error: " + err.message, "error");
+        console.error('PDF generation error:', err);
+        showToast('PDF Error: ' + err.message, 'error');
     }
 }
 
@@ -1484,6 +1763,5 @@ function resetFeeTool() {
     document.getElementById('fee_duesStatus').textContent = '';
     document.getElementById('fee_paidStatus').textContent = '';
     document.getElementById('fee_resultsArea').style.display = 'none';
-    showToast("Data erased from memory.");
+    showToast('Data erased from memory.');
 }
-

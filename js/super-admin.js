@@ -4,7 +4,7 @@ let allSchools = []; // Local cache for filtering
 
 document.addEventListener('DOMContentLoaded', async () => {
     showOverlay(true);
-    
+
     // 1. Auth Guard (Strict)
     const isAuthorized = await checkSuperAdminAuth();
     if (!isAuthorized) {
@@ -61,14 +61,14 @@ async function loadPlatformStats() {
     try {
         const schoolSnap = await db.collection('schools').get();
         const studentSnap = await db.collection('students').get();
-        
+
         document.getElementById('countSchools').textContent = schoolSnap.size;
         document.getElementById('countStudents').textContent = studentSnap.size;
-        
-        const premiumCount = schoolSnap.docs.filter(d => d.data().stage >= 5).length;
+
+        const premiumCount = schoolSnap.docs.filter((d) => d.data().stage >= 5).length;
         document.getElementById('countPremium').textContent = premiumCount;
     } catch (e) {
-        console.error("Stats Error:", e);
+        console.error('Stats Error:', e);
     }
 }
 
@@ -80,12 +80,13 @@ async function loadSchoolsList() {
     if (!tableBody) return;
 
     try {
-        const snapshot = await db.collection('schools').orderBy('createdDate', 'desc').get();
-        allSchools = snapshot.docs.map(doc => doc.data());
+        const snapshot = await db.collection('schools').orderBy('schoolId', 'asc').get();
+        allSchools = snapshot.docs.map((doc) => doc.data());
         renderSchools(allSchools);
     } catch (e) {
-        console.error("Load Schools Error:", e);
-        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#f87171;">Error access database.</td></tr>';
+        console.error('Load Schools Error:', e);
+        tableBody.innerHTML =
+            '<tr><td colspan="6" style="text-align:center; color:#f87171;">Error access database.</td></tr>';
     }
 }
 
@@ -93,7 +94,7 @@ function renderSchools(schools) {
     const tableBody = document.getElementById('schoolTableBody');
     let html = '';
 
-    schools.forEach(school => {
+    schools.forEach((school) => {
         html += `
             <tr>
                 <td><code style="color:var(--super-primary); font-weight:700;">${school.schoolId}</code></td>
@@ -114,7 +115,9 @@ function renderSchools(schools) {
             </tr>
         `;
     });
-    tableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding:3rem; color:#94a3b8;">No schools matching search.</td></tr>';
+    tableBody.innerHTML =
+        html ||
+        '<tr><td colspan="6" style="text-align:center; padding:3rem; color:#94a3b8;">No schools matching search.</td></tr>';
 }
 
 /**
@@ -122,10 +125,11 @@ function renderSchools(schools) {
  */
 function filterSchools() {
     const term = document.getElementById('schoolSearch').value.toLowerCase();
-    const filtered = allSchools.filter(s => 
-        s.schoolName.toLowerCase().includes(term) || 
-        s.schoolId.toLowerCase().includes(term) ||
-        s.subdomain.toLowerCase().includes(term)
+    const filtered = allSchools.filter(
+        (s) =>
+            s.schoolName.toLowerCase().includes(term) ||
+            s.schoolId.toLowerCase().includes(term) ||
+            s.subdomain.toLowerCase().includes(term)
     );
     renderSchools(filtered);
 }
@@ -135,7 +139,10 @@ function filterSchools() {
  */
 async function registerNewSchool() {
     const name = document.getElementById('schoolName').value;
-    const subdomain = document.getElementById('subdomain').value.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const subdomain = document
+        .getElementById('subdomain')
+        .value.toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
     const email = document.getElementById('adminEmail').value;
     const stage = parseInt(document.getElementById('schoolStage').value);
 
@@ -143,21 +150,26 @@ async function registerNewSchool() {
         showOverlay(true);
         const snapshot = await db.collection('schools').get();
         const nextIdNum = snapshot.size + 1;
-        const schoolId = "SCH" + String(nextIdNum).padStart(3, '0');
+        const schoolId = 'SCH' + String(nextIdNum).padStart(3, '0');
 
         await db.collection('schools').doc(schoolId).set({
-            schoolId, schoolName: name, subdomain, adminEmail: email,
-            stage, status: 'active', createdDate: firebase.firestore.FieldValue.serverTimestamp()
+            schoolId,
+            schoolName: name,
+            subdomain,
+            adminEmail: email,
+            stage,
+            status: 'active',
+            createdDate: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
-        await logActivity("COMMISSION", `Registered new school: ${name} (${schoolId})`);
-        
-        showToast(`Provisioned: ${name}`, "success");
+        await logActivity('COMMISSION', `Registered new school: ${name} (${schoolId})`);
+
+        showToast(`Provisioned: ${name}`, 'success');
         document.getElementById('addSchoolForm').reset();
         closeModal('schoolModal');
         await refreshDashboard();
     } catch (e) {
-        showToast(e.message, "error");
+        showToast(e.message, 'error');
     } finally {
         showOverlay(false);
     }
@@ -167,7 +179,7 @@ async function registerNewSchool() {
  * Edit Logic
  */
 async function openEditModal(id) {
-    const school = allSchools.find(s => s.schoolId === id);
+    const school = allSchools.find((s) => s.schoolId === id);
     if (!school) return;
 
     document.getElementById('editSchoolId').value = school.schoolId;
@@ -187,16 +199,18 @@ async function updateSchool() {
     try {
         showOverlay(true);
         await db.collection('schools').doc(id).update({
-            schoolName: name, subdomain, stage,
-            lastModified: firebase.firestore.FieldValue.serverTimestamp()
+            schoolName: name,
+            subdomain,
+            stage,
+            lastModified: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
-        await logActivity("UPDATE", `Updated school info for ${name} (${id})`);
-        showToast("School updated successfully", "success");
+        await logActivity('UPDATE', `Updated school info for ${name} (${id})`);
+        showToast('School updated successfully', 'success');
         closeModal('editSchoolModal');
         await refreshDashboard();
     } catch (e) {
-        showToast(e.message, "error");
+        showToast(e.message, 'error');
     } finally {
         showOverlay(false);
     }
@@ -208,15 +222,15 @@ async function updateSchool() {
 async function toggleSchoolStatus(id, currentStatus) {
     const action = currentStatus === 'active' ? 'SUSPEND' : 'ACTIVATE';
     if (!confirm(`Are you sure you want to ${action} ${id}?`)) return;
-    
+
     const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
     try {
         showOverlay(true);
         await db.collection('schools').doc(id).update({ status: newStatus });
-        await logActivity("STATUS_CHANGE", `${action} school ID: ${id}`);
+        await logActivity('STATUS_CHANGE', `${action} school ID: ${id}`);
         await refreshDashboard();
     } catch (e) {
-        showToast(e.message, "error");
+        showToast(e.message, 'error');
     } finally {
         showOverlay(false);
     }
@@ -228,10 +242,14 @@ async function toggleSchoolStatus(id, currentStatus) {
 async function logActivity(type, detail) {
     try {
         await db.collection('logs_super').add({
-            type, detail, timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            admin: auth.currentUser?.email || 'System'
+            type,
+            detail,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            admin: auth.currentUser?.email || 'System',
         });
-    } catch (e) { console.warn("Log failed:", e); }
+    } catch (e) {
+        console.warn('Log failed:', e);
+    }
 }
 
 async function loadActivityLog() {
@@ -245,10 +263,11 @@ async function loadActivityLog() {
             return;
         }
 
-        container.innerHTML = snap.docs.map(doc => {
-            const log = doc.data();
-            const time = log.timestamp ? new Date(log.timestamp.seconds * 1000).toLocaleTimeString() : 'Just now';
-            return `
+        container.innerHTML = snap.docs
+            .map((doc) => {
+                const log = doc.data();
+                const time = log.timestamp ? new Date(log.timestamp.seconds * 1000).toLocaleTimeString() : 'Just now';
+                return `
                 <div style="background: rgba(255,255,255,0.03); padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05);">
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <span class="badge" style="background: rgba(99,102,241,0.1); color: #818cf8; width: 80px; text-align: center;">${log.type}</span>
@@ -257,16 +276,25 @@ async function loadActivityLog() {
                     <span style="font-size: 0.75rem; color: #64748b;">${time}</span>
                 </div>
             `;
-        }).join('');
-    } catch (e) { console.error(e); }
+            })
+            .join('');
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 /**
  * Global UI Helpers
  */
-function showOverlay(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function showOverlay(show) {
+    document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+}
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
 function showToast(msg, type) {
     // Reusing existing toast logic if available, or simple alert
     if (typeof showToastGlobal === 'function') {

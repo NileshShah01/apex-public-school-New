@@ -1,281 +1,294 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Facilities | Apex Public School</title>
 
-<title>Facilities | Apex Public School</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        <style>
+            .facility-hero {
+                position: relative;
+                height: 50vh;
+                min-height: 400px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: var(--white);
+                background:
+                    linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 58, 138, 0.6)),
+                    url('images/Facilities-Slide-img1.jpeg');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                margin-bottom: 4rem;
+            }
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-        .facility-hero {
-            position: relative;
-            height: 50vh;
-            min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--white);
-            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 58, 138, 0.6)), url("images/Facilities-Slide-img1.jpeg");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            margin-bottom: 4rem;
-        }
+            .facility-hero h1 {
+                font-size: 4rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-bottom: 1rem;
+            }
 
-        .facility-hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-        }
+            .facility-hero p {
+                font-size: 1.5rem;
+                opacity: 0.9;
+            }
 
-        .facility-hero p {
-            font-size: 1.5rem;
-            opacity: 0.9;
-        }
+            .slider-wrap {
+                overflow: hidden;
+                padding: 4rem 0;
+                background: var(--bg-gray);
+                margin: 4rem 0;
+            }
 
-        .slider-wrap {
-            overflow: hidden;
-            padding: 4rem 0;
-            background: var(--bg-gray);
-            margin: 4rem 0;
-        }
+            .slider-track {
+                display: flex;
+                gap: 2rem;
+                width: max-content;
+                animation: slide 40s linear infinite;
+            }
 
-        .slider-track {
-            display: flex;
-            gap: 2rem;
-            width: max-content;
-            animation: slide 40s linear infinite;
-        }
+            .slider-track img {
+                width: 350px;
+                height: 250px;
+                object-fit: cover;
+                border-radius: 1.5rem;
+                box-shadow: var(--shadow);
+            }
 
-        .slider-track img {
-            width: 350px;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 1.5rem;
-            box-shadow: var(--shadow);
-        }
+            @keyframes slide {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-50%);
+                }
+            }
 
-        @keyframes slide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+            .facility-info {
+                text-align: center;
+                padding: 4rem 2rem;
+                max-width: 800px;
+                margin: 0 auto;
+            }
 
-        .facility-info {
-            text-align: center;
-            padding: 4rem 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+            .facility-info i {
+                font-size: 3rem;
+                color: var(--primary);
+                margin-bottom: 1.5rem;
+            }
 
-        .facility-info i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-        }
+            .facility-info h2 {
+                font-size: 2.25rem;
+                color: var(--secondary);
+                margin-bottom: 1rem;
+            }
 
-        .facility-info h2 {
-            font-size: 2.25rem;
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
+            .gallery-preview {
+                padding: 5rem 2rem;
+                background: var(--bg-gray);
+            }
+        </style>
+    </head>
 
-        .gallery-preview {
-            padding: 5rem 2rem;
-            background: var(--bg-gray);
-        }
-    </style>
+    <body>
+        <div id="header"></div>
 
-</head>
-
-<body>
-
-<div id="header"></div>
-
-
-<section class="facility-hero" id="facilitiesHero">
-    <div>
-        <h1>School Facilities</h1>
-        <p id="facilitiesHeroSubtitle">Modern infrastructure for quality education</p>
-    </div>
-</section>
-
-<h2 class="section-title">Campus Life and Facilities</h2>
-
-<section class="slider-wrap">
-
-<div class="slider-track" id="facilitiesSliderTrack">
-  <img src="images/Facilities-Slide-img1.jpeg" alt="School Campus">
-  <img src="images/Facilities-Slide-img2.jpeg" alt="School Building">
-  <img src="images/Facilities-Slide-img3.jpeg" alt="School Playground">
-  <img src="images/Facilities-Slide-img4.jpeg" alt="School Office">
-  <img src="images/Bihar-Museum-img5.jpeg" alt="Bihar Museum School Trip">
-  <img src="images/Science-centre-Patna-img4.jpeg" alt=" Science Centre Patna School Trip">
-   <img src="images/Facilities-Slide-img1.jpeg" alt="School Campus">
-  <img src="images/Facilities-Slide-img2.jpeg" alt="School Building">
-</div>
-
-</section>
-
-
-<section class="reveal">
-    <h2 class="section-title">Our School Facilities</h2>
-    <p class="text-muted" style="text-align:center; margin-bottom:3rem;">Explore the resources that make learning exceptional at Apex.</p>
-    <div class="facility-buttons" id="facilitiesHoverGrid">
-        <div class="facility-btn">
-            <i class="fas fa-tv"></i>
-            <h3>Smart Classrooms</h3>
-            <div class="facility-panel">
-                <img src="images/Classroom-img1.jpeg" alt="Smart Classroom">
-                <p id="facilitiesDescSmart">Digital smart boards and interactive learning tools make education engaging.</p>
+        <section class="facility-hero" id="facilitiesHero">
+            <div>
+                <h1>School Facilities</h1>
+                <p id="facilitiesHeroSubtitle">Modern infrastructure for quality education</p>
             </div>
-        </div>
+        </section>
 
-        <div class="facility-btn">
-            <i class="fas fa-desktop"></i>
-            <h3>Computer Lab</h3>
-            <div class="facility-panel">
-                <img src="images/Computer Lap.jpeg" alt="Computer Lab">
-                <p id="facilitiesDescComputer">Students learn essential digital skills in our modern computer laboratory.</p>
+        <h2 class="section-title">Campus Life and Facilities</h2>
+
+        <section class="slider-wrap">
+            <div class="slider-track" id="facilitiesSliderTrack">
+                <img src="images/Facilities-Slide-img1.jpeg" alt="School Campus" />
+                <img src="images/Facilities-Slide-img2.jpeg" alt="School Building" />
+                <img src="images/Facilities-Slide-img3.jpeg" alt="School Playground" />
+                <img src="images/Facilities-Slide-img4.jpeg" alt="School Office" />
+                <img src="images/Bihar-Museum-img5.jpeg" alt="Bihar Museum School Trip" />
+                <img src="images/Science-centre-Patna-img4.jpeg" alt=" Science Centre Patna School Trip" />
+                <img src="images/Facilities-Slide-img1.jpeg" alt="School Campus" />
+                <img src="images/Facilities-Slide-img2.jpeg" alt="School Building" />
             </div>
-        </div>
+        </section>
 
-        <div class="facility-btn">
-            <i class="fas fa-futbol"></i>
-            <h3>Sports Ground</h3>
-            <div class="facility-panel">
-                <img src="images/Facilities-Slide-img1.jpeg" alt="Sports Ground">
-                <p id="facilitiesDescSports">Large playground for physical activities, cricket, and annual sports events.</p>
+        <section class="reveal">
+            <h2 class="section-title">Our School Facilities</h2>
+            <p class="text-muted" style="text-align: center; margin-bottom: 3rem">
+                Explore the resources that make learning exceptional at Apex.
+            </p>
+            <div class="facility-buttons" id="facilitiesHoverGrid">
+                <div class="facility-btn">
+                    <i class="fas fa-tv"></i>
+                    <h3>Smart Classrooms</h3>
+                    <div class="facility-panel">
+                        <img src="images/Classroom-img1.jpeg" alt="Smart Classroom" />
+                        <p id="facilitiesDescSmart">
+                            Digital smart boards and interactive learning tools make education engaging.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="facility-btn">
+                    <i class="fas fa-desktop"></i>
+                    <h3>Computer Lab</h3>
+                    <div class="facility-panel">
+                        <img src="images/Computer Lap.jpeg" alt="Computer Lab" />
+                        <p id="facilitiesDescComputer">
+                            Students learn essential digital skills in our modern computer laboratory.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="facility-btn">
+                    <i class="fas fa-futbol"></i>
+                    <h3>Sports Ground</h3>
+                    <div class="facility-panel">
+                        <img src="images/Facilities-Slide-img1.jpeg" alt="Sports Ground" />
+                        <p id="facilitiesDescSports">
+                            Large playground for physical activities, cricket, and annual sports events.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="facility-btn">
+                    <i class="fas fa-video"></i>
+                    <h3>CCTV Security</h3>
+                    <div class="facility-panel">
+                        <img src="images/Facilities-Slide-img2.jpeg" alt="Security" />
+                        <p id="facilitiesDescSecurity">
+                            Complete campus monitoring ensures a safe and secure environment for every child.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="facility-btn">
+                    <i class="fas fa-bus"></i>
+                    <h3>School Transport</h3>
+                    <div class="facility-panel">
+                        <img src="images/Facilities-Slide-img4.jpeg" alt="Transport" />
+                        <p id="facilitiesDescTransport">
+                            Safe and reliable school buses cover nearby areas for convenient travel.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="facility-btn">
+                    <i class="fas fa-child-reaching"></i>
+                    <h3>Playground</h3>
+                    <div class="facility-panel">
+                        <img src="images/Facilities-Slide-img3.jpeg" alt="Playground" />
+                        <p id="facilitiesDescPlayground">
+                            Well-maintained play area with swings and safe equipment for younger kids.
+                        </p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="facility-btn">
-            <i class="fas fa-video"></i>
-            <h3>CCTV Security</h3>
-            <div class="facility-panel">
-                <img src="images/Facilities-Slide-img2.jpeg" alt="Security">
-                <p id="facilitiesDescSecurity">Complete campus monitoring ensures a safe and secure environment for every child.</p>
+        <section class="slider-wrap reveal">
+            <h2 class="section-title">Facilities Gallery</h2>
+            <div class="slider-track" id="facilitiesGallerySliderTrack">
+                <!-- Dynamically loaded from cms-settings.js -->
+                <img src="images/Classroom-img1.jpeg" loading="lazy" alt="Classroom" />
+                <img src="images/School-Building.jpeg" loading="lazy" alt="School Building" />
+                <img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" alt="School Trip Science Centre" />
+                <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" loading="lazy" alt="Sports Competition" />
+                <img src="images/Bihar-Museum-img1.jpeg" loading="lazy" alt="School Trip Bihar Museum" />
+                <img src="images/Republic-Day-img1.jpeg" loading="lazy" alt="Republic Day -26th" />
             </div>
-        </div>
+        </section>
 
-        <div class="facility-btn">
-            <i class="fas fa-bus"></i>
-            <h3>School Transport</h3>
-            <div class="facility-panel">
-                <img src="images/Facilities-Slide-img4.jpeg" alt="Transport">
-                <p id="facilitiesDescTransport">Safe and reliable school buses cover nearby areas for convenient travel.</p>
+        <section class="reveal">
+            <h2 class="section-title">Academic Strength</h2>
+            <div class="stats-bar">
+                <div class="stat">
+                    <h2 class="counter" id="stat_students" data-target="300">0</h2>
+                    <p>Students</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_teachers" data-target="15">0</h2>
+                    <p>Teachers</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_classrooms" data-target="12">0</h2>
+                    <p>Classrooms</p>
+                </div>
+                <div class="stat">
+                    <h2 class="counter" id="stat_years" data-target="10">0</h2>
+                    <p>Years of Excellence</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="facility-btn">
-            <i class="fas fa-child-reaching"></i>
-            <h3>Playground</h3>
-            <div class="facility-panel">
-                <img src="images/Facilities-Slide-img3.jpeg" alt="Playground">
-                <p id="facilitiesDescPlayground">Well-maintained play area with swings and safe equipment for younger kids.</p>
+        <section class="reveal">
+            <div class="grid">
+                <div class="facility-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <h2>Safe and Secure Campus</h2>
+                    <p>
+                        Our school provides a safe environment with CCTV monitoring, clean drinking water and
+                        responsible supervision from teachers.
+                    </p>
+                </div>
+
+                <div class="facility-info">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h2>Learning Environment</h2>
+                    <p>
+                        Modern teaching methods with smart classrooms help students understand concepts clearly and
+                        develop strong academic skills.
+                    </p>
+                </div>
+
+                <div class="facility-info">
+                    <i class="fas fa-running"></i>
+                    <h2>Sports and Activities</h2>
+                    <p>
+                        Students participate in sports, cultural activities, educational trips and events to develop
+                        physical fitness and confidence.
+                    </p>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
+        <section class="cta reveal">
+            <h2>Admission Open 2026 to 2027</h2>
+            <p>Visit the school office or contact us for admission enquiry</p>
+            <button onclick="location.href = 'contact.html'">Contact School</button>
+        </section>
 
-<section class="slider-wrap reveal">
-    <h2 class="section-title">Facilities Gallery</h2>
-    <div class="slider-track" id="facilitiesGallerySliderTrack">
-        <!-- Dynamically loaded from cms-settings.js -->
-        <img src="images/Classroom-img1.jpeg" loading="lazy" alt="Classroom">
-        <img src="images/School-Building.jpeg" loading="lazy" alt="School Building">
-        <img src="images/Science-centre-Patna-img3.jpeg" loading="lazy" alt="School Trip Science Centre">
-        <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" loading="lazy" alt="Sports Competition">
-        <img src="images/Bihar-Museum-img1.jpeg" loading="lazy" alt="School Trip Bihar Museum">
-        <img src="images/Republic-Day-img1.jpeg" loading="lazy" alt="Republic Day -26th">
-    </div>
-</section>
+        <div id="footer"></div>
+        <div id="floating-button"></div>
 
+        <script src="script.js"></script>
 
-<section class="reveal">
-    <h2 class="section-title">Academic Strength</h2>
-    <div class="stats-bar">
-        <div class="stat"><h2 class="counter" id="stat_students" data-target="300">0</h2><p>Students</p></div>
-        <div class="stat"><h2 class="counter" id="stat_teachers" data-target="15">0</h2><p>Teachers</p></div>
-        <div class="stat"><h2 class="counter" id="stat_classrooms" data-target="12">0</h2><p>Classrooms</p></div>
-        <div class="stat"><h2 class="counter" id="stat_years" data-target="10">0</h2><p>Years of Excellence</p></div>
-    </div>
-</section>
-
-
-<section class="reveal">
-    <div class="grid">
-        <div class="facility-info">
-            <i class="fas fa-shield-alt"></i>
-            <h2>Safe and Secure Campus</h2>
-            <p>Our school provides a safe environment with CCTV monitoring, clean drinking water and responsible supervision from teachers.</p>
-        </div>
-
-        <div class="facility-info">
-            <i class="fas fa-graduation-cap"></i>
-            <h2>Learning Environment</h2>
-            <p>Modern teaching methods with smart classrooms help students understand concepts clearly and develop strong academic skills.</p>
-        </div>
-
-        <div class="facility-info">
-            <i class="fas fa-running"></i>
-            <h2>Sports and Activities</h2>
-            <p>Students participate in sports, cultural activities, educational trips and events to develop physical fitness and confidence.</p>
-        </div>
-    </div>
-</section>
-
-
-<section class="cta reveal">
-    <h2>Admission Open 2026 to 2027</h2>
-    <p>Visit the school office or contact us for admission enquiry</p>
-    <button onclick="location.href='contact.html'">Contact School</button>
-</section>
-
-
-<div id="footer"></div>
-<div id="floating-button"></div>
-
-<script src="script.js"></script>
-  
-<script>
-document.querySelectorAll(".counter").forEach(counter => {
-    counter.innerText = "0"
-    const update = () => {
-        const target = +counter.getAttribute("data-target")
-        const count = +counter.innerText
-        const inc = target / 80
-        if(count < target) {
-            counter.innerText = Math.ceil(count + inc)
-            setTimeout(update, 20)
-        } else {
-            counter.innerText = target
-        }
-    }
-    update()
-})
-</script>
-
-</body>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <script>
+            document.querySelectorAll('.counter').forEach((counter) => {
+                counter.innerText = '0';
+                const update = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const inc = target / 80;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(update, 20);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                update();
+            });
+        </script>
+    </body>
+</html>

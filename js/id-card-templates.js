@@ -18,9 +18,10 @@ const ID_TEMPLATES = {
             </div>
             <div style="text-align: center; margin-top: 3mm; position: relative; z-index: 1;">
                 <div class="gold-photo-frame" style="width: 28mm; height: 34mm; margin: 0 auto; border: 2mm solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background: #f8fafc; overflow: hidden; position: relative; border-radius: 4px;">
-                    ${data.photo ? 
-                        `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                        `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#cbd5e1;">
+                    ${
+                        data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                            : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#cbd5e1;">
                             <img src="${data.schoolLogo}" style="width:60%; opacity:0.1; filter:grayscale(1);">
                          </div>`
                     }
@@ -62,9 +63,10 @@ const ID_TEMPLATES = {
             <div style="padding: 2.5mm; position: relative; z-index: 1;">
                 <div style="display: flex; gap: 3mm; align-items: flex-start;">
                     <div class="photo-container-luxury" style="width: 25mm; height: 32mm; border: 0.8mm solid #1e3a8a; background: #f1f5f9; border-radius: 1mm;">
-                         ${data.photo ? 
-                            `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                            `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><img src="${data.schoolLogo}" style="width:50%; opacity:0.15;"></div>`
+                         ${
+                             data.photo
+                                 ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                                 : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><img src="${data.schoolLogo}" style="width:50%; opacity:0.15;"></div>`
                          }
                     </div>
                     <div style="flex: 1; text-align: left;">
@@ -104,9 +106,10 @@ const ID_TEMPLATES = {
             </div>
             <div style="text-align: center; margin-top: -12mm; position: relative; z-index: 5;">
                 <div class="luxury-photo-ring" style="width: 28mm; height: 28mm; border: 1mm solid #fff; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2); background: #fff; margin: 0 auto; overflow: hidden;">
-                     ${data.photo ? 
-                        `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                        `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; opacity:0.1;"><img src="${data.schoolLogo}" style="width:50%;"></div>`
+                     ${
+                         data.photo
+                             ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                             : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; opacity:0.1;"><img src="${data.schoolLogo}" style="width:50%;"></div>`
                      }
                 </div>
             </div>
@@ -148,9 +151,10 @@ const ID_TEMPLATES = {
             <div style="padding: 2.5mm 4mm;">
                  <div style="display: flex; gap: 4mm; align-items: flex-start;">
                      <div style="width: 26mm; height: 32mm; border: 0.8mm solid #0f172a; border-radius: 1mm; overflow: hidden; background: #f1f5f9;">
-                          ${data.photo ? 
-                             `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                             `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#cbd5e1;"><i class="fas fa-user" style="font-size:1.5rem;"></i></div>`
+                          ${
+                              data.photo
+                                  ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                                  : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#cbd5e1;"><i class="fas fa-user" style="font-size:1.5rem;"></i></div>`
                           }
                      </div>
                      <div style="flex: 1; text-align: left;">
@@ -191,9 +195,10 @@ const ID_TEMPLATES = {
             </div>
             <div style="text-align: center; position: relative; z-index: 1;">
                  <div style="width: 28mm; height: 34mm; border: 1mm double #fbbf24; margin: 0 auto; background: #fff; padding: 0.5mm; border-radius: 0.5mm;">
-                      ${data.photo ? 
-                         `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                         `<div style="width:100%; height:100%; opacity:0.1; display:flex; align-items:center; justify-content:center;"><img src="${data.schoolLogo}" style="width:60%;"></div>`
+                      ${
+                          data.photo
+                              ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                              : `<div style="width:100%; height:100%; opacity:0.1; display:flex; align-items:center; justify-content:center;"><img src="${data.schoolLogo}" style="width:60%;"></div>`
                       }
                  </div>
             </div>
@@ -235,9 +240,10 @@ const ID_TEMPLATES = {
             </div>
             <div class="photo-area" style="display: flex; justify-content: center; margin-top: -8mm; position: relative; z-index: 2;">
                 <div class="photo-frame" style="width: 25mm; height: 25mm; background-color: #f1f5f9; border: 1mm solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.1); overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    ${data.photo ? 
-                        `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                        `<div style="text-align: center;"><i class="fas fa-user" style="font-size: 2rem; color: #cbd5e1;"></i></div>`
+                    ${
+                        data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                            : `<div style="text-align: center;"><i class="fas fa-user" style="font-size: 2rem; color: #cbd5e1;"></i></div>`
                     }
                 </div>
             </div>
@@ -279,9 +285,10 @@ const ID_TEMPLATES = {
             <div class="left-panel" style="width: 30%; background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; position: relative; padding: 2mm;">
                 <div class="school-name-side" style="position: absolute; top: 3mm; font-size: 8pt; font-weight: 800; text-transform: uppercase; text-align: center; width: 90%; line-height: 1.1;">APEX PUBLIC</div>
                 <div class="photo-frame-side" style="width: 22mm; height: 22mm; background: rgba(255,255,255,0.25); border-radius: 2mm; margin-top: 4mm; display: flex; align-items: center; justify-content: center; border: 0.5mm solid rgba(255,255,255,0.4); overflow: hidden;">
-                    ${data.photo ? 
-                        `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                        `<div style="font-size:6pt; font-weight:700;">PHOTO</div>`
+                    ${
+                        data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                            : `<div style="font-size:6pt; font-weight:700;">PHOTO</div>`
                     }
                 </div>
                 <div style="margin-top: 3mm; background: rgba(0,0,0,0.15); padding: 0.5mm 3mm; border-radius: 1mm; font-size: 7.5pt; font-weight: 800;">ID: ${data.studentId}</div>
@@ -326,9 +333,10 @@ const ID_TEMPLATES = {
             <div class="left-panel" style="width: 34%; background: linear-gradient(145deg, #FF416C 0%, #FF4B2B 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; position: relative; padding: 3mm;">
                 <div class="school-name-side" style="position: absolute; top: 3.5mm; left: 0; right: 0; font-size: 8.5pt; font-weight: 800; text-transform: uppercase; text-align: center; line-height: 1.1;">APEX SCHOOL</div>
                 <div class="photo-frame-side" style="width: 24mm; height: 24mm; background: rgba(255,255,255,0.2); border-radius: 3mm; margin-top: 5mm; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); border: 0.6mm solid rgba(255,255,255,0.35); overflow: hidden;">
-                    ${data.photo ? 
-                        `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">` :
-                        `<div style="font-size:20pt;">👤</div>`
+                    ${
+                        data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;">`
+                            : `<div style="font-size:20pt;">👤</div>`
                     }
                 </div>
                 <div style="margin-top: 4mm; display: flex; flex-direction: column; align-items: center;">
@@ -373,7 +381,7 @@ const ID_TEMPLATES = {
                 </div>
             </div>
         </div>
-    `
+    `,
 };
 
 // Export to window
