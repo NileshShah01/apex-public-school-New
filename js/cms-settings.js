@@ -8,9 +8,11 @@
             return;
         }
 
-        const page = window.location.pathname.split('/').pop() || 'index.html';
-        const pageKey = page.replace('.html', '') || 'index';
-        applyPageText(pageKey === 'index' ? 'home' : pageKey);
+        const page = window.location.pathname.split('/').pop() || 'school.html';
+        const pageKey = page.replace('.html', '') || 'school';
+        // Map 'school' or 'index' to 'home'
+        const normalizedKey = (pageKey === 'school' || pageKey === 'index') ? 'home' : pageKey;
+        applyPageText(normalizedKey);
 
         loadGeneralSettings();
         loadBirthdays();
@@ -36,7 +38,7 @@
         try {
             const doc = await schoolDoc('settings', 'aboutPage').get();
             if (doc.exists && doc.data().heroUrl) {
-                hero.style.backgroundImage = `url("${doc.data().heroUrl}")`;
+                hero.style.backgroundImage = `url("${ensureAbsoluteUrl(doc.data().heroUrl)}")`;
             }
         } catch (e) {
             console.error('Error loading about hero:', e);
@@ -58,11 +60,11 @@
             const data = doc.data();
 
             // 1. Hero
-            if (hero && data.heroUrl) hero.style.backgroundImage = `url("${data.heroUrl}")`;
+            if (hero && data.heroUrl) hero.style.backgroundImage = `url("${ensureAbsoluteUrl(data.heroUrl)}")`;
 
             // 2. Top Slider (Campus Life)
             if (sliderTrack && data.sliderUrls && data.sliderUrls.length > 0) {
-                const imgHtml = data.sliderUrls.map((url) => `<img src="${url}" alt="Campus">`).join('');
+                const imgHtml = data.sliderUrls.map((url) => `<img src="${ensureAbsoluteUrl(url)}" alt="Campus">`).join('');
                 sliderTrack.innerHTML = imgHtml + imgHtml; // Duplicate for infinite loop
             }
 
@@ -70,14 +72,14 @@
             if (hoverGrid && data.featureUrls && data.featureUrls.length > 0) {
                 const featureImages = hoverGrid.querySelectorAll('.facility-panel img');
                 data.featureUrls.forEach((url, i) => {
-                    if (featureImages[i] && url) featureImages[i].src = url;
+                    if (featureImages[i] && url) featureImages[i].src = ensureAbsoluteUrl(url);
                 });
             }
 
             // 4. Bottom Gallery Slider
             if (gallerySliderTrack && data.galleryUrls && data.galleryUrls.length > 0) {
                 const imgHtml = data.galleryUrls
-                    .map((url) => `<img src="${url}" loading="lazy" alt="Facility Photo">`)
+                    .map((url) => `<img src="${ensureAbsoluteUrl(url)}" loading="lazy" alt="Facility Photo">`)
                     .join('');
                 gallerySliderTrack.innerHTML = imgHtml + imgHtml; // Duplicate for infinite loop
             }
@@ -119,11 +121,25 @@
             const doc = await schoolDoc('pageText', pageKey).get();
             if (doc.exists) {
                 const data = doc.data();
-                for (const [id, value] of Object.entries(data)) {
-                    const el = document.getElementById(id);
-                    if (el && value) {
-                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = value;
-                        else el.innerText = value;
+                const pagePrefix = pageKey.charAt(0).toLowerCase() + pageKey.slice(1);
+
+                for (const [dbKey, value] of Object.entries(data)) {
+                    if (!value || dbKey === 'updatedAt' || dbKey === 'schoolId') continue;
+
+                    // Try multiple ID mapping strategies
+                    const possibleIds = [
+                        dbKey, // exact match
+                        pagePrefix + dbKey.charAt(0).toUpperCase() + dbKey.slice(1), // academicsHeaderSubtitle
+                        'text' + pageKey.charAt(0).toUpperCase() + pageKey.slice(1) + dbKey.charAt(0).toUpperCase() + dbKey.slice(1) // textAcademicsHeaderSubtitle (for admin)
+                    ];
+
+                    for (const id of possibleIds) {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = value;
+                            else el.innerText = value;
+                            break; // found and applied
+                        }
                     }
                 }
             }
@@ -145,20 +161,27 @@
             }
 
             if (urls.length === 0) {
-                // Fallback defaults
-                urls = [
-                    'images/School-Building.jpeg',
-                    'images/Bihar-Museum-img4.jpeg',
-                    'images/Science-centre-Patna-img15.jpeg',
-                    'images/Republic-Day-img1.jpeg',
-                ];
+                // Fallback defaults - use generic placeholders or SCH001 specific ones
+                if (window.CURRENT_SCHOOL_ID === 'SCH001') {
+                    urls = [
+                        '/images/School-Building.jpeg',
+                        '/images/Bihar-Museum-img4.jpeg',
+                        '/images/Science-centre-Patna-img15.jpeg',
+                        '/images/Republic-Day-img1.jpeg',
+                    ];
+                } else {
+                    urls = [
+                        'https://images.unsplash.com/photo-1523050853064-dbad350e700a?auto=format&fit=crop&w=1200&q=80',
+                        'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=1200&q=80'
+                    ];
+                }
             }
 
             slider.innerHTML = '';
             dotsContainer.innerHTML = '';
             urls.forEach((url, i) => {
                 const img = document.createElement('img');
-                img.src = url;
+                img.src = ensureAbsoluteUrl(url);
                 img.className = i === 0 ? 'slide active' : 'slide';
                 img.id = `slide_${i + 1}`;
                 slider.appendChild(img);
@@ -177,6 +200,13 @@
         }
     }
 
+    // Helper to ensure image URLs are absolute root-relative
+    function ensureAbsoluteUrl(url) {
+        if (!url) return '';
+        if (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:')) return url;
+        return '/' + url;
+    }
+
     // ===================== HOME PAGE MEMORIES =====================
     async function loadHomeMemories() {
         const grid = document.getElementById('homeMemoriesGrid');
@@ -189,21 +219,21 @@
                 if (urls.length > 0) {
                     grid.innerHTML = '';
                     urls.forEach((url) => {
-                        grid.innerHTML += `<img src="${url}" loading="lazy" onclick="openLightbox(this)" style="cursor:pointer;">`;
+                        grid.innerHTML += `<img src="${ensureAbsoluteUrl(url)}" loading="lazy" onclick="openLightbox(this)" style="cursor:pointer;">`;
                     });
                     return;
                 }
             }
             // Fallback to static defaults
             grid.innerHTML = `
-                <img src="images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
-                <img src="images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
-                <img src="images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
-                <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
-                <img src="images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
-                <img src="images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
-                <img src="images/Science-centre-Patna-img1.jpeg" onclick="openLightbox(this)">
-                <img src="images/Republic-Day-img2.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Science-centre-Patna-img1.jpeg" onclick="openLightbox(this)">
+                <img src="/images/Republic-Day-img2.jpeg" onclick="openLightbox(this)">
             `;
         } catch (e) {
             console.error('Error loading home memories:', e);
@@ -224,7 +254,7 @@
                     data.forEach((item) => {
                         track.innerHTML += `
                             <div class="facility-slide">
-                                <img src="${item.url}" loading="lazy">
+                                <img src="${ensureAbsoluteUrl(item.url)}" loading="lazy">
                                 <div class="facility-name">${item.name}</div>
                             </div>`;
                     });
@@ -233,10 +263,10 @@
             }
             // Fallback to defaults if no data in DB
             track.innerHTML = `
-                <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
-                <div class="facility-slide"><img src="images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
-                <div class="facility-slide"><img src="images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
-                <div class="facility-slide"><img src="images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
+                <div class="facility-slide"><img src="/images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
+                <div class="facility-slide"><img src="/images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
+                <div class="facility-slide"><img src="/images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
+                <div class="facility-slide"><img src="/images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
             `;
         } catch (e) {
             console.error('Error loading home facilities:', e);
@@ -267,7 +297,7 @@
                     if (container && urls && urls.length > 0) {
                         container.innerHTML = '';
                         urls.forEach((url) => {
-                            container.innerHTML += `<img src="${url}" style="width:100%; height:80px; object-fit:cover; border-radius:0.5rem; cursor:pointer;" onclick="event.stopPropagation(); openLightbox({src:'${url}'})">`;
+                            container.innerHTML += `<img src="${ensureAbsoluteUrl(url)}" style="width:100%; height:80px; object-fit:cover; border-radius:0.5rem; cursor:pointer;" onclick="event.stopPropagation(); openLightbox({src:'${ensureAbsoluteUrl(url)}'})">`;
                         });
                     } else if (container) {
                         container.innerHTML =
@@ -286,34 +316,56 @@
                 if (!doc.exists) return;
                 const d = doc.data();
 
+                // 1. Branding: Names & Text
+                const textMap = {
+                    'header-school-name': d.schoolName || d.name,
+                    'mobile-school-name': d.schoolName || d.name,
+                    'footer-school-name': d.schoolName || d.name,
+                    'header-school-location': d.schoolLocation || d.location,
+                    'header-school-udise-reg': d.schoolUdiseReg || `UDISE: ${d.schoolUdise || d.udise || '-'} | Registration: ${d.schoolReg || d.reg || '-'}`,
+                    'footer-school-tagline': d.tagline,
+                    'footer-address-short': d.address_short || d.schoolLocation || d.location,
+                    'footer-address-full': d.address_full || d.address,
+                    'footer-copyright': d.copyright || `© ${new Date().getFullYear()} ${d.schoolName || d.name}. All Rights Reserved.`,
+                    'dyn-phone': d.phone,
+                    'footer-phone': d.phone ? `📞 ${d.phone}` : '',
+                    'dyn-email': d.email,
+                    'footer-email': d.email ? `✉ ${d.email}` : '',
+                };
+
+                Object.entries(textMap).forEach(([id, val]) => {
+                    if (!val) return;
+                    document.querySelectorAll(`#${id}, .${id}`).forEach(el => el.textContent = val);
+                });
+
+                // 2. Branding: Logos
+                const logoUrl = d.schoolLogo || d.logoUrl;
+                if (logoUrl) {
+                    const logoIds = ['header-logo', 'mobile-header-logo'];
+                    logoIds.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.src = ensureAbsoluteUrl(logoUrl);
+                    });
+                }
+
+                // 3. Map
+                if (d.mapIframeUrl) {
+                    const mapEl = document.getElementById('footer-map-iframe');
+                    if (mapEl) mapEl.src = d.mapIframeUrl;
+                }
+
                 // Marquee
                 if (d.marquee)
                     document
                         .querySelectorAll('.dyn-marquee, #dyn-marquee, marquee')
                         .forEach((el) => (el.textContent = d.marquee));
 
-                // Phone
+                // WhatsApp Link
                 if (d.phone) {
-                    document
-                        .querySelectorAll('.dyn-phone, #dyn-phone, [data-cms="phone"]')
-                        .forEach((el) => (el.textContent = d.phone));
                     document
                         .querySelectorAll('.float-whatsapp')
                         .forEach((el) => (el.href = 'https://wa.me/' + d.phone.replace(/[^0-9]/g, '')));
                 }
-
-                // Email
-                if (d.email) {
-                    document
-                        .querySelectorAll('.dyn-email, #dyn-email, [data-cms="email"]')
-                        .forEach((el) => (el.textContent = d.email));
-                }
-
-                // Address
-                if (d.address)
-                    document
-                        .querySelectorAll('.dyn-address, #dyn-address, [data-cms="address"]')
-                        .forEach((el) => (el.textContent = d.address));
 
                 // Stats — update data-target and restart counter animation
                 const stats = {
@@ -330,10 +382,10 @@
                     }
                 });
 
-                // Hero Slider
+                // Hero Slider Fallback (Legacy check)
                 ['1', '2', '3', '4'].forEach((n) => {
                     const img = document.getElementById('slide_' + n);
-                    if (img && d['hero_' + n]) img.src = d['hero_' + n];
+                    if (img && d['hero_' + n]) img.src = ensureAbsoluteUrl(d['hero_' + n]);
                 });
 
                 // Admission Status
@@ -494,51 +546,53 @@
         const filters = document.getElementById('galleryFilters');
         if (!container) return;
 
-        // LEGACY IMAGES INTEGRATION
-        const legacyImages = [
-            { url: 'images/Facilities-Slide-img1.jpeg', category: 'Facilities' },
-            { url: 'images/Computer Lap.jpeg', category: 'Facilities' },
-            { url: 'images/Facilities-Slide-img2.jpeg', category: 'Facilities' },
-            { url: 'images/Facilities-Slide-img3.jpeg', category: 'Facilities' },
-            { url: 'images/Facilities-Slide-img4.jpeg', category: 'Facilities' },
-            { url: 'images/Classroom-img1.jpeg', category: 'Facilities' },
-            { url: 'images/Bihar-Museum-img1.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img2.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img3.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img4.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img5.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img6.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img7.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img8.jpeg', category: 'Museum' },
-            { url: 'images/Bihar-Museum-img10.jpeg', category: 'Museum' },
-            { url: 'images/Science-centre-Patna-img3.jpeg', category: 'Science' },
-            { url: 'images/Republic-Day-img1.jpeg', category: 'Events' },
-            { url: 'images/Republic-Day-img2.jpeg', category: 'Events' },
-            { url: 'images/Republic-Day-img3.jpeg', category: 'Events' },
-            { url: 'images/Sports-Event-Prize-Distribution-img1.jpeg', category: 'Sports' },
-            { url: 'images/Sports-Event-Prize-Distribution-img2.jpeg', category: 'Sports' },
-            { url: 'images/Vaisali-School-Trip-img1.jpeg', category: 'Trip' },
-            { url: 'images/Vaisali-School-Trip-img2.jpeg', category: 'Trip' },
-            { url: 'images/Vaisali-School-Trip-img3.jpeg', category: 'Trip' },
-            { url: 'images/Science-centre-Patna-img1.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img2.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img4.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img5.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img6.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img7.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img8.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img9.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img10.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img11.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img12.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img13.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img14.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img15.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img16.jpeg', category: 'Science' },
-            { url: 'images/Science-centre-Patna-img35.jpeg', category: 'Science' },
-        ];
-
-        let allImages = [...legacyImages];
+        // LEGACY IMAGES INTEGRATION (Only for SCH001)
+        let allImages = [];
+        if (window.CURRENT_SCHOOL_ID === 'SCH001') {
+            const legacyImages = [
+                { url: '/images/Facilities-Slide-img1.jpeg', category: 'Facilities' },
+                { url: '/images/Computer Lap.jpeg', category: 'Facilities' },
+                { url: '/images/Facilities-Slide-img2.jpeg', category: 'Facilities' },
+                { url: '/images/Facilities-Slide-img3.jpeg', category: 'Facilities' },
+                { url: '/images/Facilities-Slide-img4.jpeg', category: 'Facilities' },
+                { url: '/images/Classroom-img1.jpeg', category: 'Facilities' },
+                { url: '/images/Bihar-Museum-img1.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img2.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img3.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img4.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img5.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img6.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img7.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img8.jpeg', category: 'Museum' },
+                { url: '/images/Bihar-Museum-img10.jpeg', category: 'Museum' },
+                { url: '/images/Science-centre-Patna-img3.jpeg', category: 'Science' },
+                { url: '/images/Republic-Day-img1.jpeg', category: 'Events' },
+                { url: '/images/Republic-Day-img2.jpeg', category: 'Events' },
+                { url: '/images/Republic-Day-img3.jpeg', category: 'Events' },
+                { url: '/images/Sports-Event-Prize-Distribution-img1.jpeg', category: 'Sports' },
+                { url: '/images/Sports-Event-Prize-Distribution-img2.jpeg', category: 'Sports' },
+                { url: '/images/Vaisali-School-Trip-img1.jpeg', category: 'Trip' },
+                { url: '/images/Vaisali-School-Trip-img2.jpeg', category: 'Trip' },
+                { url: '/images/Vaisali-School-Trip-img3.jpeg', category: 'Trip' },
+                { url: '/images/Science-centre-Patna-img1.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img2.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img4.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img5.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img6.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img7.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img8.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img9.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img10.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img11.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img12.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img13.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img14.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img15.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img16.jpeg', category: 'Science' },
+                { url: '/images/Science-centre-Patna-img35.jpeg', category: 'Science' },
+            ];
+            allImages = [...legacyImages];
+        }
 
         schoolData('gallery')
             .orderBy('createdAt', 'desc')
@@ -583,9 +637,10 @@
 
             filteredImages.forEach((d) => {
                 const catBadge = d.category ? `<span class="card-category">${d.category}</span>` : '';
+                const absUrl = ensureAbsoluteUrl(d.url);
                 container.innerHTML += `
-                    <div class="gallery-card" onclick="openLightbox({src:'${d.url}'})">
-                        <img src="${d.url}" alt="${d.caption || 'Gallery'}" loading="lazy">
+                    <div class="gallery-card" onclick="openLightbox({src:'${absUrl}'})">
+                        <img src="${absUrl}" alt="${d.caption || 'Gallery'}" loading="lazy">
                         ${catBadge}
                         <div class="card-overlay">
                             ${d.caption ? `<div class="card-caption">${d.caption}</div>` : ''}
@@ -610,7 +665,7 @@
                 snap.forEach((doc) => {
                     const d = doc.data();
                     container.innerHTML += `<div class="premium-card" style="padding:1.5rem; text-align:center;">
-                    <img src="${d.photoUrl || 'images/default-avatar.png'}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:3px solid var(--primary-light);">
+                    <img src="${ensureAbsoluteUrl(d.photoUrl || '/images/default-avatar.png')}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:3px solid var(--primary-light);">
                     <h3 style="font-size:1.1rem; margin-bottom:0.25rem;">${d.name}</h3>
                     <p style="color:var(--primary); font-weight:600; font-size:0.9rem;">${d.role}</p>
                     ${d.qualifications ? `<p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">${d.qualifications}</p>` : ''}

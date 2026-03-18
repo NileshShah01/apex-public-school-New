@@ -319,7 +319,7 @@ async function saveExamSchedule() {
     if (!examId || !className) return;
 
     const rows = document.querySelectorAll('#scheduleTableBody tr');
-    const batch = db.batch();
+    const batch = (window.db || firebase.firestore()).batch();
 
     try {
         setLoading(true);
@@ -504,7 +504,7 @@ async function saveMarksGrid() {
     if (!examId || !subjectId || !className || !sectionName) return;
 
     const rows = document.querySelectorAll('#marksGridTableBody tr');
-    const batch = db.batch();
+    const batch = (window.db || firebase.firestore()).batch();
 
     try {
         showLoading(true);
@@ -1142,7 +1142,7 @@ async function saveAttnMarkGrid() {
 
     try {
         setLoading(true);
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         rows.forEach((row) => {
             const studentId = row.querySelector('.attn-status').dataset.id;
             const status = row.querySelector('.attn-status').value;
@@ -1499,7 +1499,7 @@ async function saveExamAttendance() {
     try {
         setLoading(true);
         const rows = document.querySelectorAll('#examAttGridBody tr');
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
 
         rows.forEach((row) => {
             const studentId = row.dataset.studentId;

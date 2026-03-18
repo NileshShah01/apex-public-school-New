@@ -113,7 +113,7 @@ async function handleSessionSubmit(event) {
 
         // If this session is marked active, deactivate all others first
         if (active) {
-            const batch = db.batch();
+            const batch = (window.db || firebase.firestore()).batch();
             erpState.sessions.forEach((s) => {
                 if (s.active) batch.update(schoolDoc('sessions', s.id), { active: false });
             });
@@ -143,7 +143,7 @@ async function handleSessionSubmit(event) {
 async function toggleSessionActive(sessionId, shouldBeActive) {
     try {
         showLoading(true);
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
 
         // Deactivate all
         erpState.sessions.forEach((s) => {
@@ -308,7 +308,10 @@ async function loadClassesForRegistration() {
     }
 
     try {
-        const snapshot = await schoolData('classes').where('sessionId', '==', sessionId).get();
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc') // Added orderBy for consistency
+            .get();
 
         const classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         classSelect.innerHTML =
@@ -357,7 +360,7 @@ async function getNextStudentId() {
     const counterRef = schoolDoc('counters', 'students');
 
     try {
-        return await db.runTransaction(async (transaction) => {
+        return await (window.db || firebase.firestore()).runTransaction(async (transaction) => {
             const doc = await transaction.get(counterRef);
             if (!doc.exists) {
                 transaction.set(counterRef, withSchool({ lastId: 1000 }));
@@ -740,7 +743,7 @@ async function handleBulkElectiveMapping() {
 
     try {
         showLoading(true);
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         checkedStudents.forEach((id) => {
             batch.update(schoolDoc('students', id), {
                 electives: firebase.firestore.FieldValue.arrayUnion(subject),

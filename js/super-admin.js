@@ -146,12 +146,16 @@ async function registerNewSchool() {
     const email = document.getElementById('adminEmail').value;
     const stage = parseInt(document.getElementById('schoolStage').value);
 
+    const logo = document.getElementById('schoolLogo').value;
+    const password = document.getElementById('adminPassword').value;
+
     try {
         showOverlay(true);
         const snapshot = await db.collection('schools').get();
         const nextIdNum = snapshot.size + 1;
         const schoolId = 'SCH' + String(nextIdNum).padStart(3, '0');
 
+        // 1. Create School Record
         await db.collection('schools').doc(schoolId).set({
             schoolId,
             schoolName: name,
@@ -159,7 +163,19 @@ async function registerNewSchool() {
             adminEmail: email,
             stage,
             status: 'active',
+            logoUrl: logo,
+            initialPass: password, // For manual setup reference
             createdDate: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // 2. Initialize School Settings (Provisioning)
+        await db.collection('schools').doc(schoolId).collection('settings').doc('theme').set({
+            logoUrl: logo,
+            schoolName: name,
+            primaryColor: '#0f172a',
+            sidebarColor: '#1e293b',
+            updatedBy: 'System',
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
         await logActivity('COMMISSION', `Registered new school: ${name} (${schoolId})`);

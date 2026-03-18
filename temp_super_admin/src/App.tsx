@@ -183,8 +183,7 @@ export default function App() {
       <aside className="w-72 glass-panel m-4 flex flex-col border-r-0">
         <div className="p-8 flex items-center gap-3">
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center glow-blue transition-all duration-500"
-            style={{ backgroundColor: config.accentColor }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center glow-blue transition-all duration-500 bg-brand-accent"
           >
             {renderLogo()}
           </div>
@@ -209,26 +208,34 @@ export default function App() {
               onClick={() => setActiveTab(item.name)}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
                 activeTab === item.name 
-                ? 'bg-white/10 text-white border border-white/10' 
+                ? 'bg-white/10 text-white border border-white/10 active-nav-item' 
                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
               }`}
-              style={activeTab === item.name ? { boxShadow: `0 0 15px ${config.accentColor}26`, borderColor: `${config.accentColor}4d` } : {}}
+              style={activeTab === item.name ? { 
+                boxShadow: `0 0 15px ${config.accentColor}26`, 
+                borderColor: `${config.accentColor}4d` 
+              } : {}}
+              title={`Navigate to ${item.name}`}
             >
-              <item.icon className={`w-5 h-5 transition-colors ${activeTab === item.name ? '' : 'group-hover:text-blue-300'}`} style={activeTab === item.name ? { color: config.accentColor } : {}} />
+              <item.icon 
+                className={`w-5 h-5 transition-colors ${activeTab === item.name ? 'text-brand-accent' : 'group-hover:text-blue-300'}`} 
+              />
               <span className="font-medium text-sm">{item.name}</span>
               {activeTab === item.name && (
-                <motion.div 
-                  layoutId="active" 
-                  className="ml-auto w-1.5 h-1.5 rounded-full" 
-                  style={{ backgroundColor: config.accentColor }}
-                />
+                  <motion.div 
+                    layoutId="active" 
+                    className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-accent" 
+                  />
               )}
             </button>
           ))}
         </nav>
 
         <div className="p-4 mt-auto">
-          <button className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-all">
+          <button 
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-all"
+            title="Logout from the system"
+          >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Logout</span>
           </button>
@@ -246,6 +253,7 @@ export default function App() {
                 type="text" 
                 placeholder="Search schools, subdomains, or analytics..." 
                 className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                title="Search platform for schools, subdomains, or analytics"
               />
             </div>
           </div>
@@ -320,6 +328,7 @@ const DashboardView = ({ showToast }: { showToast: (message: string, type?: 'suc
           key={stat.label} 
           className="glass-card p-6 group cursor-pointer"
           onClick={() => showToast(`Viewing details for ${stat.label}`, 'info')}
+          title={`View details for ${stat.label}`}
         >
           <div className="flex justify-between items-start mb-4">
             <div className={`p-3 rounded-xl bg-white/5 group-hover:bg-blue-500/10 transition-colors`}>
@@ -489,12 +498,14 @@ const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], se
             <button 
               onClick={() => showToast('Filters applied', 'info')}
               className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-all text-slate-300"
+              title="Filter school records"
             >
               Filter
             </button>
             <button 
               onClick={() => showToast('Exporting school data...', 'info')}
               className="px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 text-white"
+              title="Export school data as CSV"
             >
               Export CSV
             </button>
@@ -563,7 +574,12 @@ const SchoolsView = ({ schools, setSchools, showToast }: { schools: School[], se
                     >
                       <Settings className="w-4 h-4" />
                     </button>
-                    <button className="p-2 hover:bg-white/10 rounded-lg transition-all text-slate-400 hover:text-white"><ChevronRight className="w-4 h-4" /></button>
+                    <button 
+                      className="p-2 hover:bg-white/10 rounded-lg transition-all text-slate-400 hover:text-white"
+                      title="View School Details"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -590,7 +606,12 @@ const AddSchoolView = ({ showToast }: { showToast: (message: string, type?: 'suc
         <div className="space-y-2">
           <label className="text-sm text-slate-400">Subdomain</label>
           <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
-            <input type="text" className="bg-transparent text-white outline-none flex-1" placeholder="harvard" />
+            <input 
+              type="text" 
+              className="bg-transparent text-white outline-none flex-1" 
+              placeholder="harvard" 
+              title="Enter school subdomain"
+            />
             <span className="text-slate-500">.snrworld.com</span>
           </div>
         </div>
@@ -605,9 +626,17 @@ const AddSchoolView = ({ showToast }: { showToast: (message: string, type?: 'suc
       </div>
       <div className="space-y-2">
         <label className="text-sm text-slate-400">Admin Email</label>
-        <input type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="admin@school.com" />
+        <input 
+          type="email" 
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none" 
+          placeholder="admin@school.com" 
+          title="Enter admin email address"
+        />
       </div>
-      <button className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">
+      <button 
+        className="w-full py-3 bg-blue-600 rounded-xl font-bold text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20"
+        title="Provision the new school instance"
+      >
         Provision School Instance
       </button>
     </form>
@@ -635,6 +664,8 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
               value={config.name}
               onChange={(e) => setConfig({ ...config, name: e.target.value })}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" 
+              placeholder="Enter Dashboard Name"
+              title="Dashboard Name Input"
             />
           </div>
           <div className="space-y-4">
@@ -646,6 +677,7 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
                   onClick={() => setConfig({ ...config, accentColor: color })}
                   className={`w-10 h-10 rounded-full border-2 transition-all ${config.accentColor === color ? 'border-white scale-110' : 'border-transparent'}`}
                   style={{ backgroundColor: color }}
+                  title={`Select ${color} as accent color`}
                 />
               ))}
               <input 
@@ -670,6 +702,7 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
                   className={`flex-1 flex items-center justify-center gap-3 p-4 rounded-xl border transition-all ${
                     config.theme === theme ? 'bg-white/10 border-white/20 text-white' : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
                   }`}
+                  title={`Switch to ${theme} Mode`}
                 >
                   {theme === 'Dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                   <span className="font-medium">{theme} Mode</span>
@@ -687,6 +720,7 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
                   className={`p-3 rounded-xl border transition-all flex items-center justify-center ${
                     config.logo === iconName ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5 hover:bg-white/10'
                   }`}
+                  title={`Select ${iconName} as platform logo`}
                 >
                   {iconName === 'Globe' && <Globe className="w-5 h-5 text-blue-400" />}
                   {iconName === 'Zap' && <Zap className="w-5 h-5 text-yellow-400" />}
@@ -704,7 +738,7 @@ const AppearanceView = ({ config, setConfig, showToast }: { config: any, setConf
       <h3 className="text-lg font-bold text-white mb-2">Live Preview</h3>
       <p className="text-sm text-slate-400 mb-6">This is how your branding will appear to other administrators.</p>
       <div className="p-6 rounded-2xl bg-[#030303] border border-white/10 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: config.accentColor }}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-accent">
           {config.logo === 'Globe' && <Globe className="w-6 h-6 text-white" />}
           {config.logo === 'Zap' && <Zap className="w-6 h-6 text-white" />}
           {config.logo === 'School' && <SchoolIcon className="w-6 h-6 text-white" />}
@@ -836,6 +870,7 @@ const SubscriptionView = ({ showToast }: { showToast: (message: string, type?: '
           <button 
             onClick={() => showToast(`Switched to ${plan.name} plan`, 'info')}
             className={`w-full py-2.5 rounded-xl font-bold transition-all ${plan.active ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-300 hover:bg-white/10'}`}
+            title={`Choose ${plan.name} Plan`}
           >
             {plan.active ? 'Current Plan' : 'Upgrade'}
           </button>
@@ -863,12 +898,13 @@ const SettingsView = ({ showToast }: { showToast: (message: string, type?: 'succ
                   key={i} 
                   className="flex items-center justify-between p-4 glass-card cursor-pointer"
                   onClick={() => showToast(`${item.label} toggled`, 'info')}
+                  title={`Toggle ${item.label}`}
                 >
                   <div>
                     <p className="text-sm font-bold text-white">{item.label}</p>
                     <p className="text-xs text-slate-500">{item.desc}</p>
                   </div>
-                  <div className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${item.active ? 'bg-blue-600' : 'bg-white/10'}`}>
+                  <div className={`w-12 h-6 rounded-full relative transition-colors ${item.active ? 'bg-blue-600' : 'bg-white/10'}`}>
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.active ? 'right-1' : 'left-1'}`} />
                   </div>
                 </div>
@@ -892,8 +928,8 @@ const SettingsView = ({ showToast }: { showToast: (message: string, type?: 'succ
                 <p className="text-sm font-bold text-white">IP Whitelisting</p>
                 <p className="text-xs text-slate-500">Restrict admin access to specific IP ranges.</p>
                 <div className="flex gap-2">
-                  <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none" placeholder="192.168.1.1" />
-                  <button className="px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-bold">Add</button>
+                  <input type="text" className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none" placeholder="192.168.1.1" title="Enter IP address to whitelist" />
+                  <button className="px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-bold" title="Add IP address to whitelist">Add</button>
                 </div>
               </div>
             </div>

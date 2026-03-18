@@ -112,7 +112,7 @@
                         >
                             <i data-lucide="upload" class="w-6 h-6 text-slate-400"></i>
                             <span class="text-xs font-medium">Upload Photos</span>
-                            <input type="file" id="handwrittenUpload" multiple accept="image/*" class="hidden" />
+                            <input type="file" id="handwrittenUpload" multiple accept="image/*" class="hidden" title="Upload question photos" />
                         </label>
                         <button
                             id="btnExtractAI"
@@ -133,13 +133,26 @@
                         General Information
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="col-span-full">
+                        <div class="col-span-1">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
                                 >School Name</label
                             >
                             <input
                                 type="text"
                                 id="inputSchoolName"
+                                title="School Name"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                        <div class="col-span-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Branch / Address</label
+                            >
+                            <input
+                                type="text"
+                                id="inputSchoolAddress"
+                                title="School Address"
+                                placeholder="e.g. (ANJANI BAZAR)"
                                 class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
                             />
                         </div>
@@ -150,6 +163,7 @@
                             <input
                                 type="text"
                                 id="inputExamName"
+                                title="Exam Name"
                                 class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
                             />
                         </div>
@@ -160,6 +174,56 @@
                             <input
                                 type="text"
                                 id="inputSubject"
+                                title="Subject"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Class</label
+                            >
+                            <input
+                                type="text"
+                                id="inputClass"
+                                title="Class"
+                                placeholder="e.g. 3rd"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Full Marks</label
+                            >
+                            <input
+                                type="text"
+                                id="inputFullMarks"
+                                title="Full Marks"
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                                value="40"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Time Limit</label
+                            >
+                            <input
+                                type="text"
+                                id="inputTime"
+                                title="Time Limit"
+                                placeholder="e.g. 2hrs."
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
+                                value="2hrs."
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1"
+                                >Exam Date</label
+                            >
+                            <input
+                                type="text"
+                                id="inputDate"
+                                title="Exam Date"
+                                placeholder="DD/MM/YYYY"
                                 class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-slate-900 outline-none transition-all"
                             />
                         </div>
@@ -209,18 +273,27 @@
             <!-- The Paper -->
             <div id="printArea" class="preview-paper print-container">
                 <!-- Header -->
-                <div class="text-center mb-10 space-y-2">
+                <div class="text-center mb-6">
                     <h1
                         id="paperSchoolName"
-                        class="text-2xl font-black uppercase tracking-tight border-b-4 border-black inline-block pb-1"
+                        class="text-2xl font-black uppercase tracking-wider border-b-2 border-black inline-block leading-tight"
                     >
                         APEX PUBLIC SCHOOL
                     </h1>
-                    <p id="paperExamName" class="text-lg font-bold">ANNUAL EXAMINATION - 2026</p>
-                    <div class="flex justify-between items-center text-sm font-bold border-y-2 border-black py-2 mt-4">
-                        <span id="paperSubject">Subject: G.K</span>
-                        <span id="paperClass">Class: 3rd</span>
-                        <span id="paperFullMarks">F.M: 40</span>
+                    <p id="paperSchoolAddress" class="text-sm font-bold mt-1">(ANJANI BAZAR)</p>
+                    
+                    <div class="mt-4 border-t-2 border-black pt-2">
+                        <div class="flex justify-between items-center text-sm font-bold">
+                            <span id="paperTimeDisplay">Time: 2hrs.</span>
+                            <h2 id="paperExamName" class="text-base font-black uppercase border-b-2 border-black px-4">2nd TERMINAL EXAMINATION</h2>
+                            <span id="paperDateDisplay">DATE:- 02/12/2025</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-sm font-bold border-b-2 border-black py-2">
+                        <span id="paperClassDisplay" class="uppercase">CLASS – 3rd</span>
+                        <span id="paperSubjectDisplay" class="uppercase">SUB – G.K</span>
+                        <span id="paperFullMarksDisplay" class="uppercase">FULL MARKS-40</span>
                     </div>
                 </div>
 
@@ -244,7 +317,7 @@
         <!-- pdf libraries -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/tool-question-formatter.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/tool-question-formatter.js"></script>
     </body>
 </html>

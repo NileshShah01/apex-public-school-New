@@ -1,14 +1,65 @@
 {
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "scripts/**",
-      "implementation_plan*.md",
-      "task.md",
-      "walkthrough*.md"
-    ]
+  "hosting": [
+    {
+      "target": "school",
+      "public": ".",
+      "rewrites": [
+        {
+          "source": "/",
+          "destination": "/school.html"
+        },
+        {
+          "source": "/index.html",
+          "destination": "/school.html"
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "scripts/**",
+        "implementation_plan*.md",
+        "task.md",
+        "walkthrough*.md"
+      ]
+    },
+    {
+      "target": "platform",
+      "public": ".",
+      "rewrites": [
+        { "source": "/", "destination": "/platform.html" },
+        { "source": "/index.html", "destination": "/platform.html" },
+        { "source": "/*/Admin-Dashboard", "destination": "/portal/admin-dashboard.html" },
+        { "source": "/*/Student-Dashboard", "destination": "/portal/student-dashboard.html" },
+        { "source": "/*/Question-paper-Formator", "destination": "/portal/tool-question-formatter.html" },
+        { "source": "/*/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
+        { "source": "/*/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
+        { "source": "/*/portal/admin-login.html", "destination": "/portal/admin-login.html" },
+        { "source": "/*/portal/student-login.html", "destination": "/portal/student-login.html" },
+        { "source": "/*/about.html", "destination": "/about.html" },
+        { "source": "/*/academics.html", "destination": "/academics.html" },
+        { "source": "/*/admissions.html", "destination": "/admissions.html" },
+        { "source": "/*/contact.html", "destination": "/contact.html" },
+        { "source": "/*/facilities.html", "destination": "/facilities.html" },
+        { "source": "/*/gallery.html", "destination": "/gallery.html" },
+        { "source": "/*/inquiry.html", "destination": "/inquiry.html" },
+        { "source": "/*/", "destination": "/school.html" },
+        { "source": "/*", "destination": "/school.html" },
+        { "source": "/*/**", "destination": "/school.html" }
+      ],
+      "trailingSlash": true,
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "scripts/**",
+        "implementation_plan*.md",
+        "task.md",
+        "walkthrough*.md"
+      ]
+    }
+  ],
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

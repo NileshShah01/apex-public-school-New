@@ -6,7 +6,7 @@
 
         <title>Contact | Apex Public School</title>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -20,6 +20,7 @@
                 text-align: center;
                 padding: 5rem 2rem;
                 background: var(--glass-bg);
+                -webkit-backdrop-filter: blur(10px);
                 backdrop-filter: blur(10px);
                 margin-bottom: 2rem;
             }
@@ -221,12 +222,12 @@
             <h2 class="section-title">Send Inquiry</h2>
             <div class="form-container">
                 <form id="contactForm">
-                    <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem">
-                        <div class="form-group" style="margin-bottom: 0">
+                    <div class="grid gap-md mb-3">
+                        <div class="form-group mb-0">
                             <label>Name <span class="text-secondary">*</span></label>
-                            <input type="text" id="con_name" class="form-control" required placeholder="Your name" />
+                            <input type="text" id="con_name" class="form-control" required placeholder="Your name" title="Full Name" />
                         </div>
-                        <div class="form-group" style="margin-bottom: 0">
+                        <div class="form-group mb-0">
                             <label>Mobile Number <span class="text-secondary">*</span></label>
                             <input
                                 type="tel"
@@ -235,6 +236,7 @@
                                 required
                                 placeholder="10-digit number"
                                 maxlength="10"
+                                title="10-digit Mobile Number"
                             />
                         </div>
                     </div>
@@ -246,20 +248,11 @@
                             required
                             rows="4"
                             placeholder="How can we help you?"
+                            title="Message or Inquiry Description"
                         ></textarea>
                     </div>
-                    <div
-                        id="con_status"
-                        style="
-                            display: none;
-                            padding: 1rem;
-                            border-radius: 0.75rem;
-                            font-weight: 600;
-                            text-align: center;
-                            margin-bottom: 1.5rem;
-                        "
-                    ></div>
-                    <button type="submit" class="btn-submit">
+                    <div id="con_status" class="status-box"></div>
+                    <button type="submit" class="btn-submit" title="Send your message">
                         <i class="fa-solid fa-paper-plane"></i> Send Message
                     </button>
                 </form>
@@ -269,21 +262,21 @@
         <section class="reveal">
             <h2 class="section-title">Follow Us</h2>
             <div class="social-links">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </section>
 
         <div id="footer"></div>
 
         <!-- NEW FLOATING BUTTONS CONTAINER -->
-        <script src="script.js"></script>
+        <script src="/script.js"></script>
 
         <!-- Firebase SDK for Inquiry Sync -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="js/firebase-config.js"></script>
+        <script src="/js/firebase-config.js"></script>
         <script>
             document.getElementById('contactForm')?.addEventListener('submit', async function (e) {
                 e.preventDefault();
@@ -296,8 +289,7 @@
                 const mobile = document.getElementById('con_mobile').value.trim();
                 if (mobile.length !== 10 || isNaN(mobile)) {
                     status.style.display = 'block';
-                    status.style.background = '#fff1f2';
-                    status.style.color = '#be123c';
+                    status.className = 'status-box status-error';
                     status.textContent = 'Please enter a valid 10-digit mobile number.';
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
@@ -316,14 +308,12 @@
                         submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     });
                     status.style.display = 'block';
-                    status.style.background = '#ecfdf5';
-                    status.style.color = '#065f46';
+                    status.className = 'status-box status-success';
                     status.textContent = '✅ Message sent successfully! We will contact you soon.';
                     this.reset();
                 } catch (err) {
                     status.style.display = 'block';
-                    status.style.background = '#fff1f2';
-                    status.style.color = '#be123c';
+                    status.className = 'status-box status-error';
                     status.textContent = 'Failed to send message. Please try calling us instead.';
                 } finally {
                     btn.disabled = false;

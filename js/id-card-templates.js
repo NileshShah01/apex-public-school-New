@@ -44,7 +44,7 @@ const ID_TEMPLATES = {
                      <i class="fas fa-globe"></i> ${data.schoolWebsite}
                  </div>
                  <div style="text-align: center;">
-                      <img src="../images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
+                      <img src="/images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
                       <div style="font-size: 4pt; font-weight: 900; color: #004d40; border-top: 0.2mm solid #004d40; padding-top: 0.5mm; text-transform: uppercase;">Principal</div>
                  </div>
             </div>
@@ -85,7 +85,7 @@ const ID_TEMPLATES = {
             </div>
             <div style="position: absolute; bottom: 8mm; right: 4mm; text-align: center; position: relative; z-index: 1; margin-top: 2mm;">
                  <div style="text-align: right; padding-right: 4mm;">
-                      <img src="../images/principal-sign.png" style="height: 9mm; mix-blend-mode: multiply;">
+                      <img src="/images/principal-sign.png" style="height: 9mm; mix-blend-mode: multiply;">
                       <div style="font-size: 4.5pt; font-weight: 950; color: #1e3a8a; text-transform: uppercase; border-top: 0.2mm solid #1e3a8a; display: inline-block;">Auth Sign</div>
                  </div>
             </div>
@@ -129,7 +129,7 @@ const ID_TEMPLATES = {
                      <i class="fas fa-envelope"></i> help@apex.com
                  </div>
                  <div style="text-align: center;">
-                      <img src="../images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
+                      <img src="/images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
                       <div style="font-size: 4pt; font-weight: 950; color: #1e1b4b; border-top: 0.3mm solid #1e1b4b; text-transform: uppercase;">Principal</div>
                  </div>
             </div>
@@ -178,7 +178,7 @@ const ID_TEMPLATES = {
             <div style="position: absolute; bottom: 3mm; width: 100%; padding: 0 4mm; display: flex; justify-content: space-between; align-items: flex-end; box-sizing: border-box;">
                  <div style="font-size: 4.5pt; color: #64748b; font-weight: 950; opacity: 0.6;">SECURITY PASS v4.0</div>
                  <div style="text-align: center;">
-                      <img src="../images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
+                      <img src="/images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
                       <div style="font-size: 4pt; font-weight: 950; border-top: 0.3mm solid #0f172a; text-transform: uppercase; color: #0f172a;">Issuing Auth</div>
                  </div>
             </div>
@@ -221,7 +221,7 @@ const ID_TEMPLATES = {
             <div style="position: absolute; bottom: 3mm; width: 100%; padding: 0 5mm; display: flex; justify-content: space-between; align-items: flex-end; box-sizing: border-box;">
                  <div style="text-align: left; font-size: 4pt; color: #64748b; font-weight: 800; opacity: 0.7;">VERIFIED AUTHENTIC</div>
                  <div style="text-align: center;">
-                      <img src="../images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
+                      <img src="/images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply;">
                       <div style="font-size: 4pt; font-weight: 950; color: #1e293b; border-top: 0.4mm solid #1e293b; text-transform: uppercase;">Principal</div>
                  </div>
             </div>
@@ -271,7 +271,7 @@ const ID_TEMPLATES = {
                     <span style="font-size: 6pt; color: #888;">${data.schoolWebsite}</span>
                 </div>
                 <div class="signature-box" style="text-align: center;">
-                    <img src="../images/principal-sign.png" style="height: 8mm; margin-bottom: -1mm; mix-blend-mode: multiply;">
+                    <img src="/images/principal-sign.png" style="height: 8mm; margin-bottom: -1mm; mix-blend-mode: multiply;">
                     <div style="width: 60px; border-bottom: 0.3mm solid #333; margin: 0 auto 1mm;"></div>
                     <div style="font-weight: 800; color: #1e3c72; text-transform: uppercase; font-size: 5.5pt;">Principal</div>
                 </div>
@@ -318,7 +318,7 @@ const ID_TEMPLATES = {
                 <div class="footer-side" style="margin-top: 2mm; display: flex; justify-content: space-between; align-items: flex-end; border-top: 0.2mm solid #eee; padding-top: 2mm;">
                     <div style="font-size: 7.5pt; color: #636e72;"><strong>PH:</strong> ${data.schoolContact}</div>
                     <div class="sign-area" style="text-align: right;">
-                        <img src="../images/principal-sign.png" style="height: 7mm; mix-blend-mode: multiply; margin-bottom: -1mm;">
+                        <img src="/images/principal-sign.png" style="height: 7mm; mix-blend-mode: multiply; margin-bottom: -1mm;">
                         <span style="width: 25mm; height: 0.3mm; background: #2d3436; display: block; margin-bottom: 0.5mm;"></span>
                         <span style="font-size: 6pt; font-weight: 800; color:#2d3436; text-transform:uppercase;">Principal</span>
                     </div>
@@ -374,7 +374,7 @@ const ID_TEMPLATES = {
                         <strong style="color: #2d3436; font-size: 7.5pt;">Contact</strong><br>${data.schoolContact}
                     </div>
                     <div class="sign-area" style="text-align: center;">
-                        <img src="../images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply; margin-bottom: -1mm;">
+                        <img src="/images/principal-sign.png" style="height: 8mm; mix-blend-mode: multiply; margin-bottom: -1mm;">
                         <span style="width: 30mm; height: 0.4mm; background: #2d3436; display: block; margin-bottom: 0.5mm;"></span>
                         <span style="font-size: 6.5pt; color: #2d3436; text-transform: uppercase; font-weight: 800;">Principal</span>
                     </div>

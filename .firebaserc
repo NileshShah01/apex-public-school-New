@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "apex-public-school-portal"
-  }
+  },
+  "targets": {
+    "apex-public-school-portal": {
+      "hosting": {
+        "school": [
+          "apex-public-school-portal"
+        ],
+        "platform": [
+          "snredu-erp"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

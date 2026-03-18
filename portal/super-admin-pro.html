@@ -31,6 +31,7 @@
             }
             .glass-panel {
                 background: rgba(255, 255, 255, 0.05);
+                -webkit-backdrop-filter: blur(16px);
                 backdrop-filter: blur(16px);
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: 1.25rem;
@@ -38,6 +39,7 @@
             }
             .glass-card {
                 background: rgba(255, 255, 255, 0.03);
+                -webkit-backdrop-filter: blur(12px);
                 backdrop-filter: blur(12px);
                 border: 1px solid rgba(255, 255, 255, 0.05);
                 border-radius: 1rem;
@@ -234,13 +236,14 @@
                             id="globalSearch"
                             type="text"
                             placeholder="Search schools, subdomains, or analytics..."
+                            title="Global Search"
                             class="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         />
                     </div>
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <button class="relative p-2 rounded-full hover:bg-white/5 transition-all">
+                    <button class="relative p-2 rounded-full hover:bg-white/5 transition-all" title="View Notifications">
                         <i data-lucide="bell" class="w-6 h-6 text-slate-400"></i>
                         <span
                             class="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#030303]"
@@ -386,7 +389,7 @@
                                     <tr class="border-b border-white/10 text-slate-500 text-sm">
                                         <th class="pb-4 font-medium">School ID</th>
                                         <th class="pb-4 font-medium">School Name</th>
-                                        <th class="pb-4 font-medium">Subdomain</th>
+                                        <th class="pb-4 font-medium text-slate-400">Website / Hosting</th>
                                         <th class="pb-4 font-medium">Stage</th>
                                         <th class="pb-4 font-medium">Students</th>
                                         <th class="pb-4 font-medium">Status</th>
@@ -418,7 +421,7 @@
                                     />
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-sm text-slate-400">Subdomain</label>
+                                    <label class="text-sm text-slate-400">School Path / Slug (e.g. Apexps)</label>
                                     <div
                                         class="flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2.5"
                                     >
@@ -426,11 +429,11 @@
                                             type="text"
                                             id="proSubdomain"
                                             class="bg-transparent text-white outline-none flex-1"
-                                            placeholder="harvard"
+                                            placeholder="Apexps"
                                             required
                                         />
-                                        <span class="text-slate-500">.snredu.in</span>
                                     </div>
+                                    <p class="text-[10px] text-slate-500">URL: https://snredu-erp.web.app/[slug]/</p>
                                 </div>
                             </div>
                             <div class="space-y-2">
@@ -447,15 +450,50 @@
                                     <option value="6">Stage 6: Full ERP Suite</option>
                                 </select>
                             </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">School Display Name</label>
+                                    <input
+                                        type="text"
+                                        id="proSchoolDisplayName"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="e.g. Green Valley High"
+                                        required
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">School Logo URL</label>
+                                    <input
+                                        type="url"
+                                        id="proSchoolLogo"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="https://example.com/logo.png"
+                                        required
+                                    />
+                                </div>
+                            </div>
                             <div class="space-y-2">
-                                <label class="text-sm text-slate-400">Admin Email</label>
-                                <input
-                                    type="email"
-                                    id="proAdminEmail"
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="admin@school.com"
-                                    required
-                                />
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">Admin Email</label>
+                                    <input
+                                        type="email"
+                                        id="proAdminEmail"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="admin@school.com"
+                                        required
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-sm text-slate-400">Admin Password</label>
+                                    <input
+                                        type="password"
+                                        id="proAdminPassword"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                </div>
                             </div>
                             <button
                                 type="submit"
@@ -548,13 +586,24 @@
                         <input
                             type="text"
                             id="editSchoolName"
+                            title="School Name"
                             class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white"
+                        />
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-400">School Path / Slug</label>
+                        <input
+                            type="text"
+                            id="editSubdomain"
+                            placeholder="Apexps"
+                            class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
                         />
                     </div>
                     <div>
                         <label class="text-sm text-slate-400">Activation Stage</label>
                         <select
                             id="editSchoolStage"
+                            title="Activation Stage"
                             class="w-full bg-[#0d1117] border border-white/10 rounded-lg px-4 py-2 text-white"
                         >
                             <option value="1">Stage 1</option>
@@ -588,7 +637,7 @@
         <!-- Charts -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/super-admin-pro.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/super-admin-pro.js"></script>
     </body>
 </html>

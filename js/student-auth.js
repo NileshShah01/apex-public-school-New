@@ -1,6 +1,9 @@
 // Student Authentication Logic
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply dynamic branding based on tenant
+    applyAuthBranding();
+
     const loginForm = document.getElementById('studentLoginForm');
     const loginError = document.getElementById('loginError');
 
@@ -49,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         student_phone: studentPhone,
                         student_id: data.student_id || matchedDoc.id,
                         name: data.name,
+                        schoolId: window.CURRENT_SCHOOL_ID
                     })
                 );
                 window.location.href = 'student-dashboard.html';
@@ -71,4 +75,36 @@ document.addEventListener('DOMContentLoaded', () => {
 function logoutStudent() {
     localStorage.removeItem('student_session');
     window.location.href = 'student-login.html';
+}
+
+/**
+ * Apply dynamic branding based on school record
+ */
+async function applyAuthBranding() {
+    try {
+        const schoolDocSnap = await schoolRef().get();
+        if (!schoolDocSnap.exists) return;
+
+        const data = schoolDocSnap.data();
+        const name = data.schoolName || 'Apex Public School';
+        const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+
+        // Update Title
+        if (document.getElementById('portalTitle')) {
+            document.getElementById('portalTitle').innerText = `${name} | Student Portal`;
+        }
+
+        // Branding
+        if (document.getElementById('portalBrandName')) {
+            document.getElementById('portalBrandName').innerText = `Student Portal`;
+        }
+        if (document.getElementById('portalDesc')) {
+            document.getElementById('portalDesc').innerText = `Access your ${name} account`;
+        }
+        if (document.getElementById('schoolLogoContainer')) {
+            document.getElementById('schoolLogoContainer').innerHTML = `<img src="${logo}" alt="${name} Logo" style="height: 64px; margin-bottom: 1rem; object-fit: contain;">`;
+        }
+    } catch (e) {
+        console.error('Branding failed:', e);
+    }
 }

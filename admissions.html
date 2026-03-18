@@ -6,7 +6,7 @@
 
         <title>Admissions | Apex Public School</title>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -20,6 +20,7 @@
                 text-align: center;
                 padding: 5rem 2rem;
                 background: var(--glass-bg);
+                -webkit-backdrop-filter: blur(10px);
                 backdrop-filter: blur(10px);
                 margin-bottom: 2rem;
             }
@@ -117,15 +118,15 @@
 
         <section class="reveal">
             <div class="ad-banner-row">
-                <img src="images/Admission Banner 1.png" class="ad-banner" alt="Admission Banner 1" />
-                <img src="images/Admission Banner.png" class="ad-banner" alt="Admission Banner 2" />
+                <img src="/images/Admission Banner 1.png" class="ad-banner" alt="Admission Season 2026-27" title="Admission Banner 1" />
+                <img src="/images/Admission Banner.png" class="ad-banner" alt="Play Group to Class 8 Admissions" title="Admission Banner 2" />
             </div>
         </section>
 
         <section class="reveal">
             <h2 class="section-title">Admission Process</h2>
             <div class="grid">
-                <a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" class="card">
+                <a href="https://maps.app.goo.gl/57JbzsYH6jLvVf9b9" target="_blank" rel="noopener" class="card">
                     <i class="fa-solid fa-school"></i>
                     <h3>Visit School</h3>
                     <p id="admissionsVisitText">
@@ -160,12 +161,14 @@
                 <div class="card" id="admissionsDoc2">Birth Certificate</div>
                 <div class="card" id="admissionsDoc3">Passport Size Photos</div>
                 <div class="card" id="admissionsDoc4">Transfer Certificate</div>
+                <div class="card" id="admissionsDoc5">Previous Year Result</div>
+                <div class="card" id="admissionsDoc6">Migration Certificate</div>
             </div>
         </section>
 
         <section class="reveal">
             <h2 class="section-title">Fee Structure</h2>
-            <div id="feesListAdmin" style="overflow-x: auto">
+            <div id="feesListAdmin" class="table-responsive">
                 <!-- Loaded via CMS -->
                 <table class="fee-table">
                     <thead>
@@ -177,7 +180,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="3" class="text-muted" style="padding: 2rem; text-align: center">
+                            <td colspan="3" class="text-muted text-center p-5">
                                 Loading fee structure...
                             </td>
                         </tr>
@@ -188,7 +191,7 @@
 
         <section class="reveal">
             <h2 class="section-title">Facilities for Students</h2>
-            <p class="text-muted" style="text-align: center; margin-bottom: 3rem">
+            <p class="text-muted text-center mb-5">
                 Click on any facility to see photos
             </p>
 
@@ -196,23 +199,9 @@
                 <div class="card" onclick="toggleFacilityPanel(this)">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <h3>Smart Classrooms</h3>
-                    <div
-                        class="facility-panel"
-                        style="
-                            max-height: 0;
-                            overflow: hidden;
-                            transition: max-height 0.5s ease-out;
-                            background: var(--bg-gray);
-                            border-radius: 1rem;
-                            margin-top: 1rem;
-                        "
-                    >
-                        <div
-                            id="facility_smart_class"
-                            class="facility-images"
-                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-                        >
-                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                    <div class="facility-panel">
+                        <div class="facility-images">
+                            <p class="text-muted text-center grid-all text-sm">
                                 Loading photos...
                             </p>
                         </div>
@@ -222,23 +211,9 @@
                 <div class="card" onclick="toggleFacilityPanel(this)">
                     <i class="fas fa-laptop-code"></i>
                     <h3>Computer Lab</h3>
-                    <div
-                        class="facility-panel"
-                        style="
-                            max-height: 0;
-                            overflow: hidden;
-                            transition: max-height 0.5s ease-out;
-                            background: var(--bg-gray);
-                            border-radius: 1rem;
-                            margin-top: 1rem;
-                        "
-                    >
-                        <div
-                            id="facility_computer_lab"
-                            class="facility-images"
-                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-                        >
-                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                    <div class="facility-panel">
+                        <div class="facility-images">
+                            <p class="text-muted text-center grid-all text-sm">
                                 Loading photos...
                             </p>
                         </div>
@@ -248,23 +223,9 @@
                 <div class="card" onclick="toggleFacilityPanel(this)">
                     <i class="fas fa-futbol"></i>
                     <h3>Sports & Playground</h3>
-                    <div
-                        class="facility-panel"
-                        style="
-                            max-height: 0;
-                            overflow: hidden;
-                            transition: max-height 0.5s ease-out;
-                            background: var(--bg-gray);
-                            border-radius: 1rem;
-                            margin-top: 1rem;
-                        "
-                    >
-                        <div
-                            id="facility_sports"
-                            class="facility-images"
-                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-                        >
-                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                    <div class="facility-panel">
+                        <div class="facility-images">
+                            <p class="text-muted text-center grid-all text-sm">
                                 Loading photos...
                             </p>
                         </div>
@@ -274,23 +235,9 @@
                 <div class="card" onclick="toggleFacilityPanel(this)">
                     <i class="fas fa-shield-alt"></i>
                     <h3>CCTV Security</h3>
-                    <div
-                        class="facility-panel"
-                        style="
-                            max-height: 0;
-                            overflow: hidden;
-                            transition: max-height 0.5s ease-out;
-                            background: var(--bg-gray);
-                            border-radius: 1rem;
-                            margin-top: 1rem;
-                        "
-                    >
-                        <div
-                            id="facility_security"
-                            class="facility-images"
-                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-                        >
-                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                    <div class="facility-panel">
+                        <div class="facility-images">
+                            <p class="text-muted text-center grid-all text-sm">
                                 Loading photos...
                             </p>
                         </div>
@@ -300,23 +247,9 @@
                 <div class="card" onclick="toggleFacilityPanel(this)">
                     <i class="fas fa-bus"></i>
                     <h3>Transport</h3>
-                    <div
-                        class="facility-panel"
-                        style="
-                            max-height: 0;
-                            overflow: hidden;
-                            transition: max-height 0.5s ease-out;
-                            background: var(--bg-gray);
-                            border-radius: 1rem;
-                            margin-top: 1rem;
-                        "
-                    >
-                        <div
-                            id="facility_transport"
-                            class="facility-images"
-                            style="padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-                        >
-                            <p class="text-muted" style="grid-column: 1/-1; font-size: 0.9rem; text-align: center">
+                    <div class="facility-panel">
+                            <div id="facility_transport" class="facility-images p-3">
+                            <p class="text-muted text-center grid-all text-sm">
                                 Loading photos...
                             </p>
                         </div>
@@ -354,22 +287,22 @@
             </div>
         </section>
         <section class="cta reveal">
-            <h2>Admission Open 2026 to 2027</h2>
-            <p>Join Apex Public School for quality education</p>
-            <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
+            <h2 id="admissionsCtaTitle">Admission Open 2026 to 2027</h2>
+            <p id="admissionsCtaSubtitle">Join Apex Public School for quality education</p>
+            <button onclick="location.href = 'contact.html'" id="admissionsCtaBtn">Admission Inquiry</button>
         </section>
 
         <div id="footer"></div>
         <!-- NEW FLOATING BUTTONS CONTAINER -->
         <div id="floating-button"></div>
 
-        <script src="script.js"></script>
+        <script src="/script.js"></script>
 
         <!-- Firebase SDK for CMS -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="js/firebase-config.js"></script>
-        <script src="js/cms-settings.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/cms-settings.js"></script>
 
         <script>
             /* FAQ */
@@ -389,10 +322,10 @@
 
             document.addEventListener('mousemove', (e) => {
                 let x = e.clientX / window.innerWidth;
-
                 let y = e.clientY / window.innerHeight;
-
-                document.body.style.backgroundPosition = `${x * 40}px ${y * 40}px`;
+                document.body.classList.add('parallax-bg');
+                document.body.style.setProperty('--x', x);
+                document.body.style.setProperty('--y', y);
             });
         </script>
     </body>

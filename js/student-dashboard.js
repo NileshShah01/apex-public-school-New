@@ -5,14 +5,27 @@ let currentStudentClass = null;
 let currentStudentData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const session = localStorage.getItem('student_session');
+    // Apply Tenant Branding First
+    applyStudentBranding();
 
+    const session = localStorage.getItem('student_session');
     if (!session) {
         window.location.href = 'student-login.html';
         return;
     }
 
     const sessionData = JSON.parse(session);
+    
+    // SECURITY: Tenant Validation
+    // Ensure the student belongs to the current school portal context
+    if (sessionData.schoolId && window.CURRENT_SCHOOL_ID && sessionData.schoolId !== window.CURRENT_SCHOOL_ID) {
+        console.warn(`Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`);
+        alert("Session mismatch. Please login to this school's portal.");
+        localStorage.removeItem('student_session');
+        window.location.href = 'student-login.html';
+        return;
+    }
+
     currentStudentID = sessionData.student_phone || sessionData.student_id;
 
     if (!currentStudentID) {
@@ -32,6 +45,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     document.getElementById('academicYear')?.addEventListener('change', updateAcademicData);
 });
+
+/**
+ * Apply dynamic branding based on school record
+ */
+async function applyStudentBranding() {
+    try {
+        const schoolDocSnap = await schoolRef().get();
+        if (!schoolDocSnap.exists) return;
+
+        const data = schoolDocSnap.data();
+        const name = data.schoolName || 'Apex Public School';
+        const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+
+        // Update Title
+        if (document.getElementById('studentPortalTitle')) {
+            document.getElementById('studentPortalTitle').innerText = `${name} | Student Portal`;
+        }
+
+        // Sidebar Branding
+        if (document.getElementById('sidebarBrandName')) {
+            document.getElementById('sidebarBrandName').innerText = name;
+        }
+        if (document.getElementById('sidebarLogoImg')) {
+            document.getElementById('sidebarLogoImg').src = logo;
+            document.getElementById('sidebarLogoImg').style.display = 'block';
+        }
+
+        // Mobile Brand
+        if (document.getElementById('mobileBrandName')) {
+            document.getElementById('mobileBrandName').innerText = name;
+        }
+
+        // Notice Tag
+        if (document.getElementById('noticeTagText')) {
+            document.getElementById('noticeTagText').innerText = `${name} Notice`;
+        }
+
+        // Footer & Loading
+        if (document.getElementById('portalFooterText')) {
+            document.getElementById('portalFooterText').innerText = `© ${new Date().getFullYear()} ${name}. Powered by SNR World.`;
+        }
+        if (document.getElementById('loadingPortalText')) {
+            document.getElementById('loadingPortalText').innerText = `Loading ${name} Portal...`;
+        }
+    } catch (e) {
+        console.error('Branding failed:', e);
+    }
+}
 
 // ===================== ROUTING & NAVIGATION =====================
 function handleRouting() {
@@ -422,13 +483,120 @@ async function fetchDuesAndReceipts() {
     }
 }
 
-function printStudentReceipt(paymentId) {
-    // We can't print directly from Student side without the template which is in Admin
-    // BUT we can use the same logic if we include the template or a dedicated receipt page.
-    // For now, let's just alert
-    alert(
-        "Receipt printing is being synchronized with the school office. Please download via 'Print' button once configured."
-    );
+async function printStudentReceipt(paymentId) {
+    setLoading(true);
+    try {
+        const payDoc = await schoolData('feePayments').doc(paymentId).get();
+        if (!payDoc.exists) return;
+        const p = payDoc.data();
+        
+        const schoolSnap = await schoolRef().get();
+        const sc = schoolSnap.data() || {};
+        
+        const modal = document.getElementById('portalModal');
+        const body = document.getElementById('modalBody');
+        
+        const receiptHtml = `
+            <div class="premium-receipt">
+                <div class="receipt-header">
+                    <div class="receipt-logo">
+                        <img src="${sc.logo || '../images/ApexPublicSchoolLogo.png'}" alt="Logo" onerror="this.src='../images/ApexPublicSchoolLogo.png'">
+                        <div>
+                            <h2 style="margin:0; color:var(--primary); font-size:1.4rem;">${sc.schoolName || 'Apex Public School'}</h2>
+                            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">${sc.address || 'School Campus Address'}</p>
+                        </div>
+                    </div>
+                    <div class="receipt-title-box">
+                        <h1>FEE RECEIPT</h1>
+                        <p style="margin:0; font-weight:700;">No: ${p.receiptNo}</p>
+                    </div>
+                </div>
+
+                <div class="receipt-grid">
+                    <div class="info-group">
+                        <label>Student Name</label>
+                        <p>${currentStudentData.name}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Student ID / Admission No</label>
+                        <p>${currentStudentData.studentId || currentStudentData.admNo}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Class & Section</label>
+                        <p>Class ${currentStudentClass} - ${currentStudentData.section || 'N/A'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Payment Date</label>
+                        <p>${p.paymentDate ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString() : 'N/A'}</p>
+                    </div>
+                </div>
+
+                <table class="receipt-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align:right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>School Fee Payment (${p.paymentMode})</td>
+                            <td style="text-align:right; font-weight:700;">₹${p.amountPaid.toLocaleString()}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>TOTAL AMOUNT PAID</td>
+                            <td style="text-align:right;">₹${p.amountPaid.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Amount in Words: <b style="color:var(--secondary); text-transform:capitalize;">${numberToWords(p.amountPaid)} Rupees Only</b></p>
+                </div>
+
+                <div class="receipt-footer">
+                    <div class="seal-area">SCHOOL SEAL</div>
+                    <div class="signature-box">
+                        <div class="signature-line">Authorized Signatory</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:2rem; font-size:0.65rem; color:#aaa; text-align:center;">
+                    This is a computer generated receipt and does not require a physical signature.
+                </div>
+            </div>
+        `;
+        
+        body.innerHTML = receiptHtml;
+        modal.classList.remove('hidden');
+    } catch (e) {
+        console.error('Receipt preview failed:', e);
+        alert('Failed to generate receipt preview.');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function closePortalModal() {
+    document.getElementById('portalModal').classList.add('hidden');
+}
+
+function numberToWords(amount) {
+    // Simple enough for 5 digits for now
+    const words = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+    
+    if (amount === 0) return "Zero";
+    
+    if (amount < 20) return words[amount];
+    
+    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? " " + words[amount % 10] : "");
+    
+    if (amount < 1000) return words[Math.floor(amount / 100)] + " Hundred" + (amount % 100 !== 0 ? " and " + numberToWords(amount % 100) : "");
+    
+    if (amount < 100000) return numberToWords(Math.floor(amount / 1000)) + " Thousand" + (amount % 1000 !== 0 ? " " + numberToWords(amount % 1000) : "");
+    
+    return amount.toString(); // Fallback
 }
 
 // ===================== OTHER UPDATES =====================
@@ -697,3 +865,4 @@ window.showPortalSection = showPortalSection;
 window.toggleSidebar = toggleSidebar;
 window.logoutStudent = logoutStudent;
 window.printStudentReceipt = printStudentReceipt;
+window.closePortalModal = closePortalModal;

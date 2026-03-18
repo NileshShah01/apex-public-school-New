@@ -4,26 +4,120 @@ let allStudents = [];
 let selectedStudents = new Set();
 let currentPage = 1;
 const itemsPerPage = 20;
-let editingDocId = null; // tracks which doc is being edited
+let isInitializing = false;
 
-function previewPhoto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    document.getElementById('photoFileName').textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('photoPreview').innerHTML =
-            `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-    };
-    reader.readAsDataURL(file);
-} // Global Loading Helper (backward compatibility for erp modules)
+// Global Loading Helper (backward compatibility for erp modules)
 window.showLoading = function (show) {
     if (typeof setLoading === 'function') setLoading(show);
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
+// Safety watchdog: Force-hide loading after 10 seconds if still stuck
+// Started immediately to ensure it catches early hangs
+const globalLoadWatchdog = setTimeout(() => {
+    console.warn('Global loading watchdog triggered - force hiding loader');
+    setLoading(false);
+}, 10000);
 
+// Global error handler for admin dashboard to prevent stuck loader on JS crash
+window.onerror = function (msg, url, line, col, error) {
+    console.error('Critical Admin JS Error:', msg, 'at', url, ':', line);
+    setLoading(false);
+    return false; // Let browser handle the rest
+};
+
+/**
+ * Core function to switch between dashboard sections
+ * Exposed to window for global access/extensibility
+ */
+window.showSection = function(sectionId, updateHash = true) {
+    if (!sectionId) sectionId = 'dashboardOverview';
+
+    console.log(`Showing section request: ${sectionId}`);
+
+    // Update hash for persistence
+    if (updateHash) {
+        window.location.hash = sectionId;
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Hide all
+    document.querySelectorAll('.dashboard-section').forEach((s) => {
+        s.style.display = 'none';
+        s.classList.add('hidden');
+        s.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.nav-link').forEach((l) => l.classList.remove('active'));
+    document.querySelectorAll('.cat-header').forEach((h) => h.classList.remove('active'));
+
+    // Show target
+    const target = document.getElementById(sectionId + 'Section');
+    if (target) {
+        target.style.display = 'block';
+        target.classList.remove('hidden');
+        target.classList.add('active');
+    } else {
+        const fallbackTarget = document.getElementById(sectionId);
+        if (fallbackTarget) {
+            fallbackTarget.style.display = 'block';
+            fallbackTarget.classList.remove('hidden');
+            fallbackTarget.classList.add('active');
+        } else {
+            console.warn(`Section ${sectionId} not found, defaulting to dashboardOverview`);
+            if (sectionId !== 'dashboardOverview' && sectionId !== '') {
+                window.showSection('dashboardOverview', true);
+            }
+            return;
+        }
+    }
+
+    // Active link highlighting
+    const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`) || 
+                      document.querySelector(`.nav-link[href="#${sectionId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+        
+        // Also highlight parent category header if it's a sub-link
+        if (activeLink.classList.contains('sub-link')) {
+            const parentCat = activeLink.closest('.nav-category');
+            if (parentCat) {
+                const header = parentCat.querySelector('.cat-header');
+                const submenu = parentCat.querySelector('.cat-submenu');
+                if (header) header.classList.add('active');
+                if (submenu) submenu.classList.add('open');
+            }
+        }
+    }
+
+    // Update Section Title
+    const titles = {
+        dashboardOverview: 'School Overview',
+        studentList: 'Student Search & Management',
+        resultsStatus: 'Documents Verification',
+        admitCardTool: 'Admit Card PDF Tool',
+        bulkResultGenerator: 'Report Card PDF Tool',
+        feeMaster: 'Fee Management',
+        manageExam: 'Examination & Marks',
+        attendanceManagement: 'Attendance Marking',
+        notices: 'Notice Board',
+        academicSession: 'Academic Sessions',
+        addClass: 'Classes & Sections',
+        addSubject: 'Subject Management',
+        idCardPrint: 'ID Card Generator'
+    };
+    
+    const titleEl = document.getElementById('sectionTitle');
+    if (titleEl && titles[sectionId]) {
+        titleEl.textContent = titles[sectionId];
+    }
+};
+
+// Set original reference for external scripts (like cms-admin.js or admin-tools.js) to override
+window.originalShowSection = window.showSection;
+
+document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     document.getElementById('studentForm')?.addEventListener('submit', handleStudentSubmit);
     document.getElementById('bulkImportForm')?.addEventListener('submit', handleBulkImport);
@@ -40,20 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('selectAll')?.addEventListener('change', handleSelectAll);
     document.getElementById('websiteSettingsForm')?.addEventListener('submit', handleWebsiteSettingsSave);
 
-    // Set admin email in header
+    // Initial Auth and App Initialization
     auth.onAuthStateChanged((user) => {
         if (user) {
             document.getElementById('adminEmail').textContent = user.email;
-            // Initialize ERP Class Management if available
-            if (typeof initERPClassMgmt === 'function') initERPClassMgmt();
-
-            // Initial Routing based on Hash
-            const initialSection = window.location.hash.replace('#', '');
-            if (initialSection) {
-                showSection(initialSection);
-            } else {
-                showSection('dashboardOverview');
+            
+            // Only initialize once
+            if (!isInitializing) {
+                initializeApp();
             }
+
+            // Initial Routing based on Hash - delayed to ensure everything is ready
+            setTimeout(() => {
+                const initialSection = window.location.hash.replace('#', '');
+                window.showSection(initialSection || 'dashboardOverview');
+            }, 100);
         } else {
             window.location.href = 'admin-login.html';
         }
@@ -67,8 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function initializeApp() {
+    if (isInitializing) return;
+    isInitializing = true;
+    
     console.log('Initializing App...');
     setLoading(true);
+
     try {
         await loadInitialData();
         updateStats();
@@ -93,6 +192,7 @@ async function initializeApp() {
     } catch (error) {
         console.error('Initialization failed:', error);
     } finally {
+        clearTimeout(globalLoadWatchdog);
         setLoading(false);
         console.log('Initialization complete.');
     }
@@ -100,7 +200,15 @@ async function initializeApp() {
 
 function setLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = show ? 'flex' : 'none';
+    if (overlay) {
+        if (show) {
+            overlay.classList.remove('hidden');
+            overlay.style.display = 'flex';
+        } else {
+            overlay.classList.add('hidden');
+            overlay.style.display = 'none';
+        }
+    }
 }
 
 function showToast(message, type = 'success') {
@@ -163,308 +271,19 @@ async function loadInitialData(classFilterVal = '') {
     }
 }
 
-function showSection(sectionId, updateHash = true) {
-    if (!sectionId) sectionId = 'dashboardOverview';
-
-    // Update hash for persistence
-    if (updateHash) {
-        window.location.hash = sectionId;
-    }
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Hide all
-    document.querySelectorAll('.dashboard-section').forEach((s) => (s.style.display = 'none'));
-    document.querySelectorAll('.nav-link').forEach((l) => l.classList.remove('active'));
-    document.querySelectorAll('.cat-header').forEach((h) => h.classList.remove('active'));
-
-    // Show target
-    const target = document.getElementById(sectionId + 'Section');
-    if (target) {
-        target.style.display = 'block';
-    } else {
-        const fallbackTarget = document.getElementById(sectionId);
-        if (fallbackTarget) fallbackTarget.style.display = 'block';
-        else {
-            console.warn(`Section ${sectionId} not found, defaulting to dashboardOverview`);
-            showSection('dashboardOverview', true);
-            return;
-        }
-    }
-
-    const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`);
-    if (activeLink) {
-        activeLink.classList.add('active');
-
-        // Also highlight parent category header if it's a sub-link
-        if (activeLink.classList.contains('sub-link')) {
-            const parentCat = activeLink.closest('.nav-category');
-            if (parentCat) {
-                const header = parentCat.querySelector('.cat-header');
-                const submenu = parentCat.querySelector('.cat-submenu');
-                if (header) header.classList.add('active');
-                if (submenu) submenu.classList.add('open');
-            }
-        }
-    }
-
-    const titles = {
-        dashboardOverview: 'School Overview',
-        studentList: 'Student Search & Management',
-        resultsStatus: 'Documents Verification',
-        admitCardTool: 'Admit Card PDF Tool',
-        addStudent: 'Add/Edit Student Information',
-        bulkImport: 'Bulk Upload Students',
-        notices: 'Manage School Notices',
-        promotions: 'Student Class Promotions',
-        websiteSettings: 'Frontend Website Settings',
-        inquiries: 'Admission Inquiries',
-        bulkPdf: 'Bulk PDF Report Upload',
-
-        // Employee
-        addEmployee: 'Add New Employee',
-        searchEmployee: 'Search Employees',
-        bulkEmployeeUpdate: 'Bulk Employee Data Update',
-        employeeIdPrint: 'Employee Identity Cards',
-
-        // Class
-        addSession: 'Academic Sessions Management',
-        addClass: 'Standard Classes Management',
-        addClassDetails: 'Manage Sections & Class Details',
-        addSubject: 'Define Subjects',
-        addNonSubject: 'Define Non-Scholastic Subjects',
-        addSyllabus: 'Upload Syllabus',
-        manageSyllabus: 'Manage Academic Syllabus',
-
-        // Time Table
-        createTimetable: 'Generate Class Timetable',
-        viewTimetable: 'View/Print Timetables',
-
-        // Admission
-        addEnquiry: 'New Admission Enquiry',
-        searchEnquiry: 'Search/Follow-up Enquiries',
-        studentAdmission: 'Complete Admission Process',
-
-        // Student Extras
-        electiveMapping: 'Elective Subject Allocation',
-        studentIdPrint: 'Bulk ID Card Printing',
-        pickupIdPrint: 'Pickup/Gate Pass Printing',
-        studentBulkUpdate: 'Bulk Student Data Plan',
-        hostelReport: 'Hostel Residents Report',
-        transportReport: 'Transport/Bus Routes Report',
-
-        // Fees
-        feeMaster: 'Master Fee Configuration',
-        createMonthlyFee: 'Generate Monthly Fee Records',
-        bulkFeeDiscount: 'Apply Bulk Fee Discounts',
-        searchStudentFee: 'Individual Student Fee History',
-        classFeePayment: 'Class-wise Fee Collection',
-        searchFeeDues: 'Arrears & Pending Dues List',
-        sendFeeMessage: 'Automatic Due Notifications',
-        manageFeeFine: 'Late Payment Fine Setup',
-        feeCarryForward: 'Session Carry Forward (Dues)',
-
-        // Exam
-        examGrading: 'Setup Examination Grading Rules',
-        manageExam: 'Define Examination Terms',
-        manageExamSchedule: 'Create Exam Time Table',
-        viewExamSchedule: 'View/Verify Exam Schedules',
-        publishExamSchedule: 'Publish Schedules to Portal',
-        examAttendanceCard: 'Print Exam Attendance Sheets',
-        studentExamAttendance: 'Mark Student Exam Attendance',
-        viewExamAttendance: 'View Exam Attendance Reports',
-        examHallPlan: 'Design Exam Sitting Arrangement',
-        examHallDetail: 'View Hall/Room Details',
-        examSittingPlan: 'Export Student Sitting Plan',
-
-        // Result
-        manageResult: 'Process Examination Results',
-        addResult: 'Manual Marks Entry',
-        manageAllResults: 'Consolidated Result Manager',
-        viewAllResults: 'View Full School Results',
-        manageNonSubResult: 'Co-Scholastic Performance Grading',
-        viewNonSubResult: 'View Co-Scholastic Performance',
-        publishResult: 'Publish Exam Results Live',
-        reportCardRemarks: 'Bulk Report Card Remarks',
-        generateReportCard: 'Generate Students Report Cards',
-        viewReportCard: 'View/Download Generated Cards',
-        publishReportCard: 'Push Report Cards to Student Portal',
-
-        // CMS
-        cmsStats: 'Live Stats & Numbers',
-        cmsEvents: 'Official School Events',
-        cmsAchievements: 'School Achievements',
-        cmsTestimonials: 'Parent Testimonials',
-        cmsAdmission: 'Portal Admission Status',
-        cmsHolidays: 'Annual Holiday Calendar',
-        cmsGallery: 'Website Gallery Manager',
-        cmsStaff: 'Staff & Teachers Directory',
-        cmsTimetable: 'Timetable PDF Manager',
-        cmsFees: 'Frontend Fee Structure',
-        cmsHero: 'Hero Slider Images',
-        cmsTheme: 'Global Website Theme',
-        cmsStudentDashboard: 'Attendance & Portal Config',
-        resultsStatus: 'Student Results & Performance Status',
-        viewTimetable: 'Class Timetables Management',
-        manageResult: 'Review & Manage Student Marks',
-        manageAllResults: 'Full School Result Performance',
-        publishResult: 'Mass Result Portal Toggle',
-        viewExamSchedule: 'Complete Exam Date Sheet',
-        cmsFeeTools: 'Parents Fee Due Analytics',
-        websiteSettings: 'Global Site Configuration',
-        questionPaperLibrary: 'Question Paper Library',
-        parentsNotPaidTool: "Parents Who Didn't Pay Tool",
-        attendanceManagement: 'Mark Daily Attendance',
-        viewAttendanceStats: 'Attendance Analytics & Reports',
-        assignHomework: 'Assign New Homework',
-        homeworkHistory: 'Homework Publishing History',
-        classTimetables: 'Class-wise Weekly Schedules',
-        teacherTimetables: 'Teacher-wise schedules',
-        bulkResultGenerator: 'Bulk Result Generation & Publishing',
-        resultAnalytics: 'Academic Performance Analytics',
-        sendNotification: 'Broadcast School Notifications',
-        notificationHistory: 'Message Delivery Logs',
-        bookCatalog: 'Library Book Catalog',
-        issueReturn: 'Book Issue & Return',
-        manageRoutes: 'Transport Routes & Vehicles',
-        mapTransport: 'Assign student Transport',
-    };
-    document.getElementById('sectionTitle').textContent = titles[sectionId] || 'Dashboard';
-
-    // Visibility logic - Home specific elements are now children of dashboardOverviewSection
-    const analytics = document.getElementById('analyticsHub');
-
-    // Explicitly handle analytics hub display if needed (though it's a child now)
-    // Analytics hub might need display block if it has special class
-    if (analytics) analytics.style.display = 'block';
-
-    // Special Module Initializations
-    if (sectionId === 'questionPaperLibrary') {
-        if (typeof populateQpFilters === 'function') populateQpFilters();
-        if (typeof loadQuestionPapers === 'function') loadQuestionPapers();
-    }
-
-    if (sectionId === 'dashboardOverview') loadDashboardOverview();
-    if (sectionId === 'resultsStatus') populateResultsStatus();
-
-    // ERP Loaders
-    if (sectionId === 'addSession') loadSessions();
-    if (sectionId === 'addClass') loadClasses();
-    if (sectionId === 'addClassDetails') loadClasses();
-    if (sectionId === 'addSubject') loadSubjects();
-    if (sectionId === 'addNonSubject') loadNonSubjects();
-    if (sectionId === 'electiveMapping') loadElectiveDropdowns();
-    if (sectionId === 'studentBulkUpdate') initBulkUpdate();
-    if (sectionId === 'generateReportCard') initReportCardSection();
-    if (sectionId === 'attendanceManagement') initERPAttendance();
-    if (sectionId === 'assignHomework' || sectionId === 'homeworkHistory') initERPHomework();
-    if (sectionId === 'classTimetables') initERPTimetable();
-    if (sectionId === 'bulkResultGenerator') ReportCardTool.initUI();
-    if (sectionId === 'resultAnalytics') ResultAnalytics.init();
-    if (sectionId === 'sendNotification' || sectionId === 'notificationHistory') ERPNotifications.init();
-    if (sectionId === 'bookCatalog' || sectionId === 'issueReturn') ERPLibrary.init();
-    if (sectionId === 'manageRoutes' || sectionId === 'mapTransport') ERPTransport.init();
-
-    // Fees Loaders
-    if (['feeMaster', 'createMonthlyFee', 'searchFeeDues'].includes(sectionId)) {
-        if (typeof initERPFees === 'function') initERPFees();
-    }
-
-    // Admission Loaders
-    if (['addEnquiry', 'searchEnquiry'].includes(sectionId)) {
-        if (typeof initERPAdmission === 'function') initERPAdmission();
-    }
-    const erpSections = [
-        'examGrading',
-        'manageExam',
-        'manageExamSchedule',
-        'viewExamSchedule',
-        'publishExamSchedule',
-        'admitCardTool',
-        'examAttendanceCard',
-        'studentExamAttendance',
-        'addResult',
-        'manageResult',
-        'publishResult',
-        'reportCardRemarks',
-        'manageNonSubResult',
-    ];
-    if (erpSections.includes(sectionId)) {
-        initERPExams();
-    }
-
-    if (sectionId === 'studentIdPrint') {
-        if (typeof initERPIdCards === 'function') initERPIdCards();
-        initSearchableSelect('idPrintSearchContainer', (s) => {
-            document.getElementById('idPrintSid').value = s.id;
-            if (typeof updateIdPreview === 'function') updateIdPreview();
-        });
-    }
-
-    if (sectionId === 'employeeIdPrint') {
-        loadEmployeesForIdPrint();
-    }
-
-    if (sectionId === 'addEnquiry') {
-        populateEnquiryClasses();
-    }
-
-    if (sectionId === 'manageAllResults') {
-        const sess = document.getElementById('allResultsSessionSelect');
-        const activeSess = localStorage.getItem('activeSessionName');
-        if (sess && activeSess) {
-            Array.from(sess.options).forEach((opt) => {
-                if (opt.text === activeSess) opt.selected = true;
-            });
-        }
-    }
-
-    if (sectionId === 'studentList') loadInitialData();
-    if (sectionId === 'addStudent') {
-        if (!editingDocId) {
-            document.getElementById('studentForm')?.reset();
-            document.getElementById('formTitle').textContent = 'Add New Student';
-            document.getElementById('photoPreview').innerHTML =
-                '<i class="fas fa-user" style="font-size: 2.5rem; color: #94a3b8;"></i>';
-            document.getElementById('student_id').value = '';
-        }
-        if (typeof updateSessionDropdowns === 'function') updateSessionDropdowns();
-    }
-    if (sectionId === 'websiteSettings') loadWebsiteSettings();
-    if (sectionId === 'inquiries') loadInquiries();
-    if (sectionId === 'cmsStudentDashboard') {
-        initSearchableSelect('attendanceStudentSelect', (s) => {
-            document.getElementById('att_studentId').value = s.id;
-        });
-    }
-
-    if (sectionId === 'viewReportCard') {
-        initSearchableSelect('rcPreviewSearchContainer', (s) => {
-            document.getElementById('rcPreviewSid').value = s.id;
-        });
-        if (typeof populateRcPreviewExams === 'function') populateRcPreviewExams();
-    }
-
-    if (sectionId === 'studentExamAttendance') {
-        if (typeof loadExamAttSessions === 'function') loadExamAttSessions();
-    }
-}
-
 async function loadDashboardOverview() {
-    // Populate counts from allStudents global array
-    if (allStudents && allStudents.length > 0) {
-        document.getElementById('totalStudentsCount').textContent = allStudents.length;
-    } else {
-        // Fallback for first load
-        const snap = await schoolData('students').get();
-        document.getElementById('totalStudentsCount').textContent = snap.size;
-    }
+    // Rely on updateStats for dynamic counts
+    updateStats();
 
     // Other counts (Mocked for now, will connect to real collections in Phase 3)
-    document.getElementById('totalTeachersCount').textContent = '12';
-    document.getElementById('monthlyFeesTotal').textContent = '₹ 1,45,000';
-    document.getElementById('attendanceRate').textContent = '94%';
+    const teachers = document.getElementById('totalTeachersCount');
+    if (teachers) teachers.textContent = '12';
+    
+    const fees = document.getElementById('monthlyFeesTotal');
+    if (fees) fees.textContent = '₹ 1,45,000';
+    
+    const attendance = document.getElementById('attendanceRate');
+    if (attendance) attendance.textContent = '94%';
 }
 
 async function updateStudentAttendance() {
@@ -782,7 +601,7 @@ async function handlePromotion() {
     if (confirm(`Promote ${targets.length} students to Class ${toClass}?`)) {
         setLoading(true);
         try {
-            const batch = db.batch();
+            const batch = (window.db || firebase.firestore()).batch();
             targets.forEach((s) => batch.update(schoolDoc('students', s.id), { class: toClass }));
             await batch.commit();
             showToast(`Promoted ${targets.length} students!`);
@@ -1166,15 +985,19 @@ async function handleStudentSubmit(e) {
 
         const studentData = {
             studentId: finalSid,
-            name,
-            fatherName: father,
+            student_id: finalSid,
+            name: name,
+            father_name: father,
+            phone: phone,
             mobile: phone,
             class: sclass,
             section: sect,
-            rollNo: roll_no,
-            regNo: reg_no,
+            roll_no: roll_no,
+            reg_no: reg_no,
+            session: session,
             admissionYear: session,
             join_date,
+            dob: dob,
             dateOfBirth: dob,
             gender,
             aadhar,
@@ -1183,7 +1006,7 @@ async function handleStudentSubmit(e) {
             caste,
             pen,
             smart_card_no,
-            motherName: mother,
+            mother_name: mother,
             father_aadhar,
             mother_aadhar,
             guardian_name,
@@ -1239,7 +1062,7 @@ function updateBulkUI() {
 async function handleBulkDelete() {
     if (confirm(`Delete ${selectedStudents.size} students?`)) {
         setLoading(true);
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         selectedStudents.forEach((id) => batch.delete(schoolDoc('students', id)));
         await batch.commit();
         selectedStudents.clear();
@@ -1299,10 +1122,10 @@ async function editStudent(id) {
         }
     }
 
-    document.getElementById('student_roll_no').value = s.rollNo || s.roll_no || '';
-    document.getElementById('student_reg_no').value = s.regNo || s.reg_no || '';
+    document.getElementById('student_roll_no').value = s.roll_no || s.rollNo || '';
+    document.getElementById('student_reg_no').value = s.reg_no || s.regNo || '';
     document.getElementById('student_join_date').value = s.join_date || '';
-    document.getElementById('student_dob').value = s.dateOfBirth || s.dob || '';
+    document.getElementById('student_dob').value = s.dob || s.dateOfBirth || '';
     document.getElementById('student_gender').value = s.gender || '';
     document.getElementById('student_aadhar').value = s.aadhar || '';
     document.getElementById('student_religion').value = s.religion || '';
@@ -1310,7 +1133,7 @@ async function editStudent(id) {
     document.getElementById('student_caste').value = s.caste || '';
     document.getElementById('student_pen').value = s.pen || '';
     document.getElementById('student_smart_card_no').value = s.smart_card_no || '';
-    document.getElementById('student_mother').value = s.motherName || s.mother_name || '';
+    document.getElementById('student_mother').value = s.mother_name || s.motherName || '';
     document.getElementById('student_father_aadhar').value = s.father_aadhar || '';
     document.getElementById('student_mother_aadhar').value = s.mother_aadhar || '';
     document.getElementById('student_guardian_name').value = s.guardian_name || '';
@@ -1322,13 +1145,53 @@ async function editStudent(id) {
     document.getElementById('student_transport').value = s.transport || 'No';
 
     // Show existing photo
-    const photoDiv = document.getElementById('photoPreview');
+    const previewImg = document.getElementById('proto_preview_img');
+    const placeholderIcon = document.getElementById('photo_placeholder_icon');
+    const fileNameSpan = document.getElementById('photoFileName');
+
     if (s.photo_url) {
-        photoDiv.innerHTML = `<img src="${s.photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
+        if (previewImg) {
+            previewImg.src = s.photo_url;
+            previewImg.classList.remove('hidden');
+        }
+        if (placeholderIcon) placeholderIcon.classList.add('hidden');
     } else {
-        photoDiv.innerHTML = '<i class="fas fa-user" style="font-size:2.5rem;color:#94a3b8;"></i>';
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (placeholderIcon) placeholderIcon.classList.remove('hidden');
     }
+    if (fileNameSpan) fileNameSpan.textContent = '';
 }
+
+// Added Photo Preview helper
+window.previewPhoto = function(event) {
+    const file = event.target.files[0];
+    const previewImg = document.getElementById('proto_preview_img');
+    const placeholderIcon = document.getElementById('photo_placeholder_icon');
+    const fileNameSpan = document.getElementById('photoFileName');
+
+    if (file) {
+        if (fileNameSpan) fileNameSpan.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (previewImg) {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('hidden');
+            }
+            if (placeholderIcon) placeholderIcon.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        if (fileNameSpan) fileNameSpan.textContent = '';
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (placeholderIcon) placeholderIcon.classList.remove('hidden');
+    }
+};
 
 // Bulk Import (Excel Version)
 async function handleBulkImport(e) {
@@ -1493,9 +1356,20 @@ function logoutAdmin() {
 }
 
 function updateStats() {
-    document.getElementById('statTotalStudents').textContent = allStudents.length;
-    const classes = new Set(allStudents.map((s) => s.class));
-    document.getElementById('statTotalClasses').textContent = classes.size;
+    const totalStudents = document.getElementById('totalStudentsCount');
+    if (totalStudents) {
+        totalStudents.textContent = allStudents.length;
+    }
+    
+    const totalClasses = document.getElementById('statTotalClasses');
+    if (totalClasses) {
+        const classes = new Set(allStudents.map((s) => s.class));
+        totalClasses.textContent = classes.size;
+    }
+
+    // Secondary UI IDs (for backward compatibility or multiple views)
+    const statStudents = document.getElementById('statTotalStudents');
+    if (statStudents) statStudents.textContent = allStudents.length;
 }
 
 // ===================== INQUIRIES =====================
@@ -2030,7 +1904,7 @@ async function saveBulkStudentUpdate() {
 
     try {
         setLoading(true);
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         let changeCount = 0;
 
         rows.forEach((row) => {

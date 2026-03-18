@@ -6,7 +6,7 @@
 
         <title>Academics | Apex Public School</title>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     </head>
@@ -137,10 +137,10 @@
             <h2>Examination System</h2>
 
             <div class="grid">
-                <div class="card">Monthly Tests</div>
-                <div class="card">Half Yearly Exams</div>
-                <div class="card">Annual Exams</div>
-                <div class="card">Continuous Assessment</div>
+                <div class="card" id="academicsExam1">Monthly Tests</div>
+                <div class="card" id="academicsExam2">Half Yearly Exams</div>
+                <div class="card" id="academicsExam3">Annual Exams</div>
+                <div class="card" id="academicsExam4">Continuous Assessment</div>
             </div>
         </section>
 
@@ -174,22 +174,22 @@
         </section>
 
         <section class="cta">
-            <h2>Admission Open 2026 to 2027</h2>
+            <h2 id="academicsCtaTitle">Admission Open 2026 to 2027</h2>
 
-            <p>Join Apex Public School for quality education</p>
+            <p id="academicsCtaSubtitle">Join Apex Public School for quality education</p>
 
-            <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
+            <button onclick="location.href = 'contact.html'" id="academicsCtaBtn">Admission Inquiry</button>
         </section>
 
         <div id="footer"></div>
         <!-- NEW FLOATING BUTTONS CONTAINER -->
         <div id="floating-button"></div>
 
-        <script src="script.js"></script>
+        <script src="/script.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="js/firebase-config.js"></script>
-        <script src="js/cms-settings.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/cms-settings.js"></script>
         <script>
             document.querySelectorAll('.counter').forEach((counter) => {
                 counter.innerText = '0';

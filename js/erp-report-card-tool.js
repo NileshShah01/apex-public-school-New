@@ -67,7 +67,8 @@ const ReportCardTool = {
             const fileName = `ReportCard_${student.name.replace(/\s+/g, '_')}_${examDetails.title}.pdf`;
 
             // 6. Upload to Storage
-            const storagePath = `schools/${schoolId}/reports/${studentId}_${examDetails.title}_${sessionId}.pdf`;
+            const school_id = window.CURRENT_SCHOOL_ID || localStorage.getItem('schoolId') || 'SCH001';
+            const storagePath = `schools/${school_id}/reports/${studentId}_${examDetails.title}_${sessionId}.pdf`;
             const uploadTask = await storage.ref(storagePath).put(pdfBlob);
             const downloadUrl = await uploadTask.ref.getDownloadURL();
 

@@ -85,13 +85,14 @@ async function handleMonthlyFeeGenerate(e) {
         const studentsSnap = await schoolData('students').where('class', '==', sclass).get();
         if (studentsSnap.empty) {
             showToast('No students found in this class', 'error');
+            setLoading(false);
             return;
         }
 
         const safeId = sclass.replace(/\s+/g, '_').toLowerCase();
         const amount = (window.feeStructure && window.feeStructure[safeId + '_monthly']) || 0;
 
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         let count = 0;
 
         studentsSnap.forEach((doc) => {
@@ -435,19 +436,21 @@ async function handleFeePayment(e) {
     const receiptNo = 'R-' + Math.floor(Math.random() * 900000 + 100000);
     try {
         setLoading(true);
-        const payRef = await schoolData('feePayments').add({
-            studentId: activeStudentLedger.sid,
-            amount,
-            paymentMode: mode,
-            receiptNo,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
+        const payRef = await schoolData('feePayments').add(
+            withSchool({
+                studentId: activeStudentLedger.sid,
+                amount,
+                paymentMode: mode,
+                receiptNo,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+        );
         const feeSnap = await schoolData('fees')
             .where('studentId', '==', activeStudentLedger.sid)
             .where('status', '!=', 'paid')
             .get();
         let rem = amount;
-        const batch = db.batch();
+        const batch = (window.db || firebase.firestore()).batch();
         feeSnap.forEach((doc) => {
             if (rem <= 0) return;
             const f = doc.data();
@@ -479,7 +482,8 @@ async function printReceipt(pid) {
         const p = pSnap.data();
         const sSnap = await schoolData('students').where('studentId', '==', p.studentId).limit(1).get();
         const s = sSnap.docs[0].data();
-        const sch = (await db.collection('schools').doc(CURRENT_SCHOOL_ID).get()).data();
+        const schSnap = await schoolRef().get();
+        const sch = schSnap.exists ? schSnap.data() : {};
 
         document.getElementById('rtcSchoolName').textContent = sch.schoolName;
         document.getElementById('rtcName').textContent = s.name;

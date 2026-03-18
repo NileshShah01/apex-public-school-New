@@ -18,9 +18,9 @@
             content="https://nileshshah01.github.io/Apex-public-school-test-01/images/site-preview.jpg"
         />
         <meta property="og:url" content="https://nileshshah01.github.io/Apex-public-school-test-01/" />
-        <link rel="icon" href="images/favicon.png" />
+        <link rel="icon" href="/images/favicon.png" />
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -55,13 +55,15 @@
 
         <!-- 2. NOTICE BOARD -->
         <section class="notice-board">
-            <marquee id="dyn-marquee">Admission Open for Session 2026-2027 • Contact School Office for Enquiry</marquee>
+            <div class="ticker-container">
+                <div class="ticker-content" id="dyn-marquee">Admission Open for Session 2026-2027 • Contact School Office for Enquiry</div>
+            </div>
         </section>
 
         <!-- 2.0 SCHOOL INTRODUCTION -->
         <section class="intro-section reveal mt-2">
             <div class="intro-image">
-                <img src="images/School-Building.jpeg" alt="Apex Public School Building" />
+                <img src="/images/School-Building.jpeg" alt="Apex Public School Building" />
             </div>
             <div class="intro-text">
                 <h2 id="homeIntroTitle">About Apex Public School</h2>
@@ -132,42 +134,42 @@
         <section class="reveal">
             <h2 class="section-title">Quick Links</h2>
             <div class="card-grid">
-                <a href="about.html" class="nav-card">
+                <a href="about.html" class="nav-card" title="About Apex Public School">
                     <i class="fas fa-info-circle"></i>
                     <h3>About Us</h3>
                     <p>Know our history & mission</p>
                 </a>
-                <a href="academics.html" class="nav-card">
+                <a href="academics.html" class="nav-card" title="Academics & Curriculum">
                     <i class="fas fa-book-reader"></i>
                     <h3>Academics</h3>
                     <p>Our curriculum & classes</p>
                 </a>
-                <a href="facilities.html" class="nav-card">
+                <a href="facilities.html" class="nav-card" title="School Facilities">
                     <i class="fas fa-microscope"></i>
                     <h3>Facilities</h3>
                     <p>Modern campus features</p>
                 </a>
-                <a href="gallery.html" class="nav-card">
+                <a href="gallery.html" class="nav-card" title="School Photo Gallery">
                     <i class="fas fa-images"></i>
                     <h3>Gallery</h3>
                     <p>School life in photos</p>
                 </a>
-                <a href="admissions.html" class="nav-card">
+                <a href="admissions.html" class="nav-card" title="Admissions Information">
                     <i class="fas fa-user-plus"></i>
                     <h3>Admissions</h3>
                     <p>Apply for session 2026-27</p>
                 </a>
-                <a href="contact.html" class="nav-card">
+                <a href="contact.html" class="nav-card" title="Contact Us">
                     <i class="fas fa-envelope-open-text"></i>
                     <h3>Contact Us</h3>
                     <p>Get in touch with us</p>
                 </a>
-                <a href="inquiry.html" class="nav-card">
+                <a href="inquiry.html" class="nav-card" title="Submit Admission Inquiry">
                     <i class="fas fa-question-circle"></i>
                     <h3>Inquiry Now</h3>
                     <p>Ask us any questions</p>
                 </a>
-                <a href="portal/student-login.html" class="nav-card">
+                <a href="portal/student-login.html" class="nav-card" title="Student & Parent Portal Login">
                     <i class="fas fa-user-graduate"></i>
                     <h3>Student Portal</h3>
                     <p>Login to your dashboard</p>
@@ -197,8 +199,8 @@
                     <p class="text-muted text-center w-full">Loading facilities...</p>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 2rem">
-                <a href="facilities.html" class="btn-primary">View All Facilities</a>
+            <div class="text-center mt-2">
+                <a href="facilities.html" class="btn-primary" title="View All School Facilities">View All Facilities</a>
             </div>
         </section>
 
@@ -207,7 +209,7 @@
             <div class="grid">
                 <div class="card">
                     <img
-                        src="images/Sports-Event-Prize-Distribution-img1.jpeg"
+                        src="/images/Sports-Event-Prize-Distribution-img1.jpeg"
                         alt="Students receiving prizes at sports event"
                         loading="lazy"
                         class="card-img-top"
@@ -217,7 +219,7 @@
                 </div>
                 <div class="card">
                     <img
-                        src="images/Republic-Day-img1.jpeg"
+                        src="/images/Republic-Day-img1.jpeg"
                         alt="Republic Day celebration at school"
                         loading="lazy"
                         class="card-img-top"
@@ -227,7 +229,7 @@
                 </div>
                 <div class="card">
                     <img
-                        src="images/Science-centre-Patna-img3.jpeg"
+                        src="/images/Science-centre-Patna-img3.jpeg"
                         alt="Students exploring science exhibits"
                         loading="lazy"
                         class="card-img-top"
@@ -267,17 +269,17 @@
                 <p class="text-center w-full text-muted p-2">Loading memories...</p>
                 <!-- Static Fallback (Hidden) -->
                 <div class="hidden">
-                    <img src="images/Bihar-Museum-img1.jpeg" alt="Students at Bihar Museum" />
-                    <img src="images/Science-centre-Patna-img3.jpeg" alt="Science Center exhibits" />
-                    <img src="images/Republic-Day-img1.jpeg" alt="Republic Day celebrations" />
-                    <img src="images/Sports-Event-Prize-Distribution-img1.jpeg" alt="Sports prize distribution" />
-                    <img src="images/Bihar-Museum-img4.jpeg" alt="Artifacts at Bihar Museum" />
-                    <img src="images/Bihar-Museum-img7.jpeg" alt="Museum corridors" />
-                    <img src="images/Science-centre-Patna-img1.jpeg" alt="Science center entrance" />
-                    <img src="images/Republic-Day-img2.jpeg" alt="Flag hoisting ceremony" />
+                    <img src="/images/Bihar-Museum-img1.jpeg" alt="Students at Bihar Museum" />
+                    <img src="/images/Science-centre-Patna-img3.jpeg" alt="Science Center exhibits" />
+                    <img src="/images/Republic-Day-img1.jpeg" alt="Republic Day celebrations" />
+                    <img src="/images/Sports-Event-Prize-Distribution-img1.jpeg" alt="Sports prize distribution" />
+                    <img src="/images/Bihar-Museum-img4.jpeg" alt="Artifacts at Bihar Museum" />
+                    <img src="/images/Bihar-Museum-img7.jpeg" alt="Museum corridors" />
+                    <img src="/images/Science-centre-Patna-img1.jpeg" alt="Science center entrance" />
+                    <img src="/images/Republic-Day-img2.jpeg" alt="Flag hoisting ceremony" />
                 </div>
             </div>
-            <a href="gallery.html" class="btn-secondary">View Full Gallery</a>
+            <a href="gallery.html" class="btn-secondary" title="View Our Full Photo Gallery">View Full Gallery</a>
         </section>
 
         <!-- 5.5 RECENT ACHIEVEMENTS -->
@@ -319,11 +321,11 @@
         <!-- NEW FLOATING BUTTONS CONTAINER -->
         <div id="floating-button"></div>
 
-        <script src="script.js"></script>
+        <script src="/script.js?v=1.4"></script>
         <!-- Firebase SDK for CMS Settings -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="js/firebase-config.js"></script>
-        <script src="js/cms-settings.js"></script>
+        <script src="/js/firebase-config.js?v=1.4"></script>
+        <script src="/js/cms-settings.js?v=1.4"></script>
     </body>
 </html>

@@ -5,14 +5,19 @@
 async function applyStagePermissions() {
     console.log(`Checking permissions for: ${CURRENT_SCHOOL_ID}`);
     try {
-        const schoolDocSnap = await schoolDoc('schools', CURRENT_SCHOOL_ID).get();
+        // Use direct reference to the school document (root collection)
+        const schoolDocSnap = await schoolRef().get();
         if (!schoolDocSnap.exists) {
             console.warn('School record not found. Defaulting to full access (Development Mode).');
             return;
         }
 
-        const stage = schoolDocSnap.data().stage || 1;
+        const data = schoolDocSnap.data();
+        const stage = data.stage || 1;
         console.log(`SaaS Level: Stage ${stage}`);
+
+        // Apply Branding
+        applySchoolBranding(data);
 
         // Sidebar Elements Mapping
         const modules = {
@@ -24,8 +29,6 @@ async function applyStagePermissions() {
             navClass: 4, // Needs Stage 4+
             navTimeTable: 4, // Needs Stage 4+
         };
-
-        // Website CMS and Page Content are usually Stage 2+ (Included by default for Admin Panel)
 
         for (const [id, minStage] of Object.entries(modules)) {
             const el = document.getElementById(id);
@@ -40,6 +43,39 @@ async function applyStagePermissions() {
         }
     } catch (e) {
         console.error('Permission check failed:', e);
+    }
+}
+
+/**
+ * Apply School Branding (Name, Logo, etc.)
+ */
+function applySchoolBranding(data) {
+    if (!data) return;
+    const name = data.schoolName || 'Apex Public School';
+    const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+
+    // Update Title
+    if (document.getElementById('dashboardTitle')) {
+        document.getElementById('dashboardTitle').innerText = `Admin Dashboard | ${name}`;
+    }
+
+    // Update Mobile Brand
+    if (document.getElementById('mobileBrandName')) {
+        document.getElementById('mobileBrandName').innerText = name.split(' ')[0] + ' Admin';
+    }
+
+    // Update Sidebar
+    if (document.getElementById('sidebarSchoolName')) {
+        document.getElementById('sidebarSchoolName').innerText = name;
+    }
+    if (document.getElementById('sidebarLogoImg')) {
+        document.getElementById('sidebarLogoImg').src = logo;
+        document.getElementById('sidebarLogoImg').alt = `${name} Logo`;
+    }
+
+    // Update Page Header
+    if (document.getElementById('headerSubtext')) {
+        document.getElementById('headerSubtext').innerText = `Manage ${name} Portal`;
     }
 }
 
@@ -89,10 +125,14 @@ const CMS_SECTIONS = {
     },
 };
 
-// Hook into existing showSection
-const _origShowSection = window.showSection;
-window.showSection = function (id) {
-    _origShowSection(id);
+// Hook into existing showSection via unified reference
+window.showSection = function (id, updateHash = true) {
+    if (typeof window.originalShowSection === 'function') {
+        window.originalShowSection(id, updateHash);
+    } else {
+        console.warn('originalShowSection not found in CMS extension');
+    }
+
     if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
 
     // Close mobile sidebar if open

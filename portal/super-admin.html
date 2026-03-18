@@ -9,7 +9,7 @@
             rel="stylesheet"
         />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <link rel="stylesheet" href="../css/portal.css" />
+        <link rel="stylesheet" href="/css/portal.css" />
         <style>
             :root {
                 --super-primary: #6366f1;
@@ -29,6 +29,7 @@
             .sidebar {
                 width: 260px;
                 background: var(--super-card);
+                -webkit-backdrop-filter: blur(16px);
                 backdrop-filter: blur(16px);
                 border-right: 1px solid var(--super-border);
                 padding: 2rem 1.5rem;
@@ -97,6 +98,7 @@
 
             .card {
                 background: var(--super-card);
+                -webkit-backdrop-filter: blur(12px);
                 backdrop-filter: blur(12px);
                 border: 1px solid var(--super-border);
                 border-radius: 1.25rem;
@@ -210,6 +212,7 @@
                 width: 100%;
                 height: 100%;
                 background: rgba(0, 0, 0, 0.8);
+                -webkit-backdrop-filter: blur(8px);
                 backdrop-filter: blur(8px);
                 z-index: 1000;
                 justify-content: center;
@@ -254,32 +257,12 @@
         <!-- Loading Overlay -->
         <div
             id="loadingOverlay"
-            style="
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(15, 23, 42, 0.9);
-                z-index: 2000;
-                display: none;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            "
+            class="overlay-fixed z-top flex-col items-center justify-center hidden"
         >
             <div
-                class="spinner"
-                style="
-                    width: 50px;
-                    height: 50px;
-                    border: 5px solid rgba(255, 255, 255, 0.1);
-                    border-top: 5px solid var(--super-primary);
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                "
+                class="spinner-md border-light border-t-primary rounded-full animate-spin"
             ></div>
-            <p style="margin-top: 1rem; color: #94a3b8; font-weight: 600">Processing SNR World Data...</p>
+            <p class="mt-1 text-muted font-bold text-lg">Processing SNR World Data...</p>
         </div>
 
         <style>
@@ -295,7 +278,7 @@
 
         <aside class="sidebar">
             <div class="brand">
-                <i class="fas fa-layer-group" style="color: var(--super-primary)"></i>
+                <i class="fas fa-layer-group text-primary"></i>
                 <span>SNR World</span>
             </div>
             <ul class="nav-list">
@@ -312,16 +295,16 @@
                     <a href="#" class="nav-link"><i class="fas fa-cog"></i> Platform Settings</a>
                 </li>
             </ul>
-            <div style="margin-top: auto">
-                <a href="#" class="nav-link" style="color: #f87171"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <div class="mt-auto">
+                <a href="#" class="nav-link text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </aside>
 
         <main class="main">
             <header class="header">
                 <div>
-                    <h1 style="font-size: 2rem">Platform Overview</h1>
-                    <p style="color: #94a3b8">Manage your SNR World SaaS instances</p>
+                    <h1 class="text-3xl">Platform Overview</h1>
+                    <p class="text-muted">Manage your SNR World SaaS instances</p>
                 </div>
                 <button class="btn" onclick="openModal('schoolModal')">
                     <i class="fas fa-plus"></i> Register New School
@@ -337,7 +320,7 @@
                     </div>
                 </div>
                 <div class="card stat-card">
-                    <div class="stat-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1)">
+                    <div class="stat-icon text-success bg-success-light">
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <div>
@@ -346,7 +329,7 @@
                     </div>
                 </div>
                 <div class="card stat-card">
-                    <div class="stat-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1)">
+                    <div class="stat-icon text-warning bg-warning-light">
                         <i class="fas fa-crown"></i>
                     </div>
                     <div>
@@ -359,14 +342,13 @@
             <section class="card">
                 <div class="section-title">
                     <span>Provisioned Schools</span>
-                    <div style="display: flex; gap: 0.75rem">
+                    <div class="flex gap-md">
                         <input
                             type="text"
                             id="schoolSearch"
                             onkeyup="filterSchools()"
                             placeholder="Search by Name or ID..."
-                            class="form-control"
-                            style="width: 250px; background: rgba(255, 255, 255, 0.05)"
+                            class="form-control w-250 bg-white-05"
                         />
                     </div>
                 </div>
@@ -379,7 +361,7 @@
                                 <th>Subdomain</th>
                                 <th>Stage</th>
                                 <th>Status</th>
-                                <th style="text-align: right">Actions</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="schoolTableBody">
@@ -390,13 +372,13 @@
             </section>
 
             <!-- Platform Activity Log -->
-            <section class="card" style="margin-top: 3rem">
+            <section class="card mt-12">
                 <div class="section-title">
                     <span><i class="fas fa-history"></i> Recent Activity Log</span>
                 </div>
-                <div id="activityLog" style="display: flex; flex-direction: column; gap: 0.75rem">
+                <div id="activityLog" class="flex flex-col gap-sm">
                     <!-- Dynamic logs -->
-                    <p style="color: #64748b; font-size: 0.9rem; text-align: center; padding: 1rem">
+                    <p class="text-slate-500 text-sm text-center p-4">
                         Loading activity...
                     </p>
                 </div>
@@ -406,8 +388,8 @@
         <!-- Modal: Register School -->
         <div class="modal" id="schoolModal">
             <div class="modal-content">
-                <h2 style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem">
-                    <i class="fas fa-plus-circle" style="color: var(--super-primary)"></i> Register School
+                <h2 class="mb-8 flex items-center gap-md">
+                    <i class="fas fa-plus-circle text-primary"></i> Register School
                 </h2>
                 <form id="addSchoolForm">
                     <div class="form-group">
@@ -422,16 +404,15 @@
                     </div>
                     <div class="form-group">
                         <label>Proposed Subdomain</label>
-                        <div style="display: flex; align-items: center; gap: 0.5rem">
+                        <div class="flex items-center gap-sm">
                             <input
                                 type="text"
                                 id="subdomain"
-                                class="form-control"
+                                class="form-control flex-1"
                                 required
                                 placeholder="apex"
-                                style="flex: 1"
                             />
-                            <span style="color: #94a3b8">.snredu.in</span>
+                            <span class="text-muted">.snredu.in</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -445,6 +426,25 @@
                         />
                     </div>
                     <div class="form-group">
+                        <label>School Logo URL</label>
+                        <input
+                            type="url"
+                            id="schoolLogo"
+                            class="form-control"
+                            placeholder="https://example.com/logo.png"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Admin Password</label>
+                        <input
+                            type="password"
+                            id="adminPassword"
+                            class="form-control"
+                            required
+                            placeholder="Set initial login password"
+                        />
+                    </div>
+                    <div class="form-group">
                         <label>Activation Stage</label>
                         <select id="schoolStage" class="form-control">
                             <option value="1">Stage 1: Static Site</option>
@@ -454,11 +454,10 @@
                             <option value="5">Stage 5: Full ERP Suite</option>
                         </select>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem">
+                    <div class="grid grid-cols-2 gap-md mt-8">
                         <button
                             type="button"
-                            class="btn"
-                            style="background: rgba(239, 68, 68, 0.1); color: #f87171"
+                            class="btn bg-danger-light text-danger"
                             onclick="closeModal('schoolModal')"
                         >
                             Cancel
@@ -472,8 +471,8 @@
         <!-- Modal: Edit School -->
         <div class="modal" id="editSchoolModal">
             <div class="modal-content">
-                <h2 style="margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem">
-                    <i class="fas fa-edit" style="color: var(--super-primary)"></i> Edit School Instance
+                <h2 class="mb-8 flex items-center gap-md">
+                    <i class="fas fa-edit text-primary"></i> Edit School Instance
                 </h2>
                 <form id="editSchoolForm">
                     <input type="hidden" id="editSchoolId" />
@@ -495,11 +494,10 @@
                             <option value="5">Stage 5: Full ERP Suite</option>
                         </select>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem">
+                    <div class="grid grid-cols-2 gap-md mt-8">
                         <button
                             type="button"
-                            class="btn"
-                            style="background: rgba(239, 68, 68, 0.1); color: #f87171"
+                            class="btn bg-danger-light text-danger"
                             onclick="closeModal('editSchoolModal')"
                         >
                             Cancel
@@ -515,8 +513,8 @@
         <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/super-admin.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/super-admin.js"></script>
 
         <script>
             function openModal(id) {

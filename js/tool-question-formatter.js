@@ -8,7 +8,7 @@ let isExtracting = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Initialize Context
-    await initSchoolContext();
+    await syncHeaderWithTenant();
 
     // 2. Initialize Icons
     lucide.createIcons();
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btnDownloadPDF').addEventListener('click', downloadPDF);
 
     // Sync header inputs
-    ['inputSchoolName', 'inputExamName', 'inputSubject'].forEach((id) => {
+    ['inputSchoolName', 'inputSchoolAddress', 'inputExamName', 'inputSubject', 'inputClass', 'inputFullMarks', 'inputTime', 'inputDate'].forEach((id) => {
         document.getElementById(id).addEventListener('input', syncHeader);
     });
 
@@ -40,17 +40,21 @@ function syncHeader() {
 }
 
 /**
- * Initialize School Context (Multi-tenant)
+ * Sync Header with current School Identity
  */
-async function initSchoolContext() {
+async function syncHeaderWithTenant() {
     try {
-        const schoolId = localStorage.getItem('currentSchoolId') || 'SCH001';
-        const doc = await db.collection('schools').doc(schoolId).get();
-        if (doc.exists) {
-            const data = doc.data();
+        const schSnap = await schoolRef().get();
+        if (schSnap.exists) {
+            const data = schSnap.data();
             document.getElementById('inputSchoolName').value = data.schoolName || 'APEX PUBLIC SCHOOL';
-            document.getElementById('inputExamName').value = 'ANNUAL EXAMINATION - 2026';
-            document.getElementById('inputSubject').value = 'GENERAL KNOWLEDGE';
+            document.getElementById('inputSchoolAddress').value = '(ANJANI BAZAR)';
+            document.getElementById('inputExamName').value = '2nd TERMINAL EXAMINATION';
+            document.getElementById('inputSubject').value = 'G.K';
+            document.getElementById('inputClass').value = '3rd';
+            document.getElementById('inputFullMarks').value = '40';
+            document.getElementById('inputTime').value = '2hrs.';
+            document.getElementById('inputDate').value = '02/12/2025';
             syncHeader();
         }
     } catch (e) {

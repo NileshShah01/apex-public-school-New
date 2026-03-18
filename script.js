@@ -10,9 +10,9 @@ function loadComponent(id, file) {
         });
 }
 
-loadComponent('header', 'header.html');
-loadComponent('footer', 'footer.html');
-loadComponent('floating-button', 'floating-button.html');
+loadComponent('header', '/header.html');
+loadComponent('footer', '/footer.html');
+loadComponent('floating-button', '/floating-button.html');
 function initMenu() {
     const toggle = document.getElementById('menuToggle');
     const menu = document.getElementById('menu');

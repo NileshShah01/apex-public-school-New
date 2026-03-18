@@ -59,4 +59,12 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400;
   }
+
+  .bg-brand-accent {
+    background-color: var(--brand-accent);
+  }
+
+  .text-brand-accent {
+    color: var(--brand-accent);
+  }
 }

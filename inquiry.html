@@ -6,7 +6,7 @@
 
         <title>Inquiry | Apex Public School</title>
 
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="/style.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -20,6 +20,7 @@
                 text-align: center;
                 padding: 5rem 2rem;
                 background: var(--glass-bg);
+                -webkit-backdrop-filter: blur(10px);
                 backdrop-filter: blur(10px);
                 margin-bottom: 2rem;
             }
@@ -190,14 +191,14 @@
 
         <section class="reveal">
             <h2 class="section-title">Admission Inquiry Form</h2>
-            <p class="text-muted" style="text-align: center; margin-bottom: 3rem">
+            <p class="text-muted text-center mb-4">
                 Fill in your details below and our team will contact you shortly.
             </p>
 
             <div class="form-container">
                 <form id="inquiryForm">
-                    <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem">
-                        <div class="form-group" style="margin-bottom: 0">
+                    <div class="grid gap-md mb-3">
+                        <div class="form-group mb-0">
                             <label class="form-label"
                                 >Parent / Guardian Name <span class="text-secondary">*</span></label
                             >
@@ -209,7 +210,7 @@
                                 placeholder="Your full name"
                             />
                         </div>
-                        <div class="form-group" style="margin-bottom: 0">
+                        <div class="form-group mb-0">
                             <label class="form-label">Student Name <span class="text-secondary">*</span></label>
                             <input
                                 type="text"
@@ -221,8 +222,8 @@
                         </div>
                     </div>
 
-                    <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem">
-                        <div class="form-group" style="margin-bottom: 0">
+                    <div class="grid gap-md mb-3">
+                        <div class="form-group mb-0">
                             <label class="form-label">Mobile Number <span class="text-secondary">*</span></label>
                             <input
                                 type="tel"
@@ -233,9 +234,9 @@
                                 maxlength="10"
                             />
                         </div>
-                        <div class="form-group" style="margin-bottom: 0">
+                        <div class="form-group mb-0">
                             <label class="form-label">Admission For Class <span class="text-secondary">*</span></label>
-                            <select id="inq_class" class="form-control" required>
+                            <select id="inq_class" class="form-control" title="Select Admission Class" required>
                                 <option value="">-- Select Class --</option>
                                 <option>Play Group</option>
                                 <option>Nursery</option>
@@ -273,19 +274,9 @@
                         ></textarea>
                     </div>
 
-                    <div
-                        id="inq_status"
-                        style="
-                            display: none;
-                            padding: 1rem;
-                            border-radius: 0.75rem;
-                            font-weight: 600;
-                            text-align: center;
-                            margin-bottom: 1.5rem;
-                        "
-                    ></div>
+                    <div id="inq_status" class="status-box"></div>
 
-                    <div style="text-align: center">
+                    <div class="text-center">
                         <button type="submit" class="btn-submit">
                             <i class="fa-solid fa-paper-plane"></i> Submit Inquiry
                         </button>
@@ -297,7 +288,7 @@
         <!-- Firebase for Inquiry -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="js/firebase-config.js"></script>
+        <script src="/js/firebase-config.js"></script>
         <script>
             document.getElementById('inquiryForm').addEventListener('submit', async function (e) {
                 e.preventDefault();
@@ -310,8 +301,7 @@
                 const mobile = document.getElementById('inq_mobile').value.trim();
                 if (mobile.length !== 10 || isNaN(mobile)) {
                     status.style.display = 'block';
-                    status.style.background = '#fff1f2';
-                    status.style.color = '#be123c';
+                    status.className = 'status-box status-error';
                     status.textContent = 'Please enter a valid 10-digit mobile number.';
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Inquiry';
@@ -330,14 +320,12 @@
                         submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     });
                     status.style.display = 'block';
-                    status.style.background = '#ecfdf5';
-                    status.style.color = '#065f46';
+                    status.className = 'status-box status-success';
                     status.textContent = '✅ Inquiry submitted! Our team will contact you soon.';
                     this.reset();
                 } catch (err) {
                     status.style.display = 'block';
-                    status.style.background = '#fff1f2';
-                    status.style.color = '#be123c';
+                    status.className = 'status-box status-error';
                     status.textContent = 'Error submitting. Please try again or call us directly.';
                 } finally {
                     btn.disabled = false;
@@ -393,7 +381,7 @@
         <div id="footer"></div>
         <div id="floating-button"></div>
 
-        <script src="script.js"></script>
+        <script src="/script.js"></script>
 
         <script>
             /* FAQ ACCORDION */

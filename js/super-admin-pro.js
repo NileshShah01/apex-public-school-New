@@ -187,7 +187,15 @@ function renderSchoolsTable(schools) {
         <tr class="group hover:bg-white/5 transition-all">
             <td class="py-4 text-sm font-mono text-blue-400">${s.schoolId}</td>
             <td class="py-4 text-sm font-semibold text-white">${s.schoolName}</td>
-            <td class="py-4 text-sm text-slate-400 font-mono">${s.subdomain}.snredu.in</td>
+            <td class="py-4 text-sm text-slate-400 font-mono">
+                <a href="${s.subdomain.startsWith('http') ? s.subdomain : 'https://snredu-erp.web.app/' + s.subdomain + '/'}" 
+                   target="_blank" 
+                   class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+                    ${s.subdomain}${s.subdomain.startsWith('http') ? '' : ' /'} 
+                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
+                <p class="text-[10px] text-slate-600 mt-1">${s.subdomain.startsWith('http') ? 'Custom URL' : 'snredu-erp.web.app/' + s.subdomain}</p>
+            </td>
             <td class="py-4"><span class="badge-stage">Stage ${s.stage}</span></td>
             <td class="py-4 text-sm text-slate-300">-</td>
             <td class="py-4">
@@ -231,33 +239,119 @@ function filterSchools(term) {
 async function handleAddSchool(e) {
     e.preventDefault();
     const name = document.getElementById('proSchoolName').value;
-    const subdomain = document
-        .getElementById('proSubdomain')
-        .value.toLowerCase()
-        .replace(/[^a-z0-9]/g, '');
+    const displayName = document.getElementById('proSchoolDisplayName').value;
+    const logo = document.getElementById('proSchoolLogo').value;
+    const subdomain = document.getElementById('proSubdomain').value.trim();
     const stage = parseInt(document.getElementById('proSchoolStage').value);
     const email = document.getElementById('proAdminEmail').value;
+    const password = document.getElementById('proAdminPassword').value;
 
     try {
         showOverlay(true);
-        const schoolId = 'SCH' + String(allSchools.length + 1).padStart(3, '0');
 
-        await db.collection('schools').doc(schoolId).set({
-            schoolId,
-            schoolName: name,
-            subdomain,
-            stage,
-            adminEmail: email,
-            status: 'active',
-            createdDate: firebase.firestore.FieldValue.serverTimestamp(),
+        // 1. Unique School ID Generation (Robust)
+        const schoolSnap = await db.collection('schools').get();
+        let maxId = 0;
+        schoolSnap.forEach(doc => {
+            const id = doc.id;
+            if (id.startsWith('SCH')) {
+                const num = parseInt(id.replace('SCH', ''));
+                if (!isNaN(num) && num > maxId) maxId = num;
+            }
         });
+        const schoolId = 'SCH' + String(maxId + 1).padStart(3, '0');
 
-        await logSuperActivity('COMMISSION', `Provisioned new school: ${name}`);
-        alert('School instance provisioned successfully!');
-        e.target.reset();
-        await refreshData();
-        switchTab('Schools');
+        // 2. Email Existence Check
+        const userCheck = await db.collection('users').where('email', '==', email).get();
+        if (!userCheck.empty) {
+            throw new Error(`The email address ${email} is already registered to another school/user.`);
+        }
+
+        // 3. Create School Admin User (requires secondary app to avoid logging out super admin)
+        const secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary');
+        const secondaryAuth = secondaryApp.auth();
+        
+        try {
+            const userCredential = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+            const uid = userCredential.user.uid;
+
+            // 4. Map User to School in Root Collection
+            await db.collection('users').doc(uid).set({
+                uid,
+                email,
+                schoolId,
+                role: 'admin',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // 5. Provision School Instance
+            await db.collection('schools').doc(schoolId).set({
+                schoolId,
+                schoolName: displayName,
+                name: name,
+                logo,
+                subdomain,
+                stage,
+                adminEmail: email,
+                status: 'active',
+                createdDate: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            // 6. Initialize Settings (Automatic Template)
+            const batch = db.batch();
+            const schoolBase = db.collection('schools').doc(schoolId);
+
+            batch.set(schoolBase.collection('settings').doc('general'), {
+                schoolName: displayName,
+                schoolLogo: logo,
+                schoolLocation: 'Update Location',
+                schoolUdise: '00000000000',
+                schoolReg: '0000/0000',
+                tagline: 'Quality Education for All',
+                phone: '+91 0000000000',
+                email: email,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            batch.set(schoolBase.collection('settings').doc('homeHero'), {
+                urls: [
+                    '/images/School-Building.jpeg',
+                    '/images/Bihar-Museum-img4.jpeg',
+                    '/images/Science-centre-Patna-img15.jpeg',
+                    '/images/Republic-Day-img1.jpeg'
+                ],
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            batch.set(schoolBase.collection('pageText').doc('home'), {
+                homeHeroTitle: `Welcome to ${displayName}`,
+                homeHeroSubtitle: 'Quality Education • Discipline • Character Building',
+                homeIntroTitle: `About ${displayName}`,
+                homeIntroText: `${displayName} provides quality education and focuses on holistic student development.`,
+                homeIntroSubtext: 'Join us in nurturing the leaders of tomorrow.',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            batch.set(schoolBase.collection('settings').doc('globalStats'), {
+                students: '300',
+                teachers: '15',
+                classrooms: '12',
+                years: '1+',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            await batch.commit();
+            await logSuperActivity('COMMISSION', `Provisioned new school: ${displayName} (ID: ${schoolId})`);
+            
+            alert(`School ${schoolId} provisioned successfully!`);
+            e.target.reset();
+            await refreshData();
+            switchTab('Schools');
+        } finally {
+            await secondaryApp.delete();
+        }
     } catch (e) {
+        console.error('Provisioning Error:', e);
         alert(e.message);
     } finally {
         showOverlay(false);
@@ -274,6 +368,7 @@ function openProEditModal(id) {
     document.getElementById('editSchoolId').value = s.schoolId;
     document.getElementById('editSchoolName').value = s.schoolName;
     document.getElementById('editSchoolStage').value = s.stage;
+    document.getElementById('editSubdomain').value = s.subdomain || '';
 
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editModal').classList.add('flex');
@@ -284,10 +379,15 @@ async function handleUpdateSchool(e) {
     const id = document.getElementById('editSchoolId').value;
     const name = document.getElementById('editSchoolName').value;
     const stage = parseInt(document.getElementById('editSchoolStage').value);
+    const subdomain = document.getElementById('editSubdomain').value.trim();
 
     try {
         showOverlay(true);
-        await db.collection('schools').doc(id).update({ schoolName: name, stage });
+        await db.collection('schools').doc(id).update({ 
+            schoolName: name, 
+            stage,
+            subdomain: subdomain 
+        });
         await logSuperActivity('UPDATE', `Modified school settings: ${id}`);
         closeModal('editModal');
         await refreshData();

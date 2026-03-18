@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initAnalytics() {
     console.log('Initializing SNR World Analytics...');
 
+    // Fetch initial data using the multi-tenant helper
+    const studentSnap = await schoolData('students').get();
+    const teacherSnap = await schoolData('staff').where('role', '==', 'Teacher').get();
+    const classSnap = await schoolData('classes').get();
+
     // 1. Fee Collection Trend (Last 6 Months)
     initFeeChart();
 

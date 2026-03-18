@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // 1. School Hierarchy Support (Primary Multi-tenant Path)
+    match /schools/{schoolId} {
+      allow read: if true;
+      
+      // Enforce school-level isolation for writes
+      match /{allSubcollections=**} {
+        allow read: if true;
+        allow write: if request.auth != null && 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId == schoolId;
+      }
+    }
+
+    // 2. Compatibility Layer: Top-level Collections
+    // Many legacy modules might still hit top-level collections
+    match /sessions/{docId} { allow read, write: if true; }
+    match /classes/{docId} { allow read, write: if true; }
+    match /students/{docId} { allow read, write: if true; }
+    match /marks/{docId} { allow read, write: if true; }
+    match /counters/{docId} { allow read, write: if true; }
+    match /gradingRules/{docId} { allow read, write: if true; }
+    match /exams/{docId} { allow read, write: if true; }
+    match /schedules/{docId} { allow read, write: if true; }
+    match /publications/{docId} { allow read, write: if true; }
+    match /remarks/{docId} { allow read, write: if true; }
+    match /exam_attendance/{docId} { allow read, write: if true; }
+    match /non_subject_marks/{docId} { allow read, write: if true; }
+
+    // CMS & Website Content (Top-level Fallback)
+    match /notices/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /reports/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /admitcards/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /events/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /achievements/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /testimonials/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /holidays/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /gallery/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /staff/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /timetables/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /fees/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /website_content/{docId} { allow read, write: if true; }
+
+    match /inquiries/{docId} {
+      allow write: if true;
+      allow read: if isAdmin();
+    }
+
+    // 3. Global Fallback
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

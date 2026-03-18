@@ -16,11 +16,29 @@
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
+    /* Modal Styles */
+    --modal-bg: rgba(0, 0, 0, 0.6);
+
     /* Glassmorphism Tokens */
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.4);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 }
+
+/* Utilities */
+.h-10 { height: 2.5rem !important; }
+.h-32 { height: 8rem !important; }
+.w-10 { width: 2.5rem !important; }
+.w-auto { width: auto !important; }
+.object-contain { object-fit: contain !important; }
+.flex-1 { flex: 1 !important; }
+.hidden { display: none !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-8 { margin-top: 2rem !important; }
+.mt-12 { margin-top: 3rem !important; }
+.mt-auto { margin-top: auto !important; }
+.mb-0-5 { margin-bottom: 0.125rem !important; }
+.text-right { text-align: right !important; }
 
 .glass-card {
     background: var(--glass-bg) !important;
@@ -900,7 +918,6 @@ tr:hover {
 .table-responsive {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     border-radius: 0.75rem;
     background: white;
     margin-bottom: 1rem;
@@ -1857,3 +1874,20 @@ tr:hover {
 .border-radius-1 {
     border-radius: 1rem !important;
 }
+
+/* AUTH & LAYOUT UTILITIES */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+
+
+
+
+/* DASHBOARD UTILITIES */
+
+
+
+
+@media (max-width: 768px) {
+}
+
+
+

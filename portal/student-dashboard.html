@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Student Dashboard | Apex Public School</title>
+        <title id="studentPortalTitle">Student Dashboard</title>
         <link rel="stylesheet" href="../css/portal.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,7 +17,7 @@
         <!-- Loading Overlay -->
         <div id="loadingOverlay" class="overlay-full">
             <div class="spinner-large"></div>
-            <p class="mt-1 font-bold text-muted">Loading Apex Portal...</p>
+            <p class="mt-1 font-bold text-muted" id="loadingPortalText">Loading Portal...</p>
         </div>
 
         <!-- Main Dashboard Layout -->
@@ -25,8 +25,8 @@
             <!-- Sidebar -->
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-logo">
-                    <i class="fas fa-school" style="color: var(--accent)"></i>
-                    <h2 style="font-size: 1.1rem; color: white; font-weight: 800; margin: 0">Apex Portal</h2>
+                    <img id="sidebarLogoImg" src="../images/ApexPublicSchoolLogo.png" alt="Logo" class="h-8 w-auto mr-1 hidden" />
+                    <h2 class="text-lg white fw-800 m-0" id="sidebarBrandName">Apex Portal</h2>
                 </div>
 
                 <!-- Student Mini Profile in Sidebar -->
@@ -71,11 +71,10 @@
                     </a>
                 </nav>
 
-                <div style="margin-top: auto; padding-top: 2rem">
+                <div class="mt-auto pt-8">
                     <button
                         onclick="logoutStudent()"
-                        class="nav-link"
-                        style="width: 100%; background: transparent; border: none; cursor: pointer; color: #fca5a5"
+                        class="nav-link w-full bg-transparent border-none cursor-pointer text-red-300"
                     >
                         <i class="fas fa-sign-out-alt"></i> <span>Logout Portal</span>
                     </button>
@@ -86,30 +85,21 @@
             <main class="main-content">
                 <!-- Mobile Header -->
                 <div class="mobile-header">
-                    <div style="display: flex; align-items: center; gap: 0.75rem">
+                    <div class="d-flex align-items-center gap-sm">
                         <i
-                            class="fas fa-bars"
+                            class="fas fa-bars cursor-pointer text-xl"
                             onclick="toggleSidebar()"
-                            style="cursor: pointer; font-size: 1.25rem"
                         ></i>
-                        <h2 style="font-size: 1rem; color: var(--secondary); font-weight: 800; margin: 0">
+                        <h2 class="text-md color-secondary fw-800 m-0" id="mobileBrandName">
                             Apex Portal
                         </h2>
                     </div>
                     <div
                         id="mobileStudentPhoto"
-                        style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; overflow: hidden"
+                        class="w-8 h-8 bg-slate-200 rounded-full overflow-hidden"
                     >
                         <i
-                            class="fas fa-user-graduate"
-                            style="
-                                font-size: 1rem;
-                                color: #94a3b8;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                height: 100%;
-                            "
+                            class="fas fa-user-graduate text-md color-slate-400 d-flex align-items-center justify-content-center h-full"
                         ></i>
                     </div>
                 </div>
@@ -129,7 +119,7 @@
                                     ></p>
                                 </div>
                             </div>
-                            <div class="notice-tag">Apex Notice</div>
+                            <div class="notice-tag" id="noticeTagText">Apex Notice</div>
                         </div>
                     </div>
 
@@ -161,8 +151,7 @@
 
                     <!-- Dashboard Content Grid -->
                     <div
-                        class="dashboard-grid mt-1-5"
-                        style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.5rem"
+                        class="grid-2fr-1fr gap-md mt-4"
                     >
                         <!-- Quick Summary Column -->
                         <div class="flex-col gap-1-5">
@@ -174,8 +163,7 @@
                                         <h2 id="homeFeeBalance" class="text-2xl font-extrabold mt-1">₹--</h2>
                                     </div>
                                     <div
-                                        class="badge-glass flex-center"
-                                        style="width: 54px; height: 54px; border-radius: 12px; font-size: 1.5rem"
+                                        class="badge-glass flex-center w-14 h-14 rounded-xl text-xl"
                                     >
                                         <i class="fas fa-wallet"></i>
                                     </div>
@@ -196,13 +184,12 @@
                             <div class="card">
                                 <div class="flex-between mb-1">
                                     <h3 class="text-lg">
-                                        <i class="fas fa-pencil-alt" style="color: var(--primary)"></i> Homework Today
+                                        <i class="fas fa-pencil-alt color-primary"></i> Homework Today
                                     </h3>
                                     <a
                                         href="#homework"
                                         onclick="showPortalSection('homework')"
-                                        class="text-xs font-bold"
-                                        style="color: var(--primary-light); text-decoration: none"
+                                        class="text-xs font-bold color-primary-light no-decoration"
                                         >View All</a
                                     >
                                 </div>
@@ -215,28 +202,25 @@
                             <div id="quickActionsSection" class="card p-1">
                                 <h3 class="text-lg mb-1"><i class="fas fa-bolt accent"></i> Quick Support</h3>
                                 <div class="actions-hub">
-                                    <a href="../contact.html" class="action-item" title="Contact Support">
+                                    <a href="/contact.html" class="action-item" title="Contact Support">
                                         <div
-                                            class="icon-box flex-center bg-blue-light text-primary"
-                                            style="width: 40px; height: 40px; font-size: 1rem"
+                                            class="icon-box flex-center bg-blue-light color-primary w-10 h-10 text-md"
                                         >
                                             <i class="fas fa-phone"></i>
                                         </div>
                                         <span class="text-xs font-bold">Support</span>
                                     </a>
-                                    <a href="../holidays.html" class="action-item" title="View School Holidays">
+                                    <a href="/holidays.html" class="action-item" title="View School Holidays">
                                         <div
-                                            class="icon-box flex-center bg-amber-light text-warning"
-                                            style="width: 40px; height: 40px; font-size: 1rem"
+                                            class="icon-box flex-center bg-amber-light text-warning w-10 h-10 text-md"
                                         >
                                             <i class="fas fa-calendar-day"></i>
                                         </div>
                                         <span class="text-xs font-bold">Holidays</span>
                                     </a>
-                                    <a href="../staff.html" class="action-item" title="Meet Our Teachers">
+                                    <a href="/staff.html" class="action-item" title="Meet Our Teachers">
                                         <div
-                                            class="icon-box flex-center bg-green-light text-success"
-                                            style="width: 40px; height: 40px; font-size: 1rem"
+                                            class="icon-box flex-center bg-green-light text-success w-10 h-10 text-md"
                                         >
                                             <i class="fas fa-users"></i>
                                         </div>
@@ -244,8 +228,7 @@
                                     </a>
                                     <a href="student-login.html" class="action-item" title="Logout from Portal">
                                         <div
-                                            class="icon-box flex-center bg-red-light text-danger"
-                                            style="width: 40px; height: 40px; font-size: 1rem"
+                                            class="icon-box flex-center bg-red-light text-danger w-10 h-10 text-md"
                                         >
                                             <i class="fas fa-sign-out-alt"></i>
                                         </div>
@@ -258,7 +241,7 @@
                         <!-- Right Column: Notices & Info -->
                         <div class="flex-col gap-1-5">
                             <!-- Notice Board -->
-                            <div class="card p-0 overflow-hidden" style="min-height: 450px">
+                            <div class="card p-0 overflow-hidden min-h-450">
                                 <div class="flex align-center p-1-5 gap-1 bg-secondary white">
                                     <i class="fas fa-bullhorn accent"></i>
                                     <h3 class="text-sm font-bold">School Notice Board</h3>
@@ -295,7 +278,7 @@
                             <div id="attendanceWidget" class="card hidden">
                                 <h4 class="mb-1 text-sm"><i class="fas fa-check-circle success"></i> My Attendance</h4>
                                 <div class="flex align-center gap-1">
-                                    <div class="relative" style="width: 60px; height: 60px">
+                                    <div class="relative w-14 h-14">
                                         <svg viewBox="0 0 36 36" class="w-full h-full">
                                             <path
                                                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -406,11 +389,10 @@
                     </div>
                     <div class="card p-2">
                         <div class="flex gap-3 align-start">
-                            <div class="text-center" style="width: 180px">
+                            <div class="text-center w-[180px]">
                                 <div
                                     id="profilePhotoLarge"
-                                    class="flex-center border-radius-1-5 bg-gray border-white-4 shadow-lg overflow-hidden mb-1"
-                                    style="width: 180px; height: 180px"
+                                    class="flex-center border-radius-1-5 bg-gray border-white-4 shadow-lg overflow-hidden mb-1 w-[180px] h-[180px]"
                                 >
                                     <i class="fas fa-user-graduate text-4xl text-muted"></i>
                                 </div>
@@ -441,7 +423,7 @@
                                     <label>Phone Number</label>
                                     <p id="p_phone" class="text-lg font-bold"></p>
                                 </div>
-                                <div style="grid-column: 1 / -1">
+                                <div class="col-span-full">
                                     <label>Address</label>
                                     <p id="p_address" class="text-lg font-bold"></p>
                                 </div>
@@ -578,22 +560,14 @@
                 </section>
 
                 <!-- TRANSPORT SECTION -->
-                <section id="transportSection" class="portal-section" style="display: none">
+                <section id="transportSection" class="portal-section hidden">
                     <div class="header">
                         <h1>My Transport</h1>
                         <p>Details of your school bus route and pickup point</p>
                     </div>
                     <div class="card p-2 text-center">
                         <div
-                            class="icon-box flex-center"
-                            style="
-                                background: #f0fdf4;
-                                color: #16a34a;
-                                width: 80px;
-                                height: 80px;
-                                margin: 0 auto 1.5rem;
-                                font-size: 2rem;
-                            "
+                            class="icon-box-large flex-center bg-green-light text-success mx-auto mb-1-5 text-3xl"
                         >
                             <i class="fas fa-bus"></i>
                         </div>
@@ -629,12 +603,27 @@
                 </section>
 
                 <footer class="mt-1-5 p-2 text-center border-top">
-                    <p class="text-sm opacity-80">© 2026 Apex Public School. Powered by SNR World.</p>
+                    <p class="text-sm opacity-80" id="portalFooterText">© 2026 Powered by SNR World.</p>
                 </footer>
             </main>
         </div>
 
         <!-- Scripts -->
+        <!-- Portal Modal (Generic) -->
+        <div id="portalModal" class="modal-overlay hidden">
+            <div class="modal-content-wide">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Receipt Preview</h3>
+                    <button onclick="closePortalModal()" class="close-btn">&times;</button>
+                </div>
+                <div id="modalBody" class="modal-body-scroll"></div>
+                <div class="modal-footer no-print">
+                    <button class="btn-portal primary" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button class="btn-portal" onclick="closePortalModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
         <script src="../js/firebase-config.js"></script>
