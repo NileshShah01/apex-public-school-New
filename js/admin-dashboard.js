@@ -615,7 +615,7 @@ async function handlePromotion() {
     }
 }
 
-const ReportCardTool = {
+const BulkReportCardUI = {
     // UI HELPER FUNCTIONS
     async initUI() {
         const sessionSelect = document.getElementById('bulkRes_sessionSelect');
@@ -756,13 +756,13 @@ const ReportCardTool = {
 };
 
 // Global hooks
-window.loadBulkResClasses = () => ReportCardTool.loadClasses();
-window.loadBulkResSections = () => ReportCardTool.loadSections();
-window.loadStudentsForBulkRes = () => ReportCardTool.loadStudents();
+window.loadBulkResClasses = () => BulkReportCardUI.loadClasses();
+window.loadBulkResSections = () => BulkReportCardUI.loadSections();
+window.loadStudentsForBulkRes = () => BulkReportCardUI.loadStudents();
 window.toggleBulkResSelection = (master) => {
     document.querySelectorAll('.bulk-res-check').forEach((cb) => (cb.checked = master.checked));
 };
-window.runBulkGeneration = () => ReportCardTool.runBulk();
+window.runBulkGeneration = () => BulkReportCardUI.runBulk();
 
 // Notice Board
 async function handleNoticeSubmit(e) {

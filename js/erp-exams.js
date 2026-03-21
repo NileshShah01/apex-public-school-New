@@ -313,6 +313,60 @@ async function loadViewScheduleGrid() {
     }
 }
 
+async function loadScheduleGrid() {
+    const examId = document.getElementById('scheduleExamSelect').value;
+    const className = document.getElementById('scheduleClassSelect').value;
+    const body = document.getElementById('scheduleTableBody');
+    if (!body) return;
+    if (!examId || !className) {
+        body.innerHTML = '';
+        return;
+    }
+
+    try {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading subjects...</td></tr>';
+
+        // 1. Fetch Subjects
+        const subjectsSnap = await schoolData('subjects').get();
+        const subjects = subjectsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+        // 2. Fetch Existing Schedule
+        const schedSnap = await schoolData('schedules')
+            .where('examId', '==', examId)
+            .where('className', '==', className)
+            .get();
+
+        const existing = {};
+        schedSnap.forEach((doc) => {
+            existing[doc.data().subjectId] = doc.data();
+        });
+
+        if (subjects.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;">No subjects found.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = subjects
+            .map((s) => {
+                const ex = existing[s.id] || {};
+                return `
+                <tr data-subject-id="${s.id}">
+                    <td><strong>${s.name}</strong></td>
+                    <td><input type="date" class="sched-date form-control" value="${ex.date || ''}"></td>
+                    <td><input type="time" class="sched-time form-control" value="${ex.time || ''}"></td>
+                    <td><input type="number" class="sched-duration form-control" value="${ex.duration || '120'}" placeholder="Min"></td>
+                    <td><input type="number" class="sched-max form-control" value="${ex.maxMarks || '100'}"></td>
+                </tr>
+            `;
+            })
+            .join('');
+    } catch (e) {
+        console.error(e);
+        body.innerHTML =
+            '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading subjects.</td></tr>';
+    }
+}
+
 async function saveExamSchedule() {
     const examId = document.getElementById('scheduleExamSelect').value;
     const className = document.getElementById('scheduleClassSelect').value;
