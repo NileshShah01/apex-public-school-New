@@ -5,6 +5,156 @@
 
 const ReportCardFactory = {
     /**
+     * Generate Premium Elite Report Card
+     * Modern design with multi-graph analysis, colored tables, and professional layout.
+     */
+    async generatePremium(student, marks, examDetails, schoolDetails) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        await this._renderPremium(doc, student, marks, examDetails, schoolDetails);
+        doc.save(`Premium_Report_${student.student_id}.pdf`);
+    },
+
+    /**
+     * Internal rendering for Premium Template (No save)
+     */
+    async _renderPremium(doc, student, marks, examDetails, schoolDetails) {
+        const W = 210, H = 297, margin = 10;
+
+        // 1. PREMIUM HEADER
+        doc.setFillColor(5, 54, 95); // Deep Blue
+        doc.rect(0, 0, W, 45, 'F');
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(24);
+        doc.setTextColor(255);
+        doc.text(schoolDetails.name || 'APEX PUBLIC SCHOOL', W / 2, 20, { align: 'center' });
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(schoolDetails.address || 'CHETAN PARSA, PARSA, SARAN, BIHAR - 841219', W / 2, 28, { align: 'center' });
+        
+        doc.setDrawColor(255);
+        doc.line(W / 2 - 40, 32, W / 2 + 40, 32);
+        
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 215, 0); // Golden
+        doc.text(`${examDetails.title || 'ANNUAL'} PERFORMANCE REPORT | ${examDetails.session || '2024-25'}`, W / 2, 38, { align: 'center' });
+
+        // 2. MODERN STUDENT PROFILE GRID
+        let currentY = 55;
+        doc.setDrawColor(220);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(margin, currentY, W - margin * 2, 35, 3, 3, 'FD');
+        
+        doc.setFontSize(10);
+        doc.setTextColor(71, 85, 105);
+        const col1 = margin + 8, col2 = W / 2 + 5;
+        
+        const drawField = (label, value, x, y) => {
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${label}:`, x, y);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${value || '---'}`, x + 35, y);
+        };
+
+        drawField('STUDENT NAME', student.name, col1, currentY + 10);
+        drawField('ADMISSION NO', student.admission_no || student.student_id, col1, currentY + 18);
+        drawField('CLASS & SEC', `${student.class}-${student.section}`, col1, currentY + 26);
+        
+        drawField('FATHER NAME', student.father_name, col2, currentY + 10);
+        drawField('MOTHER NAME', student.mother_name, col2, currentY + 18);
+        drawField('DATE OF BIRTH', student.dob, col2, currentY + 26);
+
+        // 3. SCHOLASTIC TABLE (UPGRADED)
+        currentY += 45;
+        doc.setFontSize(12);
+        doc.setTextColor(5, 54, 95);
+        doc.text('I. SCHOLASTIC PERFORMANCE', margin, currentY - 2);
+        
+        const headers = [['SUBJECT', 'PERIODIC', 'NOTEBOOK', 'SUB ENR.', 'ANNUAL', 'TOTAL', 'GRADE']];
+        const data = marks.map(m => [
+            m.subject.toUpperCase(),
+            m.periodic || '0',
+            m.notebook || '0',
+            m.sub_enrich || '0',
+            m.term || '0',
+            m.total || '0',
+            this._getGrade(m.total, 100)
+        ]);
+
+        doc.autoTable({
+            startY: currentY,
+            head: headers,
+            body: data,
+            theme: 'grid',
+            headStyles: { fillColor: [5, 54, 95], textColor: 255, fontSize: 10, halign: 'center', fontStyle: 'bold' },
+            bodyStyles: { fontSize: 9, halign: 'center', textColor: [30, 41, 59] },
+            alternateRowStyles: { fillColor: [241, 245, 249] },
+            columnStyles: { 0: { halign: 'left', fontStyle: 'bold', minCellWidth: 40 } },
+            margin: { left: margin, right: margin }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 15;
+
+        // 4. MULTI-GRAPH ANALYSIS
+        if (currentY + 80 > H - 30) { doc.addPage(); currentY = 20; }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(5, 54, 95);
+        doc.text('II. COMPETENCY ANALYSIS', margin, currentY - 2);
+
+        // Dual Graph Layout
+        const canvas = document.createElement('canvas');
+        canvas.width = 800; canvas.height = 400;
+        const ctx = canvas.getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: marks.map(m => m.subject),
+                datasets: [{
+                    label: 'Marks Obtained (%)',
+                    data: marks.map(m => m.total),
+                    backgroundColor: 'rgba(5, 54, 95, 0.7)',
+                    borderColor: 'rgb(5, 54, 95)',
+                    borderWidth: 1
+                }]
+            },
+            options: { animation: false, scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+
+        const barImg = canvas.toDataURL('image/png', 1.0);
+        doc.addImage(barImg, 'PNG', margin, currentY, W - margin * 2, 60);
+        
+        currentY += 75;
+
+        // 5. ATTENDANCE & REMARKS
+        doc.setFillColor(255, 247, 237); // Light Orange for remarks
+        doc.roundedRect(margin, currentY, W - margin * 2, 25, 2, 2, 'F');
+        
+        doc.setFontSize(10);
+        doc.setTextColor(154, 52, 18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TEACHER\'S REMARKS:', margin + 5, currentY + 8);
+        
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        const feedback = marks.every(m => m.total > 75) ? 'Excellent performance with great consistency.' : 
+                         marks.some(m => m.total < 33) ? 'Needs significant improvement in core subjects.' : 
+                         'Good progress, focus more on elective subjects.';
+        doc.text(feedback, margin + 5, currentY + 16);
+
+        // 6. SIGNATURES (PREMIUM STYLE)
+        this._drawSignatures(doc, H - 35, margin, W);
+
+        // Border for professional look
+        doc.setDrawColor(5, 54, 95);
+        doc.setLineWidth(0.5);
+        doc.rect(5, 5, W - 10, H - 10);
+    },
+    /**
      * Generate Himalayan Standard Report Card
      * @param {Object} student - Student data
      * @param {Array} marks - Marks for the selected exam

@@ -1384,14 +1384,28 @@ async function previewSingleReportCard() {
             marks[doc.data().subjectId] = doc.data().marks;
         });
 
-        // Get School Details (Mocked for now)
-        const schoolDetails = { name: 'APEX PUBLIC SCHOOL', address: 'Maruti Ganj, Ayodhya', phone: '9125565555' };
+        // Get School Details (Fetch from current settings for multi-tenancy)
+        let schoolDetails = { name: 'SCHOOL NAME', address: 'Address...', phone: '...' };
+        try {
+            const schoolRef = window.schoolRef;
+            if (schoolRef) {
+                const schoolSnap = await schoolRef.get();
+                if (schoolSnap.exists) schoolDetails = schoolSnap.data();
+            }
+        } catch (err) { console.error('Error fetching school branding:', err); }
 
-        if (format === 'Himalayan') {
+        if (format === 'premium') {
+            if (window.ReportCardTool) {
+                // The tool handles data fetching and attendance calculation
+                await window.ReportCardTool.processReportCard(studentId, 'premium', examDetails.session || '');
+            } else {
+                await window.ReportCardFactory.generatePremium(student, marks, examDetails, schoolDetails);
+            }
+        } else if (format === 'Himalayan') {
             await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
         } else {
-            // Add other formats as needed
-            showToast('Generating preview...', 'info');
+            // Default to Himalayan for other formats or as fallback
+            showToast('Generating standard preview...', 'info');
             await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
         }
     } catch (e) {

@@ -109,12 +109,15 @@ const ReportCardTool = {
     },
 
     async _renderReportCard(doc, type, student, marks, examDetails, schoolDetails) {
-        // This effectively routes to the logic in ReportCardFactory but ensures doc is preserved
         const f = window.ReportCardFactory;
-        const W = 210,
-            H = 297,
-            margin = 10;
+        
+        if (type === 'premium') {
+            await f._renderPremium(doc, student, marks, examDetails, schoolDetails);
+            return;
+        }
 
+        // Default or other templates
+        const W = 210, H = 297, margin = 10;
         f._drawHeader(doc, schoolDetails, examDetails, margin, W);
         let currentY = 45;
         currentY = f._drawProfile(doc, student, currentY, margin, W);

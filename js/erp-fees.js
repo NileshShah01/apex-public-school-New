@@ -479,24 +479,65 @@ async function printReceipt(pid) {
     try {
         setLoading(true);
         const pSnap = await schoolDoc('feePayments', pid).get();
+        if (!pSnap.exists) throw new Error("Payment record not found");
         const p = pSnap.data();
+        
         const sSnap = await schoolData('students').where('studentId', '==', p.studentId).limit(1).get();
+        if (sSnap.empty) throw new Error("Student record not found");
         const s = sSnap.docs[0].data();
+        
         const schSnap = await schoolRef().get();
         const sch = schSnap.exists ? schSnap.data() : {};
 
-        document.getElementById('rtcSchoolName').textContent = sch.schoolName;
+        // Populate School Info
+        document.getElementById('rtcSchoolName').textContent = sch.schoolName || 'Our School';
+        document.getElementById('rtcSchoolAddress').textContent = sch.address || 'School Address Not Set';
+        document.getElementById('rtcSchoolContact').textContent = `Contact: ${sch.phone || '--'} | ${sch.email || '--'}`;
+        
+        // Populate Receipt Meta
+        document.getElementById('rtcNo').textContent = p.receiptNo || pid.substring(0,8).toUpperCase();
+        document.getElementById('rtcDate').textContent = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString() : '--/--/----';
+        document.getElementById('rtcSession').textContent = p.session || '2023-24';
+        document.getElementById('rtcPayId').textContent = pid;
+        document.getElementById('rtcMode').textContent = p.paymentMode || 'Cash';
+        
+        // Populate Student Info
         document.getElementById('rtcName').textContent = s.name;
-        document.getElementById('rtcNo').textContent = p.receiptNo;
+        document.getElementById('rtcClass').textContent = `Class ${s.class || '--'} ${s.section || ''}`;
+        document.getElementById('rtcAdm').textContent = s.studentId;
+        document.getElementById('rtcFName').textContent = s.fatherName || '--';
+        
+        // Populate Table (Simple for now, can be expanded if individual fee linkage is added)
+        const tableBody = document.getElementById('rtcTableBody');
+        tableBody.innerHTML = `
+            <tr>
+                <td>1</td>
+                <td>School Fee Payment (Towards Outstanding Dues)</td>
+                <td style="text-align: right;">₹${p.amount}</td>
+            </tr>
+        `;
+        
+        // Totals
+        document.getElementById('rtcTotalFee').textContent = `₹${p.amount}`;
+        document.getElementById('rtcTotalDisc').textContent = `-₹0`;
         document.getElementById('rtcPaid').textContent = `₹${p.amount}`;
         document.getElementById('rtcAmountWords').textContent = numberToWords(p.amount) + ' Rupees Only';
+        document.getElementById('rtcRemarks').textContent = p.remarks || 'Payment received with thanks.';
+        document.getElementById('rtcTime').textContent = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
 
         const area = document.getElementById('feeReceiptPrintTemplate');
+        area.classList.remove('hidden');
         area.style.display = 'block';
-        window.print();
-        area.style.display = 'none';
+        
+        setTimeout(() => {
+            window.print();
+            area.style.display = 'none';
+            area.classList.add('hidden');
+        }, 500);
+
     } catch (e) {
-        console.error(e);
+        console.error(pId, e);
+        showToast("Error printing receipt: " + e.message, "error");
     } finally {
         setLoading(false);
     }

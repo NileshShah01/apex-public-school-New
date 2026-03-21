@@ -6476,6 +6476,7 @@
                             <div class="form-group">
                                 <label>Report Format</label>
                                 <select id="rc_format" class="form-control" title="Select Report Format">
+                                    <option value="premium">Premium Elite (Modern)</option>
                                     <option value="Himalayan">Himalayan (Main)</option>
                                     <option value="MCQ_Normal">MCQ - Normal</option>
                                     <option value="MCQ_Standard">MCQ - Standard</option>
@@ -6607,6 +6608,7 @@
                         <div class="form-group mt-1-25">
                             <label>Template Format</label>
                             <select id="rcPreviewFormat" class="form-control" title="Select Template Format">
+                                <option value="premium">Premium Elite (Modern)</option>
                                 <option value="Himalayan">Himalayan (Standard)</option>
                                 <option value="MCQ_Normal">MCQ Normal</option>
                                 <option value="MCQ_Standard">MCQ Standard</option>
@@ -6692,197 +6694,317 @@
                 }
             });
         </script>
-        <!-- FEE RECEIPT PRINT TEMPLATE (Hidden) -->
+        <!-- FEE RECEIPT PRINT TEMPLATE (PREMIUM EMERALD) -->
         <div id="feeReceiptPrintTemplate" class="hidden">
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+                
                 @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-                    #receiptPrintContent,
-                    #receiptPrintContent * {
-                        visibility: visible;
-                    }
+                    body * { visibility: hidden; }
+                    #receiptPrintContent, #receiptPrintContent * { visibility: visible; }
                     #receiptPrintContent {
                         position: absolute;
                         left: 0;
                         top: 0;
                         width: 100%;
                     }
-                    .no-print {
-                        display: none !important;
-                    }
+                    .no-print { display: none !important; }
                 }
-                .receipt-canvas {
+
+                .receipt-premium {
                     width: 800px;
-                    margin: auto;
-                    border: 1px solid #333;
+                    margin: 0 auto;
+                    background: #fff;
+                    font-family: 'Inter', sans-serif;
+                    color: #1e293b;
+                    padding: 0;
+                    border: 1px solid #e2e8f0;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+                }
+
+                .rp-header {
+                    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+                    color: white;
+                    padding: 30px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .rp-school-brand {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                .rp-logo {
+                    width: 70px;
+                    height: 70px;
                     background: white;
-                    padding: 20px;
-                    font-family: 'Times New Roman', serif;
-                    color: #000;
+                    border-radius: 12px;
+                    padding: 5px;
+                    object-fit: contain;
                 }
-                .rtc-header {
-                    text-align: center;
-                    border-bottom: 2px solid #000;
-                    padding-bottom: 10px;
-                    margin-bottom: 15px;
-                }
-                .rtc-school-name {
+
+                .rp-school-details h1 {
                     font-size: 24px;
                     font-weight: 800;
-                    text-transform: uppercase;
-                    margin: 5px 0;
-                }
-                .rtc-school-info {
-                    font-size: 13px;
-                    line-height: 1.4;
-                    color: #333;
-                }
-                .rtc-title {
-                    font-size: 20px;
-                    font-weight: 800;
-                    border: 1px solid #000;
-                    display: inline-block;
-                    padding: 2px 15px;
-                    margin-top: 10px;
+                    margin: 0;
+                    letter-spacing: -0.5px;
                 }
 
-                .rtc-info-row {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 15px;
-                    font-size: 14px;
-                }
-                .rtc-box {
-                    width: 48%;
-                }
-                .rtc-box p {
-                    margin: 3px 0;
-                    display: flex;
-                }
-                .rtc-box b {
-                    width: 120px;
-                    flex-shrink: 0;
+                .rp-school-details p {
+                    font-size: 12px;
+                    margin: 2px 0 0 0;
+                    opacity: 0.9;
                 }
 
-                .rtc-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 15px;
-                    font-size: 14px;
-                }
-                .rtc-table th,
-                .rtc-table td {
-                    border: 1px solid #000;
-                    padding: 6px;
-                    text-align: center;
-                }
-                .rtc-table th {
-                    background: #f2f2f2;
-                }
-
-                .rtc-summary {
-                    display: flex;
-                    justify-content: space-between;
-                    font-size: 14px;
-                    margin-top: 10px;
-                }
-                .rtc-summary-left {
-                    width: 60%;
-                }
-                .rtc-summary-right {
-                    width: 35%;
+                .rp-receipt-label {
                     text-align: right;
                 }
-                .rtc-total-row {
-                    border-top: 2px solid #000;
-                    margin-top: 5px;
-                    padding-top: 5px;
+
+                .rp-receipt-label h2 {
+                    font-size: 28px;
                     font-weight: 800;
-                    font-size: 16px;
+                    margin: 0;
+                    opacity: 0.3;
+                    text-transform: uppercase;
                 }
 
-                .rtc-footer {
-                    margin-top: 30px;
+                .rp-receipt-meta {
+                    background: #f8fafc;
+                    padding: 20px 30px;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+
+                .rp-meta-item {
+                    margin-bottom: 8px;
+                    font-size: 14px;
+                }
+
+                .rp-meta-item b {
+                    color: #64748b;
+                    width: 120px;
+                    display: inline-block;
+                }
+
+                .rp-body {
+                    padding: 30px;
+                }
+
+                .rp-student-card {
+                    background: #ecfdf5;
+                    border: 1px solid #d1fae5;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-bottom: 25px;
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .rp-student-info h3 {
+                    margin: 0 0 5px 0;
+                    color: #065f46;
+                    font-size: 18px;
+                }
+
+                .rp-student-info p {
+                    margin: 0;
+                    font-size: 13px;
+                    color: #047857;
+                }
+
+                .rp-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 25px;
+                }
+
+                .rp-table th {
+                    background: #f1f5f9;
+                    text-align: left;
+                    padding: 12px 15px;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    color: #64748b;
+                }
+
+                .rp-table td {
+                    padding: 12px 15px;
+                    border-bottom: 1px solid #f1f5f9;
+                    font-size: 14px;
+                }
+
+                .rp-total-section {
+                    display: flex;
+                    justify-content: flex-end;
+                }
+
+                .rp-total-box {
+                    width: 300px;
+                    background: #f8fafc;
+                    border-radius: 12px;
+                    padding: 15px;
+                }
+
+                .rp-total-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 6px 0;
+                    font-size: 14px;
+                }
+
+                .rp-grand-total {
+                    border-top: 2px solid #e2e8f0;
+                    margin-top: 10px;
+                    padding-top: 10px;
+                    font-weight: 800;
+                    font-size: 18px;
+                    color: #059669;
+                }
+
+                .rp-words {
+                    margin-top: 20px;
+                    font-size: 13px;
+                    color: #64748b;
+                    font-style: italic;
+                }
+
+                .rp-footer {
+                    padding: 40px 30px;
                     display: flex;
                     justify-content: space-between;
                     align-items: flex-end;
                 }
-                .rtc-signature {
-                    border-top: 1px solid #000;
-                    width: 150px;
+
+                .rp-notice {
+                    max-width: 400px;
+                    font-size: 11px;
+                    color: #94a3b8;
+                    line-height: 1.5;
+                }
+
+                .rp-signature-block {
                     text-align: center;
+                }
+
+                .rp-stamp {
+                    width: 80px;
+                    height: 80px;
+                    border: 3px double #059669;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #059669;
+                    font-weight: 800;
+                    font-size: 10px;
+                    text-transform: uppercase;
+                    transform: rotate(-15deg);
+                    margin: 0 auto 10px;
+                    opacity: 0.6;
+                }
+
+                .rp-signature-line {
+                    border-top: 1px solid #1e293b;
+                    width: 180px;
                     padding-top: 5px;
-                    font-size: 13px;
+                    font-size: 12px;
+                    font-weight: 600;
                 }
             </style>
-            <div id="receiptPrintContent" class="receipt-canvas">
-                <div class="rtc-header">
-                    <img id="rtcLogo" src="/images/logo.png" class="w-18 mb-0-5" />
-                    <div id="rtcSchoolName" class="rtc-school-name">School Name</div>
-                    <div id="rtcSchoolAddress" class="rtc-school-info">Address Line</div>
-                    <div id="rtcSchoolReg" class="rtc-school-info">Reg No: ... | U-DISE: ...</div>
-                    <div class="rtc-title">FEE RECEIPT</div>
-                </div>
-
-                <div class="rtc-info-row">
-                    <div class="rtc-box">
-                        <p><b>Student Name:</b> <span id="rtcName">...</span></p>
-                        <p><b>Father's Name:</b> <span id="rtcFName">...</span></p>
-                        <p><b>Class / Section:</b> <span id="rtcClass">...</span></p>
-                        <p><b>Admission No:</b> <span id="rtcAdm">...</span></p>
+            
+            <div id="receiptPrintContent" class="receipt-premium">
+                <div class="rp-header">
+                    <div class="rp-school-brand">
+                        <img id="rtcLogo" src="/images/logo.png" class="rp-logo" />
+                        <div class="rp-school-details">
+                            <h1 id="rtcSchoolName">School Name</h1>
+                            <p id="rtcSchoolAddress">School Address Line</p>
+                            <p id="rtcSchoolContact">Contact: info@school.com</p>
+                        </div>
                     </div>
-                    <div class="rtc-box text-right">
-                        <p class="text-right">
-                            <b class="w-auto ml-auto pr-0-5">Date:</b> <span id="rtcDate">...</span>
-                        </p>
-                        <p class="text-right">
-                            <b class="w-auto ml-auto pr-0-5">Receipt No:</b> <span id="rtcNo">...</span>
-                        </p>
-                        <p class="text-right">
-                            <b class="w-auto ml-auto pr-0-5">Session:</b> <span id="rtcSession">...</span>
-                        </p>
-                        <p class="text-right">
-                            <b class="w-auto ml-auto pr-0-5">Payment ID:</b> <span id="rtcPayId">...</span>
-                        </p>
+                    <div class="rp-receipt-label">
+                        <h2>Receipt</h2>
+                        <div style="font-size: 14px; font-weight: 600;"># <span id="rtcNo">0000</span></div>
                     </div>
                 </div>
 
-                <table class="rtc-table">
-                    <thead>
-                        <tr>
-                            <th>Sl</th>
-                            <th>Fee Particulars</th>
-                            <th>Amount</th>
-                            <th>Discount</th>
-                            <th>Net Due</th>
-                            <th>Paid</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rtcTableBody"></tbody>
-                </table>
-
-                <div class="rtc-summary">
-                    <div class="rtc-summary-left">
-                        <p><b>In Words:</b> <em id="rtcAmountWords">...</em></p>
-                        <p><b>Payment Mode:</b> <span id="rtcMode">...</span></p>
-                        <p><b>Remarks:</b> <span id="rtcRemarks">...</span></p>
-                        <p class="mt-0-5 text-sm text-slate-muted">
-                            Collected By: <span id="rtcCollector">...</span> | Time: <span id="rtcTime">...</span>
-                        </p>
+                <div class="rp-receipt-meta">
+                    <div class="rp-meta-left">
+                        <div class="rp-meta-item"><b>Date:</b> <span id="rtcDate">--/--/----</span></div>
+                        <div class="rp-meta-item"><b>Session:</b> <span id="rtcSession">20XX-XX</span></div>
                     </div>
-                    <div class="rtc-summary-right">
-                        <p>Total Fee: <b id="rtcTotalFee">₹0</b></p>
-                        <p>Discount: <b id="rtcTotalDisc">₹0</b></p>
-                        <p>Net Outstanding: <b id="rtcTotalDue">₹0</b></p>
-                        <div class="rtc-total-row">Total Paid: <span id="rtcPaid">₹0</span></div>
+                    <div class="rp-meta-right">
+                        <div class="rp-meta-item"><b>Payment ID:</b> <span id="rtcPayId">--</span></div>
+                        <div class="rp-meta-item"><b>Payment Mode:</b> <span id="rtcMode">Cash/Online</span></div>
                     </div>
                 </div>
 
-                <div class="rtc-footer">
-                    <div class="font-800 text-base">Current Dues: <span id="rtcCurrentDues">₹0</span></div>
-                    <div class="rtc-signature">Authorized Signatory</div>
+                <div class="rp-body">
+                    <div class="rp-student-card">
+                        <div class="rp-student-info">
+                            <p>STUDENT DETAILS</p>
+                            <h3 id="rtcName">Student Name</h3>
+                            <p><span id="rtcClass">Class - Section</span> | Adm: <span id="rtcAdm">0000</span></p>
+                        </div>
+                        <div class="rp-student-info" style="text-align: right;">
+                            <p>FATHER'S NAME</p>
+                            <h3 id="rtcFName" style="font-size: 16px;">Father's Name</h3>
+                        </div>
+                    </div>
+
+                    <table class="rp-table">
+                        <thead>
+                            <tr>
+                                <th>Sl</th>
+                                <th>Fee Particulars</th>
+                                <th style="text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rtcTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div class="rp-total-section">
+                        <div class="rp-total-box">
+                            <div class="rp-total-row">
+                                <span>Sub Total:</span>
+                                <b id="rtcTotalFee">₹0</b>
+                            </div>
+                            <div class="rp-total-row" style="color: #059669;">
+                                <span>Discount:</span>
+                                <b id="rtcTotalDisc">-₹0</b>
+                            </div>
+                            <div class="rp-grand-total rp-total-row">
+                                <span>Total Paid:</span>
+                                <span id="rtcPaid">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rp-words">
+                        <b>Amount in Words:</b> <span id="rtcAmountWords">Exmple marks in words only.</span>
+                    </div>
+
+                    <div id="rtcRemarksContainer" style="margin-top: 15px; font-size: 13px;">
+                        <b>Remarks:</b> <span id="rtcRemarks">Payment received with thanks.</span>
+                    </div>
+                </div>
+
+                <div class="rp-footer">
+                    <div class="rp-notice">
+                        <p><b>Note:</b> This is a computer-generated receipt and does not require a physical signature. Any discrepancy should be reported within 7 working days. Fees once paid are non-refundable.</p>
+                        <p id="rtcFooterInfo" style="margin-top: 10px;">Generated by: Admin | <span id="rtcTime">--:--</span></p>
+                    </div>
+                    <div class="rp-signature-block">
+                        <div class="rp-stamp">Verified<br>Secure</div>
+                        <div class="rp-signature-line">Authorized Signatory</div>
+                    </div>
                 </div>
             </div>
         </div>

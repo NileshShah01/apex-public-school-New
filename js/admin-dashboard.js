@@ -2072,7 +2072,14 @@ async function processReportCardGeneration() {
         };
 
         // 4. Generate via common Factory
-        if (format === 'Himalayan') {
+        if (format === 'premium') {
+            // Premium uses the advanced tool with attendance calculation
+            if (window.ReportCardTool) {
+                await window.ReportCardTool.processReportCard(studentId, 'premium', session);
+            } else {
+                await window.ReportCardFactory.generatePremium(student, marks, examDetails, schoolDetails);
+            }
+        } else if (format === 'Himalayan') {
             await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
         } else if (format === 'MCQ_Normal') {
             await window.ReportCardFactory.generateMCQNormal(student, marks, examDetails, schoolDetails);
