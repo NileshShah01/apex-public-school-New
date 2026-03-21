@@ -18,27 +18,41 @@ let attendanceState = {
 async function initERPAttendance() {
     console.log('ERP Attendance Initializing...');
 
-    // Populate session dropdown
+    // Populate session dropdowns for both Marking and Reports
     const sessionSelect = document.getElementById('att_sessionSelect');
-    if (sessionSelect && erpState.sessions) {
-        sessionSelect.innerHTML =
-            '<option value="">Select Session</option>' +
+    const repSessionSelect = document.getElementById('repAtt_sessionSelect');
+    
+    if (erpState.sessions) {
+        const sessionOptions = '<option value="">Select Session</option>' +
             erpState.sessions
                 .map(
                     (s) =>
                         `<option value="${s.id}" data-name="${s.name}" ${s.active ? 'selected' : ''}>${s.name}</option>`
                 )
                 .join('');
+                
+        if (sessionSelect) sessionSelect.innerHTML = sessionOptions;
+        if (repSessionSelect) repSessionSelect.innerHTML = sessionOptions;
 
         if (erpState.activeSessionId) {
             await loadAttendanceClasses();
+            await loadRepAttClasses(); // Load report classes too
         }
     }
 
-    // Set today's date as default
+    // Set today's date as default for marking
     const dateInput = document.getElementById('att_dateInput');
     if (dateInput) {
         dateInput.value = attendanceState.selectedDate;
+    }
+    
+    // Set current month as default for reports
+    const monthInput = document.getElementById('repAtt_monthInput');
+    if (monthInput) {
+        const today = new Date();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        monthInput.value = `${yyyy}-${mm}`;
     }
 }
 
@@ -288,3 +302,252 @@ window.loadStudentsForAttendance = loadStudentsForAttendance;
 window.saveAttendance = saveAttendance;
 window.markAllPresent = markAllPresent;
 window.updateRecordLocal = updateRecordLocal;
+
+// ===================== MONTHLY ATTENDANCE REPORTS =====================
+
+/**
+ * Load classes for the selected session in reports view
+ */
+async function loadRepAttClasses() {
+    const sessionSelect = document.getElementById('repAtt_sessionSelect');
+    const classSelect = document.getElementById('repAtt_classSelect');
+    if (!sessionSelect || !classSelect) return;
+
+    const sessionId = sessionSelect.value;
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
+
+    try {
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc')
+            .get();
+        
+        classSelect.innerHTML = '<option value="">Select Class</option>' +
+            snapshot.docs.map(doc => `<option value="${doc.data().name}" data-id="${doc.id}">${doc.data().name}</option>`).join('');
+
+        const secSelect = document.getElementById('repAtt_sectionSelect');
+        if (secSelect) secSelect.innerHTML = '<option value="">All Sections</option>';
+    } catch (e) {
+        console.error('Error loading report classes:', e);
+    }
+}
+
+/**
+ * Update sections based on selected class in reports view
+ */
+function updateRepAttSections() {
+    const classSelect = document.getElementById('repAtt_classSelect');
+    const secSelect = document.getElementById('repAtt_sectionSelect');
+    if (!classSelect || !secSelect) return;
+
+    const selectedOption = classSelect.options[classSelect.selectedIndex];
+    const classId = selectedOption?.getAttribute('data-id');
+
+    if (!classId) {
+        secSelect.innerHTML = '<option value="">All Sections</option>';
+        return;
+    }
+
+    const cls = erpState.classes.find(c => c.id === classId);
+    if (!cls || !cls.sections || cls.sections.length === 0) {
+        secSelect.innerHTML = '<option value="">All Sections</option>';
+        return;
+    }
+
+    secSelect.innerHTML = '<option value="">All Sections</option>' +
+        cls.sections.map(sec => `<option value="${sec}">${sec}</option>`).join('');
+}
+
+let currentAttendanceReportData = [];
+
+/**
+ * Generate monthly attendance report
+ */
+async function generateAttendanceReport() {
+    const sessionSelect = document.getElementById('repAtt_sessionSelect');
+    const classSelect = document.getElementById('repAtt_classSelect');
+    const secSelect = document.getElementById('repAtt_sectionSelect');
+    const monthInput = document.getElementById('repAtt_monthInput');
+    const body = document.getElementById('attendanceReportTableBody');
+    const summary = document.getElementById('attReportSummary');
+
+    if (!classSelect.value || !monthInput.value) {
+        showToast('Please select Session, Class, and Month', 'error');
+        return;
+    }
+
+    const selectedSession = sessionSelect.options[sessionSelect.selectedIndex].text;
+    const selectedClass = classSelect.value;
+    const selectedSection = secSelect.value; // Can be empty for "All Sections"
+    const selectedMonth = monthInput.value; // Format: "YYYY-MM"
+
+    body.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Generating report...</td></tr>';
+    summary.classList.add('hidden');
+
+    try {
+        setLoading(true);
+
+        // 1. Fetch Students
+        let studentQuery = schoolData('students')
+            .where('session', '==', selectedSession)
+            .where('class', '==', selectedClass);
+        
+        if (selectedSection) {
+            studentQuery = studentQuery.where('section', '==', selectedSection);
+        }
+
+        const studentSnap = await studentQuery.get();
+        if (studentSnap.empty) {
+            body.innerHTML = '<tr><td colspan="7" class="text-center">No students found.</td></tr>';
+            return;
+        }
+
+        const students = [];
+        const studentMap = {};
+        studentSnap.forEach(doc => {
+            const data = { id: doc.id, ...doc.data() };
+            students.push(data);
+            studentMap[doc.id] = {
+                ...data,
+                present: 0,
+                absent: 0,
+                late: 0,
+                leave: 0,
+                totalRecorded: 0
+            };
+        });
+
+        // Sort students by roll number
+        students.sort((a, b) => (a.roll_no || 0) - (b.roll_no || 0));
+
+        // 2. Fetch Attendance Records for the given month
+        // We find all attendance documents where date starts with "YYYY-MM"
+        // Firestore doesn't support 'startsWith' directly in queries across all dates easily if we only have 'date' field
+        // Since dates are 'YYYY-MM-DD', we can do: date >= 'YYYY-MM-01' and date <= 'YYYY-MM-31'
+        const startDate = `${selectedMonth}-01`;
+        const endDate = `${selectedMonth}-31`;
+
+        let attQuery = schoolData('attendance')
+            .where('class', '==', selectedClass)
+            .where('date', '>=', startDate)
+            .where('date', '<=', endDate);
+
+        if (selectedSection) {
+            attQuery = attQuery.where('section', '==', selectedSection);
+        }
+
+        const attSnap = await attQuery.get();
+        
+        // Track unique working days
+        const workingDaysSet = new Set();
+
+        attSnap.forEach(doc => {
+            const record = doc.data();
+            workingDaysSet.add(record.date);
+            
+            if (studentMap[record.studentId]) {
+                const s = studentMap[record.studentId];
+                s.totalRecorded++;
+                if (record.status === 'present') s.present++;
+                else if (record.status === 'absent') s.absent++;
+                else if (record.status === 'late') s.late++;
+                else if (record.status === 'leave') s.leave++;
+            }
+        });
+
+        const totalWorkingDays = workingDaysSet.size;
+
+        // 3. Prepare data and calculate aggregates
+        let totalAttendancePercent = 0;
+        let defaultersCount = 0;
+        currentAttendanceReportData = [];
+
+        body.innerHTML = students.map(s => {
+            const stats = studentMap[s.id];
+            // If totalWorkingDays > 0, calculate percentage based on presents + late
+            // (Late often counts as half-present or present, we'll count it as present for % here but separate it in UI)
+            const attendedDays = stats.present + stats.late;
+            const percent = totalWorkingDays > 0 ? Math.round((attendedDays / totalWorkingDays) * 100) : 0;
+            
+            totalAttendancePercent += percent;
+            if (percent < 75 && totalWorkingDays > 0) defaultersCount++;
+
+            currentAttendanceReportData.push({
+                'Roll No': s.roll_no || '-',
+                'Student Name': s.name,
+                'Working Days': totalWorkingDays,
+                'Present': stats.present,
+                'Absent': stats.absent,
+                'Late/Leave': `${stats.late} / ${stats.leave}`,
+                'Attendance %': `${percent}%`
+            });
+
+            const badgeClass = percent >= 75 ? 'bg-success' : percent >= 60 ? 'bg-amber' : 'bg-danger';
+
+            return `
+                <tr>
+                    <td>${s.roll_no || '-'}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td class="text-center">${totalWorkingDays}</td>
+                    <td class="text-center text-success"><b>${stats.present}</b></td>
+                    <td class="text-center text-danger"><b>${stats.absent}</b></td>
+                    <td class="text-center text-muted">${stats.late} / ${stats.leave}</td>
+                    <td class="text-center">
+                        <span class="badge ${badgeClass} text-white">${percent}%</span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // 4. Update Summary Cards
+        const avgAtt = students.length > 0 ? Math.round(totalAttendancePercent / students.length) : 0;
+        document.getElementById('ar_totalStudents').textContent = students.length;
+        document.getElementById('ar_workingDays').textContent = totalWorkingDays;
+        document.getElementById('ar_avgAttendance').textContent = `${avgAtt}%`;
+        document.getElementById('ar_defaulters').textContent = defaultersCount;
+        
+        summary.classList.remove('hidden');
+
+    } catch (e) {
+        console.error('Error generating attendance report:', e);
+        body.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error generating report. Check console.</td></tr>';
+        showToast('Failed to generate report', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+/**
+ * Export current attendance report to Excel
+ */
+function exportAttendanceReport() {
+    if (!currentAttendanceReportData || currentAttendanceReportData.length === 0) {
+        showToast('No data to export. Generate a report first.', 'warning');
+        return;
+    }
+
+    try {
+        const classSelect = document.getElementById('repAtt_classSelect').value;
+        const monthInput = document.getElementById('repAtt_monthInput').value;
+        const filename = `Attendance_Report_${classSelect}_${monthInput}.xlsx`;
+
+        const ws = XLSX.utils.json_to_sheet(currentAttendanceReportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Monthly Attendance");
+        
+        XLSX.writeFile(wb, filename);
+        showToast('Excel report downloaded successfully!', 'success');
+    } catch (e) {
+        console.error('Export error:', e);
+        showToast('Error exporting data', 'error');
+    }
+}
+
+window.loadRepAttClasses = loadRepAttClasses;
+window.updateRepAttSections = updateRepAttSections;
+window.generateAttendanceReport = generateAttendanceReport;
+window.exportAttendanceReport = exportAttendanceReport;
+

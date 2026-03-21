@@ -60,24 +60,22 @@ const ERPNotifications = {
         if (event) event.preventDefault();
 
         const type = document.getElementById('notif_type').value;
+        const title = document.getElementById('notif_title').value.trim();
         const targetClass = document.getElementById('notif_classSelect').value;
         const targetSection = document.getElementById('notif_sectionSelect').value;
         const message = document.getElementById('notif_message').value.trim();
 
-        if (!message) {
-            showToast('Please enter a message', 'error');
+        if (!message || !title) {
+            showToast('Please enter a title and message', 'error');
             return;
         }
 
         try {
             showLoading(true);
 
-            // In a real system, we would trigger an API call to an SMS/WhatsApp gateway here.
-            // For this ERP, we simulate "Sending" by creating a log entry and
-            // potentially updating student's personal notification feeds.
-
             const notificationDoc = {
                 type: type,
+                title: title,
                 target: {
                     class: targetClass,
                     section: targetSection,
@@ -85,12 +83,12 @@ const ERPNotifications = {
                 message: message,
                 sentBy: auth.currentUser?.email || 'Admin',
                 sentAt: firebase.firestore.FieldValue.serverTimestamp(),
-                status: 'Delivered', // Simulated status
+                status: 'Delivered',
             };
 
             await schoolData('notifications').add(withSchool(notificationDoc));
 
-            showToast(`Notification sent successfully via ${type}!`);
+            showToast(`Notification sent successfully!`);
             document.getElementById('sendNotifForm').reset();
             await this.loadHistory();
         } catch (e) {
@@ -124,11 +122,13 @@ const ERPNotifications = {
 
                     return `
                     <tr>
-                        <td><i class="fab ${icon}" style="color:${color};"></i> ${d.type}</td>
-                        <td>${target}</td>
-                        <td title="${d.message}">${d.message.substring(0, 40)}${d.message.length > 40 ? '...' : ''}</td>
                         <td>${date}</td>
+                        <td>${target}</td>
+                        <td><i class="fab ${icon}" style="color:${color};"></i> <strong>${d.title || 'Notification'}</strong></td>
                         <td><span class="badge" style="background:#dcfce7; color:#166534;">${d.status}</span></td>
+                        <td style="text-align:right;">
+                            <button class="btn-portal btn-ghost btn-sm" title="${d.message}"><i class="fas fa-eye"></i></button>
+                        </td>
                     </tr>
                 `;
                 })

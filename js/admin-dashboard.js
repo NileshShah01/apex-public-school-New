@@ -113,6 +113,70 @@ window.showSection = function(sectionId, updateHash = true) {
     if (titleEl && titles[sectionId]) {
         titleEl.textContent = titles[sectionId];
     }
+    
+    // ERP Integration: Auto-populate dropdowns when entering registration sections
+    if ((sectionId === 'addStudentSection' || sectionId === 'studentList') && typeof updateSessionDropdowns === 'function') {
+        updateSessionDropdowns();
+    }
+    // Bulk Student Update: auto-populate session dropdown
+    if (sectionId === 'studentBulkUpdateSection' && typeof updateSessionDropdowns === 'function') {
+        updateSessionDropdowns();
+    }
+    // ID Generator: auto-populate session dropdown
+    if (sectionId === 'studentIdPrintSection' && typeof updateSessionDropdowns === 'function') {
+        updateSessionDropdowns().then(() => {
+            if (typeof initIdGenerator === 'function') initIdGenerator();
+        });
+    }
+
+    // Homework Management hook
+    if ((sectionId === 'assignHomework' || sectionId === 'homeworkHistory') && typeof initERPHomework === 'function') {
+        initERPHomework();
+    }
+    
+    // Library Management hook
+    if ((sectionId === 'bookCatalog' || sectionId === 'issueReturn') && typeof ERPLibrary !== 'undefined') {
+        ERPLibrary.init();
+    }
+    
+    // Transport Management hook
+    if ((sectionId === 'manageRoutes' || sectionId === 'assignTransport' || sectionId === 'transportReport') && typeof initERPTransport === 'function') {
+        initERPTransport();
+    }
+
+    // Exam & Report Card hook
+    const examSections = [
+        'examGrading', 'manageExam', 'manageExamSchedule', 
+        'viewExamSchedule', 'publishExamSchedule', 'examAttendanceCard', 
+        'studentExamAttendance', 'addResult', 'viewReportCard', 
+        'publishResults', 'bulkResultGenerator', 'resultAnalytics', 
+        'manageAllResults', 'reportCardRemarks'
+    ];
+    if (examSections.includes(sectionId) && typeof initERPExams === 'function') {
+        initERPExams();
+    }
+
+    // Notification System hook
+    if ((sectionId === 'sendNotification' || sectionId === 'notificationHistory') && typeof ERPNotifications !== 'undefined') {
+        ERPNotifications.init();
+    }
+
+    // Analytics hook
+    if (sectionId === 'resultAnalytics' && typeof ResultAnalytics !== 'undefined') {
+        ResultAnalytics.init();
+    }
+
+    // Timetable hook
+    if (['classTimetables', 'teacherTimetables', 'createTimetable', 'viewTimetable'].includes(sectionId) && typeof initERPTimetable === 'function') {
+        initERPTimetable();
+    }
+
+    // Question Paper hook
+    if (sectionId === 'questionPaperLibrary' && typeof initQuestionPapers === 'function') {
+        initQuestionPapers().then(() => {
+            if (typeof loadQuestionPapers === 'function') loadQuestionPapers();
+        });
+    }
 };
 
 // Set original reference for external scripts (like cms-admin.js or admin-tools.js) to override
@@ -874,31 +938,85 @@ async function handleWebsiteSettingsSave(e) {
 
 // Export Data
 function exportStudentData() {
-    if (allStudents.length === 0) return;
+    if (allStudents.length === 0) { showToast('No students to export', 'info'); return; }
     try {
         const formattedData = allStudents.map((s) => ({
-            'Student ID': s.student_id || '',
-            Name: s.name || '',
-            'Mobile/Phone': s.phone || '',
-            Class: s.class || '',
-            Section: s.section || '',
-            'Roll No': s.roll_no || '',
-            'Reg No': s.reg_no || '',
-            Gender: s.gender || '',
-            DOB: s.dob || '',
-            "Father's Name": s.father_name || '',
-            "Mother's Name": s.mother_name || '',
-            Address: s.address || '',
+            // ── Identifiers ──────────────────────────────────
+            'Student ID':           s.student_id || '',
+            'Registration No':      s.reg_no || '',
+            'Admission No':         s.admission_no || '',
+            'PEN No':               s.pen || '',
+            'Smart Card No':        s.smart_card_no || '',
+            'Aadhar No':            s.aadhar || '',
+
+            // ── Personal ─────────────────────────────────────
+            'Name':                 s.name || '',
+            'Gender':               s.gender || '',
+            'Date of Birth':        s.dob || '',
+            'Religion':             s.religion || '',
+            'Category':             s.category || '',
+            'Caste':                s.caste || '',
+            'Blood Group':          s.blood_group || '',
+            'Nationality':          s.nationality || '',
+
+            // ── Academic ─────────────────────────────────────
+            'Session':              s.session || '',
+            'Class':                s.class || '',
+            'Section':              s.section || '',
+            'Roll No':              s.roll_no || '',
+            'Join Date':            s.join_date || s.joinDate || '',
+            'Previous School':      s.previous_school || '',
+            'TC No':                s.tc_no || '',
+
+            // ── Parents / Guardian ────────────────────────────
+            "Father's Name":        s.father_name || s.fatherName || '',
+            "Father's Aadhar":      s.father_aadhar || '',
+            "Father's Mobile":      s.father_mobile || '',
+            "Father's Occupation":  s.father_occupation || '',
+            "Mother's Name":        s.mother_name || s.motherName || '',
+            "Mother's Aadhar":      s.mother_aadhar || '',
+            "Mother's Mobile":      s.mother_mobile || '',
+            'Guardian Name':        s.guardian_name || '',
+            'Guardian Phone':       s.guardian_phone || '',
+            'Guardian Relation':    s.guardian_relation || '',
+            'SMS Contact (Mobile)': s.sms_contact || s.phone || '',
+
+            // ── Contact ───────────────────────────────────────
+            'Mobile / Phone':       s.phone || s.mobile || '',
+            'Email':                s.email || '',
+            'Current Address':      s.address || '',
+            'Permanent Address':    s.permanent_address || '',
+            'City':                 s.city || '',
+            'State':                s.state || '',
+            'Pincode':              s.pincode || '',
+
+            // ── Facilities ────────────────────────────────────
+            'Hostel':               s.hostel || '',
+            'Transport':            s.transport || '',
+            'Bus Route':            s.bus_route || '',
+            'Bus Stop':             s.bus_stop || '',
+
+            // ── Status ────────────────────────────────────────
+            'Status':               s.status || 'Active',
+            'Remarks':              s.remarks || '',
+            'Photo URL':            s.photo || s.photoUrl || '',
+            'Created At':           s.createdAt ? new Date(s.createdAt.seconds ? s.createdAt.seconds * 1000 : s.createdAt).toLocaleDateString() : '',
         }));
+
         const ws = XLSX.utils.json_to_sheet(formattedData);
+        // Auto-fit column widths
+        const colWidths = Object.keys(formattedData[0]).map(k => ({ wch: Math.max(k.length + 2, 14) }));
+        ws['!cols'] = colWidths;
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Students');
         XLSX.writeFile(wb, `apex_students_${new Date().toISOString().split('T')[0]}.xlsx`);
-        showToast('Exported!');
+        showToast(`Exported ${formattedData.length} student(s) — all fields included!`);
     } catch (e) {
         showToast('Export failed: ' + e.message, 'error');
     }
 }
+
 
 // Student Management Core
 async function handleStudentSubmit(e) {

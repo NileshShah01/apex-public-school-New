@@ -16,14 +16,20 @@ function populateTemplateGallery() {
 
     gallery.innerHTML = '';
     const templates = [
-        { key: 'format1', title: 'Teal Amber', iconColor: '#4db6ac' },
-        { key: 'format2', title: 'Corporate Blue', iconColor: '#1e40af' },
-        { key: 'format3', title: 'Wave Dark', iconColor: '#1e3a8a' },
-        { key: 'format4', title: 'Curve Primary', iconColor: '#312e81' },
-        { key: 'format5', title: 'Stark Modern', iconColor: '#1e293b' },
+        { key: 'format1', title: 'Teal Amber', iconColor: '#00897b' },
+        { key: 'format2', title: 'Corporate Blue', iconColor: '#1e3a8a' },
+        { key: 'format3', title: 'Wave Dark', iconColor: '#312e81' },
+        { key: 'format4', title: 'Curve Primary', iconColor: '#0f172a' },
+        { key: 'format5', title: 'Gold Premium', iconColor: '#9a3412' },
         { key: 'format6', title: 'Poppins Elite', iconColor: '#1e3c72' },
         { key: 'format7', title: 'Modern Tech H1', iconColor: '#FF416C' },
         { key: 'format8', title: 'Modern Tech H2', iconColor: '#FF4B2B' },
+        // 5 NEW PREMIUM TEMPLATES
+        { key: 'format9',  title: '✨ Gradient Elite', iconColor: '#2a5298', badge: 'NEW' },
+        { key: 'format10', title: '✨ Stark Modern', iconColor: '#7c3aed', badge: 'NEW' },
+        { key: 'format11', title: '✨ Royal Maroon', iconColor: '#7b0000', badge: 'NEW' },
+        { key: 'format12', title: '✨ Saffron India', iconColor: '#FF9933', badge: 'NEW' },
+        { key: 'format13', title: '✨ Deep Space', iconColor: '#0a0a1a', badge: 'NEW' },
     ];
 
     templates.forEach((temp, i) => {
@@ -31,7 +37,8 @@ function populateTemplateGallery() {
         div.className = `template-item ${i === 0 ? 'active' : ''}`;
         div.onclick = () => selectTemplate(temp.key, div);
         div.innerHTML = `
-            <div style="height:40px; background:${temp.iconColor}; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white;">
+            <div style="height:40px; background:${temp.iconColor}; border-radius:4px; display:flex; align-items:center; justify-content:center; color:white; position:relative; overflow:hidden;">
+                ${temp.badge ? `<span style="position:absolute;top:2px;right:2px;background:#fbbf24;color:#1e293b;font-size:6px;font-weight:900;padding:1px 4px;border-radius:3px;">${temp.badge}</span>` : ''}
                 <i class="fas fa-id-card"></i>
             </div>
             <span>${temp.title}</span>
@@ -81,6 +88,9 @@ async function updateIdPreview() {
                 selectedStudentData.mobile || selectedStudentData.phone || selectedStudentData.student_phone || 'N/A',
             rollNo: selectedStudentData.rollNo || selectedStudentData.roll_no || 'N/A',
             class: selectedStudentData.class || selectedStudentData.student_class || 'N/A',
+            section: selectedStudentData.section || '',
+            session: selectedStudentData.session || selectedStudentData.academic_session || '2025-26',
+            bloodGroup: selectedStudentData.bloodGroup || selectedStudentData.blood_group || selectedStudentData.blood || 'N/A',
             photo: selectedStudentData.photo_url || selectedStudentData.photo || '', // Handled by template if empty
         };
 
@@ -213,8 +223,12 @@ async function generateBatchIdCards() {
                 mobile: s.mobile || s.phone || s.student_phone || 'N/A',
                 rollNo: s.rollNo || s.roll_no || 'N/A',
                 class: s.class || s.student_class || 'N/A',
+                section: s.section || '',
+                session: s.session || s.academic_session || '2025-26',
+                bloodGroup: s.bloodGroup || s.blood_group || s.blood || 'N/A',
                 photo: s.photo_url || s.photo || '',
             };
+
 
             renderDiv.innerHTML = templateFn(data);
             const cardEl = renderDiv.querySelector('.id-card-wrapper');

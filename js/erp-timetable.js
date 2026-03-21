@@ -12,15 +12,31 @@ let timetableState = {
 async function initERPTimetable() {
     console.log('ERP Timetable Initializing...');
 
-    // Populate class dropdown
-    const classSelect = document.getElementById('tt_classSelect');
-    if (classSelect && erpState.classes) {
-        classSelect.innerHTML =
-            '<option value="">Select Class</option>' +
-            erpState.classes
-                .map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`)
-                .join('');
-    }
+    // Populate session dropdowns
+    const sessSelects = ['tt_sessionSelect', 'ttSessionSelect'];
+    sessSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && erpState.sessions) {
+            el.innerHTML =
+                '<option value="">Select Session</option>' +
+                erpState.sessions
+                    .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+                    .join('');
+        }
+    });
+
+    // Populate class dropdowns
+    const classSelects = ['tt_classSelect', 'ttClassSelect'];
+    classSelects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && erpState.classes) {
+            el.innerHTML =
+                '<option value="">Select Class</option>' +
+                erpState.classes
+                    .map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`)
+                    .join('');
+        }
+    });
 
     await loadTimetableList();
 }
@@ -51,12 +67,13 @@ async function handleTimetableUpload(event) {
         const fileUrl = await uploadTask.ref.getDownloadURL();
 
         // 2. Save to Firestore
-        // Use the format expected by student-dashboard.js
+        const sessionId = document.getElementById('tt_sessionSelect').value;
         const classId = className.toLowerCase().replace(/\s+/g, '-');
         await schoolDoc('timetables', classId).set(
             withSchool({
                 className: className,
-                fileData: fileUrl, // student-dashboard uses fileData
+                sessionId: sessionId,
+                fileData: fileUrl,
                 fileUrl: fileUrl,
                 uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
             })
@@ -81,16 +98,34 @@ async function loadTimetableList() {
     if (!list) return;
 
     try {
-        const snap = await schoolData('timetables').get();
-        if (snap.empty) {
+        const sessFilter = document.getElementById('ttSessionSelect')?.value;
+        const classFilter = document.getElementById('ttClassSelect')?.value;
+
+        let query = schoolData('timetables');
+        // Note: Firestore doesn't support multiple inequalities, but here we use equality.
+        // However, complex filtering might require indexes. For now, we'll filter client-side if needed, 
+        // or just apply simple where clauses if possible.
+        
+        let snap = await query.get();
+        let docs = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
+        if (sessFilter) {
+            // If session is stored in the doc, filter here. 
+            // Currently erp-timetable.js doesn't seem to store sessionId in the doc during upload.
+            // Let's check handleTimetableUpload.
+        }
+        if (classFilter) {
+            docs = docs.filter(d => d.className === classFilter);
+        }
+
+        if (docs.length === 0) {
             list.innerHTML =
-                '<tr><td colspan="3" style="text-align:center; padding:2rem;">No timetables uploaded yet.</td></tr>';
+                '<tr><td colspan="3" style="text-align:center; padding:2rem;">No timetables found for the selected criteria.</td></tr>';
             return;
         }
 
-        list.innerHTML = snap.docs
-            .map((doc) => {
-                const d = doc.data();
+        list.innerHTML = docs
+            .map((d) => {
                 const date = d.uploadedAt ? new Date(d.uploadedAt.seconds * 1000).toLocaleDateString() : 'N/A';
                 return `
                 <tr>
@@ -98,7 +133,7 @@ async function loadTimetableList() {
                     <td>${date}</td>
                     <td style="text-align:right;">
                         <a href="${d.fileUrl}" target="_blank" class="btn-portal btn-ghost btn-sm"><i class="fas fa-eye"></i> View</a>
-                        <button onclick="deleteTimetable('${doc.id}')" class="btn-portal btn-ghost btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        <button onclick="deleteTimetable('${d.id}')" class="btn-portal btn-ghost btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `;

@@ -132,6 +132,7 @@ async function handleManualPaperUpload(event) {
             subject: subjectName,
             subjectId: subjectId,
             paperType: 'manualUpload',
+            fileUrl: downloadUrl, // Store directly for Student Portal
             status: 'final',
             published: false,
             revisionNumber: 1,

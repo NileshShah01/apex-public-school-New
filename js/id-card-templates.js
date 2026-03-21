@@ -382,7 +382,354 @@ const ID_TEMPLATES = {
             </div>
         </div>
     `,
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5 PREMIUM SCHOOL ID CARD TEMPLATES (Internet-Grade Professional Quality)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Format 9: GRADIENT ELITE — Full-bleed royal blue gradient, glowing photo ring
+    // Style: Premium vertical card, very popular in central school / KVS style
+    format9: (data) => `
+        <div class="id-card-wrapper temp-gradient-elite ${data.orientation}" style="width:54mm;height:86mm;background:linear-gradient(160deg,#1e3c72 0%,#2a5298 55%,#1a237e 100%);border-radius:3mm;overflow:hidden;position:relative;font-family:'Poppins',sans-serif;box-sizing:border-box;">
+            <!-- Decorative circles -->
+            <div style="position:absolute;top:-12mm;right:-12mm;width:40mm;height:40mm;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
+            <div style="position:absolute;bottom:-8mm;left:-8mm;width:28mm;height:28mm;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+
+            <!-- Header: Logo + School Name -->
+            <div style="padding:3mm 3mm 1.5mm;display:flex;align-items:center;justify-content:center;gap:2mm;position:relative;z-index:2;">
+                <img src="${data.schoolLogo}" style="height:9mm;filter:drop-shadow(0 0 6px rgba(255,255,255,0.5));background:white;border-radius:50%;padding:1px;">
+                <div style="color:#fff;text-align:left;">
+                    <div style="font-weight:800;font-size:9pt;line-height:1;text-transform:uppercase;letter-spacing:0.3px;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                    <div style="font-size:4.5pt;opacity:0.8;font-weight:500;letter-spacing:1px;text-transform:uppercase;">Excellence · Integrity · Growth</div>
+                </div>
+            </div>
+
+            <!-- Gold Divider -->
+            <div style="height:0.6mm;background:linear-gradient(90deg,transparent,#ffd700,transparent);margin:0 4mm;"></div>
+
+            <!-- Student Photo (Glowing Ring) -->
+            <div style="text-align:center;margin-top:3mm;position:relative;z-index:2;">
+                <div style="width:28mm;height:28mm;border-radius:50%;margin:0 auto;padding:1mm;background:linear-gradient(135deg,#ffd700,#fff,#ffd700);box-shadow:0 0 16px rgba(255,215,0,0.45);">
+                    <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:#1e3c72;">
+                        ${data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;object-position:center top;">`
+                            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="${data.schoolLogo}" style="width:55%;opacity:0.3;filter:brightness(0) invert(1);"></div>`
+                        }
+                    </div>
+                </div>
+                <!-- ID Badge below photo -->
+                <div style="display:inline-block;background:rgba(255,215,0,0.2);border:0.4mm solid #ffd700;color:#ffd700;font-size:7pt;font-weight:800;padding:0.5mm 3mm;border-radius:50px;margin-top:1.5mm;letter-spacing:0.5px;">ID: ${data.studentId}</div>
+            </div>
+
+            <!-- Student Info -->
+            <div style="padding:2.5mm 4.5mm;position:relative;z-index:2;">
+                <div style="color:#fff;text-align:center;font-weight:800;font-size:13pt;text-transform:uppercase;line-height:1;letter-spacing:0.5px;">${data.name}</div>
+                <div style="text-align:center;margin-top:1mm;margin-bottom:2.5mm;">
+                    <span style="color:#ffd700;font-size:7.5pt;font-weight:700;">CLASS ${data.class}</span>
+                    <span style="color:rgba(255,255,255,0.5);margin:0 1.5mm;">|</span>
+                    <span style="color:#fff;font-size:7.5pt;font-weight:700;">ROLL #${data.rollNo}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2mm;">
+                    <div style="background:rgba(255,255,255,0.1);border-radius:1.5mm;padding:1.5mm 2mm;">
+                        <div style="color:rgba(255,215,0,0.8);font-size:4.5pt;font-weight:700;text-transform:uppercase;">Father</div>
+                        <div style="color:#fff;font-size:7.5pt;font-weight:700;line-height:1.1;">${data.fatherName}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.1);border-radius:1.5mm;padding:1.5mm 2mm;">
+                        <div style="color:rgba(255,215,0,0.8);font-size:4.5pt;font-weight:700;text-transform:uppercase;">Mobile</div>
+                        <div style="color:#fff;font-size:7.5pt;font-weight:700;line-height:1.1;">${data.mobile}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.1);border-radius:1.5mm;padding:1.5mm 2mm;">
+                        <div style="color:rgba(255,215,0,0.8);font-size:4.5pt;font-weight:700;text-transform:uppercase;">DOB</div>
+                        <div style="color:#fff;font-size:7.5pt;font-weight:700;line-height:1.1;">${data.dateOfBirth}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.1);border-radius:1.5mm;padding:1.5mm 2mm;">
+                        <div style="color:rgba(255,215,0,0.8);font-size:4.5pt;font-weight:700;text-transform:uppercase;">Blood Group</div>
+                        <div style="color:#ff6b6b;font-size:8pt;font-weight:900;">${data.bloodGroup || 'N/A'}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);padding:1.5mm 4mm;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;">
+                <div style="color:rgba(255,255,255,0.75);font-size:4.5pt;font-weight:600;line-height:1.3;">
+                    📞 ${data.schoolContact}<br>
+                    🌐 ${data.schoolWebsite}
+                </div>
+                <div style="text-align:center;">
+                    <img src="/images/principal-sign.png" style="height:6mm;filter:brightness(0) invert(1);opacity:0.7;mix-blend-mode:screen;">
+                    <div style="color:rgba(255,255,255,0.8);font-size:4pt;font-weight:800;border-top:0.3mm solid rgba(255,255,255,0.3);text-transform:uppercase;margin-top:0.5mm;">Principal</div>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // Format 10: STARK MODERN — Horizontal minimalist, bold side-bar accent
+    // Style: Clean white card, single color sidebar, very modern, popular in CBSE schools
+    format10: (data) => `
+        <div class="id-card-wrapper temp-stark-modern ${data.orientation}" style="width:86mm;height:54mm;background:#fff;border-radius:2mm;overflow:hidden;display:flex;font-family:'Inter',sans-serif;box-sizing:border-box;border:0.3mm solid #e2e8f0;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+            <!-- Bold Side Color Bar -->
+            <div style="width:4mm;background:linear-gradient(180deg,#7c3aed 0%,#4f46e5 100%);flex-shrink:0;"></div>
+
+            <!-- Student Photo -->
+            <div style="width:28mm;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border-right:0.4mm solid #e2e8f0;">
+                <div style="width:24mm;height:30mm;overflow:hidden;border-radius:1mm;border:0.5mm solid #7c3aed;">
+                    ${data.photo
+                        ? `<img src="${data.photo}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;object-position:center top;">`
+                        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#cbd5e1;flex-direction:column;background:#fff;"><i class="fas fa-user" style="font-size:1.5rem;"></i></div>`
+                    }
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div style="flex:1;padding:3.5mm 4mm;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
+                <!-- School Header -->
+                <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:0.5mm solid #e2e8f0;padding-bottom:2mm;margin-bottom:2mm;">
+                    <div>
+                        <div style="font-weight:900;font-size:9pt;color:#1e293b;line-height:1;text-transform:uppercase;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                        <div style="font-size:5pt;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Identity Card — ${data.session || '2025-26'}</div>
+                    </div>
+                    <img src="${data.schoolLogo}" style="height:8mm;opacity:0.85;">
+                </div>
+
+                <!-- Student Name -->
+                <div>
+                    <div style="font-size:16pt;font-weight:900;color:#0f172a;line-height:0.9;text-transform:uppercase;">${data.name}</div>
+                    <div style="margin-top:1mm;display:flex;gap:2mm;align-items:center;">
+                        <span style="background:#7c3aed;color:#fff;font-size:6.5pt;font-weight:800;padding:0.3mm 2mm;border-radius:50px;">GR. ${data.class}</span>
+                        <span style="color:#64748b;font-size:6.5pt;font-weight:700;">Roll #${data.rollNo}</span>
+                        <span style="color:#64748b;font-size:6.5pt;font-weight:700;">|</span>
+                        <span style="color:#64748b;font-size:6.5pt;font-weight:700;">SID: ${data.studentId}</span>
+                    </div>
+                </div>
+
+                <!-- Details Grid -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5mm;">
+                    <div>
+                        <div style="font-size:4.5pt;color:#94a3b8;font-weight:700;text-transform:uppercase;">Father</div>
+                        <div style="font-size:8pt;color:#1e293b;font-weight:700;">${data.fatherName}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:4.5pt;color:#94a3b8;font-weight:700;text-transform:uppercase;">Mobile</div>
+                        <div style="font-size:8pt;color:#1e293b;font-weight:700;">${data.mobile}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:4.5pt;color:#94a3b8;font-weight:700;text-transform:uppercase;">DOB</div>
+                        <div style="font-size:8pt;color:#1e293b;font-weight:700;">${data.dateOfBirth}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:4.5pt;color:#94a3b8;font-weight:700;text-transform:uppercase;">Blood</div>
+                        <div style="font-size:8pt;color:#ef4444;font-weight:900;">${data.bloodGroup || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:0.4mm solid #e2e8f0;padding-top:1.5mm;">
+                    <div style="font-size:5pt;color:#64748b;">
+                        📞 ${data.schoolContact} &nbsp;|&nbsp; 🌐 ${data.schoolWebsite}
+                    </div>
+                    <div style="text-align:center;">
+                        <img src="/images/principal-sign.png" style="height:6mm;mix-blend-mode:multiply;">
+                        <div style="font-size:4pt;font-weight:800;color:#0f172a;border-top:0.3mm solid #0f172a;text-transform:uppercase;">Principal</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // Format 11: ROYAL MAROON — Premium maroon-gold school theme
+    // Style: Traditional, premium, used by top ICSE/ISC private schools
+    format11: (data) => `
+        <div class="id-card-wrapper temp-royal-maroon ${data.orientation}" style="width:54mm;height:86mm;background:#fff;border-radius:2mm;overflow:hidden;position:relative;font-family:'Times New Roman',Georgia,serif;box-sizing:border-box;border:1mm solid #7b0000;">
+            <!-- Inner border -->
+            <div style="position:absolute;inset:1.5mm;border:0.3mm solid #d4a017;border-radius:1mm;pointer-events:none;z-index:10;"></div>
+
+            <!-- Royal Header -->
+            <div style="background:linear-gradient(135deg,#7b0000 0%,#9b1111 60%,#7b0000 100%);padding:3mm 2mm;text-align:center;position:relative;z-index:2;">
+                <img src="${data.schoolLogo}" style="height:10mm;filter:drop-shadow(0 0 4px rgba(212,160,23,0.6));">
+                <div style="color:#d4a017;font-size:9.5pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:1mm;line-height:1;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                <div style="color:rgba(255,255,255,0.75);font-size:5pt;font-style:italic;margin-top:0.5mm;">${data.trustName || 'Excellence in Education'}</div>
+                <!-- Gold divider -->
+                <div style="height:0.6mm;background:linear-gradient(90deg,transparent,#d4a017,transparent);margin-top:2mm;"></div>
+                <div style="color:#d4a017;font-size:6pt;font-weight:700;letter-spacing:2px;margin-top:1mm;text-transform:uppercase;">IDENTITY CARD</div>
+            </div>
+
+            <!-- Photo + ID -->
+            <div style="text-align:center;margin-top:3mm;position:relative;z-index:2;">
+                <div style="display:inline-block;padding:1mm;border:0.8mm solid #d4a017;background:#fff3cd;box-shadow:0 2px 8px rgba(123,0,0,0.15);">
+                    <div style="width:26mm;height:32mm;overflow:hidden;background:#f5f5f5;">
+                        ${data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;object-position:center top;">`
+                            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0.2;"><img src="${data.schoolLogo}" style="width:60%;"></div>`
+                        }
+                    </div>
+                </div>
+                <div style="margin-top:1.5mm;font-size:6.5pt;font-weight:700;color:#7b0000;font-family:'Inter',sans-serif;">Reg. No.: ${data.studentId}</div>
+            </div>
+
+            <!-- Details -->
+            <div style="padding:2mm 4.5mm;position:relative;z-index:2;">
+                <div style="text-align:center;font-size:13pt;font-weight:700;color:#7b0000;text-transform:uppercase;border-bottom:0.5mm dotted #d4a017;padding-bottom:1.5mm;margin-bottom:2mm;line-height:1;">${data.name}</div>
+                <table style="width:100%;font-family:'Inter',sans-serif;font-size:7pt;border-collapse:collapse;">
+                    <tr><td style="color:#7b0000;font-weight:700;padding-bottom:1.5mm;width:35%;font-size:5.5pt;">CLASS</td><td style="font-weight:800;color:#1e293b;">${data.class} &nbsp;(Roll: ${data.rollNo})</td></tr>
+                    <tr><td style="color:#7b0000;font-weight:700;padding-bottom:1.5mm;font-size:5.5pt;">FATHER</td><td style="font-weight:800;color:#1e293b;">${data.fatherName}</td></tr>
+                    <tr><td style="color:#7b0000;font-weight:700;padding-bottom:1.5mm;font-size:5.5pt;">MOBILE</td><td style="font-weight:800;color:#1e293b;">${data.mobile}</td></tr>
+                    <tr><td style="color:#7b0000;font-weight:700;padding-bottom:1.5mm;font-size:5.5pt;">DOB</td><td style="font-weight:800;color:#1e293b;">${data.dateOfBirth}</td></tr>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="position:absolute;bottom:0;width:100%;background:linear-gradient(135deg,#7b0000,#9b1111);padding:2mm 4mm;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;">
+                <div style="color:rgba(255,255,255,0.8);font-size:4.5pt;font-style:italic;">If found, please return to school</div>
+                <div style="text-align:center;">
+                    <img src="/images/principal-sign.png" style="height:6mm;filter:brightness(0) invert(1);opacity:0.7;">
+                    <div style="color:#d4a017;font-size:4pt;font-weight:700;border-top:0.3mm solid #d4a017;text-transform:uppercase;margin-top:0.5mm;">Principal</div>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // Format 12: SAFFRON INDIA — National palette (Saffron + White + Green), republic style
+    // Style: Patriotic theme, popular in government & aided schools
+    format12: (data) => `
+        <div class="id-card-wrapper temp-saffron-india ${data.orientation}" style="width:86mm;height:54mm;background:#fff;border-radius:2mm;overflow:hidden;display:flex;flex-direction:column;font-family:'Inter',sans-serif;box-sizing:border-box;border:0.5mm solid #ddd;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+            <!-- Tricolor Header Stripe -->
+            <div style="display:flex;height:3mm;flex-shrink:0;">
+                <div style="flex:1;background:#FF9933;"></div>
+                <div style="flex:1;background:#fff;border-top:0.3mm solid #eee;border-bottom:0.3mm solid #eee;"></div>
+                <div style="flex:1;background:#138808;"></div>
+            </div>
+
+            <!-- Main Body -->
+            <div style="flex:1;display:flex;padding:2.5mm;gap:3mm;box-sizing:border-box;">
+                <!-- Left: School Branding -->
+                <div style="width:20mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;border-right:0.4mm solid #e2e8f0;padding-right:3mm;">
+                    <img src="${data.schoolLogo}" style="height:12mm;">
+                    <div style="text-align:center;">
+                        <div style="font-size:6pt;font-weight:900;color:#FF9933;text-transform:uppercase;line-height:1.1;">${(data.schoolName || 'APEX PUBLIC SCHOOL').split(' ').slice(0,2).join(' ')}</div>
+                        <div style="font-size:5pt;font-weight:600;color:#138808;text-transform:uppercase;line-height:1.1;">${(data.schoolName || 'APEX PUBLIC SCHOOL').split(' ').slice(2).join(' ')}</div>
+                    </div>
+                    <!-- Photo -->
+                    <div style="width:18mm;height:22mm;border:0.5mm solid #FF9933;overflow:hidden;background:#f8f8f8;">
+                        ${data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;object-position:center top;">`
+                            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#ddd;"><i class="fas fa-user" style="font-size:1.5rem;"></i></div>`
+                        }
+                    </div>
+                    <div style="font-size:5pt;font-weight:800;color:#1e293b;text-align:center;">ID: ${data.studentId}</div>
+                </div>
+
+                <!-- Right: Student Info -->
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+                    <div>
+                        <div style="font-size:13pt;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:0.95;">${data.name}</div>
+                        <div style="display:flex;gap:1.5mm;margin-top:1mm;flex-wrap:wrap;">
+                            <span style="background:#FF9933;color:#fff;font-size:6pt;font-weight:800;padding:0.3mm 2mm;border-radius:1mm;">CLASS ${data.class}</span>
+                            <span style="background:#138808;color:#fff;font-size:6pt;font-weight:800;padding:0.3mm 2mm;border-radius:1mm;">ROLL #${data.rollNo}</span>
+                        </div>
+                    </div>
+
+                    <table style="width:100%;font-size:7pt;border-collapse:collapse;margin-top:1mm;">
+                        <tr><td style="color:#64748b;font-size:5pt;font-weight:700;text-transform:uppercase;padding-bottom:1mm;">Father 👨</td><td style="font-weight:800;color:#1e293b;">${data.fatherName}</td></tr>
+                        <tr><td style="color:#64748b;font-size:5pt;font-weight:700;text-transform:uppercase;padding-bottom:1mm;">Mobile 📱</td><td style="font-weight:800;color:#1e293b;">${data.mobile}</td></tr>
+                        <tr><td style="color:#64748b;font-size:5pt;font-weight:700;text-transform:uppercase;padding-bottom:1mm;">DOB 🎂</td><td style="font-weight:800;color:#1e293b;">${data.dateOfBirth}</td></tr>
+                        <tr><td style="color:#64748b;font-size:5pt;font-weight:700;text-transform:uppercase;">Blood 🩸</td><td style="font-weight:800;color:#ef4444;">${data.bloodGroup || 'N/A'}</td></tr>
+                    </table>
+
+                    <div style="font-size:5pt;color:#94a3b8;">📞 ${data.schoolContact} &nbsp; 🌐 ${data.schoolWebsite}</div>
+                </div>
+            </div>
+
+            <!-- Tricolor Footer Stripe -->
+            <div style="display:flex;height:2.5mm;flex-shrink:0;">
+                <div style="flex:1;background:#FF9933;"></div>
+                <div style="flex:1;background:#fff;border-top:0.3mm solid #eee;"></div>
+                <div style="flex:1;background:#138808;"></div>
+            </div>
+        </div>
+    `,
+
+    // Format 13: DEEP SPACE — Dark premium theme, holographic accent, modern tech feel
+    // Style: Ultra-premium, used in elite private/international schools
+    format13: (data) => `
+        <div class="id-card-wrapper temp-deep-space ${data.orientation}" style="width:54mm;height:86mm;background:linear-gradient(145deg,#0a0a1a 0%,#0f172a 60%,#0a0a1a 100%);border-radius:3mm;overflow:hidden;position:relative;font-family:'Inter',sans-serif;box-sizing:border-box;border:0.5mm solid #1e293b;">
+            <!-- Holographic accent line -->
+            <div style="position:absolute;top:0;left:0;right:0;height:0.8mm;background:linear-gradient(90deg,#00f2fe,#4facfe,#a855f7,#ec4899,#fbbf24,#00f2fe);background-size:200%;z-index:10;"></div>
+
+            <!-- Background glow blobs -->
+            <div style="position:absolute;top:10mm;left:-10mm;width:35mm;height:35mm;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,0.12) 0%,transparent 70%);z-index:0;"></div>
+            <div style="position:absolute;bottom:10mm;right:-5mm;width:30mm;height:30mm;border-radius:50%;background:radial-gradient(circle,rgba(79,172,254,0.1) 0%,transparent 70%);z-index:0;"></div>
+
+            <!-- School Header -->
+            <div style="padding:3.5mm 3mm 2mm;display:flex;align-items:center;justify-content:center;gap:2.5mm;position:relative;z-index:2;">
+                <img src="${data.schoolLogo}" style="height:9mm;filter:drop-shadow(0 0 8px rgba(79,172,254,0.7));background:rgba(255,255,255,0.05);border-radius:50%;padding:1px;">
+                <div style="text-align:left;">
+                    <div style="font-weight:900;font-size:9pt;color:#f8fafc;text-transform:uppercase;line-height:1;letter-spacing:0.3px;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                    <div style="background:linear-gradient(90deg,#4facfe,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:5pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Student Identity Card</div>
+                </div>
+            </div>
+
+            <!-- Holographic separator -->
+            <div style="height:0.4mm;background:linear-gradient(90deg,transparent,#4facfe,#a855f7,transparent);margin:0 4mm;position:relative;z-index:2;"></div>
+
+            <!-- Photo -->
+            <div style="text-align:center;margin-top:3mm;position:relative;z-index:2;">
+                <div style="width:26mm;height:26mm;margin:0 auto;border-radius:50%;padding:1mm;background:linear-gradient(135deg,#4facfe,#a855f7,#ec4899);box-shadow:0 0 20px rgba(79,172,254,0.35);">
+                    <div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:#0f172a;">
+                        ${data.photo
+                            ? `<img src="${data.photo}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:cover;object-position:center top;">`
+                            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="font-size:1.5rem;color:rgba(255,255,255,0.2);"></i></div>`
+                        }
+                    </div>
+                </div>
+                <div style="display:inline-flex;align-items:center;gap:1mm;background:rgba(79,172,254,0.12);border:0.4mm solid rgba(79,172,254,0.5);border-radius:50px;padding:0.5mm 3mm;margin-top:1.5mm;">
+                    <div style="width:2mm;height:2mm;border-radius:50%;background:#4facfe;box-shadow:0 0 4px #4facfe;"></div>
+                    <span style="color:#e2e8f0;font-size:7pt;font-weight:800;">ID: ${data.studentId}</span>
+                </div>
+            </div>
+
+            <!-- Student Info -->
+            <div style="padding:2mm 4mm;position:relative;z-index:2;">
+                <div style="text-align:center;font-weight:900;font-size:13pt;color:#f8fafc;text-transform:uppercase;line-height:1;">${data.name}</div>
+                <div style="text-align:center;margin:1mm 0 2.5mm;">
+                    <span style="background:linear-gradient(90deg,#4facfe,#a855f7);font-size:7pt;font-weight:800;padding:0.3mm 2.5mm;border-radius:50px;color:#fff;">CLASS ${data.class}</span>
+                    <span style="color:#64748b;margin:0 1mm;">•</span>
+                    <span style="color:#94a3b8;font-size:7pt;font-weight:700;">ROLL #${data.rollNo}</span>
+                </div>
+
+                <!-- Info Rows -->
+                <div style="display:flex;flex-direction:column;gap:1.5mm;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border:0.3mm solid rgba(255,255,255,0.08);border-radius:1.5mm;padding:1.5mm 2.5mm;">
+                        <span style="font-size:5pt;color:#64748b;font-weight:700;text-transform:uppercase;">Father</span>
+                        <span style="font-size:7.5pt;font-weight:800;color:#e2e8f0;">${data.fatherName}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border:0.3mm solid rgba(255,255,255,0.08);border-radius:1.5mm;padding:1.5mm 2.5mm;">
+                        <span style="font-size:5pt;color:#64748b;font-weight:700;text-transform:uppercase;">Mobile</span>
+                        <span style="font-size:7.5pt;font-weight:800;color:#e2e8f0;">${data.mobile}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border:0.3mm solid rgba(255,255,255,0.08);border-radius:1.5mm;padding:1.5mm 2.5mm;">
+                        <span style="font-size:5pt;color:#64748b;font-weight:700;text-transform:uppercase;">DOB</span>
+                        <span style="font-size:7.5pt;font-weight:800;color:#e2e8f0;">${data.dateOfBirth}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="position:absolute;bottom:0;width:100%;padding:1.5mm 4mm;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);border-top:0.3mm solid rgba(255,255,255,0.06);">
+                <div style="font-size:4.5pt;color:#475569;line-height:1.3;">
+                    📞 ${data.schoolContact}<br>🌐 ${data.schoolWebsite}
+                </div>
+                <div style="text-align:center;">
+                    <img src="/images/principal-sign.png" style="height:5.5mm;filter:brightness(0) invert(1);opacity:0.5;">
+                    <div style="font-size:4pt;font-weight:800;color:#475569;border-top:0.3mm solid #1e293b;text-transform:uppercase;margin-top:0.5mm;">Principal</div>
+                </div>
+            </div>
+
+            <!-- Bottom holographic line -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:0.6mm;background:linear-gradient(90deg,#00f2fe,#4facfe,#a855f7,#ec4899);z-index:10;"></div>
+        </div>
+    `,
 };
 
 // Export to window
 window.ID_TEMPLATES = ID_TEMPLATES;
+

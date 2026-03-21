@@ -40,6 +40,7 @@ async function initERPExams() {
             'admitSessionSelect',
             'attnSessionSelect',
             'allResultsSessionSelect',
+            'scheduleSessionSelect',
         ];
         sessionDropdowns.forEach((id) => {
             const el = document.getElementById(id);
@@ -70,11 +71,18 @@ async function initERPExams() {
         });
 
         if (examState.activeSessionId) {
-            await Promise.all([loadGradingRules(), loadExams(), loadViewScheduleGrid()]);
+            await Promise.all([loadGradingRules(), loadExams(), loadViewScheduleGrid(), populateRcPreviewExams()]);
             // For Schedule
             updateScheduleClasses();
             refreshPublishStatus();
             if (typeof loadManageResultsClasses === 'function') loadManageResultsClasses();
+            
+            // Setup Searchable Student Select for Report Card Preview
+            if (typeof initSearchableSelect === 'function' && document.getElementById('rcPreviewSearchContainer')) {
+                initSearchableSelect('rcPreviewSearchContainer', window.allStudents || [], (s) => {
+                    document.getElementById('rcPreviewSid').value = s.student_id;
+                });
+            }
         }
     } catch (e) {
         console.error('Exam init error:', e);
@@ -333,103 +341,292 @@ async function loadViewScheduleGrid() {
     }
 }
 
+// ─── SCHEDULE: Cascading Selectors ───────────────────────────────────────────
+
+// Called when session changes in Manage Exam Schedule
+window.scheduleLoadClasses = async function() {
+    const sessionId = document.getElementById('scheduleSessionSelect')?.value;
+    const classSelect = document.getElementById('scheduleClassSelect');
+    const examSelect = document.getElementById('scheduleExamSelect');
+    if (!classSelect) return;
+    classSelect.innerHTML = '<option value="">Loading...</option>';
+    if (examSelect) examSelect.innerHTML = '<option value="">Select Class First</option>';
+    document.getElementById('schedulePapersContainer').innerHTML = `
+        <div class="text-center p-3 text-muted card">
+            <i class="fas fa-calendar-times text-4xl opacity-20 block mb-1"></i>
+            <p>Select Session, Class and Exam to view or add papers</p>
+        </div>`;
+    const addBtn = document.getElementById('scheduleAddPaperBtn');
+    if (addBtn) addBtn.classList.add('hidden');
+    if (!sessionId) { classSelect.innerHTML = '<option value="">Select Session First</option>'; return; }
+    examState.activeSessionId = sessionId;
+    try {
+        const snap = await schoolData('classes').where('sessionId', '==', sessionId).get();
+        let classes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        classes.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+        classSelect.innerHTML = '<option value="">Select Class</option>' + classes.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+        // Also populate exam select from the session
+        await scheduleLoadExams(sessionId, examSelect);
+    } catch(e) { classSelect.innerHTML = '<option value="">Error</option>'; }
+};
+
+// Load exam terms for the selected session
+window.scheduleLoadExams = async function(sessionIdOverride, examSelectOverride) {
+    const sessionId = sessionIdOverride || document.getElementById('scheduleSessionSelect')?.value;
+    const examSelect = examSelectOverride || document.getElementById('scheduleExamSelect');
+    if (!examSelect || !sessionId) return;
+    examSelect.innerHTML = '<option value="">Loading exams...</option>';
+    try {
+        const snap = await schoolData('exams').where('sessionId','==',sessionId).get();
+        const exams = snap.docs.map(d=>({id:d.id,...d.data()}));
+        examSelect.innerHTML = '<option value="">Select Exam</option>' + exams.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+    } catch(e) { examSelect.innerHTML = '<option value="">Error</option>'; }
+};
+
+// ─── SCHEDULE: Load Papers (EducationDesk-style cards) ───────────────────────
+
 async function loadScheduleGrid() {
-    const examId = document.getElementById('scheduleExamSelect').value;
-    const className = document.getElementById('scheduleClassSelect').value;
-    const body = document.getElementById('scheduleTableBody');
-    if (!body) return;
+    const examId = document.getElementById('scheduleExamSelect')?.value;
+    const className = document.getElementById('scheduleClassSelect')?.value;
+    const container = document.getElementById('schedulePapersContainer');
+    const addBtn = document.getElementById('scheduleAddPaperBtn');
+    if (!container) return;
     if (!examId || !className) {
-        body.innerHTML = '';
+        container.innerHTML = `<div class="text-center p-3 text-muted card">
+            <i class="fas fa-calendar-times text-4xl opacity-20 block mb-1"></i>
+            <p>Select Session, Class and Exam to view or add papers</p></div>`;
+        if (addBtn) addBtn.classList.add('hidden');
         return;
     }
 
+    container.innerHTML = '<div class="text-center p-2 text-muted"><i class="fas fa-spinner fa-spin mr-0-5"></i> Loading papers...</div>';
+
     try {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading subjects...</td></tr>';
+        // Fetch subjects for this class (stored with sessionId or as global)
+        const sessionId = document.getElementById('scheduleSessionSelect')?.value || examState.activeSessionId;
+        const subSnap = await schoolData('subjects').get();
+        const allSubjects = subSnap.docs.map(d=>({id:d.id,...d.data()}));
 
-        // 1. Fetch Subjects
-        const subjectsSnap = await schoolData('subjects').get();
-        const subjects = subjectsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        // Fetch existing papers from Firestore
+        const schedSnap = await schoolData('schedules').where('examId','==',examId).where('className','==',className).get();
+        let papers = schedSnap.docs.map(d=>({docId:d.id,...d.data()}));
+        papers.sort((a,b)=>(a.day||0)-(b.day||0)||(a.date||'').localeCompare(b.date||''));
 
-        // 2. Fetch Existing Schedule
-        const schedSnap = await schoolData('schedules')
-            .where('examId', '==', examId)
-            .where('className', '==', className)
-            .get();
+        if (addBtn) addBtn.classList.remove('hidden');
 
-        const existing = {};
-        schedSnap.forEach((doc) => {
-            existing[doc.data().subjectId] = doc.data();
-        });
-
-        if (subjects.length === 0) {
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center;">No subjects found.</td></tr>';
-            return;
+        if (papers.length === 0) {
+            container.innerHTML = '<div class="text-center p-3 text-muted card"><i class="fas fa-inbox text-4xl opacity-20 block mb-1"></i><p>No papers yet. Click <strong>Add Paper</strong> below to add the first paper.</p></div>';
+        } else {
+            container.innerHTML = papers.map((p,i) => renderPaperCard(p, i+1, allSubjects)).join('');
         }
 
-        body.innerHTML = subjects
-            .map((s) => {
-                const ex = existing[s.id] || {};
-                return `
-                <tr data-subject-id="${s.id}">
-                    <td><strong>${s.name}</strong></td>
-                    <td><input type="date" class="sched-date form-control" value="${ex.date || ''}"></td>
-                    <td><input type="time" class="sched-time form-control" value="${ex.time || ''}"></td>
-                    <td><input type="number" class="sched-duration form-control" value="${ex.duration || '120'}" placeholder="Min"></td>
-                    <td><input type="number" class="sched-max form-control" value="${ex.maxMarks || '100'}"></td>
-                </tr>
-            `;
-            })
-            .join('');
-    } catch (e) {
+        // Store subjects for use in dynamically added cards
+        window._scheduleSubjects = allSubjects;
+    } catch(e) {
         console.error(e);
-        body.innerHTML =
-            '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading subjects.</td></tr>';
+        container.innerHTML = `<div class="card text-danger p-2">Error loading schedule: ${e.message}</div>`;
     }
 }
 
-async function saveExamSchedule() {
-    const examId = document.getElementById('scheduleExamSelect').value;
-    const className = document.getElementById('scheduleClassSelect').value;
-    if (!examId || !className) return;
+function renderPaperCard(paper, num, subjects) {
+    const subOpts = (subjects || window._scheduleSubjects || []).map(s =>
+        `<option value="${s.id}" ${paper.subjectId === s.id ? 'selected' : ''}>${s.name}</option>`).join('');
+    const scheduleTypes = ['Theory', 'Practical', 'Oral', 'Main', 'Assignment', 'Project'].map(t =>
+        `<option value="${t}" ${paper.scheduleType === t ? 'selected' : ''}>${t}</option>`).join('');
+    const docId = paper.docId || '';
 
-    const rows = document.querySelectorAll('#scheduleTableBody tr');
-    const batch = (window.db || firebase.firestore()).batch();
+    return `
+    <div class="card mb-1" data-paper-doc="${docId}" style="border-left: 4px solid var(--primary);">
+        <div class="flex flex-between align-center mb-1">
+            <h4 class="font-700"><i class="fas fa-file-alt mr-0-5 primary"></i> Paper ${num}</h4>
+            <button onclick="schedulePaperDelete(this, '${docId}')" class="btn-portal btn-ghost"
+                style="color:var(--danger);border-color:var(--danger);padding:0.25rem 0.6rem;" title="Remove this paper">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="grid-4 gap-1 mb-1">
+            <div class="form-group">
+                <label>Exam Subject <span class="text-danger">*</span></label>
+                <select class="sched-subject form-control" title="Exam Subject">
+                    <option value="">Select Subject</option>${subOpts}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Schedule Name (Theory/Main etc)</label>
+                <select class="sched-type form-control" title="Schedule Type">
+                    ${scheduleTypes}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Exam Date <span class="text-danger">*</span></label>
+                <input type="date" class="sched-date form-control" value="${paper.date||''}" />
+            </div>
+            <div class="form-group">
+                <label>Start Time <span class="text-danger">*</span></label>
+                <input type="time" class="sched-start form-control" value="${paper.startTime||paper.time||''}" />
+            </div>
+        </div>
+        <div class="grid-4 gap-1 mb-1">
+            <div class="form-group">
+                <label>End Time <span class="text-danger">*</span></label>
+                <input type="time" class="sched-end form-control" value="${paper.endTime||''}" />
+            </div>
+            <div class="form-group">
+                <label>This Exam Marks <span class="text-danger">*</span></label>
+                <input type="number" class="sched-max form-control" value="${paper.maxMarks||80}" placeholder="80" min="1" />
+            </div>
+            <div class="form-group">
+                <label>Cut Off Marks</label>
+                <input type="number" class="sched-cutoff form-control" value="${paper.cutOff||0}" placeholder="0" min="0" />
+            </div>
+            <div class="form-group">
+                <label>Exam Invigilator</label>
+                <input type="text" class="sched-invig form-control" value="${paper.invigilator||''}" placeholder="Invigilator name" />
+            </div>
+        </div>
+        <div class="grid-3 gap-1 align-center">
+            <div class="form-group">
+                <label>Exam Code (If Any)</label>
+                <input type="text" class="sched-code form-control" value="${paper.examCode||''}" placeholder="Enter Exam Code" />
+            </div>
+            <div class="form-group">
+                <label>Room/Exam Hall No</label>
+                <input type="text" class="sched-room form-control" value="${paper.room||''}" placeholder="Enter Exam Room/Hall No" />
+            </div>
+            <div class="form-group flex align-center" style="margin-top:1.5rem;">
+                <label class="flex align-center gap-0-5" style="cursor:pointer;">
+                    <input type="checkbox" class="sched-subsub" ${paper.subSubjectEnabled ? 'checked' : ''} style="width:18px;height:18px;" />
+                    <span class="text-sm font-600">Sub Subject Enabled</span>
+                </label>
+            </div>
+        </div>
+    </div>`;
+}
+
+// Add a blank paper card
+window.scheduleAddPaper = function() {
+    const container = document.getElementById('schedulePapersContainer');
+    if (!container) return;
+    // Remove the "no papers" placeholder if present
+    if (container.querySelector('.fa-inbox') || container.querySelector('.fa-calendar-times')) {
+        container.innerHTML = '';
+    }
+    const num = container.querySelectorAll('[data-paper-doc]').length + 1;
+    const el = document.createElement('div');
+    el.innerHTML = renderPaperCard({}, num, window._scheduleSubjects || []);
+    container.appendChild(el.firstElementChild);
+    container.lastElementChild.scrollIntoView({ behavior: 'smooth' });
+};
+
+// Delete a paper card (front-end and Firestore)
+window.schedulePaperDelete = async function(btn, docId) {
+    if (!confirm('Remove this paper?')) return;
+    const card = btn.closest('[data-paper-doc]');
+    if (card) card.remove();
+    if (docId && docId !== '') {
+        try { await schoolDoc('schedules', docId).delete(); } catch(e) { console.error(e); }
+    }
+    // Renumber remaining
+    document.querySelectorAll('#schedulePapersContainer [data-paper-doc]').forEach((c,i)=>{
+        const h4 = c.querySelector('h4');
+        if (h4) h4.innerHTML = `<i class="fas fa-file-alt mr-0-5 primary"></i> Paper ${i+1}`;
+    });
+    const container = document.getElementById('schedulePapersContainer');
+    if (container && container.querySelectorAll('[data-paper-doc]').length === 0) {
+        container.innerHTML = '<div class="text-center p-3 text-muted card"><i class="fas fa-inbox text-4xl opacity-20 block mb-1"></i><p>No papers. Click <strong>Add Paper</strong> below.</p></div>';
+    }
+};
+
+async function saveExamSchedule() {
+    const examId = document.getElementById('scheduleExamSelect')?.value;
+    const className = document.getElementById('scheduleClassSelect')?.value;
+    if (!examId || !className) { showToast('Select Session, Class and Exam first', 'error'); return; }
+
+    const cards = document.querySelectorAll('#schedulePapersContainer [data-paper-doc]');
+    if (cards.length === 0) { showToast('No papers to save', 'info'); return; }
 
     try {
         setLoading(true);
-        for (const row of rows) {
-            const subjectId = row.dataset.subjectId;
-            const date = row.querySelector('.sched-date').value;
-            const time = row.querySelector('.sched-time').value;
-            const duration = row.querySelector('.sched-duration').value;
-            const maxMarks = row.querySelector('.sched-max').value;
+        const batch = (window.db || firebase.firestore()).batch();
+        let saved = 0;
+        cards.forEach((card, i) => {
+            const subjectId = card.querySelector('.sched-subject')?.value;
+            const scheduleType = card.querySelector('.sched-type')?.value;
+            const date = card.querySelector('.sched-date')?.value;
+            const startTime = card.querySelector('.sched-start')?.value;
+            const endTime = card.querySelector('.sched-end')?.value;
+            const maxMarks = card.querySelector('.sched-max')?.value;
+            const cutOff = card.querySelector('.sched-cutoff')?.value;
+            const invigilator = card.querySelector('.sched-invig')?.value;
+            const examCode = card.querySelector('.sched-code')?.value;
+            const room = card.querySelector('.sched-room')?.value;
+            const subSubjectEnabled = card.querySelector('.sched-subsub')?.checked || false;
+            const existingDocId = card.dataset.paperDoc;
 
-            if (date) {
-                const docId = `${examId}_${className}_${subjectId}`;
-                const ref = schoolDoc('schedules', docId);
-                batch.set(
-                    ref,
-                    withSchool({
-                        examId,
-                        className,
-                        subjectId,
-                        date,
-                        time,
-                        duration,
-                        maxMarks,
-                    })
-                );
-            }
-        }
+            if (!subjectId || !date || !startTime) return; // Skip incomplete papers
+
+            const docId = existingDocId || `${examId}_${className}_${subjectId}_${i}`;
+            const ref = schoolDoc('schedules', docId);
+            batch.set(ref, withSchool({
+                examId, className, subjectId, scheduleType,
+                date, startTime, endTime, time: startTime,
+                maxMarks: parseFloat(maxMarks) || 0,
+                cutOff: parseFloat(cutOff) || 0,
+                invigilator, examCode, room, subSubjectEnabled,
+                day: i + 1,
+            }));
+            // Update data attribute in case it was new
+            card.dataset.paperDoc = docId;
+            saved++;
+        });
         await batch.commit();
-        showToast('Schedule saved successfully', 'success');
+        showToast(`${saved} paper(s) saved successfully`, 'success');
         await loadViewScheduleGrid();
-    } catch (e) {
-        showToast('Error saving schedule', 'error');
+    } catch(e) {
+        showToast('Error saving: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
 }
+
+// Download schedule as PDF
+window.scheduleDownloadPdf = async function() {
+    const examId = document.getElementById('scheduleExamSelect')?.value;
+    const className = document.getElementById('scheduleClassSelect')?.value;
+    if (!examId || !className) { showToast('Select Exam and Class first', 'error'); return; }
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const examName = examState.exams.find(e=>e.id===examId)?.name || 'Exam';
+        const sessionId = document.getElementById('scheduleSessionSelect')?.value || examState.activeSessionId;
+        const sessionName = document.getElementById('scheduleSessionSelect')?.options[document.getElementById('scheduleSessionSelect')?.selectedIndex]?.text || '';
+        const subSnap = await schoolData('subjects').get();
+        const subjects = {};
+        subSnap.docs.forEach(d=>{ subjects[d.id] = d.data().name; });
+
+        const schedSnap = await schoolData('schedules').where('examId','==',examId).where('className','==',className).get();
+        const papers = schedSnap.docs.map(d=>d.data()).sort((a,b)=>(a.day||0)-(b.day||0));
+
+        doc.setFontSize(16);
+        doc.text('APEX PUBLIC SCHOOL', 105, 15, {align:'center'});
+        doc.setFontSize(12);
+        doc.text(`Exam Schedule — ${examName}`, 105, 22, {align:'center'});
+        doc.text(`Class: ${className} | Session: ${sessionName}`, 105, 29, {align:'center'});
+        doc.line(15, 33, 195, 33);
+        const body = papers.map((p,i)=>[
+            i+1, (new Date(p.date)).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}),
+            `${p.startTime||''} – ${p.endTime||''}`,
+            subjects[p.subjectId]||p.subjectId||'-',
+            p.maxMarks||'', p.room||'-', p.invigilator||'-'
+        ]);
+        if (doc.autoTable) {
+            doc.autoTable({ startY:37, head:[['#','Date','Time','Subject','Max Marks','Hall/Room','Invigilator']], body, theme:'grid', headStyles:{fillColor:[120,0,0]}, styles:{fontSize:9} });
+        }
+        doc.save(`Schedule_${className}_${examName}.pdf`);
+    } catch(e) { showToast('PDF generation failed: '+e.message, 'error'); }
+};
+
+
 
 /**
  * BULK MARKS ENTRY
@@ -1471,7 +1668,7 @@ async function previewSingleReportCard() {
         if (format === 'premium') {
             if (window.ReportCardTool) {
                 // The tool handles data fetching and attendance calculation
-                await window.ReportCardTool.processReportCard(studentId, 'premium', examDetails.session || '');
+                await window.ReportCardTool.processReportCard(studentId, examId, examDetails.session || '', 'premium');
             } else {
                 await window.ReportCardFactory.generatePremium(student, marks, examDetails, schoolDetails);
             }

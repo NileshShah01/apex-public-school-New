@@ -90,6 +90,22 @@
                         </a>
                     </div>
 
+                    <!-- CLASS MANAGEMENT (Moved to Top) -->
+                    <div class="nav-category" id="navClass" onclick="toggleCategory('catClass')">
+                        <div class="cat-header">
+                            <i class="fas fa-book"></i>
+                            <span>Class Management</span>
+                            <i class="fas fa-chevron-down arrow"></i>
+                        </div>
+                        <div class="cat-submenu" id="catClass">
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')">Add Class Details</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')">Add Non-Subject</a>
+                        </div>
+                    </div>
+
                     <!-- ID GENERATOR -->
                     <div class="nav-item" onclick="showSection('studentIdPrint')">
                         <a href="#" class="nav-link">
@@ -608,29 +624,66 @@
                                 </div>
                             </div>
 
-                            <!-- Step 2: Batch Options -->
+                            <!-- Step 2: Individual Student (Session → Class → Student) -->
+                            <div class="card mb-1-5" style="border-left: 4px solid var(--primary);">
+                                <h3 class="mb-1"><i class="fas fa-user primary"></i> Individual Student</h3>
+                                <p class="text-xs text-muted mb-1-25">
+                                    Browse Session → Class → Student to load a specific student's ID card into the preview.
+                                </p>
+                                <div class="grid-3 gap-1">
+                                    <div class="form-group">
+                                        <label>Session</label>
+                                        <select id="idIndiv_session" class="form-control" title="Session" onchange="idIndivLoadClasses()">
+                                            <option value="">Select Session</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <select id="idIndiv_class" class="form-control" title="Class" onchange="idIndivLoadStudents()">
+                                            <option value="">Select Session First</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Student</label>
+                                        <select id="idIndiv_student" class="form-control" title="Student" onchange="idIndivPreview()">
+                                            <option value="">Select Class First</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Batch Options -->
                             <div class="card">
                                 <h3 class="mb-1"><i class="fas fa-layer-group primary"></i> Batch Generation</h3>
                                 <p class="text-xs text-muted mb-1-25">
-                                    Select a class to generate ID cards for all students at once.
+                                    Select Session &amp; Class to generate ID cards for all students at once.
                                 </p>
-                                <div class="grid-auto-280 align-flex-end">
+                                <div class="grid-3 gap-1">
                                     <div class="form-group">
-                                        <label>Select Class</label>
+                                        <label>Session</label>
+                                        <select id="idGen_session" class="form-control" title="Select Session" onchange="idGenLoadClasses()">
+                                            <option value="">Select Session</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Class</label>
                                         <select
                                             id="idBatchClassSelect"
                                             class="form-control"
                                             title="Select Class for Batch Generation"
                                         ></select>
                                     </div>
-                                    <button
-                                        onclick="generateBatchIdCards()"
-                                        class="btn-portal btn-ghost mb-1-25"
-                                        title="Generate Batch PDF"
-                                    >
-                                        <i class="fas fa-file-pdf"></i> Generate Batch PDF
-                                    </button>
+                                    <div class="form-group flex align-end">
+                                        <button
+                                            onclick="generateBatchIdCards()"
+                                            class="btn-portal btn-ghost w-full"
+                                            title="Generate Batch PDF"
+                                        >
+                                            <i class="fas fa-file-pdf"></i> Batch PDF
+                                        </button>
+                                    </div>
                                 </div>
+                                <div id="idBatchStudentCount" class="text-xs text-muted mt-0-75"></div>
                             </div>
                         </div>
 
@@ -993,6 +1046,101 @@
                         >
                             <i class="fas fa-save"></i> Save Attendance
                         </button>
+                    </div>
+                </section>
+
+                <!-- Attendance Reports & Statistics Section -->
+                <section id="viewAttendanceStats" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <div>
+                            <h1>Monthly Attendance Reports</h1>
+                            <p>View attendance summaries and export class-wise data</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-portal btn-ghost" onclick="exportAttendanceReport()">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="attendance-filter-row glass-card p-1-5 mb-2 grid-auto-150 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select
+                                id="repAtt_sessionSelect"
+                                class="form-control"
+                                onchange="loadRepAttClasses()"
+                                title="Select Session"
+                            ></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select
+                                id="repAtt_classSelect"
+                                class="form-control"
+                                onchange="updateRepAttSections()"
+                                title="Select Class"
+                            ></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="repAtt_sectionSelect" class="form-control" title="Select Section"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Month</label>
+                            <input type="month" id="repAtt_monthInput" class="form-control" title="Select Month" />
+                        </div>
+                        <button
+                            class="btn-portal btn-secondary h-42"
+                            onclick="generateAttendanceReport()"
+                            title="Generate Report"
+                        >
+                            <i class="fas fa-chart-bar"></i> Generate
+                        </button>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div id="attReportSummary" class="grid-4 gap-1-5 mb-2 hidden">
+                        <div class="card p-1-5 border-left-primary">
+                            <p class="text-xs text-muted text-uppercase">Total Students</p>
+                            <h2 id="ar_totalStudents" class="text-2xl m-0-5-0">0</h2>
+                        </div>
+                        <div class="card p-1-5 border-left-success">
+                            <p class="text-xs text-muted text-uppercase">Working Days</p>
+                            <h2 id="ar_workingDays" class="text-2xl m-0-5-0">0</h2>
+                        </div>
+                        <div class="card p-1-5 border-left-amber">
+                            <p class="text-xs text-muted text-uppercase">Avg Attendance %</p>
+                            <h2 id="ar_avgAttendance" class="text-2xl m-0-5-0">0%</h2>
+                        </div>
+                        <div class="card p-1-5 border-left-danger">
+                            <p class="text-xs text-muted text-uppercase">Defaulters (< 75%)</p>
+                            <h2 id="ar_defaulters" class="text-2xl m-0-5-0">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Student Name</th>
+                                    <th>Working Days</th>
+                                    <th>Present</th>
+                                    <th>Absent</th>
+                                    <th>Late/Leave</th>
+                                    <th>Attendance %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceReportTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted p-3">
+                                        <i class="fas fa-calendar-alt text-5xl opacity-01 block mb-1"></i>
+                                        Select filters and click Generate to view report
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -1755,8 +1903,8 @@
                     <form id="studentForm" class="mt-2">
                         <!-- Photo Upload -->
                         <div class="flex align-center gap-2 mb-2 p-1-5 bg-secondary border-radius-0-75">
-                            <div id="photoPreview" class="avatar-100 bg-gray-light border-3-primary flex-shrink-0 flex align-center justify-center overflow-hidden">
-                                <img id="proto_preview_img" src="" alt="Student Preview" class="hidden width-100 height-100 object-fit-cover" />
+                            <div id="photoPreview" class="avatar-100 bg-gray-light border-3-primary flex-shrink-0 flex align-center justify-center overflow-hidden" style="width:90px;height:90px;border-radius:50%;border:3px solid var(--primary);flex-shrink:0;overflow:hidden;">
+                                <img id="proto_preview_img" src="" alt="Student Preview" class="hidden" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;" />
                                 <i id="photo_placeholder_icon" class="fas fa-user text-2xl text-muted"></i>
                             </div>
                             <div>
@@ -1827,6 +1975,18 @@
                         </p>
                         <div class="grid-3 gap-1-25 mb-1-5">
                             <div class="form-group">
+                                <label>Session <span class="text-red">*</span></label>
+                                <select
+                                    id="student_session"
+                                    required
+                                    onchange="loadClassesForRegistration()"
+                                    class="form-control"
+                                    title="Select Session"
+                                >
+                                    <option value="">Select Session</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label>Student ID</label>
                                 <input
                                     type="text"
@@ -1864,20 +2024,8 @@
                                 <input type="text" id="student_reg_no" class="form-control" title="Reg No" />
                             </div>
                             <div class="form-group">
-                                <label>Session <span class="text-red">*</span></label>
-                                <select
-                                    id="student_session"
-                                    required
-                                    onchange="loadClassesForRegistration()"
-                                    class="form-control"
-                                    title="Select Session"
-                                >
-                                    <option value="">Select Session</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label>Join Date</label>
-                                <input type="text" id="student_join_date" class="form-control" title="Join Date" />
+                                <input type="date" id="student_join_date" class="form-control" title="Join Date" />
                             </div>
                         </div>
 
@@ -1888,9 +2036,8 @@
                             <div class="form-group">
                                 <label>Date of Birth</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     id="student_dob"
-                                    placeholder="e.g. 01.01.2015"
                                     class="form-control"
                                     title="Date of Birth"
                                 />
@@ -1915,11 +2062,27 @@
                             </div>
                             <div class="form-group">
                                 <label>Religion</label>
-                                <input type="text" id="student_religion" class="form-control" title="Religion" />
+                                <select id="student_religion" class="form-control" title="Religion">
+                                    <option value="">Select Religion</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Muslim">Muslim</option>
+                                    <option value="Buddhist">Buddhist</option>
+                                    <option value="Sikh">Sikh</option>
+                                    <option value="Jain">Jain</option>
+                                    <option value="Christian">Christian</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Category</label>
-                                <input type="text" id="student_category" class="form-control" title="Category" />
+                                <select id="student_category" class="form-control" title="Category">
+                                    <option value="">Select Category</option>
+                                    <option value="General">General Category (Unreserved)</option>
+                                    <option value="OBC">Other Backward Class (OBC/BC)</option>
+                                    <option value="EBC">Extremely Backward Class (EBC)</option>
+                                    <option value="SC">Scheduled Castes (SC)</option>
+                                    <option value="ST">Scheduled Tribes (ST)</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Caste</label>
@@ -5068,7 +5231,7 @@
                                 <label>Class</label>
                                 <select
                                     id="bulk_student_class"
-                                    onchange="loadBulkStudentList()"
+                                    onchange="loadBulkSectionsForUpdate(); loadBulkStudentList();"
                                     class="form-control"
                                     title="Class"
                                 >
@@ -5911,53 +6074,62 @@
                 <section id="manageExamScheduleSection" class="dashboard-section hidden">
                     <div class="header">
                         <div>
-                            <h1>Exam Timetable Generator</h1>
-                            <p>Map assessment dates and maximum weightage for subjects</p>
+                            <h1>Manage Exam Schedule</h1>
+                            <p>Search, Add and Edit exam timetables with per-paper details</p>
+                        </div>
+                        <div class="flex gap-0-75">
+                            <button onclick="scheduleDownloadPdf()" class="btn-portal btn-ghost" title="Download as PDF"><i class="fas fa-file-pdf"></i> Download as PDF</button>
+                            <button onclick="saveExamSchedule()" class="btn-portal btn-primary" title="Save Schedule"><i class="fas fa-cloud-upload-alt"></i> Save Schedule</button>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="grid-auto-220 align-flex-end">
-                            <div class="form-group">
-                                <label><i class="fas fa-file-invoice mr-0-5"></i> Assessment Term</label>
-                                <select
-                                    id="scheduleExamSelect"
-                                    onchange="loadScheduleGrid()"
-                                    class="form-control"
-                                    title="Assessment Term"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-users-rectangle mr-0-5"></i> Select Class</label>
-                                <select
-                                    id="scheduleClassSelect"
-                                    onchange="loadScheduleGrid()"
-                                    class="form-control"
-                                    title="Select Class"
-                                ></select>
-                            </div>
-                            <button onclick="saveExamSchedule()" class="btn-portal btn-primary" title="Save Schedule">
-                                <i class="fas fa-cloud-upload-alt"></i> Save Schedule
-                            </button>
-                        </div>
 
-                        <div class="mt-2">
-                            <div class="table-responsive">
-                                <table class="portal-table" id="scheduleTable">
-                                    <thead class="bg-slate-light">
-                                        <tr>
-                                            <th>Subject Name</th>
-                                            <th>Exam Date</th>
-                                            <th>Start Time</th>
-                                            <th>Duration (Min)</th>
-                                            <th>Max Marks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="scheduleTableBody">
-                                        <!-- Dynamic rows from subjects -->
-                                    </tbody>
-                                </table>
+                    <!-- Filter Bar -->
+                    <div class="card mb-1-5">
+                        <h4 class="mb-1 text-muted"><i class="fas fa-filter mr-0-5"></i> Exam Schedule</h4>
+                        <div class="grid-4 gap-1">
+                            <div class="form-group">
+                                <label>Session <span class="text-danger">*</span></label>
+                                <select id="scheduleSessionSelect" class="form-control" title="Session" onchange="scheduleLoadClasses()">
+                                    <option value="">Select Session</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class <span class="text-danger">*</span></label>
+                                <select id="scheduleClassSelect" class="form-control" title="Select Class" onchange="scheduleLoadExams()">
+                                    <option value="">Select Session First</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class (Year/Semester)</label>
+                                <select id="scheduleYearSemSelect" class="form-control" title="Year/Semester">
+                                    <option value="1">1st</option>
+                                    <option value="2">2nd</option>
+                                    <option value="3">3rd</option>
+                                    <option value="4">4th</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Exam <span class="text-danger">*</span></label>
+                                <select id="scheduleExamSelect" class="form-control" title="Assessment Term" onchange="loadScheduleGrid()">
+                                    <option value="">Select Exam</option>
+                                </select>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Per-Paper Cards Container -->
+                    <div id="schedulePapersContainer">
+                        <div class="text-center p-3 text-muted card">
+                            <i class="fas fa-calendar-times text-4xl opacity-20 block mb-1"></i>
+                            <p>Select Session, Class and Exam to view or add papers</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Paper Button -->
+                    <div id="scheduleAddPaperBtn" class="hidden mt-1">
+                        <button onclick="scheduleAddPaper()" class="btn-portal btn-secondary w-full" title="Add Paper">
+                            <i class="fas fa-plus"></i> Add Paper
+                        </button>
                     </div>
                 </section>
 
@@ -6010,10 +6182,10 @@
                             <div class="form-group">
                                 <label>Exam Term</label>
                                 <select
-                                    id="idTermSelect"
+                                    id="publishSchedExamSelect"
                                     class="form-control"
                                     title="Select Exam Term"
-                                    onchange="loadIDSummary()"
+                                    onchange="loadPublishScheduleStatus()"
                                 ></select>
                             </div>
                         </div>
@@ -6650,6 +6822,360 @@
                         </button>
                     </div>
                 </section>
+                <!-- NOTIFICATION SYSTEM -->
+                <section id="sendNotificationSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Send Bulk Notification</h1>
+                            <p>Broadcast messages to students and parents via Mobile App, SMS, or WhatsApp</p>
+                        </div>
+                    </div>
+                    <div class="grid-2 gap-1-5 mt-1-5">
+                        <div class="card">
+                            <h3 class="mb-1-25"><i class="fas fa-paper-plane primary"></i> Compose Notification</h3>
+                            <form id="sendNotifForm" onsubmit="ERPNotifications.sendNotification(event)">
+                                <div class="grid-2 gap-1 mb-1">
+                                    <div class="form-group">
+                                        <label>Notification Type</label>
+                                        <select id="notif_type" class="form-control" required>
+                                            <option value="App Push">Mobile App Push (Free)</option>
+                                            <option value="SMS">SMS Message</option>
+                                            <option value="WhatsApp">WhatsApp Message</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Academic Session</label>
+                                        <select id="notif_sessionSelect" class="form-control" required onchange="ERPNotifications.loadClasses()"></select>
+                                    </div>
+                                </div>
+                                <div class="grid-2 gap-1 mb-1">
+                                    <div class="form-group">
+                                        <label>Target Class</label>
+                                        <select id="notif_classSelect" class="form-control" onchange="ERPNotifications.loadSections()">
+                                            <option value="All">All Classes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Target Section</label>
+                                        <select id="notif_sectionSelect" class="form-control">
+                                            <option value="All">All Sections</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-1">
+                                    <label>Notification Title</label>
+                                    <input type="text" id="notif_title" class="form-control" placeholder="e.g. Summer Vacation Circular" required>
+                                </div>
+                                <div class="form-group mb-1-5">
+                                    <label>Message Content</label>
+                                    <textarea id="notif_message" class="form-control" rows="5" placeholder="Type your message here..." required></textarea>
+                                </div>
+                                <div class="flex gap-1">
+                                    <button type="submit" class="btn-portal btn-primary flex-1">
+                                        <i class="fas fa-paper-plane"></i> Send Now
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="flex-col gap-1-5">
+                            <div class="card bg-amber-light border-left-amber">
+                                <h4 class="mb-0-5 text-amber"><i class="fas fa-info-circle"></i> SMS/WhatsApp Credits</h4>
+                                <p class="text-xs line-height-1-5">Bulk messaging via SMS or WhatsApp requires active credits. App Notifications are always free and unlimited.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="mb-1-25">Quick Templates</h4>
+                                <div class="flex-col gap-0-5">
+                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('holiday')">School Holiday Announcement</button>
+                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('fee')">Fee Payment Reminder</button>
+                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('exam')">Examination Schedule Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="notificationHistorySection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Notification History</h1>
+                            <p>Track delivery status and message logs</p>
+                        </div>
+                        <button class="btn-portal btn-primary" onclick="showSection('sendNotification')">
+                            <i class="fas fa-plus"></i> New Message
+                        </button>
+                    </div>
+                    <div class="card mt-1-5">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Target</th>
+                                        <th>Title</th>
+                                        <th>Delivery Status</th>
+                                        <th style="text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notif_historyBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RESULT ANALYTICS -->
+                <section id="resultAnalyticsSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Result & Performance Analytics</h1>
+                            <p>Visualizing academic performance across classes and sessions</p>
+                        </div>
+                    </div>
+
+                    <div class="card glass-panel mt-1-5 mb-1-5">
+                        <div class="grid-4 gap-1 align-end">
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Session</label>
+                                <select id="analytic_sessionSelect" class="form-control" onchange="ResultAnalytics.loadClasses(); ResultAnalytics.loadExams();"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Class</label>
+                                <select id="analytic_classSelect" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Exam</label>
+                                <select id="analytic_examSelect" class="form-control"></select>
+                            </div>
+                            <button class="btn-portal btn-primary" onclick="ResultAnalytics.refresh()">
+                                <i class="fas fa-sync"></i> Generate Analytics
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid-3 gap-1-5 mt-1-5">
+                        <div class="card p-1-5 border-left-primary">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Average Score</p>
+                            <h2 id="an_avgScore" class="text-xl secondary">0</h2>
+                        </div>
+                        <div class="card p-1-5 border-left-success">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Highest Score</p>
+                            <h2 id="an_highestScore" class="text-xl secondary">0</h2>
+                        </div>
+                        <div class="card p-1-5 border-left-amber">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Pass Percentage</p>
+                            <h2 id="an_passPercent" class="text-xl secondary">0%</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 gap-1-5 mt-1-5">
+                        <div class="card">
+                            <h3 class="mb-1-5"><i class="fas fa-chart-bar primary"></i> Subject Performance</h3>
+                            <div style="position: relative; height:300px; width:100%">
+                                <canvas id="subjectChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="mb-1-5"><i class="fas fa-chart-pie secondary"></i> Score Distribution</h3>
+                            <div style="position: relative; height:300px; width:100%">
+                                <canvas id="distChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TIMETABLE MANAGEMENT -->
+                <section id="classTimetablesSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Class Timetables</h1>
+                            <p>Manage weekly schedules for all classes</p>
+                        </div>
+                        <button class="btn-portal btn-primary" onclick="showSection('createTimetable')">
+                            <i class="fas fa-plus"></i> Add New Timetable
+                        </button>
+                    </div>
+                    <div class="card glass-panel mt-1-5 mb-1-5">
+                        <div class="grid-3 gap-1 align-end">
+                            <div class="form-group">
+                                <label>Session</label>
+                                <select id="ttSessionSelect" class="form-control" onchange="initERPTimetable()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class</label>
+                                <select id="ttClassSelect" class="form-control" onchange="initERPTimetable()"></select>
+                            </div>
+                            <button class="btn-portal btn-ghost" onclick="initERPTimetable()">
+                                <i class="fas fa-sync"></i> Refresh List
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card mt-1-5">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Schedule</th>
+                                        <th>Last Updated</th>
+                                        <th style="text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timetableListBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="teacherTimetablesSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <h1>Teacher Timetables</h1>
+                        <p>View consolidated schedules for staff members</p>
+                    </div>
+                    <div class="card mt-1-5 text-center p-3">
+                        <i class="fas fa-user-tie text-slate-300 text-3xl mb-1-5 block"></i>
+                        <p class="text-slate-muted">Teacher timetable view is being synchronized with daily substitutions.</p>
+                        <button onclick="showSection('classTimetables')" class="btn-portal btn-ghost mt-1-25">View Class Timetables</button>
+                    </div>
+                </section>
+
+                <section id="createTimetableSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Create / Upload Timetable</h1>
+                            <p>Publish weekly schedule to the student portal</p>
+                        </div>
+                    </div>
+                    <div class="card mt-1-5">
+                        <form id="uploadTimetableForm" onsubmit="handleTimetableUpload(event)">
+                            <div class="grid-2 gap-1-25 mb-1-5">
+                                <div class="form-group">
+                                    <label>Session</label>
+                                    <select id="tt_sessionSelect" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Class</label>
+                                    <select id="tt_classSelect" class="form-control" required></select>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1-5">
+                                <label>Timetable Document (PDF/Image)</label>
+                                <div class="file-upload-zone" id="timetableDropZone">
+                                    <input type="file" id="tt_file" accept=".pdf,image/*" required>
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Click to browse or drag & drop</p>
+                                    <small>Max file size: 2MB</small>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary w-full">
+                                <i class="fas fa-upload"></i> Upload & Publish
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="viewTimetableSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <h1>Timetable Preview</h1>
+                        <p id="previewTimetableTitle">Viewing Schedule</p>
+                    </div>
+                    <div id="timetablePreviewArea" class="mt-1-5"></div>
+                </section>
+
+                <!-- QUESTION PAPER LIBRARY -->
+                <section id="questionPaperLibrarySection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1>Question Paper Library</h1>
+                            <p>Manage and publish examination papers to the student portal</p>
+                        </div>
+                        <div class="flex gap-0-5">
+                            <a href="question-formatter/index.html" target="_blank" class="btn-portal btn-ghost">
+                                <i class="fas fa-magic"></i> AI Formatter
+                            </a>
+                            <button class="btn-portal btn-primary" onclick="showSection('addManualPaper')">
+                                <i class="fas fa-plus"></i> Manual Upload
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card glass-panel mt-1-5 mb-1-5">
+                        <div class="grid-4 gap-1">
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Session</label>
+                                <select id="qpSessionFilter" class="form-control" onchange="loadQuestionPapers()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Exam</label>
+                                <select id="qpExamFilter" class="form-control" onchange="loadQuestionPapers()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Class</label>
+                                <select id="qpClassFilter" class="form-control" onchange="loadQuestionPapers()"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-xs font-bold text-muted uppercase">Subject</label>
+                                <select id="qpSubjectFilter" class="form-control" onchange="loadQuestionPapers()"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Class</th>
+                                        <th>Exam Term</th>
+                                        <th>Created By</th>
+                                        <th>Status</th>
+                                        <th>Published</th>
+                                        <th style="text-align:right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paperLibraryTableBody">
+                                    <!-- Loaded via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="addManualPaperSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <h1>Upload Question Paper</h1>
+                        <p>Manually upload a PDF or Image of a question paper</p>
+                    </div>
+                    <div class="card mt-1-5 max-w-600 mx-auto">
+                        <form id="manualUploadForm" onsubmit="handleManualPaperUpload(event)">
+                            <div class="grid-2 gap-1 mb-1-5">
+                                <div class="form-group">
+                                    <label>Session</label>
+                                    <select id="uploadQpSession" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Exam</label>
+                                    <select id="uploadQpExam" class="form-control" required></select>
+                                </div>
+                            </div>
+                             <div class="grid-2 gap-1 mb-1-5">
+                                <div class="form-group">
+                                    <label>Class</label>
+                                    <select id="uploadQpClass" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <select id="uploadQpSubject" class="form-control" required></select>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1-5">
+                                <label>Paper File (PDF/Image)</label>
+                                <input type="file" id="manualPaperFile" class="form-control" accept=".pdf,image/*" required>
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary w-full">Confirm Upload</button>
+                        </form>
+                    </div>
+                </section>
             </main>
         </div>
 
@@ -6658,6 +7184,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>

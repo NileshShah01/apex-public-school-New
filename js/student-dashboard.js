@@ -127,6 +127,7 @@ function showPortalSection(sectionId, updateHash = true) {
     if (sectionId === 'attendance') fetchAttendance();
     if (sectionId === 'transport') fetchTransport();
     if (sectionId === 'library') fetchLibrary();
+    if (sectionId === 'materials') loadExamMaterials();
 }
 
 function toggleSidebar() {
@@ -739,58 +740,97 @@ async function loadExamMaterials() {
     const status = document.getElementById('examMaterialsStatusArea');
     if (!list || !currentStudentClass) return;
 
-    list.innerHTML = '';
+    list.innerHTML = '<p class="text-center p-2">Looking for practice materials...</p>';
     try {
         const year = document.getElementById('academicYear').value;
         const sessionId = `${year - 1}_${year.toString().slice(-2)}`;
         const snap = await schoolData('questionPapers')
             .where('class', '==', currentStudentClass)
-            .where('sessionId', '==', sessionId)
             .where('published', '==', true)
+            .orderBy('createdAt', 'desc')
             .get();
 
         if (snap.empty) {
+            list.innerHTML = '<p class="text-center text-muted p-2">No practice papers published yet.</p>';
             if (status) status.innerHTML = '<span class="badge">No papers yet</span>';
             return;
         }
 
         if (status)
-            status.innerHTML = `<span class="badge" style="background:#dcfce7; color:#166534;">${snap.size} Materials</span>`;
+            status.innerHTML = `<span class="badge" style="background:#dcfce7; color:#166534;">${snap.size} Materials Available</span>`;
+        
+        list.innerHTML = '';
         snap.forEach((doc) => {
             const d = doc.data();
-            const btn = document.createElement('button');
-            btn.className = 'btn-portal btn-ghost';
-            btn.style.width = '100%';
-            btn.innerHTML = `<i class="fas fa-file-pdf" style="color:#ef4444;"></i> ${d.subject}`;
-            btn.onclick = () => window.open(d.fileUrl || '#', '_blank'); // Simplified for now
-            list.appendChild(btn);
+            const card = document.createElement('div');
+            card.className = 'card p-1-25 flex-col gap-0-75';
+            card.style.background = 'rgba(255,255,255,0.05)';
+            
+            const url = d.fileUrl || '#';
+            const isManual = d.paperType === 'manualUpload';
+
+            card.innerHTML = `
+                <div class="flex justify-between align-start">
+                    <div>
+                        <h4 class="mb-0-25 text-sm">${d.subject}</h4>
+                        <p class="text-xs opacity-60">${d.examId || 'Practice Test'}</p>
+                    </div>
+                    <i class="fas fa-file-pdf text-xl" style="color:#ef4444;"></i>
+                </div>
+                <a href="${url}" target="_blank" class="btn-portal btn-ghost btn-sm" style="width: 100%; justify-content: center; margin-top: auto;">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+            `;
+            list.appendChild(card);
         });
-    } catch (e) {}
+    } catch (e) {
+        console.error('Materials load failed:', e);
+        list.innerHTML = '<p class="text-center text-danger p-2">Error loading materials.</p>';
+    }
 }
 
 async function fetchNotices() {
     const container = document.getElementById('noticesContainer');
     if (!container) return;
     try {
-        const snap = await schoolData('notices').orderBy('date', 'desc').limit(5).get();
+        const snap = await schoolData('notifications')
+            .orderBy('sentAt', 'desc')
+            .limit(10)
+            .get();
+
         if (snap.empty) {
-            container.innerHTML = '<p style="text-align:center; color:#94a3b8; margin-top:2rem;">No notices.</p>';
+            container.innerHTML = '<div class="text-center py-3 opacity-05"><i class="fas fa-bell-slash text-2xl mb-1 block"></i><p class="text-sm">No recent notifications.</p></div>';
             return;
         }
-        container.innerHTML = snap.docs
-            .map((doc) => {
-                const d = doc.data();
-                const date = d.date ? new Date(d.date.seconds * 1000).toLocaleDateString() : 'New';
-                return `
-                <div style="padding: 1rem 0; border-bottom: 1px solid #f1f5f9;">
-                    <h4 style="font-size: 0.9rem; font-weight: 700;">${d.title}</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-main); margin: 0.25rem 0;">${d.message}</p>
-                    <small style="color: var(--text-muted);">${date}</small>
+
+        container.innerHTML = snap.docs.map(doc => {
+            const d = doc.data();
+            const date = d.sentAt ? new Date(d.sentAt.seconds * 1000).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'Just now';
+            
+            // Filter target (optional but good for privacy/relevance)
+            // If class is specified and doesn't match current student, skip (unless target is 'All')
+            if (d.target && d.target.class !== 'All' && d.target.class !== currentStudentClass) {
+                return '';
+            }
+
+            return `
+                <div class="notice-item p-1 border-bottom-soft">
+                    <div class="flex justify-between align-start mb-0-25">
+                        <h4 class="text-sm font-bold text-secondary">${d.type === 'WhatsApp' ? '<i class="fab fa-whatsapp text-success mr-0-5"></i>' : ''}${d.title || 'Notification'}</h4>
+                        <span class="text-xs opacity-50 font-mono">${date}</span>
+                    </div>
+                    <p class="text-xs line-height-1-5 opacity-90">${d.message}</p>
                 </div>
             `;
-            })
-            .join('');
-    } catch (error) {}
+        }).join('');
+    } catch (error) {
+        console.error('Notice fetch failed:', error);
+    }
 }
 
 async function fetchTransport() {

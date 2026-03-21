@@ -9,14 +9,12 @@ const ERPTransport = {
         console.log('ERP Transport Initializing...');
         await this.loadRoutes();
 
-        document.getElementById('transportSectionBtn')?.addEventListener('click', () => {
-            // Setup Searchable Student Select for Mapping Form
-            if (typeof initSearchableSelect === 'function' && document.getElementById('map_student_select')) {
-                initSearchableSelect('map_student_select', window.allStudents || [], (s) => {
-                    document.getElementById('map_student_id').value = s.student_id;
-                });
-            }
-        });
+        // Setup Searchable Student Select for Mapping Form
+        if (typeof initSearchableSelect === 'function' && document.getElementById('map_student_select')) {
+            initSearchableSelect('map_student_select', window.allStudents || [], (s) => {
+                document.getElementById('map_student_id').value = s.student_id;
+            });
+        }
     },
 
     async loadRoutes() {
@@ -154,3 +152,4 @@ const ERPTransport = {
 };
 
 window.ERPTransport = ERPTransport;
+window.initERPTransport = () => ERPTransport.init();

@@ -9,14 +9,17 @@ const ERPLibrary = {
         console.log('ERP Library Initializing...');
         await this.loadBooks();
 
-        document.getElementById('librarySectionBtn')?.addEventListener('click', () => {
-            // Setup Searchable Student Select for Issue Form
-            if (typeof initSearchableSelect === 'function' && document.getElementById('issue_student_select')) {
-                initSearchableSelect('issue_student_select', window.allStudents || [], (s) => {
-                    document.getElementById('issue_student_id').value = s.student_id;
-                });
-            }
-        });
+        // Setup Searchable Student Select for Issue Form
+        if (typeof initSearchableSelect === 'function' && document.getElementById('issue_student_select')) {
+            initSearchableSelect('issue_student_select', window.allStudents || [], (s) => {
+                document.getElementById('selected_student_id').value = s.student_id;
+            });
+        }
+        
+        // Also load transactions (issues)
+        if (typeof this.loadTransactions === 'function') {
+            await this.loadTransactions();
+        }
     },
 
     async loadBooks() {

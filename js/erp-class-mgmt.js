@@ -471,7 +471,10 @@ async function updateClassDropdowns() {
         'remarkClassSelect',
         'scheduleClassSelect',
         'admitClassSelect',
-        'promoteFromClass'
+        'promoteFromClass',
+        'tt_classSelect',
+        'qpClassFilter',
+        'uploadQpClass'
     ];
     
     const options = 
@@ -493,6 +496,21 @@ async function updateSessionDropdowns() {
     const idOptions = '<option value="">Select Session</option>' +
         erpState.sessions.map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
 
+    const sessOptions = [
+        'classSessionSelect',
+        'bulk_student_session',
+        'idGen_session',
+        'notif_sessionSelect',
+        'analytic_sessionSelect',
+        'qpSessionFilter',
+        'uploadQpSession'
+    ];
+
+    sessOptions.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = idOptions;
+    });
+
     // Student Registration options with Name as value (for storage consistency)
     const nameOptions = '<option value="">Select Session</option>' +
         erpState.sessions.map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
@@ -506,15 +524,39 @@ async function updateSessionDropdowns() {
         }
     }
 
+    // Bulk Student Update session dropdown (uses ID as value)
+    const bulkSessionSelect = document.getElementById('bulk_student_session');
+    if (bulkSessionSelect) {
+        bulkSessionSelect.innerHTML = idOptions;
+        if (!bulkSessionSelect.getAttribute('data-listener')) {
+            bulkSessionSelect.setAttribute('data-listener', 'true');
+        }
+        // Auto-select active session
+        const active = erpState.sessions.find(s => s.active);
+        if (active && !bulkSessionSelect.value) {
+            bulkSessionSelect.value = active.id;
+        }
+    }
+
+    // ID Generator session dropdown
+    const idGenSession = document.getElementById('idGen_session');
+    if (idGenSession) {
+        idGenSession.innerHTML = idOptions;
+        const active = erpState.sessions.find(s => s.active);
+        if (active && !idGenSession.value) idGenSession.value = active.id;
+    }
+
     const regSession = document.getElementById('student_session');
     if (regSession) {
         regSession.innerHTML = nameOptions;
 
-        // Auto-load Classes for Registration
-        const activeSession = erpState.sessions.find(s => s.active);
-        if (activeSession) {
-            regSession.value = activeSession.name;
-            await loadClassesForRegistration(activeSession.id);
+        // Auto-load Classes for Registration (only if not already selected/editing)
+        if (!regSession.value) {
+            const activeSession = erpState.sessions.find(s => s.active);
+            if (activeSession) {
+                regSession.value = activeSession.name;
+                await loadClassesForRegistration(activeSession.id);
+            }
         }
     }
 }
@@ -572,6 +614,143 @@ async function loadClassesForRegistration(providedSessionId) {
         classSelect.innerHTML = '<option value="">Error Loading Classes</option>';
     }
 }
+
+/**
+ * BULK STUDENT UPDATE DROPDOWNS
+ */
+async function loadClassesForBulkUpdate() {
+    const sessionSelect = document.getElementById('bulk_student_session');
+    const classSelect = document.getElementById('bulk_student_class');
+    const sectionSelect = document.getElementById('bulk_student_section');
+    if (!sessionSelect || !classSelect) return;
+
+    const sessionId = sessionSelect.value;
+    classSelect.innerHTML = '<option value="">Loading Classes...</option>';
+    if (sectionSelect) sectionSelect.innerHTML = '<option value="">Select Class First</option>';
+
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
+
+    try {
+        const snapshot = await schoolData('classes').where('sessionId', '==', sessionId).get();
+        let classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+        classSelect.innerHTML = '<option value="">Select Class</option>' +
+            classes.filter(c => !c.disabled)
+                   .map(c => `<option value="${c.name}" data-id="${c.id}" data-sections='${JSON.stringify(c.sections||[])}'>${c.name}</option>`)
+                   .join('');
+    } catch (e) {
+        console.error('Error loading bulk classes:', e);
+        classSelect.innerHTML = '<option value="">Error Loading</option>';
+    }
+}
+
+window.loadClassesForBulkUpdate = loadClassesForBulkUpdate;
+
+async function loadBulkSectionsForUpdate() {
+    const classSelect = document.getElementById('bulk_student_class');
+    const sectionSelect = document.getElementById('bulk_student_section');
+    if (!classSelect || !sectionSelect) return;
+
+    const selectedOpt = classSelect.options[classSelect.selectedIndex];
+    let sections = [];
+    try { sections = JSON.parse(selectedOpt?.getAttribute('data-sections') || '[]'); } catch(e) {}
+
+    sectionSelect.innerHTML = '<option value="">All Sections</option>' +
+        sections.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+window.loadBulkSectionsForUpdate = loadBulkSectionsForUpdate;
+
+async function loadBulkStudentList() {
+    const sessionSelect = document.getElementById('bulk_student_session');
+    const classSelect = document.getElementById('bulk_student_class');
+    const sectionSelect = document.getElementById('bulk_student_section');
+    const tbody = document.getElementById('bulkUpdateTableBody');
+    if (!tbody) return;
+
+    const sessionId = sessionSelect?.value;
+    const className = classSelect?.value;
+    if (!sessionId || !className) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3 text-slate-muted"><i class="fas fa-filter text-2xl opacity-03 mb-1 block"></i>Select Session and Class to start bulk editing</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center p-2"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
+
+    try {
+        // Get the session name for filtering
+        const sessionDoc = erpState.sessions.find(s => s.id === sessionId);
+        const sessionName = sessionDoc ? sessionDoc.name : '';
+
+        let q = schoolData('students').where('class', '==', className);
+        const snap = await q.get();
+        const students = snap.docs
+            .map(doc => ({ docId: doc.id, ...doc.data() }))
+            .filter(s => !sessionName || !s.session || s.session === sessionName);
+
+        const sectionFilter = sectionSelect?.value || '';
+        const filtered = sectionFilter ? students.filter(s => s.section === sectionFilter) : students;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3">No students found for selected filters.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(s => `
+            <tr data-doc-id="${s.docId}">
+                <td>${s.student_id || s.docId}</td>
+                <td><input type="text" value="${s.name || ''}" class="form-control" style="min-width:120px" data-field="name" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_roll"><input type="text" value="${s.roll_no || ''}" class="form-control" data-field="roll_no" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_father"><input type="text" value="${s.father_name || s.fatherName || ''}" class="form-control" data-field="father_name" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_mobile"><input type="text" value="${s.mobile || s.phone || ''}" class="form-control" data-field="mobile" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_dob"><input type="date" value="${s.dob || ''}" class="form-control" data-field="dob" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_blood hidden"><input type="text" value="${s.blood_group || ''}" class="form-control" data-field="blood_group" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_address hidden"><input type="text" value="${s.address || ''}" class="form-control" data-field="address" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="col_sms hidden"><input type="text" value="${s.sms_contact || ''}" class="form-control" data-field="sms_contact" onchange="markBulkDirty('${s.docId}',this)" /></td>
+            </tr>`).join('');
+    } catch (e) {
+        console.error('Error loading bulk students:', e);
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3 text-danger">Error loading students: ' + e.message + '</td></tr>';
+    }
+}
+
+window.loadBulkStudentList = loadBulkStudentList;
+
+// Track dirty rows in bulk update
+window._bulkDirtyRows = {};
+window.markBulkDirty = function(docId, input) {
+    if (!window._bulkDirtyRows[docId]) window._bulkDirtyRows[docId] = {};
+    window._bulkDirtyRows[docId][input.getAttribute('data-field')] = input.value;
+    input.style.borderColor = '#f59e0b'; // Yellow highlight for changed
+};
+
+window.saveBulkStudentUpdate = async function() {
+    const dirty = window._bulkDirtyRows;
+    const docIds = Object.keys(dirty);
+    if (docIds.length === 0) { showToast('No changes to save', 'info'); return; }
+    
+    if (!confirm(`Save changes for ${docIds.length} student record(s)?`)) return;
+    showLoading(true);
+    try {
+        const batch = (window.db || firebase.firestore()).batch();
+        docIds.forEach(id => {
+            batch.update(schoolDoc('students', id), dirty[id]);
+        });
+        await batch.commit();
+        window._bulkDirtyRows = {};
+        // Reset highlight
+        document.querySelectorAll('[style*="border-color: rgb(245, 158, 11)"]').forEach(el => el.style.borderColor = '');
+        showToast(`Saved ${docIds.length} student(s) successfully!`);
+    } catch (e) {
+        showToast('Error saving: ' + e.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+};
 
 async function updateRegistrationSections() {
     const classSelect = document.getElementById('student_class');
@@ -1024,3 +1203,88 @@ window.loadClassesForRegistration = loadClassesForRegistration;
 window.getNextStudentId = getNextStudentId;
 window.deleteClass = deleteClass;
 window.toggleClassStatus = toggleClassStatus;
+
+/**
+ * ID GENERATOR - Cascading Selectors
+ */
+
+// Batch Mode: Load classes when session changes
+window.idGenLoadClasses = async function() {
+    const sessionId = document.getElementById('idGen_session')?.value;
+    const classSelect = document.getElementById('idBatchClassSelect');
+    if (!classSelect) return;
+    classSelect.innerHTML = '<option value="">Loading...</option>';
+    if (!sessionId) { classSelect.innerHTML = '<option value="">Select Session First</option>'; return; }
+    try {
+        const snap = await schoolData('classes').where('sessionId', '==', sessionId).get();
+        let classes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => !c.disabled);
+        classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        classSelect.innerHTML = '<option value="">Select Class</option>' + classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    } catch(e) { classSelect.innerHTML = '<option value="">Error loading</option>'; }
+};
+
+// Individual Mode: Load classes when session changes
+window.idIndivLoadClasses = async function() {
+    const sessionId = document.getElementById('idIndiv_session')?.value;
+    const classSelect = document.getElementById('idIndiv_class');
+    const studentSelect = document.getElementById('idIndiv_student');
+    if (!classSelect) return;
+    classSelect.innerHTML = '<option value="">Loading...</option>';
+    if (studentSelect) studentSelect.innerHTML = '<option value="">Select Class First</option>';
+    if (!sessionId) { classSelect.innerHTML = '<option value="">Select Session First</option>'; return; }
+    try {
+        const snap = await schoolData('classes').where('sessionId', '==', sessionId).get();
+        let classes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => !c.disabled);
+        classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        classSelect.innerHTML = '<option value="">Select Class</option>' + classes.map(c => `<option value="${c.name}" data-id="${c.id}">${c.name}</option>`).join('');
+    } catch(e) { classSelect.innerHTML = '<option value="">Error loading</option>'; }
+};
+
+// Individual Mode: Load students when class changes
+window.idIndivLoadStudents = async function() {
+    const className = document.getElementById('idIndiv_class')?.value;
+    const sessionId = document.getElementById('idIndiv_session')?.value;
+    const studentSelect = document.getElementById('idIndiv_student');
+    if (!studentSelect) return;
+    studentSelect.innerHTML = '<option value="">Loading students...</option>';
+    if (!className) { studentSelect.innerHTML = '<option value="">Select Class First</option>'; return; }
+    try {
+        const session = erpState.sessions.find(s => s.id === sessionId);
+        const sessionName = session ? session.name : '';
+        const snap = await schoolData('students').where('class', '==', className).get();
+        let students = snap.docs.map(d => ({ docId: d.id, ...d.data() }))
+            .filter(s => !sessionName || !s.session || s.session === sessionName);
+        students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        studentSelect.innerHTML = '<option value="">Select Student</option>' +
+            students.map(s => `<option value="${s.docId}">${s.name || s.docId} (${s.student_id || ''})</option>`).join('');
+    } catch(e) { studentSelect.innerHTML = '<option value="">Error loading</option>'; }
+};
+
+// Individual Mode: Load ID preview when student is selected
+window.idIndivPreview = async function() {
+    const docId = document.getElementById('idIndiv_student')?.value;
+    if (!docId) return;
+    try {
+        const doc = await schoolDoc('students', docId).get();
+        if (!doc.exists) { showToast('Student not found', 'error'); return; }
+        const sidInput = document.getElementById('idPrintSid');
+        if (sidInput) { sidInput.value = docId; }
+        if (typeof updateIdPreview === 'function') updateIdPreview(doc.data());
+        else showToast('Student selected! Click Download to generate ID card.', 'info');
+    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+};
+
+// Initialize ID Generator session dropdown (called on section open)
+window.initIdGenerator = function() {
+    const sessOpts = '<option value="">Select Session</option>' +
+        erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    const indivSess = document.getElementById('idIndiv_session');
+    if (indivSess) indivSess.innerHTML = sessOpts;
+    // idGen_session already handled by updateSessionDropdowns
+    // Auto-trigger class load for active session in individual mode
+    const active = erpState.sessions.find(s => s.active);
+    if (active && indivSess) {
+        indivSess.value = active.id;
+        window.idIndivLoadClasses();
+    }
+};
