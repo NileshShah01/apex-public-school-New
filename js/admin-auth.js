@@ -20,36 +20,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(async (userCredential) => {
                     const user = userCredential.user;
                     
-                    // Fetch user metadata for school mapping
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
+                    try {
+                        // Fetch user metadata for school mapping
+                        let userDoc = await db.collection('users').doc(user.uid).get();
                         
-                        // SECURITY: Fetch the current context school ID (from URL or fallback)
-                        const contextId = window.CURRENT_SCHOOL_ID; 
-
-                        // SECURITY: Cross-Tenant Guard
-                        // If the user's schoolId doesn't match the current portal context, redirect them.
-                        if (userData.schoolId && contextId && userData.schoolId !== contextId) {
-                            console.warn(`Tenant Mismatch: User belongs to ${userData.schoolId}, but is on ${contextId} portal.`);
-                            alert(`Unauthorized Access: You belong to ${userData.schoolId}. Redirecting to your portal...`);
-                            
-                            // Construct correct URL
-                            const correctPath = window.location.pathname.replace(new RegExp(`/${contextId}/`, 'i'), `/${userData.schoolId}/`);
-                            window.location.href = correctPath.includes(userData.schoolId) ? correctPath : `/${userData.schoolId}/Admin-Dashboard`;
-                            return;
+                        // AUTO-PROVISION: If record is missing, recreate it for the primary admin
+                        if (!userDoc.exists && user.email === 'nileshshah84870@gmail.com') {
+                            console.warn('Admin record missing. Auto-provisioning SCH001 mapping...');
+                            await db.collection('users').doc(user.uid).set({
+                                email: user.email,
+                                schoolId: 'SCH001',
+                                role: 'admin',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            // Re-fetch to confirm
+                            userDoc = await db.collection('users').doc(user.uid).get();
                         }
 
-                        // Sync school ID to session storage
-                        sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
-                        
-                        // Success, redirect to dashboard
-                        window.location.href = 'admin-dashboard.html';
-                    } else {
-                        console.error('User record not found in database.');
-                        loginError.textContent = 'Account error: School mapping not found.';
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            
+                            // SECURITY: Fetch the current context school ID (from URL or fallback)
+                            const contextId = window.CURRENT_SCHOOL_ID; 
+
+                            // SECURITY: Cross-Tenant Guard
+                            // If the user's schoolId doesn't match the current portal context, redirect them.
+                            if (userData.schoolId && contextId && userData.schoolId !== contextId) {
+                                console.warn(`Tenant Mismatch: User belongs to ${userData.schoolId}, but is on ${contextId} portal.`);
+                                alert(`Unauthorized Access: You belong to ${userData.schoolId}. Redirecting to your portal...`);
+                                
+                                // Construct correct URL
+                                const correctPath = window.location.pathname.replace(new RegExp(`/${contextId}/`, 'i'), `/${userData.schoolId}/`);
+                                window.location.href = correctPath.includes(userData.schoolId) ? correctPath : `/${userData.schoolId}/Admin-Dashboard`;
+                                return;
+                            }
+
+                            // Sync school ID to session storage
+                            sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
+                            
+                            // Success, redirect to dashboard
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            console.error('User record not found in database.');
+                            loginError.textContent = 'Account error: School mapping not found.';
+                            loginError.style.display = 'block';
+                            auth.signOut();
+                        }
+                    } catch (dbErr) {
+                        console.error('Authentication Mapping Error:', dbErr);
+                        loginError.textContent = 'Database Error: ' + dbErr.message;
                         loginError.style.display = 'block';
-                        auth.signOut();
                     }
                 })
                 .catch((error) => {

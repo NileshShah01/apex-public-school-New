@@ -9,12 +9,14 @@ const ERPLibrary = {
         console.log('ERP Library Initializing...');
         await this.loadBooks();
 
-        // Setup Searchable Student Select for Issue Form
-        if (typeof initSearchableSelect === 'function' && document.getElementById('issue_student_select')) {
-            initSearchableSelect('issue_student_select', (s) => {
-                document.getElementById('selected_student_id').value = s.studentId || s.student_id;
-            });
-        }
+        document.getElementById('librarySectionBtn')?.addEventListener('click', () => {
+            // Setup Searchable Student Select for Issue Form
+            if (typeof initSearchableSelect === 'function' && document.getElementById('issue_student_select')) {
+                initSearchableSelect('issue_student_select', window.allStudents || [], (s) => {
+                    document.getElementById('issue_student_id').value = s.student_id;
+                });
+            }
+        });
     },
 
     async loadBooks() {

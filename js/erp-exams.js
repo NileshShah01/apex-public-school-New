@@ -10,13 +10,19 @@ let examState = {
 };
 
 // Internal loading helper
-function setLoading(show) {
-    if (typeof window.setLoading === 'function') window.setLoading(show);
-    else {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.style.display = show ? 'flex' : 'none';
+window.setLoading = function(show) {
+    let loader = document.getElementById('globalLoader');
+    if (!loader && show) {
+        loader = document.createElement('div');
+        loader.id = 'globalLoader';
+        loader.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        loader.innerHTML = '<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"><span class="visually-hidden">Loading...</span></div>';
+        document.body.appendChild(loader);
     }
-}
+    if (loader) {
+        loader.style.display = show ? 'flex' : 'none';
+    }
+};
 async function initERPExams() {
     console.log('ERP Exams Initializing...');
     try {
@@ -46,6 +52,20 @@ async function initERPExams() {
                                 `<option value="${s.id}" ${s.id === examState.activeSessionId ? 'selected' : ''}>${s.name}</option>`
                         )
                         .join('');
+
+                // Add change listener to refresh exam data for the selected session
+                if (!el.getAttribute('data-listener')) {
+                    el.addEventListener('change', async (e) => {
+                        examState.activeSessionId = e.target.value;
+                        if (examState.activeSessionId) {
+                            await Promise.all([loadExams(), loadViewScheduleGrid(), loadGradingRules()]);
+                            updateScheduleClasses();
+                            refreshPublishStatus();
+                            if (typeof loadManageResultsClasses === 'function') loadManageResultsClasses();
+                        }
+                    });
+                    el.setAttribute('data-listener', 'true');
+                }
             }
         });
 
@@ -54,7 +74,7 @@ async function initERPExams() {
             // For Schedule
             updateScheduleClasses();
             refreshPublishStatus();
-            loadManageResultsClasses();
+            if (typeof loadManageResultsClasses === 'function') loadManageResultsClasses();
         }
     } catch (e) {
         console.error('Exam init error:', e);

@@ -5,6 +5,7 @@ let selectedStudents = new Set();
 let currentPage = 1;
 const itemsPerPage = 20;
 let isInitializing = false;
+let editingDocId = null; // Track current student being edited
 
 // Global Loading Helper (backward compatibility for erp modules)
 window.showLoading = function (show) {
@@ -958,28 +959,35 @@ async function handleStudentSubmit(e) {
         // Upload photo string if selected (bypassing Storage)
         if (photoFile) {
             document.getElementById('uploadProgress').style.display = 'block';
-            photoUrl = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX = 300;
-                        let w = img.width,
-                            h = img.height;
-                        if (w > MAX) {
-                            h *= MAX / w;
-                            w = MAX;
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+            try {
+                photoUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const MAX = 300;
+                            let w = img.width,
+                                h = img.height;
+                            if (w > MAX) {
+                                h *= MAX / w;
+                                w = MAX;
+                            }
+                            canvas.width = w;
+                            canvas.height = h;
+                            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                            resolve(canvas.toDataURL('image/jpeg', 0.8));
+                        };
+                        img.onerror = () => reject(new Error('Failed to load image file.'));
+                        img.src = e.target.result;
                     };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(photoFile);
-            });
+                    reader.onerror = () => reject(new Error('Failed to read photo file.'));
+                    reader.readAsDataURL(photoFile);
+                });
+            } catch (imageErr) {
+                console.error('Photo processing error:', imageErr);
+                showToast('Warning: Photo could not be processed, saving without photo.', 'error');
+            }
             document.getElementById('uploadProgress').style.display = 'none';
         }
 
@@ -1688,19 +1696,22 @@ async function processAdmitCardPdf() {
     }
 }
 // ===================== SEARCHABLE STUDENT SELECT =====================
-function initSearchableSelect(containerId, onSelect) {
+function initSearchableSelect(containerId, dataArray, onSelect) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // Attach data to window for the global toggle/filter functions to access
+    window[`${containerId}_data`] = dataArray;
 
     container.innerHTML = `
         <div class="searchable-select-wrapper" style="position:relative;">
             <div class="select-trigger" onclick="toggleSearchDropdown('${containerId}')" style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1rem; border:1px solid var(--border); border-radius:0.5rem; background:white; cursor:pointer;">
-                <span id="${containerId}_label" style="color:var(--text-muted);">Select Student...</span>
+                <span id="${containerId}_label" style="color:var(--text-muted);">Select Item...</span>
                 <i class="fas fa-chevron-down" style="font-size:0.8rem; color:var(--text-muted);"></i>
             </div>
             <div id="${containerId}_dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1px solid var(--border); border-radius:0.5rem; margin-top:0.5rem; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1000; max-height:300px; overflow:hidden; display:flex; flex-direction:column;">
                 <div style="padding:0.75rem; border-bottom:1px solid var(--border); background:#f8fafc;">
-                    <input type="text" placeholder="Search by name, father name or phone..." oninput="filterSearchDropdown('${containerId}', this.value)" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.4rem; font-size:0.9rem;">
+                    <input type="text" placeholder="Search..." oninput="filterSearchDropdown('${containerId}', this.value)" style="width:100%; padding:0.6rem; border:1px solid var(--border); border-radius:0.4rem; font-size:0.9rem;">
                 </div>
                 <div id="${containerId}_list" style="overflow-y:auto; flex:1; max-height:220px;">
                     <!-- List populated dynamically -->
@@ -1709,8 +1720,11 @@ function initSearchableSelect(containerId, onSelect) {
         </div>
     `;
 
-    window[`${containerId}_select`] = (s) => {
-        document.getElementById(`${containerId}_label`).textContent = `${s.name} [${s.father_name}] [${s.student_id}]`;
+    window[`${containerId}_select`] = (sJson) => {
+        const s = JSON.parse(decodeURIComponent(sJson));
+        // Default label formatting for students vs classes
+        const labelText = s.student_id ? `${s.name} [${s.father_name || ''}] [${s.student_id}]` : (s.name || s.id);
+        document.getElementById(`${containerId}_label`).textContent = labelText;
         document.getElementById(`${containerId}_dropdown`).style.display = 'none';
         if (onSelect) onSelect(s);
     };
@@ -1719,13 +1733,14 @@ function initSearchableSelect(containerId, onSelect) {
 function toggleSearchDropdown(id) {
     const drop = document.getElementById(`${id}_dropdown`);
     const isVisible = drop.style.display === 'flex';
+    const dataArray = window[`${id}_data`] || [];
 
     // Close others
     document.querySelectorAll('[id$="_dropdown"]').forEach((el) => (el.style.display = 'none'));
 
     if (!isVisible) {
         drop.style.display = 'flex';
-        renderDropdownList(id, allStudents);
+        renderDropdownList(id, dataArray);
         const input = drop.querySelector('input');
         if (input) {
             input.value = '';
@@ -1736,7 +1751,8 @@ function toggleSearchDropdown(id) {
 
 function filterSearchDropdown(id, q) {
     const term = q.toLowerCase();
-    const filtered = allStudents.filter(
+    const dataArray = window[`${id}_data`] || [];
+    const filtered = dataArray.filter(
         (s) =>
             (s.name || '').toLowerCase().includes(term) ||
             (s.student_id || '').toLowerCase().includes(term) ||
@@ -1748,23 +1764,21 @@ function filterSearchDropdown(id, q) {
 
 function renderDropdownList(id, list) {
     const el = document.getElementById(`${id}_list`);
-    if (!el) return;
-
-    if (list.length === 0) {
-        el.innerHTML =
-            '<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">No students found</div>';
+    if (!el) return; // Added check for el
+    if (!list || list.length === 0) {
+        el.innerHTML = '<div style="padding:0.75rem; text-align:center; color:var(--text-muted);">No results found</div>';
         return;
     }
 
     el.innerHTML = list
-        .map(
-            (s) => `
-        <div onclick="window['${id}_select'](${JSON.stringify(s).replace(/"/g, '&quot;')})" style="padding:0.75rem 1rem; border-bottom:1px solid #f1f5f9; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">
-            <div style="font-weight:600; font-size:0.95rem; color:var(--secondary);">${s.name}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">F/N: ${s.father_name || '-'} | ID: ${s.student_id || '-'}</div>
-        </div>
-    `
-        )
+        .map((s) => {
+            const labelText = s.student_id ? `${s.name} (${s.student_id})` : (s.name || s.id);
+            const subText = s.father_name ? `<br><small style="color:var(--text-muted)">Father: ${s.father_name}</small>` : '';
+            return `<div onclick="window['${id}_select']('${encodeURIComponent(JSON.stringify(s))}')" style="padding:0.75rem 1rem; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s;">
+                <div style="font-weight:500;">${labelText}</div>
+                ${subText}
+            </div>`;
+        })
         .join('');
 }
 
@@ -2025,11 +2039,15 @@ async function loadRcStudents() {
         if (section) query = query.where('section', '==', section);
         const snapshot = await query.get();
         const students = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        studentSelect.innerHTML =
-            '<option value="">Select Student</option>' +
-            students
-                .map((s) => `<option value="${s.id}">${s.name} (${s.student_id || s.id.slice(0, 6)})</option>`)
-                .join('');
+
+        const container = document.getElementById('rcStudentContainer');
+        if (container) {
+            initSearchableSelect('rcStudentContainer', students, (selectedStudent) => {
+                document.getElementById('rc_student').value = selectedStudent.id;
+            });
+            // Reset the hidden value initially
+            document.getElementById('rc_student').value = '';
+        }
     } catch (e) {
         console.error(e);
     }
@@ -2047,6 +2065,9 @@ async function processReportCardGeneration() {
 
     try {
         setLoading(true);
+        const sessionSelect = document.getElementById('rc_session');
+        const sessionId = sessionSelect.options[sessionSelect.selectedIndex]?.getAttribute('data-id') || session;
+
         // 1. Fetch Student Data
         const sDoc = await schoolDoc('students', studentId).get();
         if (!sDoc.exists) throw new Error('Student not found');
@@ -2075,7 +2096,7 @@ async function processReportCardGeneration() {
         if (format === 'premium') {
             // Premium uses the advanced tool with attendance calculation
             if (window.ReportCardTool) {
-                await window.ReportCardTool.processReportCard(studentId, 'premium', session);
+                await window.ReportCardTool.processReportCard(studentId, 'premium', sessionId, 'premium');
             } else {
                 await window.ReportCardFactory.generatePremium(student, marks, examDetails, schoolDetails);
             }

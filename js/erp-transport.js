@@ -9,12 +9,14 @@ const ERPTransport = {
         console.log('ERP Transport Initializing...');
         await this.loadRoutes();
 
-        // Setup Searchable Student Select for Mapping Form
-        if (typeof initSearchableSelect === 'function' && document.getElementById('map_student_select')) {
-            initSearchableSelect('map_student_select', (s) => {
-                document.getElementById('trans_student_id').value = s.studentId || s.student_id;
-            });
-        }
+        document.getElementById('transportSectionBtn')?.addEventListener('click', () => {
+            // Setup Searchable Student Select for Mapping Form
+            if (typeof initSearchableSelect === 'function' && document.getElementById('map_student_select')) {
+                initSearchableSelect('map_student_select', window.allStudents || [], (s) => {
+                    document.getElementById('map_student_id').value = s.student_id;
+                });
+            }
+        });
     },
 
     async loadRoutes() {

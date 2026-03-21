@@ -82,21 +82,92 @@ function renderSessions() {
             (session) => `
         <tr>
             <td><strong>${session.name}</strong></td>
-            <td>${session.startDate} to ${session.endDate}</td>
+            <td><small>${session.startDate} to ${session.endDate}</small></td>
             <td>
                 <span class="badge" style="background:${session.active ? '#10b981' : '#64748b'}; color:white;">
                     ${session.active ? 'Active' : 'Inactive'}
                 </span>
             </td>
             <td>
-                <button onclick="toggleSessionActive('${session.id}', ${!session.active})" class="btn-portal btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;">
-                    ${session.active ? 'Deactivate' : 'Set Active'}
-                </button>
+                <div style="display: flex; gap: 5px; align-items: center;">
+                    <button onclick="toggleSessionActive('${session.id}', ${!session.active})" class="btn-portal btn-ghost" title="${session.active ? 'Deactivate' : 'Set Active'}" style="padding:0.25rem 0.5rem; font-size:0.75rem;">
+                         <i class="fas ${session.active ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                    </button>
+                    <button onclick="editSession('${session.id}')" class="btn-portal btn-ghost" title="Edit" style="padding:0.25rem 0.5rem; font-size:0.75rem;">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteSession('${session.id}')" class="btn-portal btn-ghost" title="Delete" style="color:var(--danger); border-color:var(--danger); padding:0.25rem 0.5rem; font-size:0.75rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </td>
         </tr>
     `
         )
         .join('');
+}
+
+/**
+ * EDIT SESSION
+ */
+async function editSession(sessionId) {
+    const session = erpState.sessions.find(s => s.id === sessionId);
+    if (!session) return;
+
+    const newName = prompt("Enter new Session Name:", session.name);
+    if (newName === null) return; // Cancelled
+
+    const newStart = prompt("Enter Start Date (YYYY-MM-DD):", session.startDate);
+    const newEnd = prompt("Enter End Date (YYYY-MM-DD):", session.endDate);
+
+    try {
+        showLoading(true);
+        await schoolDoc('sessions', sessionId).update({
+            name: newName || session.name,
+            startDate: newStart || session.startDate,
+            endDate: newEnd || session.endDate,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Session updated successfully', 'success');
+        await loadSessions();
+    } catch (error) {
+        console.error('Error editing session:', error);
+        showToast('Error updating session', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * DELETE SESSION
+ */
+async function deleteSession(sessionId) {
+    if (!confirm('Are you sure you want to PERMANENTLY delete this session? This will fail if classes are linked to it.')) return;
+
+    try {
+        showLoading(true);
+        
+        // Safety Check: Check for classes in this session
+        const classSnap = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .limit(1)
+            .get();
+
+        if (!classSnap.empty) {
+            showLoading(false);
+            alert(`Cannot delete this session because it has classes linked to it. Delete the classes first.`);
+            return;
+        }
+
+        await schoolDoc('sessions', sessionId).delete();
+        showToast('Session deleted successfully', 'success');
+        await loadSessions();
+    } catch (error) {
+        console.error('Error deleting session:', error);
+        showToast('Error deleting session', 'error');
+    } finally {
+        showLoading(false);
+    }
 }
 
 async function handleSessionSubmit(event) {
@@ -134,7 +205,8 @@ async function handleSessionSubmit(event) {
         await loadSessions();
     } catch (error) {
         console.error('Error adding session:', error);
-        showToast('Error saving session', 'error');
+        showToast('Error saving session: ' + error.message, 'error');
+        alert('DEBUG: Error saving session -> ' + error.message + '\nStack: ' + error.stack);
     } finally {
         showLoading(false);
     }
@@ -169,9 +241,14 @@ async function toggleSessionActive(sessionId, shouldBeActive) {
 /**
  * CLASSES LOGIC
  */
-async function loadClasses() {
-    if (!erpState.activeSessionId) {
-        showToast('Please select/create an active session first', 'info');
+/**
+ * CLASSES LOGIC
+ * @param {string} sessionId - Optional ID of the session to load classes for.
+ */
+async function loadClasses(sessionId = null) {
+    const targetSessionId = sessionId || erpState.activeSessionId;
+    if (!targetSessionId) {
+        showToast('Please select/create a session first', 'info');
         return;
     }
 
@@ -182,7 +259,7 @@ async function loadClasses() {
 
     try {
         const snapshot = await schoolData('classes')
-            .where('sessionId', '==', erpState.activeSessionId)
+            .where('sessionId', '==', targetSessionId)
             .orderBy('sortOrder', 'asc')
             .get();
 
@@ -191,10 +268,11 @@ async function loadClasses() {
         updateClassDropdowns();
     } catch (error) {
         console.error('Error loading classes:', error);
-        // If index doesn't exist, it might fail. fallback without order
-        const fallback = await schoolData('classes').where('sessionId', '==', erpState.activeSessionId).get();
+        // Fallback without sort if index is missing
+        const fallback = await schoolData('classes').where('sessionId', '==', targetSessionId).get();
         erpState.classes = fallback.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         renderClasses();
+        updateClassDropdowns();
     }
 }
 
@@ -204,32 +282,142 @@ function renderClasses() {
 
     if (erpState.classes.length === 0) {
         classesTableBody.innerHTML =
-            '<tr><td colspan="4" style="text-align:center;">No classes found for this session.</td></tr>';
+            '<tr><td colspan="5" style="text-align:center;">No classes found for this session.</td></tr>';
         return;
     }
 
     classesTableBody.innerHTML = erpState.classes
         .map(
-            (cls) => `
-        <tr>
+            (cls) => {
+                const isDisabled = cls.disabled === true;
+                return `
+        <tr style="${isDisabled ? 'opacity: 0.6; background: #f9fafb;' : ''}">
             <td>${cls.sortOrder}</td>
-            <td><strong>${cls.name}</strong></td>
+            <td>
+                <strong>${cls.name}</strong> 
+                ${isDisabled ? '<span class="badge" style="background:#6b7280; font-size: 10px; padding: 2px 6px; margin-left: 5px;">DISABLED</span>' : ''}
+            </td>
             <td>${cls.sections ? cls.sections.length : 0} Sections</td>
             <td>
-                <button onclick="deleteClass('${cls.id}')" class="btn-portal btn-ghost" style="color:var(--danger); border-color:var(--danger); padding:0.25rem 0.5rem; font-size:0.7rem;">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div style="display: flex; gap: 5px; justify-content: flex-end;">
+                    <button onclick="editClass('${cls.id}')" class="btn-portal btn-ghost" title="Edit" style="padding:0.25rem 0.5rem; font-size:0.7rem;">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="toggleClassStatus('${cls.id}', ${isDisabled})" class="btn-portal btn-ghost" title="${isDisabled ? 'Enable' : 'Disable'}" style="padding:0.25rem 0.5rem; font-size:0.7rem;">
+                        <i class="fas ${isDisabled ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                    </button>
+                    <button onclick="deleteClass('${cls.id}')" class="btn-portal btn-ghost" title="Delete" style="color:var(--danger); border-color:var(--danger); padding:0.25rem 0.5rem; font-size:0.7rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </td>
         </tr>
-    `
+    `;
+            }
         )
         .join('');
 }
 
+/**
+ * EDIT CLASS
+ */
+async function editClass(classId) {
+    const cls = erpState.classes.find(c => c.id === classId);
+    if (!cls) return;
+
+    const newName = prompt("Enter new Class Name:", cls.name);
+    if (newName === null) return;
+
+    const newSort = prompt("Enter Sort Order (number):", cls.sortOrder);
+    if (newSort === null) return;
+
+    try {
+        showLoading(true);
+        await schoolDoc('classes', classId).update({
+            name: newName || cls.name,
+            sortOrder: parseInt(newSort) || cls.sortOrder,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Class updated successfully', 'success');
+        
+        // Refresh by reloading classes for the current session view
+        const sessionSelect = document.getElementById('classSessionSelect');
+        const selectedSessionId = sessionSelect ? sessionSelect.value : erpState.activeSessionId;
+        await loadClasses(selectedSessionId);
+    } catch (error) {
+        console.error('Error editing class:', error);
+        showToast('Error updating class', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * DELETE CLASS
+ */
+async function deleteClass(classId) {
+    if (!confirm('Are you sure you want to PERMANENTLY delete this class? This cannot be undone.')) return;
+
+    try {
+        showLoading(true);
+        const cls = erpState.classes.find((c) => c.id === classId);
+        if (!cls) return;
+
+        // Safety Check: Check for students in this class
+        const studentSnap = await schoolData('students')
+            .where('class', '==', cls.name)
+            .limit(1)
+            .get();
+
+        if (!studentSnap.empty) {
+            showLoading(false);
+            alert(`Cannot delete "${cls.name}" because students are still assigned to it. Please move students to another class or just "Disable" this class instead.`);
+            return;
+        }
+
+        // If no students, delete
+        await schoolDoc('classes', classId).delete();
+        showToast('Class deleted successfully', 'success');
+        await loadClasses(); // Refresh
+    } catch (error) {
+        console.error('Error deleting class:', error);
+        showToast('Error deleting class', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * DISABLE/ENABLE CLASS
+ */
+async function toggleClassStatus(classId, currentlyDisabled) {
+    const action = currentlyDisabled ? 'Enable' : 'Disable';
+    if (!confirm(`Are you sure you want to ${action} this class?`)) return;
+
+    try {
+        showLoading(true);
+        await schoolDoc('classes', classId).update({
+            disabled: !currentlyDisabled,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+
+        showToast(`Class ${action}d successfully`, 'success');
+        await loadClasses(); // Refresh
+    } catch (error) {
+        console.error('Error toggling class status:', error);
+        showToast('Error updating class status', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
 async function handleClassSubmit(event) {
     event.preventDefault();
-    if (!erpState.activeSessionId) {
-        showToast('No active session found', 'error');
+    const sessionSelect = document.getElementById('classSessionSelect');
+    const selectedSessionId = sessionSelect ? sessionSelect.value : erpState.activeSessionId;
+
+    if (!selectedSessionId) {
+        showToast('Please select a session', 'error');
         return;
     }
 
@@ -242,17 +430,18 @@ async function handleClassSubmit(event) {
             withSchool({
                 name,
                 sortOrder: order,
-                sessionId: erpState.activeSessionId,
+                sessionId: selectedSessionId,
                 sections: [], // Default empty
             })
         );
 
         showToast('Class added successfully', 'success');
         document.getElementById('addClassForm').reset();
-        await loadClasses();
+        await loadClasses(selectedSessionId);
     } catch (error) {
         console.error('Error adding class:', error);
-        showToast('Error adding class', 'error');
+        showToast('Error adding class: ' + error.message, 'error');
+        alert('DEBUG: Error adding class -> ' + error.message + '\nStack: ' + error.stack);
     } finally {
         showLoading(false);
     }
@@ -262,31 +451,70 @@ async function handleClassSubmit(event) {
  * CLASS DETAILS (SECTIONS) LOGIC
  */
 async function updateClassDropdowns() {
-    const dropdowns = ['detailsClassSelect'];
+    const dropdowns = [
+        'detailsClassSelect',
+        'genFeeClass',
+        'idBatchClassSelect',
+        'classFilter',
+        'uploadQpClass',
+        'att_classSelect',
+        'hw_classSelect',
+        'tt_classSelect',
+        'bulkRes_classSelect',
+        'analytic_classSelect',
+        'notif_classSelect',
+        'syllabusClass',
+        'enq_class',
+        'attnClassSelect',
+        'marksClassSelect',
+        'allResultsClassSelect',
+        'remarkClassSelect',
+        'scheduleClassSelect',
+        'admitClassSelect',
+        'promoteFromClass'
+    ];
+    
+    const options = 
+        '<option value="">Select Class</option>' +
+        erpState.classes
+            .filter(cls => !cls.disabled)
+            .map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`)
+            .join('');
+
     dropdowns.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.innerHTML =
-            '<option value="">Select Class</option>' +
-            erpState.classes.map((cls) => `<option value="${cls.id}">${cls.name}</option>`).join('');
+        el.innerHTML = options;
     });
 }
 
 async function updateSessionDropdowns() {
+    // Standard options with ID as value
+    const idOptions = '<option value="">Select Session</option>' +
+        erpState.sessions.map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+
+    // Student Registration options with Name as value (for storage consistency)
+    const nameOptions = '<option value="">Select Session</option>' +
+        erpState.sessions.map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+
+    const classSessionSelect = document.getElementById('classSessionSelect');
+    if (classSessionSelect) {
+        classSessionSelect.innerHTML = idOptions;
+        if (!classSessionSelect.getAttribute('data-listener')) {
+            classSessionSelect.addEventListener('change', (e) => loadClasses(e.target.value));
+            classSessionSelect.setAttribute('data-listener', 'true');
+        }
+    }
+
     const regSession = document.getElementById('student_session');
     if (regSession) {
-        regSession.innerHTML =
-            '<option value="">Select Session</option>' +
-            erpState.sessions
-                .map(
-                    (s) =>
-                        `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`
-                )
-                .join('');
+        regSession.innerHTML = nameOptions;
 
-        // If an active session exists, load its classes immediately
-        if (erpState.activeSessionId) {
-            await loadClassesForRegistration();
+        // Auto-load Classes for Registration
+        const activeSession = erpState.sessions.find(s => s.active);
+        if (activeSession) {
+            regSession.value = activeSession.name;
+            await loadClassesForRegistration(activeSession.id);
         }
     }
 }
@@ -294,13 +522,21 @@ async function updateSessionDropdowns() {
 /**
  * REGISTRATION FORM DROPDOWNS
  */
-async function loadClassesForRegistration() {
+async function loadClassesForRegistration(providedSessionId) {
     const regSession = document.getElementById('student_session');
-    if (!regSession) return;
-    const selectedOption = regSession.options[regSession.selectedIndex];
-    const sessionId = selectedOption?.getAttribute('data-id');
     const classSelect = document.getElementById('student_class');
     if (!classSelect) return;
+
+    let sessionId = providedSessionId;
+    if (!sessionId && regSession) {
+        const selectedOption = regSession.options[regSession.selectedIndex];
+        sessionId = selectedOption?.getAttribute('data-id');
+    }
+
+    // Reset selection and show loading
+    classSelect.innerHTML = '<option value="">Loading Classes...</option>';
+    const secSelect = document.getElementById('student_section');
+    if (secSelect) secSelect.innerHTML = '<option value="">Select Class First</option>';
 
     if (!sessionId) {
         classSelect.innerHTML = '<option value="">Select Session First</option>';
@@ -308,24 +544,32 @@ async function loadClassesForRegistration() {
     }
 
     try {
+        console.log(`Loading classes for session: ${sessionId}`);
         const snapshot = await schoolData('classes')
             .where('sessionId', '==', sessionId)
-            .orderBy('sortOrder', 'asc') // Added orderBy for consistency
             .get();
 
-        const classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        let classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        
+        // Client-side sort if needed
+        classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
         classSelect.innerHTML =
             '<option value="">Select Class</option>' +
-            classes.map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`).join('');
+            classes
+                .filter((cls) => !cls.disabled) // Filter out disabled
+                .map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`)
+                .join('');
 
-        // Reset section select
-        const secSelect = document.getElementById('student_section');
-        if (secSelect) secSelect.innerHTML = '<option value="">Select Class First</option>';
-
-        // Store registration classes temporarily if needed
+        // Store registration classes temporarily
         erpState.regClasses = classes;
+
+        if (classes.length === 0) {
+            classSelect.innerHTML = '<option value="">No Classes Found</option>';
+        }
     } catch (error) {
         console.error('Error loading registration classes:', error);
+        classSelect.innerHTML = '<option value="">Error Loading Classes</option>';
     }
 }
 
@@ -659,7 +903,9 @@ async function loadClassesForElectives() {
 
         classSelect.innerHTML =
             '<option value="">Select Class</option>' +
-            classes.map((cls) => `<option value="${cls.name}">${cls.name}</option>`).join('');
+            classes
+                .filter(cls => !cls.disabled)
+                .map((cls) => `<option value="${cls.name}">${cls.name}</option>`).join('');
 
         // Also load elective subjects for this session
         const subSnapshot = await schoolData('subjects')
@@ -776,3 +1022,5 @@ window.removeSection = removeSection;
 window.updateRegistrationSections = updateRegistrationSections;
 window.loadClassesForRegistration = loadClassesForRegistration;
 window.getNextStudentId = getNextStudentId;
+window.deleteClass = deleteClass;
+window.toggleClassStatus = toggleClassStatus;

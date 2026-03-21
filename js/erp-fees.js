@@ -10,16 +10,16 @@ async function initERPFees() {
 
     // 2. Initialize Searchable Selects
     if (typeof initSearchableSelect === 'function') {
-        // Legacy Search
-        initSearchableSelect('feeSearchSidContainer', (s) => {
+        // 1. Fee Search Select
+        initSearchableSelect('feeSearchSidContainer', window.allStudents || [], (s) => {
             document.getElementById('feeSearchSid').value = s.studentId || s.student_id;
-            searchStudentFees();
+            if (typeof searchStudentFees === 'function') searchStudentFees();
         });
 
-        // New Payment Collector Search
-        initSearchableSelect('feeCollectorSidContainer', (s) => {
+        // 2. Fee Collection Select
+        initSearchableSelect('feeCollectorSidContainer', window.allStudents || [], (s) => {
             document.getElementById('feeCollectorSid').value = s.studentId || s.student_id;
-            loadStudentLedgerData(s.studentId || s.student_id);
+            if (typeof loadStudentLedgerData === 'function') loadStudentLedgerData(s.studentId || s.student_id);
         });
     }
 
@@ -33,7 +33,7 @@ async function initERPFees() {
             const snap = await schoolData('sessions').orderBy('name', 'desc').get();
             const sessionHtml =
                 '<option value="">Select Session</option>' +
-                snap.docs.map((doc) => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+                snap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
 
             if (duesSession) duesSession.innerHTML = sessionHtml;
             if (fmSession) fmSession.innerHTML = sessionHtml;
@@ -53,6 +53,7 @@ async function initERPFees() {
                         classEl.innerHTML =
                             '<option value="">All Classes</option>' +
                             classSnap.docs
+                                .filter((c) => !c.data().disabled)
                                 .map((c) => `<option value="${c.data().name}">${c.data().name}</option>`)
                                 .join('');
                     }
