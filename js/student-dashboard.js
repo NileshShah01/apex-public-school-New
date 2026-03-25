@@ -86,11 +86,21 @@ async function applyStudentBranding() {
 
         // Footer & Loading
         if (document.getElementById('portalFooterText')) {
-            document.getElementById('portalFooterText').innerText = `© ${new Date().getFullYear()} ${name}. Powered by SNR World.`;
+            document.getElementById('portalFooterText').innerText = `© ${new Date().getFullYear()} ${name}. Powered by Nexorasoftagency.`;
         }
         if (document.getElementById('loadingPortalText')) {
-            document.getElementById('loadingPortalText').innerText = `Loading ${name} Portal...`;
+            document.getElementById('loadingPortalText').innerText = `Syncing with ${name} Registry...`;
         }
+
+        // Favicon
+        let favicon = document.querySelector('link[rel="icon"]');
+        if (!favicon) {
+            favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            document.head.appendChild(favicon);
+        }
+        favicon.href = logo;
+
     } catch (e) {
         console.error('Branding failed:', e);
     }
@@ -130,7 +140,7 @@ function showPortalSection(sectionId, updateHash = true) {
     if (sectionId === 'transport') fetchTransport();
     if (sectionId === 'library') fetchLibrary();
     if (sectionId === 'materials') loadExamMaterials();
-    if (sectionId === 'results') fetchManualReports();
+    if (sectionId === 'results' || sectionId === 'exams') fetchUnifiedReports();
 
     // Visitor Access Logic
     if (isVisitor) {
@@ -308,11 +318,8 @@ function displayStudentProfile(data) {
     const photoUrl = data.photo_url || `${GITHUB_BASE}/images/students/${data.studentId || data.admNo}.jpg`;
     updateStudentPhoto(photoUrl);
 
-    // Initial Documents Check
+    // Dynamic Section Visibility (if not already handled by loadDashboardConfig)
     updateResultLink();
-    if (isVisitor) {
-        applyVisitorSidebarFilter();
-    }
 }
 
 function applyVisitorSidebarFilter() {
@@ -392,7 +399,12 @@ async function fetchHomework() {
     const empty = document.getElementById('noHomeworkMsg');
     if (!grid || !currentStudentClass) return;
 
-    grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 3rem;">Loading assignments...</p>';
+    // Premium Skeleton Loading
+    grid.innerHTML = `
+        <div class="skeleton-card" style="height: 180px; border-radius: 1rem;"></div>
+        <div class="skeleton-card" style="height: 180px; border-radius: 1rem;"></div>
+        <div class="skeleton-card" style="height: 180px; border-radius: 1rem;"></div>
+    `;
 
     try {
         const currentStudentSection = currentStudentData?.section || 'A';
@@ -415,12 +427,12 @@ async function fetchHomework() {
             const d = doc.data();
             const dateStr = d.date ? new Date(d.date.seconds * 1000).toLocaleDateString() : 'N/A';
             const card = `
-                <div class="card" style="padding: 1.5rem; position: relative; overflow: hidden;">
-                    <span class="badge" style="position: absolute; top: 1rem; right: 1rem; background: var(--bg-gray);">${d.subject}</span>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--secondary);">${d.title}</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Published: ${dateStr}</p>
-                    <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 1.5rem;">${d.content || d.description}</div>
-                    ${d.attachment ? `<a href="${d.attachment}" target="_blank" class="btn-portal btn-ghost" style="width: 100%; justify-content: center;"><i class="fas fa-paperclip"></i> View Attachment</a>` : ''}
+                <div class="card hover-translate transition-all-500" style="padding: 1.5rem; position: relative; overflow: hidden; border: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(8px);">
+                    <span class="badge" style="position: absolute; top: 1rem; right: 1rem; background: var(--primary); color: white;">${d.subject}</span>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--secondary); font-weight: 700;">${d.title}</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;"><i class="far fa-calendar-alt mr-0-25"></i> Published: ${dateStr}</p>
+                    <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 1.5rem; opacity: 0.8;">${d.content || d.description}</div>
+                    ${d.attachment ? `<a href="${d.attachment}" target="_blank" class="btn-portal btn-ghost" style="width: 100%; justify-content: center; border-radius: 0.5rem;"><i class="fas fa-paperclip"></i> View Attachment</a>` : ''}
                 </div>
             `;
             grid.innerHTML += card;
@@ -733,9 +745,9 @@ async function fetchAttendance() {
                 }[d.status] || '';
 
             table.innerHTML += `
-                <tr>
-                    <td style="font-weight:600;">${new Date(d.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                    <td><span class="badge" style="${statusClass}">${d.status.toUpperCase()}</span></td>
+                <tr class="hover-translate transition-all">
+                    <td style="font-weight:600; padding: 1rem 0.5rem;">${new Date(d.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                    <td><span class="badge" style="border-radius: 0.5rem; font-weight: 700; ${statusClass}">${d.status.toUpperCase()}</span></td>
                     <td style="font-size:0.8rem; color:var(--text-muted);">${d.remarks || '-'}</td>
                 </tr>
             `;
@@ -809,34 +821,128 @@ async function updateResultLink() {
             resultArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not published</div>';
     }
 
-    // Check Admit Card
-    try {
-        const docRef = await schoolDoc('admitcards', `${currentStudentID}_${year}`).get();
-        if (docRef.exists) {
-            admitArea.innerHTML = `<a href="${docRef.data().fileData}" download class="btn-portal" style="background: #ea580c; color: white; width: 100%; justify-content: center;"><i class="fas fa-download"></i> Admit Card</a>`;
-        } else {
-            throw new Error('404');
-        }
-    } catch (e) {
-        if (admitArea)
-            admitArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not available</div>';
-    }
-
     // Timetable
     if (timetableArea && currentStudentClass) {
         try {
             const classId = currentStudentClass.toLowerCase().replace(/\s+/g, '-');
             const docRef = await schoolDoc('timetables', classId).get();
             if (docRef.exists) {
-                timetableArea.innerHTML = `<a href="${docRef.data().fileData}" download class="btn-portal" style="background:#0d9488; color:white; width:auto;"><i class="fas fa-download"></i> View Timetable</a>`;
+                timetableArea.innerHTML = `<a href="${docRef.data().fileData}" download class="btn-portal" style="background:#0d9488; color:white; width:auto; justify-content:center;"><i class="fas fa-download"></i> View Timetable</a>`;
             } else {
                 throw new Error('404');
             }
         } catch (e) {
             timetableArea.innerHTML =
-                '<span style="font-size:0.8rem; color:var(--text-muted);">Class timetable not uploaded.</span>';
+                '<span style="font-size:0.8rem; color:var(--text-muted); padding: 0.5rem; display: block; background: var(--bg-gray); border-radius: 0.5rem;">Class timetable not uploaded yet.</span>';
         }
     }
+}
+
+/**
+ * Unified logic to fetch both auto-generated and manual report cards
+ */
+async function fetchUnifiedReports() {
+    const manualArea = document.getElementById('manualResultsArea');
+    const examResultArea = document.getElementById('resultStatusArea');
+    if (!manualArea && !examResultArea) return;
+
+    const year = document.getElementById('academicYear').value;
+    const skeleton = `
+        <div class="skeleton-card" style="height: 60px; margin-bottom: 0.75rem; border-radius: 0.75rem;"></div>
+        <div class="skeleton-card" style="height: 60px; margin-bottom: 0.75rem; border-radius: 0.75rem;"></div>
+    `;
+
+    if (manualArea) manualArea.innerHTML = skeleton;
+    if (examResultArea) examResultArea.innerHTML = '<span class="text-xs opacity-50">Syncing...</span>';
+
+    try {
+        // 1. Fetch Manual Uploads
+        const manualSnap = await schoolData('reports')
+            .where('studentId', 'in', [currentStudentData.studentId || '', currentStudentData.admNo || '', currentStudentID])
+            .where('published', '==', true)
+            .get();
+
+        // 2. Check Auto-Generated (Legacy format or specific term reports)
+        const autoDoc = await schoolDoc('reports', `${currentStudentID}_${year}`).get();
+        let pubStatus = false;
+        if (autoDoc.exists) {
+            const pubSnap = await schoolData('publications')
+                .where('className', '==', currentStudentClass)
+                .where('published', '==', true)
+                .get();
+            pubStatus = !pubSnap.empty;
+        }
+
+        // Logic for "Exams" Section (Latest Result)
+        if (examResultArea) {
+            if (pubStatus && autoDoc.exists) {
+                examResultArea.innerHTML = `<a href="${autoDoc.data().fileData}" download="Report_${year}.pdf" class="btn-portal btn-primary w-full justify-center"><i class="fas fa-download"></i> Latest Result</a>`;
+            } else if (!manualSnap.empty) {
+                const latest = manualSnap.docs[0].data();
+                examResultArea.innerHTML = `<a href="${latest.fileData}" download="${latest.title || 'Result'}.pdf" class="btn-portal btn-primary w-full justify-center"><i class="fas fa-download"></i> View Report</a>`;
+            } else {
+                examResultArea.innerHTML = '<div class="text-xs opacity-50 py-1">No active reports</div>';
+            }
+        }
+
+        // Logic for "My Report Card" Section (List)
+        if (manualArea) {
+            let reportsHtml = '';
+
+            // Add auto-gen if published
+            if (pubStatus && autoDoc.exists) {
+                reportsHtml += renderReportRow({
+                    title: `Annual Report Card ${year}`,
+                    session: year,
+                    fileData: autoDoc.data().fileData,
+                    uploadedAt: autoDoc.data().generatedAt || null,
+                    type: 'System Generated'
+                });
+            }
+
+            // Add manuals
+            manualSnap.forEach(doc => {
+                reportsHtml += renderReportRow({
+                    ...doc.data(),
+                    type: 'Official Upload'
+                });
+            });
+
+            if (reportsHtml === '') {
+                manualArea.innerHTML = `
+                    <div class="flex-center p-4 text-muted border-radius-1 bg-secondary dashed">
+                        <p class="m-0 italic">No published reports currently available.</p>
+                    </div>
+                `;
+            } else {
+                manualArea.innerHTML = reportsHtml;
+            }
+        }
+
+    } catch (e) {
+        console.error("Unified Report Fetch Error:", e);
+        if (manualArea) manualArea.innerHTML = '<p class="text-xs text-danger">Failed to load reports archive.</p>';
+    }
+}
+
+function renderReportRow(r) {
+    const dateStr = r.uploadedAt ? (r.uploadedAt.toDate ? r.uploadedAt.toDate().toLocaleDateString() : new Date(r.uploadedAt).toLocaleDateString()) : 'Institutional Record';
+    return `
+        <div class="card flex-between p-1 border-left-primary bg-white shadow-sm hover-translate transition-all" style="margin-bottom: 0.75rem;">
+            <div class="flex align-center gap-1">
+                <div class="w-10 h-10 bg-blue-light text-primary flex-center border-radius-0-75 text-lg">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="text-left">
+                    <h4 class="m-0 secondary text-sm fw-700">${r.title || 'Academic Record'}</h4>
+                    <p class="text-xs text-muted m-0">${r.type} | ${dateStr}</p>
+                </div>
+            </div>
+            <button onclick="downloadReport('${r.fileData}', '${r.title || 'ReportCard'}')" class="btn-portal btn-white shadow-sm font-bold text-xs p-0-5-1">
+                <i class="fas fa-download mr-0-5"></i>
+            </button>
+        </div>
+    `;
 }
 
 async function loadExamMaterials() {
@@ -1021,58 +1127,10 @@ window.printStudentReceipt = printStudentReceipt;
 window.closePortalModal = closePortalModal;
 
 /**
- * Fetch and display manually uploaded report cards for the student
+ * Redundant - Handled by fetchUnifiedReports
  */
 async function fetchManualReports() {
-    const area = document.getElementById('manualResultsArea');
-    if (!area) return;
-
-    try {
-        area.innerHTML = `
-            <div class="flex-center p-4 text-muted">
-                <i class="fas fa-spinner fa-spin mr-0-5"></i> Searching archives...
-            </div>
-        `;
-
-        const q = schoolData('reports')
-            .where('studentId', 'in', [currentStudentData.studentId || '', currentStudentData.admNo || '', currentStudentID])
-            .where('status', '==', 'published');
-        
-        const snap = await q.get();
-
-        if (snap.empty) {
-            area.innerHTML = `
-                <div class="flex-center p-4 text-muted border-radius-1 bg-secondary dashed">
-                    <p class="m-0 italic">No published report cards found for your ID.</p>
-                </div>
-            `;
-            return;
-        }
-
-        area.innerHTML = snap.docs.map(doc => {
-            const r = doc.data();
-            return `
-                <div class="card flex-between p-1-25 border-left-primary bg-white shadow-sm hover-translate transition-all">
-                    <div class="flex align-center gap-1">
-                        <div class="w-10 h-10 bg-blue-light text-primary flex-center border-radius-0-75 text-lg">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <div class="text-left">
-                            <h4 class="m-0 secondary text-md">${r.title || 'Academic Report Card'}</h4>
-                            <p class="text-xs text-muted m-0">${r.session || 'Current Session'} | ${r.uploadedAt?.toDate()?.toLocaleDateString() || 'Recently Uploaded'}</p>
-                        </div>
-                    </div>
-                    <button onclick="downloadReport('${r.fileData}', '${r.title || 'ReportCard'}')" class="btn-portal btn-white shadow-sm font-bold text-xs p-0-5-1">
-                        <i class="fas fa-download mr-0-5"></i> Download
-                    </button>
-                </div>
-            `;
-        }).join('');
-
-    } catch (e) {
-        console.error('Fetch reports failed:', e);
-        area.innerHTML = `<p class="text-danger p-2 text-center text-xs">Correctional synchronization failed. Please retry later.</p>`;
-    }
+    return fetchUnifiedReports();
 }
 
 function downloadReport(base64, filename) {

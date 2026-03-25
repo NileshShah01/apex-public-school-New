@@ -541,9 +541,47 @@
                     </div>
                 </header>
 
-                <!-- Dashboard Overview Section (New Container for Home Elements) -->
-
-
+                <!-- ERP DASHBOARD OVERVIEW -->
+                <section id="dashboardOverviewSection" class="dashboard-section active">
+                    <div class="stats-grid" id="statsOverview">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-sky-opacity-10 text-sky">
+                                <i class="fas fa-user-graduate" title="Total Students"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Students</h3>
+                                <p id="totalStudentsCount">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-emerald-opacity-10 text-emerald">
+                                <i class="fas fa-chalkboard-teacher" title="Total Teachers"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Teachers</h3>
+                                <p id="totalTeachersCount">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-amber-opacity-10 text-amber">
+                                <i class="fas fa-indian-rupee-sign" title="Monthly Fees"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Monthly Fees</h3>
+                                <p id="monthlyFeesTotal">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-rose-opacity-10 text-rose">
+                                <i class="fas fa-clock" title="Today's Attendance"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Today's Attendance</h3>
+                                <p id="attendanceRate">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 <!-- Student ID Card Generator -->
                 <section id="studentIdPrintSection" class="dashboard-section hidden">
                     <div class="header">
@@ -729,11 +767,31 @@
                             <thead>
                                 <tr>
                                     <th class="w-10"><input type="checkbox" id="selectAll" title="Select All" /></th>
-                                    <th>Student ID</th>
+                                    <th>ID</th>
+                                    <th>Roll No</th>
+                                    <th>Reg No</th>
                                     <th>Name</th>
-                                    <th>Class</th>
-                                    <th>Section</th>
-                                    <th>Mobile Number</th>
+                                    <th>Class/Sec</th>
+                                    <th>Session</th>
+                                    <th>Father Name</th>
+                                    <th>Mother Name</th>
+                                    <th>Mobile</th>
+                                    <th>DOB</th>
+                                    <th>Gender</th>
+                                    <th>Category</th>
+                                    <th>Caste</th>
+                                    <th>Religion</th>
+                                    <th>Aadhar</th>
+                                    <th>PEN</th>
+                                    <th>Smart Card</th>
+                                    <th>Guardian</th>
+                                    <th>G.Phone</th>
+                                    <th>Current Address</th>
+                                    <th>Permanent Address</th>
+                                    <th>City</th>
+                                    <th>Hostel</th>
+                                    <th>Transport</th>
+                                    <th>Join Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -795,6 +853,13 @@
                             <p>Mark and track daily attendance for students</p>
                         </div>
                         <div class="header-actions">
+                            <button class="btn-portal btn-ghost" onclick="downloadAttendanceTemplate()">
+                                <i class="fas fa-download"></i> Download Template
+                            </button>
+                            <button class="btn-portal btn-ghost" onclick="document.getElementById('att_excelUpload').click()">
+                                <i class="fas fa-file-excel"></i> Mark via Excel
+                            </button>
+                            <input type="file" id="att_excelUpload" class="hidden" accept=".xlsx, .xls" onchange="handleAttendanceExcelUpload(event)">
                             <button class="btn-portal btn-ghost" onclick="markAllPresent()">
                                 <i class="fas fa-check-double"></i> Mark All Present
                             </button>
@@ -1134,11 +1199,18 @@
                         </div>
                         <div class="form-group mb-0">
                             <label>Section</label>
-                            <select id="bulkRes_sectionSelect" class="form-control" title="Select Section"></select>
+                            <select
+                                id="bulkRes_sectionSelect"
+                                class="form-control"
+                                onchange="loadStudentsForBulkRes()"
+                                title="Select Section"
+                            >
+                                <option value="All">All Sections</option>
+                            </select>
                         </div>
                         <div class="form-group mb-0">
-                            <label>Exam Term</label>
-                            <select id="bulkRes_examSelect" class="form-control" title="Select Exam Term"></select>
+                            <label>Assessment Term</label>
+                            <select id="bulkRes_examSelect" class="form-control" title="Select Exam"></select>
                         </div>
                         <button
                             class="btn-portal btn-secondary h-42"
@@ -1410,7 +1482,7 @@
                             </label>
                             <input type="file" id="marksExcelInput" class="hidden" accept=".xlsx, .xls" onchange="handleMarksExcelUpload(event)">
                             
-                            <button class="btn-portal btn-secondary" onclick="downloadExcelTemplate('marks')" title="Download Excel Template">
+                            <button class="btn-portal btn-secondary" onclick="downloadMarksExcelTemplate()" title="Download Excel Template">
                                 <i class="fas fa-download mr-1"></i> Template
                             </button>
 
@@ -1423,12 +1495,12 @@
                     <div class="table-container">
                         <div class="table-responsive">
                             <table class="portal-table">
-                                <thead>
+                                <thead id="marksGridHeaderRow">
                                     <tr>
                                         <th class="w-100">Roll No</th>
                                         <th>Student Name</th>
-                                        <th class="min-w-150">Score Obtained</th>
-                                        <th class="w-150">Status</th>
+                                        <th id="singleSubjectHeader" class="min-w-150">Score Obtained</th>
+                                        <th id="statusHeader" class="w-150">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="marksGridTableBody">
@@ -1610,30 +1682,69 @@
                         <h1>Report Card Preview</h1>
                         <p>Generate and verify individual student report cards</p>
                     </div>
-                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
-                        <div class="form-group mb-0" id="rcPreviewSearchContainer">
-                            <label>Search Student</label>
-                            <!-- Searchable select initialized via JS -->
+                    <div class="glass-card p-1-5 mb-2 grid-auto-180 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="rcPreviewSession" class="form-control" onchange="loadRcClasses()" title="Select Session"></select>
                         </div>
-                        <input type="hidden" id="rcPreviewSid">
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="rcPreviewClass" class="form-control" onchange="loadRcSections()" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="rcPreviewSection" class="form-control" onchange="loadRcStudents()" title="Select Section"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Student</label>
+                            <select id="rcPreviewStudentSelect" class="form-control" title="Select Student (Optional)">
+                                <option value="All">All Students</option>
+                            </select>
+                        </div>
                         <div class="form-group mb-0">
                             <label>Exam Term</label>
                             <select id="rcPreviewExam" class="form-control" title="Select Exam"></select>
                         </div>
                         <div class="form-group mb-0">
-                            <label>Template Format</label>
-                            <select id="rcPreviewFormat" class="form-control" title="Select Format">
-                                <option value="premium">Premium Glass</option>
-                                <option value="Himalayan">Standard Himalayan</option>
+                            <label>Format / Template</label>
+                            <select id="rcPreviewFormat" class="form-control" title="Select Format" onchange="previewSingleReportCard(false)">
+                                <option value="premium">Premium Glassmorphic</option>
+                                <option value="himalayan">Standard Himalayan</option>
+                                <option value="classic">Classic Academic</option>
                             </select>
                         </div>
-                        <button class="btn-portal btn-primary h-42" onclick="previewSingleReportCard()">
-                            <i class="fas fa-eye mr-1"></i> Preview Report
-                        </button>
+                        <div class="flex gap-0-5">
+                            <button class="btn-portal btn-primary h-42 flex-1" onclick="previewSingleReportCard(false)">
+                                <i class="fas fa-eye mr-1"></i> Preview
+                            </button>
+                            <button class="btn-portal btn-secondary h-42" onclick="previewSingleReportCard(true)" title="Download PDF">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="glass-card p-2 text-center text-muted">
-                        <i class="fas fa-file-pdf text-4xl opacity-20 block mb-1"></i>
-                        <p>Select a student and exam to generate a preview PDF</p>
+
+                    <div class="grid-2-1 gap-1-5">
+                        <div class="card">
+                            <h3 class="mb-1-25"><i class="fas fa-info-circle primary"></i> How to use</h3>
+                            <div class="text-sm text-muted">
+                                <p class="mb-1">1. Select <b>Session</b>, <b>Class</b>, and <b>Section</b>.</p>
+                                <p class="mb-1">2. Choose a specific <b>Student</b> for a real-data preview, or leave as "All" for a template sample.</p>
+                                <p class="mb-1">3. Select the <b>Exam Term</b> and preferred <b>Format</b>.</p>
+                                <p>4. Click <b>Generate Preview</b> to view the result in the viewport.</p>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <button class="btn btn-outline-primary btn-sm" onclick="downloadPreviewPdf()">
+                                    <i class="fas fa-download mr-1"></i> Download Sample PDF
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="rcPreviewContainer" class="preview-viewport card" style="min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #eaeff2; overflow: auto; padding: 20px; border-radius: 12px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-file-pdf text-4xl opacity-20 block mb-1"></i>
+                                <p>Select criteria to generate preview</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -1643,14 +1754,22 @@
                         <h1>Publish Exam Results</h1>
                         <p>Toggle final result visibility for students and parents</p>
                     </div>
-                    <div class="glass-card p-1-5 mb-2 grid-2 gap-1 align-flex-end">
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
                         <div class="form-group mb-0">
                             <label>Academic Session</label>
-                            <select id="publishSessionSelect" class="form-control" onchange="refreshPublishStatus()" title="Select Session"></select>
+                            <select id="publishSessionSelect" class="form-control" onchange="PublishResultsUI.loadClasses()" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="publishClassSelect" class="form-control" onchange="PublishResultsUI.loadSections()" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="publishSectionSelect" class="form-control" onchange="PublishResultsUI.refresh()" title="Select Section"></select>
                         </div>
                         <div class="form-group mb-0">
                             <label>Assessment Term</label>
-                            <select id="publishExamSelect" class="form-control" onchange="refreshPublishStatus()" title="Select Exam Term"></select>
+                            <select id="publishExamSelect" class="form-control" onchange="PublishResultsUI.refresh()" title="Select Exam Term"></select>
                         </div>
                     </div>
                     <div class="glass-card p-0 overflow-hidden">
@@ -1743,10 +1862,18 @@
                         <h1>Remarks & Co-Scholastic</h1>
                         <p>Enter teacher remarks and grades for non-academic activities</p>
                     </div>
-                    <div class="glass-card p-1-5 mb-2 grid-2 gap-1 align-flex-end">
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="remarkSessionSelect" class="form-control" title="Select Session" onchange="loadRemarkClasses()"></select>
+                        </div>
                         <div class="form-group mb-0">
                             <label>Class</label>
-                            <select id="remarkClassSelect" class="form-control" title="Select Class" onchange="loadRemarksGrid()"></select>
+                            <select id="remarkClassSelect" class="form-control" title="Select Class" onchange="loadRemarkSections()"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="remarkSectionSelect" class="form-control" title="Select Section" onchange="loadRemarksGrid()"></select>
                         </div>
                         <div class="form-group mb-0">
                             <label>Exam</label>
@@ -4921,107 +5048,6 @@
                     </div>
                 </div>
 
-                <!-- ERP DASHBOARD OVERVIEW -->
-                <section id="dashboardOverviewSection" class="dashboard-section active">
-                    <div class="header">
-                        <div>
-                            <h1>Dashboard Overview</h1>
-                            <p class="text-sm opacity-80 mt-1">Manage your school portal</p>
-                        </div>
-                    </div>
-
-                    <div class="stats-grid" id="statsOverview">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-sky-opacity-10 text-sky">
-                                <i class="fas fa-user-graduate" title="Total Students"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Total Students</h3>
-                                <p id="totalStudentsCount">Loading...</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-emerald-opacity-10 text-emerald">
-                                <i class="fas fa-chalkboard-teacher" title="Total Teachers"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Total Teachers</h3>
-                                <p id="totalTeachersCount">Loading...</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-amber-opacity-10 text-amber">
-                                <i class="fas fa-indian-rupee-sign" title="Monthly Fees"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Monthly Fees</h3>
-                                <p id="monthlyFeesTotal">Loading...</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-rose-opacity-10 text-rose">
-                                <i class="fas fa-clock" title="Today's Attendance"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>Today's Attendance</h3>
-                                <p id="attendanceRate">Loading...</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ERP Service Hub - Quick Access -->
-                    <div id="quickActionsHub" class="feature-hub mt-2">
-                        <h2 class="mb-1-5"><i class="fas fa-th-large"></i> ERP Service Hub</h2>
-                        <div class="feature-grid">
-                            <div class="feature-card" onclick="showSection('addEnquiry')">
-                                <div class="icon-box-small flex-center bg-blue-light text-primary border-radius-12">
-                                    <i class="fas fa-user-plus"></i>
-                                </div>
-                                <h4>New Enquiry</h4>
-                                <p>Record admission leads</p>
-                            </div>
-                            <a href="#students" class="feature-card" onclick="showSection('studentList')">
-                                <div class="icon-box bg-blue-light flex-center"><i class="fas fa-user-plus"></i></div>
-                                <h4>Add Student</h4>
-                                <p>Register new profiles</p>
-                            </a>
-                            <a href="#idPrint" class="feature-card" onclick="showSection('studentIdPrint')">
-                                <div class="icon-box bg-green-light flex-center"><i class="fas fa-id-card"></i></div>
-                                <h4>ID Card</h4>
-                                <p>Generate & Print</p>
-                            </a>
-                            <a href="#reports" class="feature-card" onclick="showSection('bulkResultGenerator')">
-                                <div class="icon-box bg-indigo-light flex-center"><i class="fas fa-print"></i></div>
-                                <h4>Report Card</h4>
-                                <p>Bulk PDF generator</p>
-                            </a>
-                            <a href="#fees" class="feature-card" onclick="showSection('feeMaster')">
-                                <div class="icon-box bg-amber-light flex-center">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <h4>Fee Management</h4>
-                                <p>Record & Tracker</p>
-                            </a>
-                            <a href="#exams" class="feature-card" onclick="showSection('manageExam')">
-                                <div class="icon-box bg-indigo-light flex-center"><i class="fas fa-magic"></i></div>
-                                <h4>Exams</h4>
-                                <p>Marks & Grading</p>
-                            </a>
-                            <a href="#attendance" class="feature-card" onclick="showSection('attendanceManagement')">
-                                <div class="icon-box bg-red-light flex-center"><i class="fas fa-check-double"></i></div>
-                                <h4>Attendance</h4>
-                                <p>Daily Bulk Entry</p>
-                            </a>
-                            <a href="#classes" class="feature-card" onclick="showSection('addClass')">
-                                <div class="icon-box bg-amber-light flex-center">
-                                    <i class="fas fa-ruler-combined"></i>
-                                </div>
-                                <h4>Classes</h4>
-                                <p>Structure & Stats</p>
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- ADMIN PORTAL CMS SECTION -->
                 <section id="adminPortalCMSSection" class="dashboard-section hidden card">

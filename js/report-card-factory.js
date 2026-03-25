@@ -9,9 +9,7 @@ const ReportCardFactory = {
      * Modern design with multi-graph analysis, colored tables, and professional layout.
      */
     async generatePremium(student, marks, examDetails, schoolDetails) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        await this._renderPremium(doc, student, marks, examDetails, schoolDetails);
+        const doc = await this.getReportCardDoc('premium', student, marks, examDetails, schoolDetails);
         doc.save(`Premium_Report_${student.student_id}.pdf`);
     },
 
@@ -162,100 +160,78 @@ const ReportCardFactory = {
      * @param {Object} schoolDetails - Header info (Logo, Name, etc.)
      */
     async generateHimalayan(student, marks, examDetails, schoolDetails) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const W = 210;
-        const H = 297;
-        const margin = 10;
+        const doc = await this.getReportCardDoc('himalayan', student, marks, examDetails, schoolDetails);
+        doc.save(`Report_Card_Himalayan_${student.student_id}.pdf`);
+    },
 
+    async _renderHimalayan(doc, student, marks, examDetails, schoolDetails) {
+        const W = 210, H = 297, margin = 10;
         // 1. HEADER
         this._drawHeader(doc, schoolDetails, examDetails, margin, W);
-
         // 2. STUDENT PROFILE
         let currentY = 45;
         currentY = this._drawProfile(doc, student, currentY, margin, W);
-
         // 3. SCHOLASTIC AREA (TABLE)
         currentY += 5;
         currentY = this._drawScholasticTable(doc, marks, currentY, margin, W);
-
         // 4. GRAPHICAL ANALYSIS
         currentY += 10;
-        if (currentY + 60 > H - 30) {
-            doc.addPage();
-            currentY = margin;
-        }
+        if (currentY + 60 > H - 30) { doc.addPage(); currentY = margin; }
         currentY = await this._drawGraphicalAnalysis(doc, marks, currentY, margin, W);
-
         // 5. CO-SCHOLASTIC & ATTENDANCE
         currentY += 10;
         currentY = this._drawCoScholastic(doc, student, currentY, margin, W);
-
         // 6. SIGNATURES
         this._drawSignatures(doc, H - 30, margin, W);
-
-        doc.save(`Report_Card_Himalayan_${student.student_id}.pdf`);
     },
 
     /**
      * Generate MCQ Normal Report Card (Simple Summary)
      */
     async generateMCQNormal(student, marks, examDetails, schoolDetails) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const W = 210,
-            H = 297,
-            margin = 15;
+        const doc = await this.getReportCardDoc('mcq_normal', student, marks, examDetails, schoolDetails);
+        doc.save(`MCQ_Normal_${student.student_id}.pdf`);
+    },
 
+    async _renderMCQNormal(doc, student, marks, examDetails, schoolDetails) {
+        const W = 210, H = 297, margin = 15;
         this._drawHeader(doc, schoolDetails, examDetails, margin, W);
         let currentY = 50;
-
         doc.setFontSize(14);
         doc.text('MCQ PERFORMANCE SUMMARY', W / 2, currentY, { align: 'center' });
         currentY += 10;
-
         currentY = this._drawProfile(doc, student, currentY, margin, W);
         currentY += 10;
-
         const totalObtained = marks.reduce((acc, m) => acc + (Number(m.total) || 0), 0);
-        const totalMax = marks.length * 100; // Assuming 100 per subject
+        const totalMax = marks.length * 100;
         const percentage = ((totalObtained / totalMax) * 100).toFixed(1);
-
         doc.setFontSize(12);
         doc.rect(margin, currentY, W - margin * 2, 40);
         doc.text(`Total Subjects: ${marks.length}`, margin + 10, currentY + 10);
         doc.text(`Total Marks: ${totalObtained} / ${totalMax}`, margin + 10, currentY + 20);
         doc.text(`Percentage: ${percentage}%`, margin + 10, currentY + 30);
-        doc.text(`Result Status: ${percentage >= 33 ? 'QUALIFIED' : 'NOT QUALIFIED'}`, W - margin - 10, currentY + 20, {
-            align: 'right',
-        });
-
+        doc.text(`Result Status: ${percentage >= 33 ? 'QUALIFIED' : 'NOT QUALIFIED'}`, W - margin - 10, currentY + 20, { align: 'right' });
         this._drawSignatures(doc, H - 40, margin, W);
-        doc.save(`MCQ_Normal_${student.student_id}.pdf`);
     },
 
     /**
      * Generate MCQ Standard Report Card (With Progress Chart)
      */
     async generateMCQStandard(student, marks, examDetails, schoolDetails) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const W = 210,
-            H = 297,
-            margin = 15;
+        const doc = await this.getReportCardDoc('mcq_standard', student, marks, examDetails, schoolDetails);
+        doc.save(`MCQ_Standard_${student.student_id}.pdf`);
+    },
 
+    async _renderMCQStandard(doc, student, marks, examDetails, schoolDetails) {
+        const W = 210, H = 297, margin = 15;
         this._drawHeader(doc, schoolDetails, examDetails, margin, W);
         let currentY = 50;
         currentY = this._drawProfile(doc, student, currentY, margin, W);
-
         currentY += 10;
         currentY = this._drawScholasticTable(doc, marks, currentY, margin, W);
-
         currentY += 15;
         doc.setFontSize(11);
         doc.text('PERFORMANCE PROGRESSION', margin, currentY);
-
-        // Horizontal Progress Bars (Custom Drawing)
         marks.forEach((m, i) => {
             const barY = currentY + 10 + i * 8;
             const score = Number(m.total) || 0;
@@ -264,76 +240,75 @@ const ReportCardFactory = {
             doc.setDrawColor(220);
             doc.rect(margin + 40, barY, 100, 5);
             doc.setFillColor(54, 162, 235);
-            doc.rect(margin + 40, barY, score, 5, 'F');
+            doc.rect(margin + 40, barY, Math.min(score, 100), 5, 'F');
             doc.text(`${score}%`, margin + 145, barY + 4);
         });
-
         this._drawSignatures(doc, H - 40, margin, W);
-        doc.save(`MCQ_Standard_${student.student_id}.pdf`);
     },
 
     /**
      * Generate MCQ Advance Report Card (Deep Analysis)
      */
     async generateMCQAdvance(student, marks, examDetails, schoolDetails) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const W = 210,
-            H = 297,
-            margin = 10;
+        const doc = await this.getReportCardDoc('mcq_advance', student, marks, examDetails, schoolDetails);
+        doc.save(`MCQ_Advance_${student.student_id}.pdf`);
+    },
 
+    async _renderMCQAdvance(doc, student, marks, examDetails, schoolDetails) {
+        const W = 210, H = 297, margin = 10;
         this._drawHeader(doc, schoolDetails, examDetails, margin, W);
         let currentY = 45;
         currentY = this._drawProfile(doc, student, currentY, margin, W);
-
-        // Subject breakdown
         currentY += 5;
         currentY = this._drawScholasticTable(doc, marks, currentY, margin, W);
-
-        // Radar Chart / Comparative Analysis
         currentY += 10;
         doc.setFontSize(11);
         doc.text('COMPETENCY MAPPING (RADAR ANALYSIS)', W / 2, currentY, { align: 'center' });
-
         const canvas = document.createElement('canvas');
-        canvas.width = 500;
-        canvas.height = 400;
+        canvas.width = 500; canvas.height = 400;
         const ctx = canvas.getContext('2d');
         new Chart(ctx, {
             type: 'radar',
             data: {
                 labels: marks.map((m) => m.subject),
-                datasets: [
-                    {
-                        label: 'Student Score',
-                        data: marks.map((m) => m.total),
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgb(255, 99, 132)',
-                    },
-                ],
+                datasets: [{
+                    label: 'Student Score',
+                    data: marks.map((m) => m.total),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgb(255, 99, 132)',
+                }],
             },
             options: { animation: false, scales: { r: { suggestMin: 0, suggestMax: 100 } } },
         });
-
         const imgData = canvas.toDataURL('image/png', 1.0);
         doc.addImage(imgData, 'PNG', margin + 30, currentY + 5, W - margin * 2 - 60, 80);
         currentY += 90;
-
-        // Remedial Suggestions
         doc.rect(margin, currentY, W - margin * 2, 30);
         doc.setFontSize(10);
         doc.text('PERSONALIZED FEEDBACK & REMEDIAL SUGGESTIONS:', margin + 5, currentY + 8);
         doc.setFontSize(9);
         doc.setFont('helvetica', 'italic');
         const weakSubjects = marks.filter((m) => m.total < 50).map((m) => m.subject);
-        const feedback =
-            weakSubjects.length > 0
-                ? `Special attention required in: ${weakSubjects.join(', ')}. Focus on fundamental concepts.`
-                : 'Excellent performance across all domains. Keep maintaining the high standard.';
+        const feedback = weakSubjects.length > 0 ? `Special attention required in: ${weakSubjects.join(', ')}. Focus on fundamental concepts.` : 'Excellent performance across all domains. Keep maintaining the high standard.';
         doc.text(doc.splitTextToSize(feedback, W - margin * 2 - 10), margin + 5, currentY + 18);
-
         this._drawSignatures(doc, H - 30, margin, W);
-        doc.save(`MCQ_Advance_${student.student_id}.pdf`);
+    },
+
+    async getReportCardDoc(type, student, marks, examDetails, schoolDetails) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const t = (type || '').toLowerCase();
+        
+        switch(t) {
+            case 'premium': await this._renderPremium(doc, student, marks, examDetails, schoolDetails); break;
+            case 'himalayan': await this._renderHimalayan(doc, student, marks, examDetails, schoolDetails); break;
+            case 'classic': 
+            case 'mcq_normal': await this._renderMCQNormal(doc, student, marks, examDetails, schoolDetails); break;
+            case 'mcq_standard': await this._renderMCQStandard(doc, student, marks, examDetails, schoolDetails); break;
+            case 'mcq_advance': await this._renderMCQAdvance(doc, student, marks, examDetails, schoolDetails); break;
+            default: await this._renderPremium(doc, student, marks, examDetails, schoolDetails);
+        }
+        return doc;
     },
 
     // --- Helper Methods ---

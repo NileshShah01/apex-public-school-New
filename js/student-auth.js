@@ -55,6 +55,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const data = matchedDoc.data();
 
+                // SECURITY: Explicit Tenant Validation
+                // Even if the query was scoped, double-check that the student belongs to the current portal context
+                if (data.schoolId && window.CURRENT_SCHOOL_ID && data.schoolId !== window.CURRENT_SCHOOL_ID) {
+                    throw new Error('This account is registered with a different school portal. Please login at your school\'s official website.');
+                }
+
                 // Success - store session and redirect
                 localStorage.setItem(
                     'student_session',

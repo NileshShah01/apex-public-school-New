@@ -124,80 +124,65 @@ async function resolveSchoolSlug() {
         return cached;
     }
 
+    const host = window.location.hostname;
     const slug = getURLSlug();
-    if (!slug) {
-        // No slug in URL (root path) — default to SCH001
-        const defaultId = 'SCH001';
-        sessionStorage.setItem('CURRENT_SCHOOL_ID', defaultId);
-        console.log(`[Tenant] No URL slug found, defaulting to: ${defaultId}`);
-        return defaultId;
-    }
+    
+    console.log(`[Tenant] Initializing resolution for Host: ${host}, Slug: ${slug}`);
 
-    // Check hardcoded mappings first (no Firestore query needed)
-    const lower = slug.toLowerCase();
-    const hardcoded = {
-        'apexps': 'SCH001',
-        'nexorasoftagency': 'SCH003',
-    };
-    if (hardcoded[lower]) {
-        sessionStorage.setItem('CURRENT_SCHOOL_ID', hardcoded[lower]);
-        console.log(`[Tenant] Hardcoded slug "${slug}" → ${hardcoded[lower]}`);
-        return hardcoded[lower];
-    }
-
-    // If slug looks like a School ID already (SCH001, SCH002 etc.)
-    if (lower.match(/^sch\d+$/)) {
-        const id = lower.toUpperCase();
-        sessionStorage.setItem('CURRENT_SCHOOL_ID', id);
-        console.log(`[Tenant] Direct School ID in URL: ${id}`);
-        return id;
-    }
-
-    // DYNAMIC RESOLUTION: Query Firestore for the school with this subdomain/slug
+    // DYNAMIC RESOLUTION: Root Path or Custom Domain check via Hostname
     try {
         const firestore = firebase.firestore();
-        console.log(`[Tenant] Resolving slug "${slug}" via Firestore...`);
+        
+        // 1. Check if hostname matches any school's custom domain or recorded subdomain
+        // We look for documents where 'domain' or 'subdomain' matches the current host/slug
+        let schoolMatch = null;
 
-        // Query by subdomain field (case-insensitive check)
-        const snap = await firestore.collection('schools')
-            .where('subdomain', '==', slug)
+        // Try hostname first (for production domains like nexorasoft.in)
+        const hostSnap = await firestore.collection('schools')
+            .where('domain', '==', host)
             .limit(1)
             .get();
 
-        if (!snap.empty) {
-            const schoolId = snap.docs[0].data().schoolId;
-            sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolId);
-            console.log(`[Tenant] ✅ Resolved slug "${slug}" → ${schoolId}`);
-            return schoolId;
+        if (!hostSnap.empty) {
+            schoolMatch = hostSnap.docs[0].data().schoolId;
         }
 
-        // Try lowercase match
-        const snapLower = await firestore.collection('schools')
-            .where('subdomain', '==', lower)
-            .limit(1)
-            .get();
-
-        if (!snapLower.empty) {
-            const schoolId = snapLower.docs[0].data().schoolId;
-            sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolId);
-            console.log(`[Tenant] ✅ Resolved slug "${lower}" → ${schoolId}`);
-            return schoolId;
+        // 2. Try subdomain/slug match (for paths like /apexps)
+        if (!schoolMatch && slug) {
+            const slugSnap = await firestore.collection('schools')
+                .where('subdomain', '==', slug.toLowerCase())
+                .limit(1)
+                .get();
+            
+            if (!slugSnap.empty) {
+                schoolMatch = slugSnap.docs[0].data().schoolId;
+            }
         }
 
-        // Slug not found — might be the schoolId itself used as slug
-        // Check if a school doc exists with this as the doc ID
-        const directDoc = await firestore.collection('schools').doc(slug).get();
-        if (directDoc.exists) {
-            sessionStorage.setItem('CURRENT_SCHOOL_ID', slug);
-            console.log(`[Tenant] ✅ Direct doc match: ${slug}`);
-            return slug;
+        // 3. Try direct School ID match (in URL or as slug)
+        if (!schoolMatch && slug && slug.toLowerCase().match(/^sch\d+$/)) {
+            schoolMatch = slug.toUpperCase();
         }
 
-        console.warn(`[Tenant] ⚠️ Could not resolve slug "${slug}". Falling back to SCH001.`);
+        // 4. Hardcoded fallbacks for local testing or specific known hosts
+        if (!schoolMatch) {
+            if (host.includes('apex-public-school')) schoolMatch = 'SCH001';
+            else if (host.includes('nexorasoft')) schoolMatch = 'SCH003';
+            else if (slug === 'apexps') schoolMatch = 'SCH001';
+            else if (slug === 'snrworld') schoolMatch = 'SCH003';
+        }
+
+        if (schoolMatch) {
+            sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolMatch);
+            console.log(`[Tenant] ✅ Resolved context to: ${schoolMatch}`);
+            return schoolMatch;
+        }
+
+        console.warn(`[Tenant] ⚠️ Could not resolve domain/slug. Falling back to SCH001.`);
         sessionStorage.setItem('CURRENT_SCHOOL_ID', 'SCH001');
         return 'SCH001';
     } catch (e) {
-        console.error('[Tenant] Slug resolution error:', e);
+        console.error('[Tenant] Detailed resolution error:', e);
         sessionStorage.setItem('CURRENT_SCHOOL_ID', 'SCH001');
         return 'SCH001';
     }

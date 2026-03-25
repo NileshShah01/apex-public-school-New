@@ -41,6 +41,7 @@ async function initERPExams() {
             'attnSessionSelect',
             'allResultsSessionSelect',
             'scheduleSessionSelect',
+            'publishSchedSessionSelect',
         ];
         sessionDropdowns.forEach((id) => {
             const el = document.getElementById(id);
@@ -286,7 +287,6 @@ function updateExamSelects() {
         'attnExamSelect',
         'attnMarkExamSelect',
         'remarkExamSelect',
-        'publishExamSelect',
         'nonSubExamSelect',
         'publishSchedExamSelect',
         'allResultsExamSelect',
@@ -681,6 +681,7 @@ async function loadMarksSubjects() {
         const subjects = snap.docs.map((doc) => ({ id: doc.id, name: doc.data().name }));
         el.innerHTML =
             '<option value="">Select Subject</option>' +
+            '<option value="ALL">All Subjects</option>' +
             subjects.map((s) => `<option value="${s.id}">${s.name}</option>`).join('');
     } catch (e) {
         console.error(e);
@@ -689,22 +690,20 @@ async function loadMarksSubjects() {
 
 async function refreshMarksGrid() {
     const sessionId = document.getElementById('marksSessionSelect').value;
-    const sessionName =
-        document.getElementById('marksSessionSelect').options[
-            document.getElementById('marksSessionSelect').selectedIndex
-        ]?.text;
+    const sessionName = document.getElementById('marksSessionSelect').options[document.getElementById('marksSessionSelect').selectedIndex]?.text;
     const className = document.getElementById('marksClassSelect').value;
     const sectionName = document.getElementById('marksSectionSelect').value;
     const examId = document.getElementById('marksExamSelect').value;
     const subjectId = document.getElementById('marksSubjectSelect').value;
     const body = document.getElementById('marksGridTableBody');
+    const headerRow = document.getElementById('marksGridHeaderRow');
 
     if (!body || !className || !sectionName || !examId || !subjectId) {
         if (body) body.innerHTML = '';
         return;
     }
 
-    body.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading students...</td></tr>';
+    body.innerHTML = '<tr><td colspan="10" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
 
     try {
         const studentsSnap = await schoolData('students')
@@ -715,31 +714,56 @@ async function refreshMarksGrid() {
 
         const students = studentsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-        // Load existing marks
-        const marksSnap = await schoolData('marks')
-            .where('examId', '==', examId)
-            .where('subjectId', '==', subjectId)
-            .where('className', '==', className)
-            .where('sectionName', '==', sectionName)
-            .get();
-
-        const existingMarks = {};
-        marksSnap.forEach((doc) => {
-            existingMarks[doc.data().studentId] = doc.data();
-        });
-
         if (students.length === 0) {
-            body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No students found.</td></tr>';
+            body.innerHTML = '<tr><td colspan="10" style="text-align:center;">No students found.</td></tr>';
             return;
         }
 
-        const enteredCount = Object.keys(existingMarks).length;
-        const totalCount = students.length;
+        let subjects = [];
+        let marksQuery = schoolData('marks')
+            .where('examId', '==', examId)
+            .where('className', '==', className)
+            .where('sectionName', '==', sectionName);
+
+        if (subjectId === 'ALL') {
+            const subSnap = await schoolData('subjects').where('sessionId', '==', sessionId).get();
+            subjects = subSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+            
+            headerRow.innerHTML = `
+                <tr>
+                    <th class="w-100">Roll No</th>
+                    <th>Student Name</th>
+                    ${subjects.map(s => `<th class="text-center">${s.name}</th>`).join('')}
+                    <th class="w-100">Status</th>
+                </tr>
+            `;
+        } else {
+            const selSubName = document.getElementById('marksSubjectSelect').options[document.getElementById('marksSubjectSelect').selectedIndex].text;
+            subjects = [{ id: subjectId, name: selSubName }];
+            marksQuery = marksQuery.where('subjectId', '==', subjectId);
+            
+            headerRow.innerHTML = `
+                <tr>
+                    <th class="w-100">Roll No</th>
+                    <th>Student Name</th>
+                    <th id="singleSubjectHeader" class="min-w-150">Score Obtained</th>
+                    <th id="statusHeader" class="w-150">Status</th>
+                </tr>
+            `;
+        }
+
+        const marksSnap = await marksQuery.get();
+        const existingMarks = {}; // studentId -> { subjectId -> data }
+        marksSnap.forEach((doc) => {
+            const d = doc.data();
+            if (!existingMarks[d.studentId]) existingMarks[d.studentId] = {};
+            existingMarks[d.studentId][d.subjectId] = d;
+        });
 
         const countStudentsEl = document.getElementById('marksCountStudents');
         const countEnteredEl = document.getElementById('marksCountEntered');
-        if (countStudentsEl) countStudentsEl.innerText = totalCount;
-        if (countEnteredEl) countEnteredEl.innerText = enteredCount;
+        if (countStudentsEl) countStudentsEl.innerText = students.length;
+        if (countEnteredEl) countEnteredEl.innerText = Object.keys(existingMarks).length;
 
         body.innerHTML = students
             .map(
@@ -747,11 +771,20 @@ async function refreshMarksGrid() {
             <tr data-student-id="${s.id}">
                 <td>${s.roll_no || '-'}</td>
                 <td><strong>${s.name}</strong></td>
-                <td><input type="number" class="marks-input form-control" value="${existingMarks[s.id]?.obtained || ''}" placeholder="0" style="width:120px;"></td>
+                ${subjects.map(sub => `
+                    <td>
+                        <input type="number" 
+                            class="marks-input form-control text-center" 
+                            data-subject-id="${sub.id}"
+                            value="${existingMarks[s.id]?.[sub.id]?.obtained ?? ''}" 
+                            placeholder="0" 
+                            style="width:80px; margin: 0 auto;">
+                    </td>
+                `).join('')}
                 <td>
-                    <select class="status-select form-control" style="width:120px;">
-                        <option value="P" ${existingMarks[s.id]?.status === 'P' ? 'selected' : ''}>Present</option>
-                        <option value="A" ${existingMarks[s.id]?.status === 'A' ? 'selected' : ''}>Absent</option>
+                    <select class="status-select form-control" style="width:100px;">
+                        <option value="P" ${existingMarks[s.id]?.[subjects[0].id]?.status === 'P' ? 'selected' : ''}>Present</option>
+                        <option value="A" ${existingMarks[s.id]?.[subjects[0].id]?.status === 'A' ? 'selected' : ''}>Absent</option>
                     </select>
                 </td>
             </tr>
@@ -761,7 +794,7 @@ async function refreshMarksGrid() {
     } catch (e) {
         console.error(e);
         body.innerHTML =
-            '<tr><td colspan="4" style="text-align:center; color:var(--danger);">Error loading marks grid.</td></tr>';
+            '<tr><td colspan="10" style="text-align:center; color:var(--danger);">Error loading marks grid.</td></tr>';
     }
 }
 
@@ -778,36 +811,97 @@ async function saveMarksGrid() {
     const batch = (window.db || firebase.firestore()).batch();
 
     try {
-        showLoading(true);
+        if (typeof window.setLoading === 'function') window.setLoading(true);
         for (const row of rows) {
             const studentId = row.dataset.studentId;
-            const obtained = row.querySelector('.marks-input').value;
             const status = row.querySelector('.status-select').value;
+            const inputs = row.querySelectorAll('.marks-input');
 
-            if (studentId) {
-                const docId = `${examId}_${subjectId}_${studentId}`;
-                const ref = schoolDoc('marks', docId);
-                batch.set(
-                    ref,
-                    withSchool({
+            for (const input of inputs) {
+                const subId = input.dataset.subjectId || subjectId;
+                const obtained = input.value;
+                
+                if (studentId) {
+                    const docId = `${examId}_${subId}_${studentId}`;
+                    const ref = schoolDoc('marks', docId);
+                    batch.set(ref, withSchool({
                         examId,
-                        subjectId,
+                        subjectId: subId,
                         studentId,
                         className,
                         sectionName,
                         sessionId,
-                        obtained: obtained ? parseFloat(obtained) : 0,
-                        status,
-                    })
-                );
+                        obtained: obtained !== '' ? parseFloat(obtained) : 0,
+                        status: status
+                    }), { merge: true });
+                }
             }
         }
         await batch.commit();
         showToast('Marks saved successfully', 'success');
     } catch (e) {
-        showToast('Error saving marks', 'error');
+        console.error(e);
+        showToast('Error saving marks: ' + e.message, 'error');
     } finally {
-        showLoading(false);
+        if (typeof window.setLoading === 'function') window.setLoading(false);
+    }
+}
+
+async function downloadMarksExcelTemplate() {
+    const sessionId = document.getElementById('marksSessionSelect').value;
+    const sessionName = document.getElementById('marksSessionSelect').options[document.getElementById('marksSessionSelect').selectedIndex]?.text;
+    const className = document.getElementById('marksClassSelect').value;
+    const sectionName = document.getElementById('marksSectionSelect').value;
+    const subjectId = document.getElementById('marksSubjectSelect').value;
+
+    if (!sessionId || !className || !sectionName) {
+        showToast('Please select Session, Class and Section first', 'error');
+        return;
+    }
+
+    try {
+        if (typeof window.setLoading === 'function') window.setLoading(true);
+
+        const studentsSnap = await schoolData('students')
+            .where('class', '==', className)
+            .where('section', '==', sectionName)
+            .where('session', '==', sessionName)
+            .get();
+        const students = studentsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => (parseInt(a.roll_no)||0) - (parseInt(b.roll_no)||0));
+
+        let headers = ['Roll No', 'Student ID', 'Reg No', 'Name', 'Father Name'];
+        let subjects = [];
+
+        if (subjectId === 'ALL') {
+            const subSnap = await schoolData('subjects').where('sessionId', '==', sessionId).get();
+            subjects = subSnap.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+            headers = [...headers, ...subjects.map(s => s.name), 'Status'];
+        } else {
+            const selSubName = document.getElementById('marksSubjectSelect').options[document.getElementById('marksSubjectSelect').selectedIndex].text;
+            headers = [...headers, selSubName, 'Status'];
+        }
+
+        const data = students.map(s => {
+            const row = [s.roll_no || '', s.id || '', s.reg_no || '', s.name || '', s.father_name || ''];
+            if (subjectId === 'ALL') {
+                subjects.forEach(() => row.push('')); 
+            } else {
+                row.push('');
+            }
+            row.push('P'); 
+            return row;
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+        XLSX.utils.book_append_sheet(wb, ws, 'Marks');
+        XLSX.writeFile(wb, `Marks_Template_${className}_${sectionName}.xlsx`);
+        showToast('Template downloaded');
+    } catch (e) {
+        console.error(e);
+        showToast('Error generating template', 'error');
+    } finally {
+        if (typeof window.setLoading === 'function') window.setLoading(false);
     }
 }
 
@@ -816,29 +910,54 @@ function handleMarksExcelUpload(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function (e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+    reader.onload = async (e) => {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
 
-        // Map Excel data to grid
-        const rows = document.querySelectorAll('#marksGridTableBody tr');
-        rows.forEach((row) => {
-            const studentName = row.cells[1].innerText.trim();
-            const excelRow = jsonData.find(
-                (j) =>
-                    (j.Name && j.Name.toString().trim() === studentName) ||
-                    (j['Student Name'] && j['Student Name'].toString().trim() === studentName)
-            );
-            if (excelRow) {
-                const marksVal = excelRow.Marks || excelRow.Obtained || excelRow['Marks Obtained'];
-                if (marksVal !== undefined) {
-                    row.querySelector('.marks-input').value = marksVal;
-                }
+            if (json.length === 0) {
+                showToast('Excel file is empty', 'error');
+                return;
             }
-        });
-        showToast("Excel data mapped to grid. Click 'Save' to commit.", 'info');
+
+            const subjectId = document.getElementById('marksSubjectSelect').value;
+            const rows = document.querySelectorAll('#marksGridTableBody tr');
+            
+            json.forEach(rowData => {
+                const sid = String(rowData['Student ID'] || rowData['student_id'] || '');
+                const roll = String(rowData['Roll No'] || '');
+                const targetRow = Array.from(rows).find(r => r.dataset.studentId === sid || (roll && r.cells[0].innerText.trim() === roll));
+                
+                if (targetRow) {
+                    if (subjectId === 'ALL') {
+                        const inputs = targetRow.querySelectorAll('.marks-input');
+                        inputs.forEach(input => {
+                            const subId = input.dataset.subjectId;
+                            const subNameInHeader = Array.from(document.getElementById('marksSubjectSelect').options).find(opt => opt.value === subId)?.text;
+                            if (subNameInHeader && rowData[subNameInHeader] !== undefined) {
+                                input.value = rowData[subNameInHeader];
+                            }
+                        });
+                    } else {
+                        const selSubName = document.getElementById('marksSubjectSelect').options[document.getElementById('marksSubjectSelect').selectedIndex].text;
+                        const score = rowData[selSubName] || rowData['Marks Obtained'] || rowData['Score'] || rowData['Marks'];
+                        const input = targetRow.querySelector('.marks-input');
+                        if (input) input.value = score !== undefined ? score : '';
+                    }
+                    
+                    const status = rowData['Status'] || 'P';
+                    const statusSelect = targetRow.querySelector('.status-select');
+                    if (statusSelect) statusSelect.value = status;
+                }
+            });
+
+            showToast("Excel data mapped to grid. Click 'Finalize Marks' to commit.", 'info');
+        } catch (err) {
+            console.error(err);
+            showToast('Error processing Excel file', 'error');
+        }
     };
     reader.readAsArrayBuffer(file);
 }
@@ -1156,60 +1275,72 @@ async function refreshPublishStatus() {
     const body = document.getElementById('publishStatusTableBody');
     const sessionId = document.getElementById('publishSessionSelect').value;
     const examId = document.getElementById('publishExamSelect').value;
+    const filterClass = document.getElementById('publishClassSelect')?.value || '';
+    const filterSection = document.getElementById('publishSectionSelect')?.value || '';
 
     if (!body) return;
     if (!sessionId || !examId) {
-        body.innerHTML =
-            '<tr><td colspan="3" style="text-align:center;">Select Session and Exam to view status.</td></tr>';
+        body.innerHTML = '<tr><td colspan="3" style="text-align:center;">Select Session and Exam to view status.</td></tr>';
         return;
     }
 
     try {
-        const classesSnap = await schoolData('classes')
-            .where('sessionId', '==', sessionId)
-            .orderBy('sortOrder', 'asc')
-            .get();
+        const classesSnap = await schoolData('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
         const pubsSnap = await schoolData('publications').where('examId', '==', examId).get();
         const pubs = {};
         pubsSnap.forEach((doc) => (pubs[doc.data().className] = doc.data().published));
 
         body.innerHTML = classesSnap.docs
+            .filter(doc => !filterClass || doc.data().name === filterClass)
             .map((doc) => {
                 const cls = doc.data().name;
-                const isPublished = pubs[cls] || false;
-                return `
-                <tr>
-                    <td><strong>${cls}</strong></td>
-                    <td>${isPublished ? '<span class="badge" style="background:#dcfce7; color:#166534;">Published</span>' : '<span class="badge" style="background:#f1f5f9; color:#64748b;">Draft</span>'}</td>
-                    <td>
-                        <button onclick="togglePublish('${examId}', '${cls}', ${isPublished})" class="btn-portal ${isPublished ? 'btn-ghost' : 'btn-primary'}" style="padding:0.4rem 1rem; font-size:0.8rem;">
-                            ${isPublished ? 'Unpublish' : 'Publish'}
-                        </button>
-                    </td>
-                </tr>
-            `;
+                const docSections = doc.data().sections || ['A'];
+                
+                return docSections
+                    .filter(sec => !filterSection || sec === filterSection)
+                    .map(sec => {
+                        const isPublished = pubs[`${cls}_${sec}`] || pubs[cls] || false;
+                        return `
+                        <tr>
+                            <td><strong>${cls}</strong> - Section ${sec}</td>
+                            <td>${isPublished ? '<span class="badge" style="background:#dcfce7; color:#166534;">Published</span>' : '<span class="badge" style="background:#f1f5f9; color:#64748b;">Draft</span>'}</td>
+                            <td>
+                                <button onclick="togglePublish('${examId}', '${cls}', ${isPublished}, '${sec}')" class="btn-portal ${isPublished ? 'btn-ghost' : 'btn-primary'}" style="padding:0.4rem 1rem; font-size:0.8rem;">
+                                    ${isPublished ? 'Unpublish' : 'Publish'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    }).join('');
             })
             .join('');
+        
+        if (body.innerHTML === '') {
+            body.innerHTML = '<tr><td colspan="3" style="text-align:center;">No records match your filters.</td></tr>';
+        }
     } catch (e) {
         console.error(e);
+        showToast('Error loading status', 'error');
     }
 }
 
-async function togglePublish(examId, className, currentStatus) {
+async function togglePublish(examId, className, currentStatus, sectionName = 'A') {
     try {
         setLoading(true);
-        const docId = `${examId}_${className.replace(/\s+/g, '_')}`;
+        const docId = `${examId}_${className.replace(/\s+/g, '_')}_${sectionName}`;
         await schoolDoc('publications', docId).set(
             withSchool({
                 examId,
                 className,
+                sectionName,
                 published: !currentStatus,
                 type: 'result',
+                updatedAt: new Date(),
             }),
             { merge: true }
         );
 
-        showToast(`Results ${!currentStatus ? 'published' : 'unpublished'} for ${className}`, 'success');
+        showToast(`Results ${!currentStatus ? 'published' : 'unpublished'} for ${className} ${sectionName}`, 'success');
         refreshPublishStatus();
     } catch (e) {
         showToast('Error: ' + e.message, 'error');
@@ -1311,25 +1442,37 @@ window.initERPExams = initERPExams;
  * REPORT CARD REMARKS & CO-SCHOLASTIC
  */
 async function loadRemarksGrid() {
-    const cls = document.getElementById('remarkClassSelect').value;
-    const ex = document.getElementById('remarkExamSelect').value;
     const body = document.getElementById('remarksGridBody');
-    if (!body || !cls || !ex) return;
+    const sessionId = document.getElementById('remarkSessionSelect').value;
+    const className = document.getElementById('remarkClassSelect').value;
+    const sectionName = document.getElementById('remarkSectionSelect').value;
+    const examId = document.getElementById('remarkExamSelect').value;
+
+    if (!body) return;
+    if (!sessionId || !className || !examId) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Select Session, Class and Exam to load remarks.</td></tr>';
+        return;
+    }
 
     body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
     try {
-        const studentsSnap = await schoolData('students').where('class', '==', cls).get();
+        const sessText = document.getElementById('remarkSessionSelect').options[document.getElementById('remarkSessionSelect').selectedIndex].text;
+        
+        let q = schoolData('students').where('session', '==', sessText).where('class', '==', className);
+        if (sectionName) q = q.where('section', '==', sectionName);
+        
+        const studentsSnap = await q.get();
         const students = studentsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        const remarksSnap = await schoolData('remarks').where('examId', '==', ex).where('className', '==', cls).get();
+        const remarksSnap = await schoolData('remarks').where('examId', '==', examId).where('className', '==', className).get();
         const existing = {};
         remarksSnap.forEach((doc) => (existing[doc.data().studentId] = doc.data()));
 
         body.innerHTML = students
             .map(
                 (s) => `
-            <tr data-student-id="${s.id}">
-                <td><strong>${s.name}</strong></td>
+            <tr data-student-id="${s.id}" data-section="${s.section || 'A'}">
+                <td><strong>${s.name}</strong><br><small>${s.section || 'A'}</small></td>
                 <td><textarea class="remark-text" style="width:100%; height:40px; border-radius:4px; border:1px solid #ddd;">${existing[s.id]?.text || ''}</textarea></td>
                 <td><input type="text" class="remark-art" placeholder="A" style="width:40px; text-align:center;" value="${existing[s.id]?.art || ''}"></td>
                 <td><input type="text" class="remark-disc" placeholder="A" style="width:40px; text-align:center;" value="${existing[s.id]?.disc || ''}"></td>
@@ -1346,6 +1489,7 @@ async function loadRemarksGrid() {
 async function saveRemarkRow(btn) {
     const row = btn.closest('tr');
     const studentId = row.dataset.studentId;
+    const sectionName = row.dataset.section || 'A';
     const examId = document.getElementById('remarkExamSelect').value;
     const className = document.getElementById('remarkClassSelect').value;
     const text = row.querySelector('.remark-text').value;
@@ -1358,15 +1502,17 @@ async function saveRemarkRow(btn) {
                 examId,
                 studentId,
                 className,
+                sectionName,
                 text,
                 art,
                 disc,
+                updatedAt: new Date()
             }),
             { merge: true }
         );
         showToast('Remark Saved', 'success');
     } catch (e) {
-        showToast('Error Saving', 'error');
+        showToast('Error Saving: ' + e.message, 'error');
     }
 }
 
@@ -1627,22 +1773,70 @@ async function populateRcPreviewExams() {
     }
 }
 
-async function previewSingleReportCard() {
-    const studentId = document.getElementById('rcPreviewSid').value;
+async function previewSingleReportCard(isDownload = false) {
+    const studentId = document.getElementById('rcPreviewStudentSelect').value;
     const examId = document.getElementById('rcPreviewExam').value;
     const format = document.getElementById('rcPreviewFormat').value;
+    const sessionId = document.getElementById('rcPreviewSession').value;
 
-    if (!studentId || !examId) {
-        showToast('Please select student and exam', 'error');
+    if (!examId) {
+        showToast('Please select an exam term', 'error');
         return;
     }
 
+    if (studentId === 'All') {
+        if (!isDownload) {
+            showToast('Preview is only available for individual students. Use Download for bulk.', 'warning');
+            return;
+        }
+        const sess = document.getElementById('rcPreviewSession').options[document.getElementById('rcPreviewSession').selectedIndex].text;
+        const cls = document.getElementById('rcPreviewClass').value;
+        const sec = document.getElementById('rcPreviewSection').value;
+
+        if (!cls || !sec) {
+            showToast('Please select Class and Section for block generation', 'warning');
+            return;
+        }
+
+        if (!confirm(`Generate report cards for all students in ${cls} - ${sec}?`)) return;
+
+        try {
+            setLoading(true);
+            const q = schoolData('students').where('session', '==', sess).where('class', '==', cls).where('section', '==', sec);
+            const snap = await q.get();
+            
+            if (snap.empty) {
+                showToast('No students found in this group', 'info');
+                return;
+            }
+
+            showToast(`Processing ${snap.docs.length} report cards...`, 'info');
+            for (const doc of snap.docs) {
+                await processIndividualReportCard(doc.id, examId, sessionId, format, false);
+            }
+            showToast('Bulk generation complete!', 'success');
+        } catch (e) {
+            showToast('Bulk Error: ' + e.message, 'error');
+        } finally {
+            setLoading(false);
+        }
+    } else if (studentId) {
+        await processIndividualReportCard(studentId, examId, sessionId, format, !isDownload);
+    } else {
+        showToast('Please select a student or "All Students"', 'error');
+    }
+}
+
+// Logic extracted for reuse
+async function processIndividualReportCard(studentId, examId, sessionId, format, isPreview = false) {
     try {
-        setLoading(true);
+        if (!isPreview) setLoading(true);
         const sSnap = await schoolDoc('students', studentId).get();
+        if (!sSnap.exists) throw new Error('Student not found');
         const student = sSnap.data();
 
         const examSnap = await schoolDoc('exams', examId).get();
+        if (!examSnap.exists) throw new Error('Exam details not found');
         const examDetails = examSnap.data();
 
         // Get Marks
@@ -1650,12 +1844,16 @@ async function previewSingleReportCard() {
             .where('studentId', '==', studentId)
             .where('examId', '==', examId)
             .get();
-        const marks = {};
-        marksSnap.forEach((doc) => {
-            marks[doc.data().subjectId] = doc.data().marks;
-        });
+        
+        // Convert to array of marks for the factory
+        const marks = marksSnap.docs.map(doc => ({
+            subject: doc.data().subjectName || doc.data().subjectId,
+            marks: doc.data().marks || 0,
+            total: doc.data().total || doc.data().marks || 0,
+            grade: doc.data().grade || ''
+        }));
 
-        // Get School Details (Fetch from current settings for multi-tenancy)
+        // Get School Details
         let schoolDetails = { name: 'SCHOOL NAME', address: 'Address...', phone: '...' };
         try {
             const schoolRef = window.schoolRef;
@@ -1665,24 +1863,23 @@ async function previewSingleReportCard() {
             }
         } catch (err) { console.error('Error fetching school branding:', err); }
 
-        if (format === 'premium') {
-            if (window.ReportCardTool) {
-                // The tool handles data fetching and attendance calculation
-                await window.ReportCardTool.processReportCard(studentId, examId, examDetails.session || '', 'premium');
-            } else {
-                await window.ReportCardFactory.generatePremium(student, marks, examDetails, schoolDetails);
+        if (!window.ReportCardFactory) throw new Error('Report Card Factory not loaded');
+
+        const doc = await window.ReportCardFactory.getReportCardDoc(format, student, marks, examDetails, schoolDetails);
+
+        if (isPreview) {
+            const container = document.getElementById('rcPreviewContainer');
+            if (container) {
+                const blobUrl = doc.output('bloburl');
+                container.innerHTML = `<iframe src="${blobUrl}" style="width:100%; height:100%; border:none;"></iframe>`;
             }
-        } else if (format === 'Himalayan') {
-            await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
         } else {
-            // Default to Himalayan for other formats or as fallback
-            showToast('Generating standard preview...', 'info');
-            await window.ReportCardFactory.generateHimalayan(student, marks, examDetails, schoolDetails);
+            doc.save(`Report_Card_${student.name.replace(/\s+/g, '_')}_${format}.pdf`);
         }
     } catch (e) {
-        showToast('Error: ' + e.message, 'error');
+        showToast(`Error for ${studentId}: ` + e.message, 'error');
     } finally {
-        setLoading(false);
+        if (!isPreview) setLoading(false);
     }
 }
 
@@ -1816,6 +2013,7 @@ async function saveExamAttendance() {
 // Global exposure
 window.populateRcPreviewExams = populateRcPreviewExams;
 window.previewSingleReportCard = previewSingleReportCard;
+window.processIndividualReportCard = processIndividualReportCard;
 window.loadExamAttSessions = loadExamAttSessions;
 window.loadExamAttClasses = loadExamAttClasses;
 window.loadExamAttSections = loadExamAttSections;

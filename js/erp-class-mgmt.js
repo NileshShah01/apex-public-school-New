@@ -477,17 +477,20 @@ async function updateClassDropdowns() {
         'uploadQpClass'
     ];
     
-    const options = 
-        '<option value="">Select Class</option>' +
-        erpState.classes
-            .filter(cls => !cls.disabled)
-            .map((cls) => `<option value="${cls.name}" data-id="${cls.id}">${cls.name}</option>`)
-            .join('');
-
     dropdowns.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.innerHTML = options;
+        
+        let optionsHtml = '<option value="">Select Class</option>';
+        erpState.classes
+            .filter(cls => !cls.disabled)
+            .forEach(cls => {
+                // IMPORTANT: detailsClassSelect needs the Firestore ID to manage sections.
+                // Others often need the Name for student filtering (class == "Nursery").
+                const value = (id === 'detailsClassSelect') ? cls.id : cls.name;
+                optionsHtml += `<option value="${value}" data-id="${cls.id}">${cls.name}</option>`;
+            });
+        el.innerHTML = optionsHtml;
     });
 }
 

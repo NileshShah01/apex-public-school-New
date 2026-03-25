@@ -92,29 +92,62 @@ window.showSection = function(sectionId, updateHash = true) {
         }
     }
 
-    // Update Section Title
-    const titles = {
-        dashboardOverview: 'School Overview',
-        studentList: 'Student Search & Management',
-        resultsStatus: 'Documents Verification',
-        admitCardTool: 'Admit Card PDF Tool',
-        bulkResultGenerator: 'Report Card PDF Tool',
-        feeMaster: 'Fee Management',
-        manageExam: 'Examination & Marks',
-        attendanceManagement: 'Attendance Marking',
-        notices: 'Notice Board',
-        academicSession: 'Academic Sessions',
-        addClass: 'Classes & Sections',
-        addSubject: 'Subject Management',
-        idCardPrint: 'ID Card Generator',
-        adminPortalCMS: 'Admin Portal CMS',
-        parentsNotPaidTool: 'Parents Who Not Paid',
-        manualReportCardUpload: 'Manual Report Card Upload'
+    // Update Section Title & Subtitle
+    const sectionMetadata = {
+        dashboardOverview: { title: 'School Overview', sub: 'Real-time performance metrics' },
+        studentList: { title: 'Student Search & Management', sub: 'Quick search and comprehensive student profiles' },
+        resultsStatus: { title: 'Documents Verification', sub: 'Audit and verify student enrollment documents' },
+        admitCardTool: { title: 'Admit Card PDF Tool', sub: 'Generate and print examination admit cards' },
+        bulkResultGenerator: { title: 'Report Card PDF Tool', sub: 'Bulk generate student report cards' },
+        feeMaster: { title: 'Fee Management', sub: 'Track payments, dues, and fee structures' },
+        manageExam: { title: 'Examination & Marks', sub: 'Manage schedules, subjects, and marks entry' },
+        attendanceManagement: { title: 'Attendance Marking', sub: 'Daily student attendance tracking' },
+        notices: { title: 'Notice Board', sub: 'Publish and manage school-wide announcements' },
+        academicSession: { title: 'Academic Sessions', sub: 'Configure and switch between academic years' },
+        addClass: { title: 'Classes & Sections', sub: 'Manage school structure and class levels' },
+        addSubject: { title: 'Subject Management', sub: 'Define and assign subjects to classes' },
+        idCardPrint: { title: 'ID Card Generator', sub: 'Design and print student identity cards' },
+        adminPortalCMS: { title: 'Admin Portal CMS', sub: 'Customize portal settings and branding' },
+        parentsNotPaidTool: { title: 'Fee Default Tracking', sub: 'Identify and notify parents with pending dues' },
+        manualReportCardUpload: { title: 'Manual Report Card Upload', sub: 'Upload legacy report cards for students' },
+        addEnquiry: { title: 'New Admission Enquiry', sub: 'Record and track potential student leads' },
+        searchEnquiry: { title: 'Search Enquiries', sub: 'Filter and manage admission enquiries' },
+        studentAdmission: { title: 'Student Admission', sub: 'Register new student profiles in the system' },
+        viewAttendanceStats: { title: 'Attendance Reports', sub: 'Analyze student attendance trends' },
+        assignHomework: { title: 'Assign Homework', sub: 'Create and distribute homework to classes' },
+        homeworkHistory: { title: 'Homework History', sub: 'Review and manage past homework assignments' },
+        classTimetables: { title: 'Class Timetables', sub: 'Manage and view class-wise schedules' },
+        teacherTimetables: { title: 'Teacher Timetables', sub: 'Manage and view teacher-wise schedules' },
+        manageExamSchedule: { title: 'Exam Timetable', sub: 'Configure dates and timing for examinations' },
+        viewExamSchedule: { title: 'View Date-Sheet', sub: 'Monitor upcoming exam schedules' },
+        publishExamSchedule: { title: 'Publish Schedule', sub: 'Make exam schedules visible to students' },
+        examAttendanceCard: { title: 'Exam Attendance', sub: 'Generate attendance sheets for exams' },
+        addResult: { title: 'Bulk Marks Entry', sub: 'Batch update student exam marks' },
+        viewReportCard: { title: 'View Report Card', sub: 'Preview individual student results' },
+        publishResults: { title: 'Publish Results', sub: 'Release examination results to portals' },
+        resultAnalytics: { title: 'Result Analytics', sub: 'In-depth performance analysis and stats' },
+        manageAllResults: { title: 'Manage Results', sub: 'Administrative control over all student marks' },
+        createMonthlyFee: { title: 'Create Monthly Fee', sub: 'Generate fee structures for the month' },
+        searchStudentFee: { title: 'Search Student Fee', sub: 'Query individual student payment status' },
+        searchFeeDues: { title: 'Search Fee Dues', sub: 'Filter students with outstanding balances' },
+        sendNotification: { title: 'Send Bulk Message', sub: 'Blast announcements via SMS or Email' },
+        bookCatalog: { title: 'Book Catalog', sub: 'Manage library book inventory' },
+        issueReturn: { title: 'Issue / Return Book', sub: 'Log library circulation transactions' },
+        manageRoutes: { title: 'Manage Routes', sub: 'Configure school transport paths' },
+        mapTransport: { title: 'Assign Students', sub: 'Link students to transport routes' },
+        addEmployee: { title: 'Add Employee', sub: 'Register new staff members' },
+        searchEmployee: { title: 'Search Employee', sub: 'Filter and manage staff profiles' },
+        cmsHero: { title: 'Hero Slider CMS', sub: 'Manage home page banner images' },
+        cmsGallery: { title: 'Photo Gallery CMS', sub: 'Update website image gallery' },
+        cmsStaff: { title: 'Staff Directory CMS', sub: 'Manage staff profiles on the website' }
     };
     
     const titleEl = document.getElementById('sectionTitle');
-    if (titleEl && titles[sectionId]) {
-        titleEl.textContent = titles[sectionId];
+    const subtextEl = document.getElementById('headerSubtext');
+    
+    if (titleEl && sectionMetadata[sectionId]) {
+        titleEl.textContent = sectionMetadata[sectionId].title;
+        if (subtextEl) subtextEl.textContent = sectionMetadata[sectionId].sub;
     }
     
     // ERP Integration: Auto-populate dropdowns when entering registration sections
@@ -124,6 +157,20 @@ window.showSection = function(sectionId, updateHash = true) {
     // Bulk Student Update: auto-populate session dropdown
     if (sectionId === 'studentBulkUpdateSection' && typeof updateSessionDropdowns === 'function') {
         updateSessionDropdowns();
+    }
+
+    // Result Management Initializers
+    if (sectionId === 'bulkResultGenerator') {
+        if (typeof BulkReportCardUI !== 'undefined') BulkReportCardUI.initUI();
+    }
+    if (sectionId === 'viewReportCard') {
+        if (typeof RcPreviewUI !== 'undefined') RcPreviewUI.init();
+    }
+    if (sectionId === 'publishResults') {
+        if (window.refreshPublishStatus) window.refreshPublishStatus();
+    }
+    if (sectionId === 'reportCardRemarksSection' || sectionId === 'reportCardRemarks') {
+        if (window.loadRemarksGrid) window.loadRemarksGrid();
     }
     // ID Generator: auto-populate session dropdown
     if (sectionId === 'studentIdPrintSection' && typeof updateSessionDropdowns === 'function') {
@@ -145,6 +192,11 @@ window.showSection = function(sectionId, updateHash = true) {
     // Transport Management hook
     if ((sectionId === 'manageRoutes' || sectionId === 'assignTransport' || sectionId === 'transportReport') && typeof initERPTransport === 'function') {
         initERPTransport();
+    }
+
+    // Attendance Management hook
+    if ((sectionId === 'attendanceManagement' || sectionId === 'viewAttendanceStats') && typeof initERPAttendance === 'function') {
+        initERPAttendance();
     }
 
     // Exam & Report Card hook
@@ -626,13 +678,21 @@ async function filterAndDisplayStudents() {
     const filtered = allStudents.filter((s) => {
         const name = (s.name || '').toLowerCase();
         const sid = (s.student_id || '').toLowerCase();
-        const father = (s.fatherName || s.father_name || '').toLowerCase();
+        const roll = (s.roll_no || '').toLowerCase();
+        const reg = (s.reg_no || '').toLowerCase();
+        const aadhar = (s.aadhar || s.student_aadhar || '').toLowerCase();
+        const father = (s.father_name || s.fatherName || '').toLowerCase();
+        const mother = (s.mother_name || s.mother || '').toLowerCase();
         const mobile = (s.mobile || s.phone || '').toLowerCase();
 
         const matchesSearch =
             name.includes(searchTerm) ||
             sid.includes(searchTerm) ||
+            roll.includes(searchTerm) ||
+            reg.includes(searchTerm) ||
+            aadhar.includes(searchTerm) ||
             father.includes(searchTerm) ||
+            mother.includes(searchTerm) ||
             mobile.includes(searchTerm);
 
         const matchesClass = classVal === '' || s.class === classVal;
@@ -647,11 +707,31 @@ async function filterAndDisplayStudents() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="checkbox" class="student-checkbox" value="${student.id}" onchange="toggleSelect('${student.id}')" ${selectedStudents.has(student.id) ? 'checked' : ''}></td>
-            <td>${student.student_id}</td>
-            <td><b>${student.name}</b></td>
-            <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class || '-'}</span></td>
-            <td>${student.section || '-'}</td>
-            <td>${student.mobile || student.phone || '-'}</td>
+            <td>${student.student_id || '-'}</td>
+            <td>${student.roll_no || '-'}</td>
+            <td>${student.reg_no || '-'}</td>
+            <td><b>${student.name || '-'}</b></td>
+            <td><span class="badge" style="background:#f1f5f9; color:#475569;">Class ${student.class || '-'} / ${student.section || '-'}</span></td>
+            <td>${student.session || '-'}</td>
+            <td>${student.father_name || '-'}</td>
+            <td>${student.mother_name || '-'}</td>
+            <td>${student.phone || student.mobile || '-'}</td>
+            <td>${student.dob || '-'}</td>
+            <td>${student.gender || '-'}</td>
+            <td>${student.category || '-'}</td>
+            <td>${student.caste || '-'}</td>
+            <td>${student.religion || '-'}</td>
+            <td>${student.aadhar || '-'}</td>
+            <td>${student.pen || '-'}</td>
+            <td>${student.smart_card_no || '-'}</td>
+            <td>${student.guardian_name || '-'}</td>
+            <td>${student.guardian_phone || '-'}</td>
+            <td>${student.address || '-'}</td>
+            <td>${student.permanent_address || '-'}</td>
+            <td>${student.city || '-'}</td>
+            <td>${student.hostel || '-'}</td>
+            <td>${student.transport || '-'}</td>
+            <td>${student.join_date || '-'}</td>
             <td>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="btn-portal btn-ghost btn-sm" onclick="editStudent('${student.id}')"><i class="fas fa-edit"></i></button>
@@ -915,10 +995,9 @@ async function handlePromotion() {
 }
 
 const BulkReportCardUI = {
-    // UI HELPER FUNCTIONS
-    async initUI() {
+    async init() {
         const sessionSelect = document.getElementById('bulkRes_sessionSelect');
-        if (sessionSelect && erpState.sessions) {
+        if (sessionSelect && typeof erpState !== 'undefined' && erpState.sessions) {
             sessionSelect.innerHTML =
                 '<option value="">Select Session</option>' +
                 erpState.sessions
@@ -926,93 +1005,67 @@ const BulkReportCardUI = {
                     .join('');
 
             if (erpState.activeSessionId) {
-                await this.loadClasses();
-                await this.loadExams();
+                this.loadExams();
             }
         }
     },
 
-    async loadClasses() {
-        const sessId = document.getElementById('bulkRes_sessionSelect').value;
-        const el = document.getElementById('bulkRes_classSelect');
-        if (!el || !sessId) return;
-        const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
-        el.innerHTML =
-            '<option value="">Select Class</option>' +
-            snap.docs.map((doc) => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
-    },
-
-    async loadSections() {
-        const sessId = document.getElementById('bulkRes_sessionSelect').value;
-        const cls = document.getElementById('bulkRes_classSelect').value;
-        const el = document.getElementById('bulkRes_sectionSelect');
-        if (!el || !cls) return;
-        const snap = await schoolData('classes')
-            .where('sessionId', '==', sessId)
-            .where('name', '==', cls)
-            .limit(1)
-            .get();
-        if (!snap.empty) {
-            const sections = snap.docs[0].data().sections || [];
-            el.innerHTML =
-                '<option value="All">All Sections</option>' +
-                sections.map((s) => `<option value="${s}">${s}</option>`).join('');
-        }
-    },
-
-    async loadExams() {
-        const sessId = document.getElementById('bulkRes_sessionSelect').value;
-        const el = document.getElementById('bulkRes_examSelect');
-        if (!el || !sessId) return;
-        const snap = await schoolData('exams').where('sessionId', '==', sessId).get();
-        el.innerHTML =
-            '<option value="">Select Exam</option>' +
-            snap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+    loadExams() {
+        RcPreviewUI.loadExams();
     },
 
     async loadStudents() {
-        const sess =
-            document.getElementById('bulkRes_sessionSelect').options[
-                document.getElementById('bulkRes_sessionSelect').selectedIndex
-            ].text;
+        const sessEl = document.getElementById('bulkRes_sessionSelect');
+        if (!sessEl) return;
+        const sess = sessEl.options[sessEl.selectedIndex]?.text;
         const cls = document.getElementById('bulkRes_classSelect').value;
         const sec = document.getElementById('bulkRes_sectionSelect').value;
         const body = document.getElementById('bulkResTableBody');
 
-        if (!cls) return;
+        if (!cls || !body) return;
         body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
 
-        const q = schoolData('students').where('session', '==', sess).where('class', '==', cls);
-        const snap = sec === 'All' ? await q.get() : await q.where('section', '==', sec).get();
+        try {
+            const q = schoolData('students').where('session', '==', sess).where('class', '==', cls);
+            const snap = sec === 'All' ? await q.get() : await q.where('section', '==', sec).get();
 
-        if (snap.empty) {
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center;">No students found.</td></tr>';
-            return;
+            if (snap.empty) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center;">No students found.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = snap.docs
+                .map((doc) => {
+                    const s = doc.data();
+                    return `
+                    <tr>
+                        <td><input type="checkbox" class="bulk-res-check" value="${doc.id}"></td>
+                        <td>${s.roll_no || '-'}</td>
+                        <td><strong>${s.name}</strong></td>
+                        <td><span class="badge" style="background:#f1f5f9;">Ready</span></td>
+                        <td id="status_${doc.id}"><span style="color:var(--text-muted);">Waiting</span></td>
+                    </tr>
+                `;
+                })
+                .join('');
+            document.getElementById('startBulkGenBtn').disabled = false;
+        } catch (e) {
+            console.error(e);
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
         }
-
-        body.innerHTML = snap.docs
-            .map((doc) => {
-                const s = doc.data();
-                return `
-                <tr>
-                    <td><input type="checkbox" class="bulk-res-check" value="${doc.id}"></td>
-                    <td>${s.roll_no || '-'}</td>
-                    <td><strong>${s.name}</strong></td>
-                    <td><span class="badge" style="background:#f1f5f9;">Ready</span></td>
-                    <td id="status_${doc.id}"><span style="color:var(--text-muted);">Waiting</span></td>
-                </tr>
-            `;
-            })
-            .join('');
-        document.getElementById('startBulkGenBtn').disabled = false;
     },
 
     async runBulk() {
         const selected = Array.from(document.querySelectorAll('.bulk-res-check:checked')).map((cb) => cb.value);
-        if (selected.length === 0) return;
+        if (selected.length === 0) {
+            showToast('No students selected', 'warning');
+            return;
+        }
 
         const examId = document.getElementById('bulkRes_examSelect').value;
         const sessionId = document.getElementById('bulkRes_sessionSelect').value;
+        const format = 'premium';
+
         if (!examId) {
             showToast('Select Exam First', 'error');
             return;
@@ -1025,43 +1078,300 @@ const BulkReportCardUI = {
         const statusMsg = document.getElementById('bulkResStatusMsg');
         const percentMsg = document.getElementById('bulkResPercentMsg');
 
-        progressArea.style.display = 'block';
+        if (progressArea) progressArea.style.display = 'block';
         document.getElementById('startBulkGenBtn').disabled = true;
 
-        let success = 0;
+        let successCount = 0;
         for (let i = 0; i < selected.length; i++) {
             const sid = selected[i];
             const nameEl = document.getElementById(`status_${sid}`);
-            nameEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            if (nameEl) nameEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-            const res = await this.processReportCard(sid, examId, sessionId);
-
-            if (res.success) {
-                success++;
-                nameEl.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> Published';
-            } else {
-                nameEl.innerHTML = `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Failed: ${res.reason || 'Error'}`;
+            try {
+                if (window.processIndividualReportCard) {
+                    await window.processIndividualReportCard(sid, examId, sessionId, format);
+                    successCount++;
+                    if (nameEl) nameEl.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> Generated';
+                } else {
+                    throw new Error('Generation logic not found');
+                }
+            } catch (err) {
+                console.error(err);
+                if (nameEl) nameEl.innerHTML = `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Failed`;
             }
 
             const p = Math.round(((i + 1) / selected.length) * 100);
-            bar.style.width = `${p}%`;
-            percentMsg.textContent = `${p}%`;
-            statusMsg.textContent = `Processing student ${i + 1} of ${selected.length}...`;
+            if (bar) bar.style.width = `${p}%`;
+            if (percentMsg) percentMsg.textContent = `${p}%`;
+            if (statusMsg) statusMsg.textContent = `Processing student ${i + 1} of ${selected.length}...`;
         }
 
-        showToast(`Successfully processed ${success} report cards!`);
+        showToast(`Bulk processing complete! ${successCount}/${selected.length} success.`);
         document.getElementById('startBulkGenBtn').disabled = false;
+    }
+};
+
+const IdCardPreviewUI = {
+    async init() {
+        const sessEl = document.getElementById('idIndiv_session');
+        if (!sessEl) return;
+        if (typeof erpState !== 'undefined' && erpState.sessions) {
+            const options = '<option value="">Select Session</option>' +
+                erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+            sessEl.innerHTML = options;
+            if (erpState.activeSessionId) {
+                setTimeout(() => this.loadClasses(), 100);
+            }
+        }
     },
+    async loadClasses() {
+        const sessId = document.getElementById('idIndiv_session').value;
+        const el = document.getElementById('idIndiv_class');
+        if (!el || !sessId) return;
+        const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
+        el.innerHTML = '<option value="">Select Class</option>' + 
+            snap.docs.map(doc => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+    },
+    async loadStudents() {
+        const sessEl = document.getElementById('idIndiv_session');
+        const sess = sessEl.options[sessEl.selectedIndex]?.text;
+        const cls = document.getElementById('idIndiv_class').value;
+        const el = document.getElementById('idIndiv_student');
+        if (!el || !cls || !sess) return;
+
+        const snap = await schoolData('students').where('session', '==', sess).where('class', '==', cls).get();
+        el.innerHTML = '<option value="">Select Student</option>' + 
+            snap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+    },
+    preview() {
+        const sid = document.getElementById('idIndiv_student').value;
+        if (!sid) return;
+        document.getElementById('idPrintSid').value = sid;
+        if (window.updateIdPreview) window.updateIdPreview();
+    }
+};
+
+const RcPreviewUI = {
+    async init() {
+        const sessionDropdowns = [
+            'rcPreviewSession', 
+            'publishSessionSelect', 
+            'bulkRes_sessionSelect', 
+            'remarkSessionSelect',
+            'manageResultsSession'
+        ];
+        
+        // Find at least one existing dropdown to proceed
+        const exists = sessionDropdowns.some(id => document.getElementById(id));
+        if (!exists) return;
+
+        if (typeof erpState !== 'undefined' && erpState.sessions) {
+            const options = '<option value="">Select Session</option>' +
+                erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+            
+            sessionDropdowns.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.options.length <= 1) el.innerHTML = options;
+            });
+            
+            if (erpState.activeSessionId) {
+                setTimeout(() => {
+                    this.loadClasses('rcPreviewSession', 'rcPreviewClass');
+                    this.loadClasses('publishSessionSelect', 'publishClassSelect');
+                    this.loadClasses('bulkRes_sessionSelect', 'bulkRes_classSelect');
+                    this.loadClasses('remarkSessionSelect', 'remarkClassSelect');
+                    this.loadClasses('manageResultsSession', 'manageResultsClass');
+                    this.loadExams();
+                }, 100);
+            }
+        }
+    },
+
+    async loadClasses(sessIdStr, targetIdStr) {
+        const sessId = document.getElementById(sessIdStr)?.value;
+        const el = document.getElementById(targetIdStr);
+        if (!el || !sessId) return;
+        
+        const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
+        const options = '<option value="">Select Class</option>' +
+            snap.docs.map(doc => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+        el.innerHTML = options;
+    },
+
+    async loadSections(sessIdStr, classIdStr, targetIdStr) {
+        const sessId = document.getElementById(sessIdStr)?.value;
+        const cls = document.getElementById(classIdStr)?.value;
+        const el = document.getElementById(targetIdStr);
+        if (!el || !cls || !sessId) return;
+
+        const snap = await schoolData('classes').where('sessionId', '==', sessId).where('name', '==', cls).limit(1).get();
+        if (!snap.empty) {
+            const sections = snap.docs[0].data().sections || ['A'];
+            const options = '<option value="">Select Section</option>' +
+                sections.map(s => `<option value="${s}">${s}</option>`).join('');
+            el.innerHTML = options;
+        }
+    },
+
+    async loadStudents() {
+        const sessEl = document.getElementById('rcPreviewSession');
+        const sess = sessEl.options[sessEl.selectedIndex].text;
+        const cls = document.getElementById('rcPreviewClass').value;
+        const sec = document.getElementById('rcPreviewSection').value;
+        const studentSelect = document.getElementById('rcPreviewStudentSelect');
+
+        if (!cls || !sec) return;
+
+        const q = schoolData('students').where('session', '==', sess).where('class', '==', cls).where('section', '==', sec);
+        const snap = await q.get();
+        
+        studentSelect.innerHTML = '<option value="All">All Students</option>' +
+            snap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+    },
+
+    async loadExams() {
+        const sessionDropdowns = [
+            'rcPreviewSession', 
+            'publishSessionSelect', 
+            'bulkRes_sessionSelect', 
+            'remarkSessionSelect',
+            'manageResultsSession'
+        ];
+        const examDropdowns = [
+            'rcPreviewExam', 
+            'publishExamSelect', 
+            'bulkRes_examSelect', 
+            'remarkExamSelect',
+            'manageResultsExam'
+        ];
+
+        for (let i = 0; i < sessionDropdowns.length; i++) {
+            const sessId = document.getElementById(sessionDropdowns[i])?.value;
+            const exEl = document.getElementById(examDropdowns[i]);
+            if (!sessId || !exEl) continue;
+
+            const exSnap = await schoolData('exams').where('sessionId', '==', sessId).get();
+            exEl.innerHTML = '<option value="">Select Exam</option>' +
+                exSnap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+        }
+    }
+};
+
+const PublishResultsUI = {
+    loadClasses() { window.loadPublishClasses(); },
+    loadSections() { window.loadPublishSections(); },
+    refresh() { if (window.refreshPublishStatus) window.refreshPublishStatus(); }
+};
+
+const BulkReportCardUI = {
+    initUI() {
+        if (typeof RcPreviewUI !== 'undefined') {
+            RcPreviewUI.init();
+        }
+    },
+    loadClasses() { window.loadBulkResClasses(); },
+    loadSections() { window.loadBulkResSections(); },
+    async loadStudents() {
+        const sessEl = document.getElementById('bulkRes_sessionSelect');
+        const sess = sessEl.options[sessEl.selectedIndex].text;
+        const cls = document.getElementById('bulkRes_classSelect').value;
+        const sec = document.getElementById('bulkRes_sectionSelect').value;
+        const body = document.getElementById('bulkRes_studentList');
+        if (!body || !cls || !sec) return;
+
+        try {
+            const q = schoolData('students').where('session', '==', sess).where('class', '==', cls).where('section', '==', sec);
+            const snap = await q.get();
+            body.innerHTML = snap.docs.map(doc => `
+                <div class="flex align-center gap-0-75 p-0-5 surface-hover rounded-sm mb-0-25">
+                    <input type="checkbox" class="bulk-res-check" value="${doc.id}" checked>
+                    <span class="text-sm">${doc.data().name}</span>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); }
+    },
+    async runBulk() {
+        const selected = Array.from(document.querySelectorAll('.bulk-res-check:checked')).map(cb => cb.value);
+        const examId = document.getElementById('bulkRes_examSelect').value;
+        const format = document.getElementById('bulkRes_formatSelect').value;
+        const sessionId = document.getElementById('bulkRes_sessionSelect').value;
+
+        if (!selected.length || !examId) {
+            showToast('Select students and exam first', 'error');
+            return;
+        }
+
+        if (!confirm(`Generate ${selected.length} report cards?`)) return;
+
+        try {
+            setLoading(true);
+            showToast(`Generating ${selected.length} report cards...`, 'info');
+            for (const id of selected) {
+                if (window.processIndividualReportCard) {
+                    await window.processIndividualReportCard(id, examId, sessionId, format, false);
+                }
+            }
+            showToast('All report cards generated successfully!', 'success');
+        } catch (e) {
+            showToast('Bulk Error: ' + e.message, 'error');
+        } finally {
+            setLoading(false);
+        }
+    }
 };
 
 // Global hooks
-window.loadBulkResClasses = () => BulkReportCardUI.loadClasses();
-window.loadBulkResSections = () => BulkReportCardUI.loadSections();
+// Global hooks for Report Card Preview
+window.loadRcClasses = () => RcPreviewUI.loadClasses('rcPreviewSession', 'rcPreviewClass');
+window.loadRcSections = () => RcPreviewUI.loadSections('rcPreviewSession', 'rcPreviewClass', 'rcPreviewSection');
+window.loadRcStudents = () => RcPreviewUI.loadStudents();
+
+window.idIndivLoadClasses = () => IdCardPreviewUI.loadClasses();
+window.idIndivLoadStudents = () => IdCardPreviewUI.loadStudents();
+window.idIndivPreview = () => IdCardPreviewUI.preview();
+
+window.loadPublishClasses = () => RcPreviewUI.loadClasses('publishSessionSelect', 'publishClassSelect');
+window.loadPublishSections = () => {
+    RcPreviewUI.loadSections('publishSessionSelect', 'publishClassSelect', 'publishSectionSelect');
+    if (window.refreshPublishStatus) refreshPublishStatus();
+};
+
+window.loadRemarkClasses = () => RcPreviewUI.loadClasses('remarkSessionSelect', 'remarkClassSelect');
+window.loadRemarkSections = () => {
+    RcPreviewUI.loadSections('remarkSessionSelect', 'remarkClassSelect', 'remarkSectionSelect');
+    if (window.loadRemarksGrid) loadRemarksGrid();
+};
+
+window.loadManageResultsClasses = () => RcPreviewUI.loadClasses('manageResultsSession', 'manageResultsClass');
+window.loadManageResultsSections = () => {
+    RcPreviewUI.loadSections('manageResultsSession', 'manageResultsClass', 'manageResultsSectionSelect');
+    if (window.refreshManageResultsTable) refreshManageResultsTable();
+};
+window.loadManageResultsSubjects = () => {
+    const sessId = document.getElementById('manageResultsSession')?.value;
+    if (window.loadSubjectsForResults && sessId) {
+        window.loadSubjectsForResults(sessId, 'manageResultsSubject');
+    }
+};
+
+window.loadBulkResClasses = () => RcPreviewUI.loadClasses('bulkRes_sessionSelect', 'bulkRes_classSelect');
+window.loadBulkResSections = () => {
+    RcPreviewUI.loadSections('bulkRes_sessionSelect', 'bulkRes_classSelect', 'bulkRes_sectionSelect');
+    BulkReportCardUI.loadStudents();
+};
+
 window.loadStudentsForBulkRes = () => BulkReportCardUI.loadStudents();
 window.toggleBulkResSelection = (master) => {
     document.querySelectorAll('.bulk-res-check').forEach((cb) => (cb.checked = master.checked));
 };
 window.runBulkGeneration = () => BulkReportCardUI.runBulk();
+window.previewSingleReportCard = (isDownload = false) => {
+    if (typeof previewSingleReportCard === 'function') {
+        window.previewSingleReportCard(isDownload);
+    } else {
+        showToast('Report card logic initializing...', 'info');
+    }
+};
 
 // Notice Board
 async function handleNoticeSubmit(e) {

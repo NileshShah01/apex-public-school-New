@@ -546,8 +546,119 @@ function exportAttendanceReport() {
     }
 }
 
+/**
+ * Download an Excel template for attendance marking with student names
+ */
+async function downloadAttendanceTemplate() {
+    const classVal = document.getElementById('att_classSelect').value;
+    const sectionVal = document.getElementById('att_sectionSelect').value;
+    const sessionVal = document.getElementById('att_sessionSelect').value;
+
+    if (!classVal || !sectionVal || !sessionVal) {
+        showToast('Please select Session, Class and Section first', 'warning');
+        return;
+    }
+
+    try {
+        showToast('Preparing template...', 'info');
+        
+        // Fetch students for the selected class/section
+        const snapshot = await schoolData('students')
+            .where('currentClass', '==', classVal)
+            .where('currentSection', '==', sectionVal)
+            .where('status', '==', 'active')
+            .get();
+
+        if (snapshot.empty) {
+            showToast('No active students found for this class/section', 'warning');
+            return;
+        }
+
+        const students = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                'Roll No': data.rollNo || '',
+                'Student Name': data.name || '',
+                'Attendance (P/A/L)': 'P', // Default to Present
+                'Student ID': doc.id // Hidden column or just for context
+            };
+        });
+
+        // Sort by Roll No if available, else Name
+        students.sort((a, b) => {
+            if (a['Roll No'] && b['Roll No']) return a['Roll No'] - b['Roll No'];
+            return a['Student Name'].localeCompare(b['Student Name']);
+        });
+
+        const ws = XLSX.utils.json_to_sheet(students);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Attendance Sheet");
+
+        const filename = `Attendance_Template_${classVal}_${sectionVal}.xlsx`;
+        XLSX.writeFile(wb, filename);
+        showToast('Template downloaded! Fill it and upload back.', 'success');
+    } catch (e) {
+        console.error('Error downloading template:', e);
+        showToast('Error generating template', 'error');
+    }
+}
+
+/**
+ * Handle Excel upload and update attendance state
+ */
+async function handleAttendanceExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.SheetNames[0];
+            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+
+            if (!jsonData || jsonData.length === 0) {
+                showToast('The Excel file is empty', 'warning');
+                return;
+            }
+
+            showToast('Processing attendance data...', 'info');
+
+            // Find matching students in the current view or DB
+            // We'll update the attendanceRecords map
+            let matchedCount = 0;
+            const statusMap = { 'P': 'present', 'A': 'absent', 'L': 'late' };
+
+            for (const row of jsonData) {
+                const studentId = row['Student ID'];
+                let status = row['Attendance (P/A/L)'] || 'P';
+                status = status.toUpperCase().trim();
+                
+                if (studentId && statusMap[status]) {
+                    attendanceState.attendanceRecords[studentId] = statusMap[status];
+                    matchedCount++;
+                }
+            }
+
+            // Update UI
+            renderAttendanceTable();
+            showToast(`Successfully matched ${matchedCount} records. Click "Save Attendance" to commit.`, 'success');
+            
+            // Reset input
+            event.target.value = '';
+        } catch (err) {
+            console.error('Excel processing error:', err);
+            showToast('Error processing file. Please ensure it follows the template.', 'error');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 window.loadRepAttClasses = loadRepAttClasses;
 window.updateRepAttSections = updateRepAttSections;
 window.generateAttendanceReport = generateAttendanceReport;
 window.exportAttendanceReport = exportAttendanceReport;
+window.downloadAttendanceTemplate = downloadAttendanceTemplate;
+window.handleAttendanceExcelUpload = handleAttendanceExcelUpload;
 
