@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title id="studentPortalTitle">Student Dashboard</title>
-        <link rel="stylesheet" href="../css/portal.css" />
+        <link rel="stylesheet" href="/css/portal.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,8 +25,10 @@
             <!-- Sidebar -->
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-logo">
-                    <img id="sidebarLogoImg" src="../images/ApexPublicSchoolLogo.png" alt="Logo" class="h-8 w-auto mr-1 hidden" />
-                    <h2 class="text-lg white fw-800 m-0" id="sidebarBrandName">Apex Portal</h2>
+                    <div class="flex-center bg-primary white w-10 h-10 border-radius-0-75 shadow-sm">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h2 class="text-lg secondary fw-800 m-0" id="sidebarBrandName">Apex Portal</h2>
                 </div>
 
                 <!-- Student Mini Profile in Sidebar -->
@@ -34,8 +36,8 @@
                     <div id="sidebarStudentPhoto" class="sidebar-avatar">
                         <i class="fas fa-user-graduate"></i>
                     </div>
-                    <h4 id="sidebarStudentName" class="text-sm white">Loading...</h4>
-                    <p id="sidebarStudentClass" class="text-xs text-muted uppercase letter-spacing-1">Class - Sec</p>
+                    <h4 id="sidebarStudentName">Loading...</h4>
+                    <p id="sidebarStudentClass" class="text-xs uppercase letter-spacing-1">Class - Sec</p>
                 </div>
 
                 <nav class="nav-menu">
@@ -44,10 +46,10 @@
                         <i class="fas fa-th-large"></i> <span>Dashboard</span>
                     </a>
                     <a href="#homework" class="nav-link" onclick="showPortalSection('homework')">
-                        <i class="fas fa-book-reader"></i> <span>Daily Homework</span>
+                        <i class="fas fa-book-reader"></i> <span>Assignments</span>
                     </a>
                     <a href="#attendance" class="nav-link" onclick="showPortalSection('attendance')">
-                        <i class="fas fa-calendar-check"></i> <span>My Attendance</span>
+                        <i class="fas fa-calendar-check"></i> <span>Attendance</span>
                     </a>
                     <a href="#profile" class="nav-link" onclick="showPortalSection('profile')">
                         <i class="fas fa-user-circle"></i> <span>My Profile</span>
@@ -60,11 +62,14 @@
                     <a href="#exams" class="nav-link" onclick="showPortalSection('exams')">
                         <i class="fas fa-file-alt"></i> <span>Exams & Results</span>
                     </a>
+                    <a href="#results" class="nav-link" onclick="showPortalSection('results')">
+                        <i class="fas fa-certificate"></i> <span>My Report Card</span>
+                    </a>
                     <a href="#materials" class="nav-link" onclick="showPortalSection('materials')">
-                        <i class="fas fa-folder-open"></i> <span>Question Papers</span>
+                        <i class="fas fa-folder-open"></i> <span>Resources</span>
                     </a>
                     <a href="#transport" class="nav-link" onclick="showPortalSection('transport')">
-                        <i class="fas fa-bus"></i> <span>My Transport</span>
+                        <i class="fas fa-bus"></i> <span>Transport</span>
                     </a>
                     <a href="#library" class="nav-link" onclick="showPortalSection('library')">
                         <i class="fas fa-book"></i> <span>My Library</span>
@@ -83,24 +88,43 @@
 
             <!-- Main Content -->
             <main class="main-content">
+                <!-- Top Desktop Header -->
+                <header class="top-bar no-mobile">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search services..." readonly onclick="showPortalSection('dashboard')">
+                    </div>
+                    <div class="flex align-center gap-md">
+                        <div class="year-pill">
+                            <i class="far fa-calendar-alt text-muted"></i>
+                            <select id="academicYear" title="Select Academic Year">
+                                <option value="2026">Session 2025-26</option>
+                                <option value="2027">Session 2026-27</option>
+                            </select>
+                        </div>
+                        <div class="divider-v"></div>
+                        <div class="notify-dot">
+                            <i class="far fa-bell text-lg cursor-pointer"></i>
+                        </div>
+                    </div>
+                </header>
+
                 <!-- Mobile Header -->
                 <div class="mobile-header">
                     <div class="d-flex align-items-center gap-sm">
                         <i
-                            class="fas fa-bars cursor-pointer text-xl"
+                            class="fas fa-bars-staggered cursor-pointer text-xl primary"
                             onclick="toggleSidebar()"
                         ></i>
-                        <h2 class="text-md color-secondary fw-800 m-0" id="mobileBrandName">
+                        <h2 class="text-md secondary fw-800 m-0" id="mobileBrandName">
                             Apex Portal
                         </h2>
                     </div>
                     <div
                         id="mobileStudentPhoto"
-                        class="w-8 h-8 bg-slate-200 rounded-full overflow-hidden"
+                        class="w-10 h-10 bg-white border-radius-50 shadow-sm overflow-hidden flex-center border"
                     >
-                        <i
-                            class="fas fa-user-graduate text-md color-slate-400 d-flex align-items-center justify-content-center h-full"
-                        ></i>
+                        <i class="fas fa-user-graduate primary"></i>
                     </div>
                 </div>
 
@@ -123,131 +147,115 @@
                         </div>
                     </div>
 
-                    <!-- Profile Overview Cards -->
-                    <div class="card profile-card-horizontal">
-                        <div id="studentPhotoCard" class="profile-photo-box">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h1 id="disp_student_name" class="text-2xl mb-0-5 secondary">Loading Profile...</h1>
-                            <div class="flex gap-1-5 text-muted text-xs">
-                                <span><i class="fas fa-id-card"></i> <b id="disp_student_id">...</b></span>
-                                <span><i class="fas fa-graduation-cap"></i> <b id="disp_class">...</b></span>
-                                <span><i class="fas fa-door-open"></i> Sec: <b id="disp_section">...</b></span>
+                    <!-- Profile Overview Banner -->
+                    <div class="card profile-banner gradient-subtle">
+                        <div class="flex align-center gap-2">
+                            <div id="studentPhotoCard" class="banner-photo">
+                                <i class="fas fa-user-graduate"></i>
                             </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Academic Year</p>
-                            <select
-                                id="academicYear"
-                                class="p-0-5 bg-gray border-radius-0-5 font-bold text-sm"
-                                title="Select Academic Year"
-                            >
-                                <option value="2026">2025-26</option>
-                                <option value="2027">2026-27</option>
-                            </select>
+                            <div class="flex-1">
+                                <p class="text-xs primary font-bold uppercase mb-0-25">Student Profile</p>
+                                <h1 id="disp_student_name" class="text-2xl mb-0-25 secondary">Loading Profile...</h1>
+                                <div class="flex gap-1-5 text-muted text-sm">
+                                    <span><i class="fas fa-id-badge primary"></i> ID: <b id="disp_student_id">...</b></span>
+                                    <span><i class="fas fa-graduation-cap primary"></i> Class: <b id="disp_class">...</b></span>
+                                    <span><i class="fas fa-door-open primary"></i> Section: <b id="disp_section">...</b></span>
+                                </div>
+                            </div>
+                            <div class="no-mobile">
+                                <button onclick="showPortalSection('profile')" class="btn-portal btn-white shadow-sm">
+                                    Edit Profile
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Dashboard Content Grid -->
-                    <div
-                        class="grid-2fr-1fr gap-md mt-4"
-                    >
-                        <!-- Quick Summary Column -->
+                    <div class="grid-2fr-1fr gap-md mt-4">
+                        <!-- Left Column: Primary Info -->
                         <div class="flex-col gap-1-5">
-                            <!-- Fee Status Widget (Home Version) -->
-                            <div class="card gradient-primary p-2">
-                                <div class="flex-between mb-1-5">
+                            <!-- Fee Status Widget (Premium Version) -->
+                            <div class="card gradient-primary p-2 border-none">
+                                <div class="flex-between mb-1-5 pt-0-5">
                                     <div>
-                                        <p class="text-xs opacity-80 uppercase letter-spacing-1">Fee Balance Status</p>
-                                        <h2 id="homeFeeBalance" class="text-2xl font-extrabold mt-1">₹--</h2>
+                                        <p class="text-xs opacity-80 uppercase letter-spacing-1 font-bold white-important">Outstanding Balance</p>
+                                        <h2 id="homeFeeBalance" class="text-3xl font-extrabold mt-1 white-important">₹--</h2>
                                     </div>
-                                    <div
-                                        class="badge-glass flex-center w-14 h-14 rounded-xl text-xl"
-                                    >
-                                        <i class="fas fa-wallet"></i>
+                                    <div class="bg-white p-1-25 rounded-xl shadow-lg border-none">
+                                        <i class="fas fa-wallet text-2xl primary"></i>
                                     </div>
                                 </div>
                                 <div class="glass-panel p-1 flex-between border-radius-0-75">
                                     <span class="text-sm">Next Due Date: <b id="homeNextDue">Checking...</b></span>
-                                    <button
-                                        onclick="showPortalSection('fees')"
-                                        class="btn-portal bg-white primary border-none p-0-5-1 border-radius-0-5 text-xs font-bold"
-                                        title="View Fee History"
-                                    >
-                                        View History
+                                    <button onclick="showPortalSection('fees')" class="btn-portal btn-white shadow-sm border-none p-0-5-1 text-xs font-bold">
+                                        Manage Fees
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Homework Preview -->
-                            <div class="card">
-                                <div class="flex-between mb-1">
-                                    <h3 class="text-lg">
-                                        <i class="fas fa-pencil-alt color-primary"></i> Homework Today
+                            <!-- Homework & Tasks -->
+                            <div class="card p-0 overflow-hidden">
+                                <div class="flex-between p-1-5 pb-1">
+                                    <h3 class="text-lg secondary m-0">
+                                        <i class="fas fa-pencil-alt primary mr-0-5"></i> Assignments Today
                                     </h3>
-                                    <a
-                                        href="#homework"
-                                        onclick="showPortalSection('homework')"
-                                        class="text-xs font-bold color-primary-light no-decoration"
-                                        >View All</a
-                                    >
+                                    <button onclick="showPortalSection('homework')" class="btn-portal btn-white-primary text-xs font-bold">
+                                        Explore All
+                                    </button>
                                 </div>
-                                <div id="homeHomeworkPreview">
-                                    <p class="text-sm p-2 text-center opacity-80">Loading today's tasks...</p>
+                                <div id="homeHomeworkPreview" class="p-1-5 pt-0">
+                                    <div class="flex-center p-3 text-muted text-sm italic">
+                                        Fetching today's assignments...
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Quick Actions Hub -->
-                            <div id="quickActionsSection" class="card p-1">
-                                <h3 class="text-lg mb-1"><i class="fas fa-bolt accent"></i> Quick Support</h3>
+                            <!-- Quick Support Hub -->
+                            <div id="quickActionsSection" class="card">
+                                <h3 class="text-lg secondary mb-1-5">
+                                    <i class="fas fa-life-ring primary mr-0-5"></i> Quick Support Hub
+                                </h3>
                                 <div class="actions-hub">
                                     <a href="/contact.html" class="action-item" title="Contact Support">
-                                        <div
-                                            class="icon-box flex-center bg-blue-light color-primary w-10 h-10 text-md"
-                                        >
+                                        <div class="icon-box bg-primary white w-12 h-12 shadow-sm">
                                             <i class="fas fa-phone"></i>
                                         </div>
-                                        <span class="text-xs font-bold">Support</span>
+                                        <span class="text-xs font-bold secondary">Help Desk</span>
                                     </a>
                                     <a href="/holidays.html" class="action-item" title="View School Holidays">
-                                        <div
-                                            class="icon-box flex-center bg-amber-light text-warning w-10 h-10 text-md"
-                                        >
+                                        <div class="icon-box bg-amber-light text-warning w-12 h-12 shadow-sm">
                                             <i class="fas fa-calendar-day"></i>
                                         </div>
-                                        <span class="text-xs font-bold">Holidays</span>
+                                        <span class="text-xs font-bold secondary">Holidays</span>
                                     </a>
                                     <a href="/staff.html" class="action-item" title="Meet Our Teachers">
-                                        <div
-                                            class="icon-box flex-center bg-green-light text-success w-10 h-10 text-md"
-                                        >
+                                        <div class="icon-box bg-green-light text-success w-12 h-12 shadow-sm">
                                             <i class="fas fa-users"></i>
                                         </div>
-                                        <span class="text-xs font-bold">Teachers</span>
+                                        <span class="text-xs font-bold secondary">Directory</span>
                                     </a>
                                     <a href="student-login.html" class="action-item" title="Logout from Portal">
-                                        <div
-                                            class="icon-box flex-center bg-red-light text-danger w-10 h-10 text-md"
-                                        >
+                                        <div class="icon-box bg-red-light text-danger w-12 h-12 shadow-sm">
                                             <i class="fas fa-sign-out-alt"></i>
                                         </div>
-                                        <span class="text-xs font-bold">Logout</span>
+                                        <span class="text-xs font-bold secondary">Logout</span>
                                     </a>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Right Column: Notices & Info -->
+                        <!-- Right Column: Boards & Widgets -->
                         <div class="flex-col gap-1-5">
-                            <!-- Notice Board -->
-                            <div class="card p-0 overflow-hidden min-h-450">
-                                <div class="flex align-center p-1-5 gap-1 bg-secondary white">
-                                    <i class="fas fa-bullhorn accent"></i>
-                                    <h3 class="text-sm font-bold">School Notice Board</h3>
+                            <!-- Premium Notice Board -->
+                            <div class="card p-0 overflow-hidden">
+                                <div class="flex align-center p-1-5 gap-1 bg-secondary border-bottom">
+                                    <i class="fas fa-bullhorn primary animate-pulse"></i>
+                                    <h3 class="text-md secondary fw-700 m-0 text-color-inherit">Official Updates</h3>
                                 </div>
-                                <div id="noticesContainer" class="p-1-5">
-                                    <p class="text-sm p-2 text-center opacity-80 mt-3">Fetching announcements...</p>
+                                <div id="noticesContainer" class="p-1-5 min-h-350">
+                                    <div class="flex-center p-4 text-muted text-sm">
+                                        Synchronizing updates...
+                                    </div>
                                 </div>
                             </div>
 
@@ -264,42 +272,33 @@
                                 </p>
                             </div>
 
-                            <!-- Important Links (If enabled) -->
-                            <div id="importantLinksWidget" class="card hidden">
-                                <h4 class="mb-1 text-sm secondary">
-                                    <i class="fas fa-external-link-alt"></i> Useful Links
-                                </h4>
-                                <div id="linksList" class="flex-col gap-0-5">
+                            <!-- Important Links Hub -->
+                            <div id="importantLinksWidget" class="card hidden p-0 overflow-hidden">
+                                <div class="bg-secondary p-1-25 border-bottom flex align-center gap-0-75">
+                                    <i class="fas fa-external-link-alt primary text-sm"></i>
+                                    <h4 class="m-0 text-sm secondary fw-700 uppercase letter-spacing-1">Useful Links</h4>
+                                </div>
+                                <div id="linksList" class="p-1-25 flex-col gap-0-75">
                                     <!-- Links populated here -->
                                 </div>
                             </div>
 
-                            <!-- Attendance Mini Widget -->
-                            <div id="attendanceWidget" class="card hidden">
-                                <h4 class="mb-1 text-sm"><i class="fas fa-check-circle success"></i> My Attendance</h4>
+                            <!-- Attendance Mini Tracking -->
+                            <div id="attendanceWidget" class="card hidden p-1-5">
+                                <div class="flex-between mb-1-25">
+                                    <h4 class="m-0 text-sm secondary"><i class="fas fa-check-circle success mr-0-5"></i> Academic Presence</h4>
+                                    <span id="attendancePercent" class="badge-success">0%</span>
+                                </div>
                                 <div class="flex align-center gap-1">
-                                    <div class="relative w-14 h-14">
-                                        <svg viewBox="0 0 36 36" class="w-full h-full">
-                                            <path
-                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                fill="none"
-                                                stroke="#e2e8f0"
-                                                stroke-width="3"
-                                            />
-                                            <path
-                                                id="attendanceCircle"
-                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                fill="none"
-                                                stroke="var(--success)"
-                                                stroke-width="3"
-                                                stroke-dasharray="0, 100"
-                                            />
+                                    <div class="relative w-14 h-14 flex-shrink-0">
+                                        <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                            <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                                            <circle id="attendanceCircle" cx="18" cy="18" r="16" fill="none" stroke="var(--success)" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" class="transition-all-500"></circle>
                                         </svg>
-                                        <div class="absolute-center text-center">
-                                            <span id="attendancePercent" class="text-xs font-bold secondary">0%</span>
-                                        </div>
                                     </div>
-                                    <div id="attendanceStatusText" class="text-xs text-muted">Loading...</div>
+                                    <div id="attendanceStatusText" class="text-xs text-muted line-height-1-4">
+                                        Evaluating attendance records...
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -308,10 +307,13 @@
 
                 <!-- HOMEWORK SECTION -->
                 <section id="homeworkSection" class="portal-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Daily Homework</h1>
-                            <p>Complete your assignments on time for better grades</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Assignment Portal</h1>
+                            <p class="text-sm text-muted m-0">Daily tasks and curriculum materials</p>
+                        </div>
+                        <div class="badge-glass primary px-4 py-2 border-radius-2 font-bold no-mobile">
+                            SESSION 2025-26
                         </div>
                     </div>
                     <div id="homeworkGrid" class="grid-auto-300">
@@ -325,10 +327,13 @@
 
                 <!-- ATTENDANCE SECTION -->
                 <section id="attendanceSection" class="portal-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>My Attendance</h1>
-                            <p>Track your daily attendance and academic regularity</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Presence Records</h1>
+                            <p class="text-sm text-muted m-0">Official academic regularity tracking</p>
+                        </div>
+                        <div class="badge-glass success px-4 py-2 border-radius-2 font-bold no-mobile">
+                            ENROLLED
                         </div>
                     </div>
 
@@ -383,9 +388,11 @@
 
                 <!-- PROFILE SECTION -->
                 <section id="profileSection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>Personal Information</h1>
-                        <p>Verified student dossier from school records</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Student Dossier</h1>
+                            <p class="text-sm text-muted m-0">Verified identity from institutional records</p>
+                        </div>
                     </div>
                     <div class="card p-2">
                         <div class="flex gap-3 align-start">
@@ -434,9 +441,11 @@
 
                 <!-- FEES & RECEIPTS SECTION -->
                 <section id="feesSection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>Fees & Payments</h1>
-                        <p>Track your financial history and download receipts</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Finance Dashboard</h1>
+                            <p class="text-sm text-muted m-0">Transaction history and digital receipt repository</p>
+                        </div>
                     </div>
 
                     <div class="stats-grid">
@@ -511,11 +520,40 @@
                     </div>
                 </section>
 
-                <!-- EXAMS & RESULTS SECTION -->
+                <!-- RESULTS SECTION (MANUAL REPORT CARDS) -->
+                <section id="resultsSection" class="portal-section hidden">
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Academic Performance</h1>
+                            <p class="text-sm text-muted m-0">Official institutional scorecards and evaluations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-2 text-center">
+                        <div class="icon-box-large flex-center bg-primary white mx-auto mb-1-5 shadow-lg border-none text-2xl">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h2 class="secondary mb-1">Formal Report Cards</h2>
+                        <p class="text-sm text-muted mb-2 max-w-400 mx-auto">
+                            Access your signed and verified academic reports. Select the document below to view or download.
+                        </p>
+                        
+                        <div id="manualResultsArea" class="flex-col gap-1 max-w-500 mx-auto">
+                            <!-- Populated by JS -->
+                            <div class="flex-center p-4 text-muted border-radius-1 bg-secondary dashed">
+                                <p class="m-0 italic">Searching for available documents...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXAMS SECTION -->
                 <section id="examsSection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>Academic Documents</h1>
-                        <p>Download your report cards and admit cards</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Assessment Center</h1>
+                            <p class="text-sm text-muted m-0">Examination schedules and hall tickets</p>
+                        </div>
                     </div>
                     <!-- This will adapt existing logic but in a cleaner grid -->
                     <div class="grid-2">
@@ -547,9 +585,11 @@
 
                 <!-- QUESTION PAPERS SECTION -->
                 <section id="materialsSection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>Question Paper Library</h1>
-                        <p>Practice for your exams with previous year papers</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Academic Resources</h1>
+                            <p class="text-sm text-muted m-0">Reference materials and previous year assessments</p>
+                        </div>
                     </div>
                     <div class="card">
                         <div id="examMaterialsStatusArea" class="mb-1-5"></div>
@@ -561,9 +601,11 @@
 
                 <!-- TRANSPORT SECTION -->
                 <section id="transportSection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>My Transport</h1>
-                        <p>Details of your school bus route and pickup point</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Logistics & Transit</h1>
+                            <p class="text-sm text-muted m-0">Route tracking and transport assignments</p>
+                        </div>
                     </div>
                     <div class="card p-2 text-center">
                         <div
@@ -579,9 +621,11 @@
 
                 <!-- LIBRARY SECTION -->
                 <section id="librarySection" class="portal-section hidden">
-                    <div class="header">
-                        <h1>My Library</h1>
-                        <p>Track your currently issued books and history</p>
+                    <div class="section-header-pill">
+                        <div class="flex-1">
+                            <h1 class="text-2xl secondary m-0">Institutional Library</h1>
+                            <p class="text-sm text-muted m-0">Book circulation and issuing history</p>
+                        </div>
                     </div>
                     <div class="card">
                         <h3><i class="fas fa-book"></i> Currently Issued</h3>
@@ -626,8 +670,8 @@
 
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/student-auth.js"></script>
-        <script src="../js/student-dashboard.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/student-auth.js"></script>
+        <script src="/js/student-dashboard.js"></script>
     </body>
 </html>

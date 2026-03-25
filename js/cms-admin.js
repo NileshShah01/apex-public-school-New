@@ -3,6 +3,10 @@
  * Dynamically show/hide sidebar modules based on the school's active SaaS stage.
  */
 async function applyStagePermissions() {
+    // Wait for slug resolution before checking permissions
+    if (window.schoolBootstrapReady) {
+        await window.schoolBootstrapReady;
+    }
     console.log(`Checking permissions for: ${CURRENT_SCHOOL_ID}`);
     try {
         // Use direct reference to the school document (root collection)
@@ -22,12 +26,12 @@ async function applyStagePermissions() {
         // Sidebar Elements Mapping
         const modules = {
             navAdmission: 4, // Needs Stage 4+
-            navExams: 5, // Needs Stage 5
-            navResults: 5, // Needs Stage 5
+            navExams: 1, // Restored: Visible for all stages
+            navResults: 1, // Restored: Visible for all stages
             navFees: 4, // Needs Stage 4+
-            navEmployee: 5, // Needs Stage 5
-            navClass: 4, // Needs Stage 4+
-            navTimeTable: 4, // Needs Stage 4+
+            navEmployee: 1, // Restored: Visible for all stages
+            navClass: 1, // Restored: Visible for all stages
+            navTimeTable: 1, // Restored: Visible for all stages
         };
 
         for (const [id, minStage] of Object.entries(modules)) {
@@ -51,8 +55,16 @@ async function applyStagePermissions() {
  */
 function applySchoolBranding(data) {
     if (!data) return;
-    const name = data.schoolName || 'Apex Public School';
-    const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+    const name = data.schoolName || window.SCHOOL_NAME || 'School';
+    let logo = data.logo || '/images/ApexPublicSchoolLogo.png';
+
+    // Ensure logo path is absolute
+    if (logo.startsWith('../')) {
+        logo = logo.substring(2);
+    }
+    if (!logo.startsWith('/') && !logo.startsWith('http')) {
+        logo = '/' + logo;
+    }
 
     // Update Title
     if (document.getElementById('dashboardTitle')) {
@@ -119,7 +131,7 @@ const CMS_SECTIONS = {
     cmsTextInquiry: { load: () => loadPageTextAdmin('inquiry') },
     cmsFeeTools: {
         load: () => {
-            window.feeResultData = null;
+            window.feeDuesToolResultData = null;
             document.getElementById('fee_resultsArea').style.display = 'none';
         },
     },
@@ -1412,396 +1424,4 @@ async function loadHeroSlider() {
     }
 }
 
-// ===================== FEE TOOLS: PARENTS WHO NOT PAID =====================
-let feeResultData = null;
-
-function updateFileName(inputId, statusId) {
-    const file = document.getElementById(inputId).files[0];
-    if (file) {
-        document.getElementById(statusId).textContent = '✓ ' + file.name;
-    }
-}
-
-const SEARCH_TERMS = {
-    'Student Id': [
-        'studentId',
-        'student id',
-        'id',
-        'admission no',
-        'adm no',
-        'id_no',
-        'student_id',
-        'scholar no',
-        'reg no',
-        'roll no',
-        'sid',
-        'id no',
-        'stuid',
-        'enrollment',
-    ],
-    'Student Name': ['student name', 'name', 'student_name', 'candidate name', 'full name', 'sname', 'student'],
-    'Father Name': ['fatherName', 'father name', 'father_name', 'father', 'guardian name', 'guardian'],
-    Phone: ['mobile', 'phone', 'contact', 'mobile number', 'phone number', 'whatsapp', 'mob'],
-    Session: ['admissionYear', 'session', 'year', 'academic year', 'acad_year'],
-    Class: ['class', 'cls', 'grade', 'standard', 'standard_no'],
-    'Due Amount': ['due amount', 'balance', 'pending', 'dues', 'total due', 'amount due', 'due', 'remain', 'arrear'],
-};
-
-function findKey(row, keyName) {
-    if (!row) return null;
-    const searchTerms = SEARCH_TERMS[keyName] || [keyName.toLowerCase()];
-    const keys = Object.keys(row);
-
-    // Exact match first
-    for (const term of searchTerms) {
-        const exact = keys.find((k) => k.trim().toLowerCase() === term.toLowerCase());
-        if (exact) return exact;
-    }
-
-    // Fuzzy match second
-    for (const term of searchTerms) {
-        const fuzzy = keys.find((k) => k.toLowerCase().includes(term.toLowerCase()));
-        if (fuzzy) return fuzzy;
-    }
-    return null;
-}
-
-function mapFeeRow(row) {
-    const idKey = findKey(row, 'Student Id');
-    const nameKey = findKey(row, 'Student Name');
-    const fatherKey = findKey(row, 'Father Name');
-    const phoneKey = findKey(row, 'Phone');
-    const sessionKey = findKey(row, 'Session');
-    const classKey = findKey(row, 'Class');
-    const dueKey = findKey(row, 'Due Amount');
-
-    if (!idKey) console.warn('Missing Student Id mapping in row:', row);
-
-    // Clean due amount - handles currency, commas, etc.
-    let rawDue = dueKey && row[dueKey] ? String(row[dueKey]) : '0';
-    let cleanDue = Number(rawDue.replace(/[^\d.]/g, '')) || 0;
-
-    return {
-        'Student Id': idKey ? String(row[idKey] || '').trim() : '',
-        'Student Name': nameKey ? String(row[nameKey] || '').trim() : '',
-        'Father Name': fatherKey ? String(row[fatherKey] || '').trim() : '',
-        Phone: phoneKey ? String(row[phoneKey] || '').trim() : '',
-        Session: sessionKey ? String(row[sessionKey] || '').trim() : '',
-        Class: classKey ? String(row[classKey] || '').trim() : '',
-        'Due Amount': cleanDue,
-    };
-}
-
-function readExcelFile(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-
-                // First pass: find headers by scanning rows
-                const fullAOA = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                console.log('Full AOA head:', fullAOA.slice(0, 5));
-
-                let headerRowIndex = 0;
-                for (let i = 0; i < Math.min(fullAOA.length, 20); i++) {
-                    const row = fullAOA[i];
-                    if (!row || !Array.isArray(row)) continue;
-
-                    // Count how many expected headers match this row
-                    let matches = 0;
-                    const combinedTerms = Object.values(SEARCH_TERMS).flat();
-
-                    row.forEach((cell) => {
-                        const cellStr = String(cell || '')
-                            .toLowerCase()
-                            .trim();
-                        if (combinedTerms.some((term) => cellStr === term || cellStr.includes(term))) {
-                            matches++;
-                        }
-                    });
-
-                    if (matches >= 3) {
-                        headerRowIndex = i;
-                        console.log(`[FeeTool] Detected header at row ${i + 1} with ${matches} matches:`, row);
-                        break;
-                    }
-                }
-
-                // Now parse using the headerRowIndex
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
-                console.log('Final JSON Data sample:', jsonData.slice(0, 2));
-                resolve(jsonData);
-            } catch (err) {
-                console.error('Excel Parse error:', err);
-                reject(err);
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-    });
-}
-
-async function processFeeData() {
-    const duesFile = document.getElementById('fee_duesFile').files[0];
-    const paidFile = document.getElementById('fee_paidFile').files[0];
-
-    if (!duesFile || !paidFile) {
-        showToast('Please upload both Excel files first.', 'error');
-        return;
-    }
-
-    try {
-        showToast('Processing data...', 'info');
-
-        const rawDuesData = await readExcelFile(duesFile);
-        const rawPaidData = await readExcelFile(paidFile);
-
-        if (!rawDuesData.length || !rawPaidData.length) {
-            showToast('One of the files seems empty or invalid.', 'error');
-            return;
-        }
-
-        // Discovery of ID keys for matching
-        const duesIdKey = findKey(rawDuesData[0], 'Student Id');
-        const paidIdKey = findKey(rawPaidData[0], 'Student Id');
-
-        console.log('[FeeTool] Dues ID Key found:', duesIdKey);
-        console.log('[FeeTool] Paid ID Key found:', paidIdKey);
-
-        if (!duesIdKey || !paidIdKey) {
-            const missing = !duesIdKey ? 'Dues File' : 'Paid File';
-            showToast(`Could not find 'Student id' column in ${missing}. Check headers.`, 'error');
-            return;
-        }
-
-        // Get paid IDs set
-        const paidIds = new Set(
-            rawPaidData.map((row) => String(row[paidIdKey] || '').trim()).filter((id) => id !== '')
-        );
-        console.log(`[FeeTool] Found ${paidIds.size} unique paid student IDs.`);
-
-        // Identify non-paying students and map them
-        const nonPaying = [];
-        rawDuesData.forEach((row, idx) => {
-            const id = String(row[duesIdKey] || '').trim();
-            if (id !== '' && !paidIds.has(id)) {
-                nonPaying.push(mapFeeRow(row));
-            }
-        });
-
-        console.log(`[FeeTool] Identified ${nonPaying.length} students who have not paid.`);
-
-        if (nonPaying.length === 0) {
-            showToast('Great news! All students have paid.', 'success');
-            return;
-        }
-
-        // Group by Class and sort by Due Amount Desc
-        const grouped = {};
-        nonPaying.forEach((std) => {
-            const cls = std.Class || 'Unclassified';
-            if (!grouped[cls]) grouped[cls] = [];
-            grouped[cls].push(std);
-        });
-
-        // Sort each class by Due Amount Descending
-        Object.keys(grouped).forEach((cls) => {
-            grouped[cls].sort((a, b) => (b['Due Amount'] || 0) - (a['Due Amount'] || 0));
-        });
-
-        feeResultData = grouped;
-
-        document.getElementById('fee_resultsArea').style.display = 'block';
-        document.getElementById('fee_summaryText').textContent =
-            `Found ${nonPaying.length} students across ${Object.keys(grouped).length} classes with pending payments.`;
-        showToast('Analysis complete!', 'success');
-    } catch (e) {
-        console.error(e);
-        showToast('Error processing files: ' + e.message, 'error');
-    }
-}
-
-function downloadFeeExcel() {
-    if (!feeResultData) return;
-
-    const wb = XLSX.utils.book_new();
-    const sortedClasses = Object.keys(feeResultData).sort();
-
-    const dateRange = `(01 Dec, 2023 - ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
-    const title = [`Apex Public School | Parents Who Not Paid | ${dateRange}`];
-    const headers = ['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Due Amount'];
-
-    sortedClasses.forEach((cls) => {
-        const rows = feeResultData[cls];
-        const sheetData = [
-            title,
-            headers,
-            ...rows.map((std) => [
-                String(std['Student Id']),
-                std['Student Name'],
-                std['Father Name'],
-                std['Phone'],
-                std['Session'],
-                std['Class'],
-                std['Due Amount'],
-            ]),
-        ];
-
-        const ws = XLSX.utils.aoa_to_sheet(sheetData);
-
-        // Styling definitions
-        const headerStyle = {
-            font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
-            fill: { fgColor: { rgb: '1E3A8A' } }, // Dark Blue
-            alignment: { horizontal: 'center', vertical: 'center' },
-            border: {
-                top: { style: 'thin', color: { rgb: '000000' } },
-                bottom: { style: 'thin', color: { rgb: '000000' } },
-                left: { style: 'thin', color: { rgb: '000000' } },
-                right: { style: 'thin', color: { rgb: '000000' } },
-            },
-        };
-
-        const titleStyle = {
-            font: { bold: true, sz: 14, color: { rgb: '1E3A8A' } },
-            alignment: { horizontal: 'center', vertical: 'center' },
-        };
-
-        const dataStyle = {
-            border: {
-                top: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                bottom: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                left: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                right: { style: 'thin', color: { rgb: 'E2E8F0' } },
-            },
-            alignment: { vertical: 'center' },
-        };
-
-        const amountStyle = {
-            ...dataStyle,
-            alignment: { horizontal: 'right', vertical: 'center' },
-            numFmt: '#,##0.00',
-        };
-
-        // Apply formatting
-        const range = XLSX.utils.decode_range(ws['!ref']);
-        for (let R = range.s.r; R <= range.e.r; ++R) {
-            for (let C = range.s.c; C <= range.e.c; ++C) {
-                const cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
-                if (!ws[cell_ref]) ws[cell_ref] = { t: 's', v: '' };
-
-                if (R === 0) {
-                    // Title
-                    ws[cell_ref].s = titleStyle;
-                } else if (R === 1) {
-                    // Headers
-                    ws[cell_ref].s = headerStyle;
-                } else {
-                    // Data
-                    // Alternate row shading
-                    let style = C === 6 ? { ...amountStyle } : { ...dataStyle };
-                    if (R % 2 === 0) {
-                        style.fill = { fgColor: { rgb: 'F8FAFC' } };
-                    }
-                    ws[cell_ref].s = style;
-                }
-            }
-        }
-
-        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }];
-        ws['!cols'] = [{ wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 }];
-
-        XLSX.utils.book_append_sheet(wb, ws, cls.substring(0, 31));
-    });
-
-    XLSX.writeFile(wb, 'Parents_Who_Not_Paid.xlsx');
-}
-
-function downloadFeePdf() {
-    if (!feeResultData) return;
-    try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-
-        const sortedClasses = Object.keys(feeResultData).sort();
-        const dateRange = `(01 Dec, 2023 - ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})`;
-
-        sortedClasses.forEach((cls, index) => {
-            if (index > 0) doc.addPage();
-
-            const rows = feeResultData[cls];
-            const headers = [['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Due Amount']];
-            const body = rows.map((std) => [
-                std['Student Id'],
-                std['Student Name'],
-                std['Father Name'],
-                std['Phone'],
-                std['Session'],
-                std['Class'],
-                Number(std['Due Amount'] || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-            ]);
-
-            doc.autoTable({
-                head: headers,
-                body: body,
-                startY: 28,
-                theme: 'grid',
-                headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold', halign: 'center' },
-                styles: { fontSize: 8, cellPadding: 3, halign: 'left', font: 'helvetica' },
-                alternateRowStyles: { fillColor: [248, 250, 252] },
-                margin: { top: 25, bottom: 15 },
-                columnStyles: {
-                    0: { cellWidth: 20 },
-                    3: { cellWidth: 25 },
-                    6: { halign: 'right', fontStyle: 'bold' },
-                },
-                didDrawPage: function (data) {
-                    // Header on every page
-                    doc.setFontSize(14);
-                    doc.setTextColor(30, 58, 138); // Darker blue
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(`ED | Download Due Payment | ${dateRange}`, 105, 12, { align: 'center' });
-
-                    doc.setFontSize(10);
-                    doc.setTextColor(100);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Class: ${cls} | Pending Payments Report | Page ${data.pageNumber}`, 14, 20);
-
-                    // Footer line
-                    doc.setDrawColor(226, 232, 240);
-                    doc.line(14, 22, 196, 22);
-                },
-            });
-        });
-
-        // Use a blob-based download to ensure correct MIME type and prevent misinterpretation by WPS/Spreadsheet tools
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'Parents_Who_Not_Paid.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        showToast('PDF report generated successfully!');
-    } catch (err) {
-        console.error('PDF generation error:', err);
-        showToast('PDF Error: ' + err.message, 'error');
-    }
-}
-
-function resetFeeTool() {
-    feeResultData = null;
-    document.getElementById('fee_duesFile').value = '';
-    document.getElementById('fee_paidFile').value = '';
-    document.getElementById('fee_duesStatus').textContent = '';
-    document.getElementById('fee_paidStatus').textContent = '';
-    document.getElementById('fee_resultsArea').style.display = 'none';
-    showToast('Data erased from memory.');
-}
+// ===================== LEGACY FEE TOOLS REMOVED (Migrated to js/fee-dues-tool.js) =====================

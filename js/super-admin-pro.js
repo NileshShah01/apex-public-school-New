@@ -183,39 +183,51 @@ function renderSchoolsTable(schools) {
     const body = document.getElementById('schoolProTableBody');
     body.innerHTML = schools
         .map(
-            (s) => `
-        <tr class="group hover:bg-white/5 transition-all">
-            <td class="py-4 text-sm font-mono text-blue-400">${s.schoolId}</td>
-            <td class="py-4 text-sm font-semibold text-white">${s.schoolName}</td>
-            <td class="py-4 text-sm text-slate-400 font-mono">
-                <a href="${s.subdomain.startsWith('http') ? s.subdomain : 'https://snredu-erp.web.app/' + s.subdomain + '/'}" 
-                   target="_blank" 
-                   class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
-                    ${s.subdomain}${s.subdomain.startsWith('http') ? '' : ' /'} 
-                    <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-                <p class="text-[10px] text-slate-600 mt-1">${s.subdomain.startsWith('http') ? 'Custom URL' : 'snredu-erp.web.app/' + s.subdomain}</p>
-            </td>
-            <td class="py-4"><span class="badge-stage">Stage ${s.stage}</span></td>
-            <td class="py-4 text-sm text-slate-300">-</td>
-            <td class="py-4">
-                <div class="flex items-center gap-2">
-                    <div class="w-1.5 h-1.5 rounded-full ${s.status === 'active' ? 'bg-emerald-400' : 'bg-red-400'}"></div>
-                    <span class="text-sm text-slate-300 font-medium">${s.status.toUpperCase()}</span>
-                </div>
-            </td>
-            <td class="py-4 text-right">
-                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onclick="openProEditModal('${s.schoolId}')" class="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="toggleSchoolStatus('${s.schoolId}', '${s.status}')" class="p-2 hover:bg-white/10 rounded-lg ${s.status === 'active' ? 'text-red-400' : 'text-emerald-400'}">
-                        <i data-lucide="${s.status === 'active' ? 'power' : 'play'}" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `
+            (s) => {
+                const slug = s.subdomain || s.schoolId.toLowerCase();
+                const baseUrl = window.location.origin;
+                const websiteUrl = s.subdomain.startsWith('http') ? s.subdomain : `${baseUrl}/${slug}/`;
+                const dashboardUrl = s.subdomain.startsWith('http') ? `${s.subdomain}/Admin-Dashboard` : `${baseUrl}/${slug}/Admin-Dashboard`;
+                
+                return `
+                <tr class="group hover:bg-white/5 transition-all">
+                    <td class="py-4 text-sm font-mono text-blue-400">${s.schoolId}</td>
+                    <td class="py-4 text-sm font-semibold text-white">${s.schoolName}</td>
+                    <td class="py-4 text-sm text-slate-400 font-mono">
+                        <div class="space-y-2">
+                            <a href="${websiteUrl}" target="_blank" class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors group/link">
+                                <span class="truncate max-w-[150px]">${slug}</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                                <span class="text-[10px] bg-blue-500/10 px-1.5 py-0.5 rounded text-blue-400 opacity-0 group-hover/link:opacity-100 transition-opacity">Website</span>
+                            </a>
+                            <a href="${dashboardUrl}" target="_blank" class="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors group/link">
+                                <span class="truncate max-w-[150px]">Admin Panel</span>
+                                <i data-lucide="shield-check" class="w-3 h-3"></i>
+                                <span class="text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded text-emerald-400 opacity-0 group-hover/link:opacity-100 transition-opacity">Login</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="py-4"><span class="badge-stage">Stage ${s.stage}</span></td>
+                    <td class="py-4 text-sm text-slate-300">-</td>
+                    <td class="py-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full ${s.status === 'active' ? 'bg-emerald-400' : 'bg-red-400'}"></div>
+                            <span class="text-sm text-slate-300 font-medium">${s.status.toUpperCase()}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 text-right">
+                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openProEditModal('${s.schoolId}')" class="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white" title="Edit School Settings">
+                                <i data-lucide="settings" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="toggleSchoolStatus('${s.schoolId}', '${s.status}')" class="p-2 hover:bg-white/10 rounded-lg ${s.status === 'active' ? 'text-red-400' : 'text-emerald-400'}" title="${s.status === 'active' ? 'Suspend School' : 'Activate School'}">
+                                <i data-lucide="${s.status === 'active' ? 'power' : 'play'}" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }
         )
         .join('');
     lucide.createIcons();
@@ -268,15 +280,29 @@ async function handleAddSchool(e) {
         }
 
         // 3. Create School Admin User (requires secondary app to avoid logging out super admin)
-        const secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary');
+        if (typeof firebaseConfig === 'undefined') {
+            throw new Error('Firebase configuration missing. Check firebase-config.js');
+        }
+
+        let secondaryApp;
+        if (firebase.apps.find(app => app.name === 'secondary')) {
+            secondaryApp = firebase.app('secondary');
+        } else {
+            secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary');
+        }
+        
         const secondaryAuth = secondaryApp.auth();
         
         try {
             const userCredential = await secondaryAuth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
 
-            // 4. Map User to School in Root Collection
-            await db.collection('users').doc(uid).set({
+            // 4. Provision Everything in a single batch where possible
+            const batch = db.batch();
+            const schoolBase = db.collection('schools').doc(schoolId);
+
+            // User record
+            batch.set(db.collection('users').doc(uid), {
                 uid,
                 email,
                 schoolId,
@@ -284,8 +310,8 @@ async function handleAddSchool(e) {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // 5. Provision School Instance
-            await db.collection('schools').doc(schoolId).set({
+            // School record
+            batch.set(schoolBase, {
                 schoolId,
                 schoolName: displayName,
                 name: name,
@@ -295,17 +321,6 @@ async function handleAddSchool(e) {
                 adminEmail: email,
                 status: 'active',
                 createdDate: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-
-            // 6. Initialize Settings (Automatic Template)
-            const batch = db.batch();
-            const schoolBase = db.collection('schools').doc(schoolId);
-
-            batch.set(schoolBase.collection('settings').doc('general'), {
-                schoolName: displayName,
-                schoolLogo: logo,
-                schoolLocation: 'Update Location',
-                schoolUdise: '00000000000',
                 schoolReg: '0000/0000',
                 tagline: 'Quality Education for All',
                 phone: '+91 0000000000',
@@ -313,6 +328,36 @@ async function handleAddSchool(e) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+            // Module permissions
+            const getModulesForStage = (s) => {
+                const modulesByStage = {
+                    1: ['website'],
+                    2: ['website', 'cms'],
+                    3: ['website', 'cms', 'student_portal'],
+                    4: ['website', 'cms', 'student_portal', 'attendance', 'fees'],
+                    5: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom'],
+                    6: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom', 'exams', 'reports', 'library', 'transport']
+                };
+                return modulesByStage[s] || ['website'];
+            };
+
+            batch.set(schoolBase.collection('settings').doc('access'), {
+                maxStage: stage,
+                modules: getModulesForStage(stage),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Settings/General
+            batch.set(schoolBase.collection('settings').doc('general'), {
+                schoolName: displayName,
+                schoolLogo: logo,
+                schoolLocation: 'Update Location',
+                schoolUdise: '00000000000',
+                schoolPhone: '0000000000',
+                schoolEmail: email
+            });
+
+            // Hero content
             batch.set(schoolBase.collection('settings').doc('homeHero'), {
                 urls: [
                     '/images/School-Building.jpeg',
@@ -323,6 +368,7 @@ async function handleAddSchool(e) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+            // Page text
             batch.set(schoolBase.collection('pageText').doc('home'), {
                 homeHeroTitle: `Welcome to ${displayName}`,
                 homeHeroSubtitle: 'Quality Education • Discipline • Character Building',
@@ -332,6 +378,7 @@ async function handleAddSchool(e) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
+            // Stats
             batch.set(schoolBase.collection('settings').doc('globalStats'), {
                 students: '300',
                 teachers: '15',
@@ -341,12 +388,16 @@ async function handleAddSchool(e) {
             });
 
             await batch.commit();
+
+            // 5. Cleanup and Feedback
+            await secondaryAuth.signOut();
             await logSuperActivity('COMMISSION', `Provisioned new school: ${displayName} (ID: ${schoolId})`);
             
-            alert(`School ${schoolId} provisioned successfully!`);
+            alert(`School ${schoolId} provisioned successfully! Admin: ${email}`);
             e.target.reset();
             await refreshData();
             switchTab('Schools');
+
         } finally {
             await secondaryApp.delete();
         }
@@ -383,11 +434,31 @@ async function handleUpdateSchool(e) {
 
     try {
         showOverlay(true);
+        const getModulesForStage = (s) => {
+            const modulesByStage = {
+                1: ['website'],
+                2: ['website', 'cms'],
+                3: ['website', 'cms', 'student_portal'],
+                4: ['website', 'cms', 'student_portal', 'attendance', 'fees'],
+                5: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom'],
+                6: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom', 'exams', 'reports', 'library', 'transport']
+            };
+            return modulesByStage[s] || ['website'];
+        };
+
         await db.collection('schools').doc(id).update({ 
             schoolName: name, 
             stage,
             subdomain: subdomain 
         });
+
+        // Update permissions in settings/access
+        await db.collection('schools').doc(id).collection('settings').doc('access').set({
+            maxStage: stage,
+            modules: getModulesForStage(stage),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
         await logSuperActivity('UPDATE', `Modified school settings: ${id}`);
         closeModal('editModal');
         await refreshData();

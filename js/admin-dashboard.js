@@ -106,7 +106,10 @@ window.showSection = function(sectionId, updateHash = true) {
         academicSession: 'Academic Sessions',
         addClass: 'Classes & Sections',
         addSubject: 'Subject Management',
-        idCardPrint: 'ID Card Generator'
+        idCardPrint: 'ID Card Generator',
+        adminPortalCMS: 'Admin Portal CMS',
+        parentsNotPaidTool: 'Parents Who Not Paid',
+        manualReportCardUpload: 'Manual Report Card Upload'
     };
     
     const titleEl = document.getElementById('sectionTitle');
@@ -125,7 +128,7 @@ window.showSection = function(sectionId, updateHash = true) {
     // ID Generator: auto-populate session dropdown
     if (sectionId === 'studentIdPrintSection' && typeof updateSessionDropdowns === 'function') {
         updateSessionDropdowns().then(() => {
-            if (typeof initIdGenerator === 'function') initIdGenerator();
+            if (typeof initERPIdCards === 'function') initERPIdCards();
         });
     }
 
@@ -147,10 +150,10 @@ window.showSection = function(sectionId, updateHash = true) {
     // Exam & Report Card hook
     const examSections = [
         'examGrading', 'manageExam', 'manageExamSchedule', 
-        'viewExamSchedule', 'publishExamSchedule', 'examAttendanceCard', 
+        'viewExamSchedule', 'publishExamSchedule', 'admitCardTool', 'examAttendanceCard', 
         'studentExamAttendance', 'addResult', 'viewReportCard', 
         'publishResults', 'bulkResultGenerator', 'resultAnalytics', 
-        'manageAllResults', 'reportCardRemarks'
+        'manageAllResults', 'reportCardRemarks', 'manualReportCardUpload'
     ];
     if (examSections.includes(sectionId) && typeof initERPExams === 'function') {
         initERPExams();
@@ -176,6 +179,16 @@ window.showSection = function(sectionId, updateHash = true) {
         initQuestionPapers().then(() => {
             if (typeof loadQuestionPapers === 'function') loadQuestionPapers();
         });
+    }
+
+    // Admin Portal CMS hook
+    if (sectionId === 'adminPortalCMS' && typeof initAdminPortalCMS === 'function') {
+        initAdminPortalCMS();
+    }
+
+    // Manual Report Card Upload hook
+    if (sectionId === 'manualReportCardUpload' && typeof initManualUpload === 'function') {
+        initManualUpload();
     }
 };
 
@@ -228,9 +241,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initializeApp() {
     if (isInitializing) return;
-    isInitializing = true;
     
-    console.log('Initializing App...');
+    // Ensure school resolution is complete before any data fetching
+    if (window.schoolBootstrapReady) {
+        console.log('Admin Dashboard: Waiting for school bootstrap...');
+        await window.schoolBootstrapReady;
+    }
+    
+    isInitializing = true;
+    console.log('Initializing App for School:', CURRENT_SCHOOL_ID);
     setLoading(true);
 
     try {
@@ -254,6 +273,9 @@ async function initializeApp() {
         if (typeof initERPFees === 'function') safeInit(initERPFees, 'initERPFees');
         if (typeof initERPAdmission === 'function') safeInit(initERPAdmission, 'initERPAdmission');
         if (typeof initQuestionPapers === 'function') safeInit(initQuestionPapers, 'initQuestionPapers');
+        
+        // Final Branding Cleanup
+        if (typeof applyAdminBranding === 'function') applyAdminBranding();
     } catch (error) {
         console.error('Initialization failed:', error);
     } finally {
@@ -349,7 +371,219 @@ async function loadDashboardOverview() {
     
     const attendance = document.getElementById('attendanceRate');
     if (attendance) attendance.textContent = '94%';
+
+    // Load custom quick links
+    loadCustomQuickLinks();
 }
+
+/**
+ * ADMIN PORTAL CMS LOGIC
+ */
+let adminPortalSettings = {
+    logoUrl: '',
+    principalSignatureUrl: '',
+    showSchoolName: true,
+    quickLinks: [
+        { title: 'New Enquiry', icon: 'fa-user-plus', sectionId: 'addEnquiry', color: 'blue' },
+        { title: 'Add Student', icon: 'fa-user-plus', sectionId: 'studentList', color: 'blue' },
+        { title: 'ID Card', icon: 'fa-id-card', sectionId: 'studentIdPrint', color: 'green' },
+        { title: 'Report Card', icon: 'fa-print', sectionId: 'bulkResultGenerator', color: 'indigo' },
+        { title: 'Fee Management', icon: 'fa-credit-card', sectionId: 'feeMaster', color: 'amber' },
+        { title: 'Exams', icon: 'fa-magic', sectionId: 'manageExam', color: 'indigo' },
+        { title: 'Attendance', icon: 'fa-check-double', sectionId: 'attendanceManagement', color: 'red' },
+        { title: 'Classes', icon: 'fa-ruler-combined', sectionId: 'addClass', color: 'amber' }
+    ]
+};
+
+async function initAdminPortalCMS() {
+    setLoading(true);
+    try {
+        const doc = await schoolData('settings').doc('admin_portal').get();
+        if (doc.exists) {
+            adminPortalSettings = { ...adminPortalSettings, ...doc.data() };
+        }
+
+        // Apply to form
+        const logoPreview = document.getElementById('cms_logoPreview');
+        const sigPreview = document.getElementById('cms_signaturePreview');
+        const showNameCheck = document.getElementById('cms_showSchoolName');
+
+        if (logoPreview && adminPortalSettings.logoUrl) logoPreview.src = adminPortalSettings.logoUrl;
+        if (sigPreview && adminPortalSettings.principalSignatureUrl) sigPreview.src = adminPortalSettings.principalSignatureUrl;
+        if (showNameCheck) showNameCheck.checked = adminPortalSettings.showSchoolName !== false;
+
+        renderAdminQuickLinksEditor();
+    } catch (error) {
+        console.error('Error loading Admin CMS settings:', error);
+        showToast('Error loading settings', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function renderAdminQuickLinksEditor() {
+    const list = document.getElementById('cms_quickLinksList');
+    if (!list) return;
+
+    list.innerHTML = '';
+    adminPortalSettings.quickLinks.forEach((link, index) => {
+        const row = document.createElement('div');
+        row.className = 'flex gap-0-5 mb-0-75 align-center card bg-light p-0-75 border-radius-8';
+        row.innerHTML = `
+            <div class="flex-1">
+                <input type="text" class="form-control form-control-sm mb-0-25" placeholder="Title" value="${link.title}" onchange="updateQuickLink(${index}, 'title', this.value)">
+                <div class="flex gap-0-5">
+                    <input type="text" class="form-control form-control-sm" placeholder="Icon (fa-...)" value="${link.icon}" onchange="updateQuickLink(${index}, 'icon', this.value)">
+                    <select class="form-control form-control-sm" onchange="updateQuickLink(${index}, 'sectionId', this.value)">
+                        <option value="dashboardOverview" ${link.sectionId === 'dashboardOverview' ? 'selected' : ''}>Overview</option>
+                        <option value="studentList" ${link.sectionId === 'studentList' ? 'selected' : ''}>Students</option>
+                        <option value="studentIdPrint" ${link.sectionId === 'studentIdPrint' ? 'selected' : ''}>ID Cards</option>
+                        <option value="bulkResultGenerator" ${link.sectionId === 'bulkResultGenerator' ? 'selected' : ''}>Report Cards</option>
+                        <option value="feeMaster" ${link.sectionId === 'feeMaster' ? 'selected' : ''}>Fees</option>
+                        <option value="manageExam" ${link.sectionId === 'manageExam' ? 'selected' : ''}>Exams</option>
+                        <option value="attendanceManagement" ${link.sectionId === 'attendanceManagement' ? 'selected' : ''}>Attendance</option>
+                        <option value="addClass" ${link.sectionId === 'addClass' ? 'selected' : ''}>Classes</option>
+                        <option value="notices" ${link.sectionId === 'notices' ? 'selected' : ''}>Notices</option>
+                        <option value="addEnquiry" ${link.sectionId === 'addEnquiry' ? 'selected' : ''}>Enquiry</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-portal btn-ghost btn-sm text-red" onclick="removeQuickLinkRow(${index})"><i class="fas fa-times"></i></button>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function updateQuickLink(index, field, value) {
+    adminPortalSettings.quickLinks[index][field] = value;
+}
+
+function addQuickLinkRow() {
+    adminPortalSettings.quickLinks.push({ title: 'New Link', icon: 'fa-link', sectionId: 'dashboardOverview', color: 'blue' });
+    renderAdminQuickLinksEditor();
+}
+
+function removeQuickLinkRow(index) {
+    adminPortalSettings.quickLinks.splice(index, 1);
+    renderAdminQuickLinksEditor();
+}
+
+/**
+ * Global helper for image previews
+ */
+window.previewImage = function(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(previewId).src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+};
+
+async function saveAdminPortalCMS() {
+    setLoading(true);
+    try {
+        const logoInput = document.getElementById('cms_logoInput');
+        const sigInput = document.getElementById('cms_signatureInput');
+        const showNameCheck = document.getElementById('cms_showSchoolName');
+
+        // Handle Image Uploads (Base64 for this version)
+        if (logoInput.files && logoInput.files[0]) {
+            adminPortalSettings.logoUrl = await toBase64(logoInput.files[0]);
+        }
+        if (sigInput.files && sigInput.files[0]) {
+            adminPortalSettings.principalSignatureUrl = await toBase64(sigInput.files[0]);
+        }
+
+        adminPortalSettings.showSchoolName = showNameCheck ? showNameCheck.checked : true;
+
+        await schoolData('settings').doc('admin_portal').set(withSchool(adminPortalSettings));
+        
+        // Update global branding instantly
+        if (typeof applyAdminBranding === 'function') applyAdminBranding();
+        
+        showToast('Settings saved successfully!');
+    } catch (error) {
+        console.error('Error saving Admin CMS settings:', error);
+        showToast('Error saving settings', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+/**
+ * Load and render custom quick links on dashboard home
+ */
+async function loadCustomQuickLinks() {
+    const hub = document.querySelector('#quickActionsHub .feature-grid');
+    if (!hub) return;
+
+    try {
+        // Try to fetch latest settings
+        const doc = await schoolData('settings').doc('admin_portal').get();
+        if (doc.exists) {
+            adminPortalSettings = { ...adminPortalSettings, ...doc.data() };
+        }
+
+        // Apply dynamic visibility
+        applyAdminBranding();
+
+        // Render links
+        hub.innerHTML = '';
+        adminPortalSettings.quickLinks.forEach(link => {
+            const card = document.createElement('div');
+            card.className = 'feature-card';
+            card.onclick = () => showSection(link.sectionId);
+            card.innerHTML = `
+                <div class="icon-box-small flex-center bg-${link.color || 'blue'}-light text-primary border-radius-12">
+                    <i class="fas ${link.icon}"></i>
+                </div>
+                <h4>${link.title}</h4>
+                <p>Quick Access</p>
+            `;
+            hub.appendChild(card);
+        });
+
+    } catch (e) {
+        console.warn('Could not load custom quick links, using defaults', e);
+    }
+}
+
+/**
+ * Apply dynamic branding across the portal
+ */
+function applyAdminBranding() {
+    const sNameElements = document.querySelectorAll('.school-name-dynamic');
+    const sLogoElements = document.querySelectorAll('.school-logo-dynamic');
+    
+    const showName = adminPortalSettings.showSchoolName !== false;
+    const logoUrl = adminPortalSettings.logoUrl || window.SCHOOL_LOGO || '/images/ApexPublicSchoolLogo.png';
+    const name = window.SCHOOL_NAME || 'School Portal';
+
+    sNameElements.forEach(el => {
+        el.textContent = name;
+        el.style.display = showName ? 'block' : 'none';
+    });
+
+    sLogoElements.forEach(el => {
+        el.src = logoUrl;
+    });
+
+    // Update global variables for other modules
+    if (adminPortalSettings.logoUrl) window.SCHOOL_LOGO = adminPortalSettings.logoUrl;
+    if (adminPortalSettings.principalSignatureUrl) window.PRINCIPAL_SIGNATURE = adminPortalSettings.principalSignatureUrl;
+}
+
 
 async function updateStudentAttendance() {
     const studentId = document.getElementById('att_studentId').value;
@@ -1404,78 +1638,6 @@ async function handleBulkImport(e) {
     reader.readAsArrayBuffer(file);
 }
 
-function downloadExcelTemplate() {
-    const headers = [
-        'Id',
-        'Name',
-        'Reg No',
-        'Roll No',
-        'Session',
-        'Class',
-        'Section',
-        'Birth Date',
-        'Join Date',
-        'Gender',
-        'Father Name',
-        'Mother Name',
-        'Phone',
-        'Religion',
-        'Category',
-        'PEN',
-        'Aadhar',
-        'Father Aadhar',
-        'Mother Aadhar',
-        'Caste',
-        'Hostel',
-        'Transport',
-        'Address',
-        'Permanent Address',
-        'City',
-        'Guardian Name',
-        'Guardian Phone',
-        'Smart Card No',
-    ];
-
-    const sampleData = [
-        [
-            'APEX001',
-            'Rahul Kumar',
-            'R101',
-            '12',
-            '2026-27',
-            '6',
-            'A',
-            '01.01.2012',
-            '15.04.2023',
-            'Male',
-            'Suresh Kumar',
-            'Meena Devi',
-            '9876543210',
-            'Hindu',
-            'General',
-            'P12345',
-            '123456789012',
-            '234567890123',
-            '345678901234',
-            'OBC',
-            'No',
-            'Yes',
-            'Main Road, Saran',
-            'Village Apex, Saran',
-            'Saran',
-            'Suresh Kumar',
-            '9876543210',
-            'SC1001',
-        ],
-    ];
-
-    const ws_data = [headers, ...sampleData];
-    const ws = XLSX.utils.aoa_to_sheet(ws_data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Students Template');
-    XLSX.writeFile(wb, 'apex_student_import_template.xlsx');
-    showToast('Excel template downloaded!');
-}
 
 function logoutAdmin() {
     auth.signOut().then(() => (window.location.href = 'admin-login.html'));
@@ -2275,3 +2437,57 @@ async function populateEnquiryClasses() {
         console.error(e);
     }
 }
+
+/**
+ * Standardized Excel Template Generator
+ * Supports: students, marks, fee_dues, fee_payments
+ */
+function downloadExcelTemplate(type) {
+    let filename = 'template.xlsx';
+    let headers = [];
+    let sampleData = [];
+
+    switch (type) {
+        case 'students':
+            filename = 'student_import_template.xlsx';
+            headers = ['Id', 'Name', 'Class', 'Section', 'Phone', 'Father Name', 'Address'];
+            sampleData = [['1001', 'John Doe', '5', 'A', '9876543210', 'Richard Doe', 'Main St, City']];
+            break;
+        case 'marks':
+            filename = 'marks_upload_template.xlsx';
+            headers = ['Roll No', 'Name', 'Marks Obtained'];
+            sampleData = [['1', 'John Doe', '85']];
+            break;
+        case 'fee_dues':
+            filename = 'fee_dues_template.xlsx';
+            headers = ['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Due Amount'];
+            sampleData = [['1001', 'John Doe', 'Richard Doe', '9876543210', '2025-26', '5', '5000']];
+            break;
+        case 'fee_payments':
+            filename = 'monthly_payments_template.xlsx';
+            headers = ['Student Id', 'Student Name', 'Father Name', 'Phone', 'Session', 'Class', 'Paid Amount'];
+            sampleData = [['1001', 'John Doe', 'Richard Doe', '9876543210', '2025-26', '5', '2000']];
+            break;
+        default:
+            showToast('Invalid template type', 'error');
+            return;
+    }
+
+    try {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleData]);
+        
+        // Basic column widths
+        ws['!cols'] = headers.map(() => ({ wch: 15 }));
+        
+        XLSX.utils.book_append_sheet(wb, ws, 'Template');
+        XLSX.writeFile(wb, filename);
+        showToast(`Downloaded ${filename}`, 'success');
+    } catch (e) {
+        console.error('Template download error:', e);
+        showToast('Failed to generate template', 'error');
+    }
+}
+
+// Global Exports for templates
+window.downloadExcelTemplate = downloadExcelTemplate;

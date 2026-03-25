@@ -1,38 +1,48 @@
 // Student Authentication Logic
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for slug resolution to complete FIRST
+    if (window.schoolBootstrapReady) {
+        await window.schoolBootstrapReady;
+    }
+
     // Apply dynamic branding based on tenant
     applyAuthBranding();
 
     const loginForm = document.getElementById('studentLoginForm');
     const loginError = document.getElementById('loginError');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // UI States
+            const originalBtnHtml = loginSubmitBtn.innerHTML;
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Authenticating...</span>';
+            loginError.style.display = 'none';
+
             const studentPhone = document.getElementById('student_phone').value.trim();
             const studentName = document.getElementById('student_name').value.trim();
 
-            loginError.style.display = 'none';
-
-            // Guard: check db is available
-            if (!db) {
-                loginError.textContent = 'Database not connected. Please refresh and try again.';
-                loginError.style.display = 'block';
-                return;
-            }
-
             try {
+                // Guard: check db is available
+                if (!db) {
+                    throw new Error('System initialization pending. Please wait a moment and try again.');
+                }
+
                 // Check Firestore for matching phone in the current school
                 const snapshot = await schoolData('students').where('phone', '==', studentPhone).get();
 
                 if (snapshot.empty) {
-                    throw new Error('Mobile Number not found. Please check your number.');
+                    throw new Error('Mobile Number not found. Please contact your school administrator.');
                 }
 
                 let matchedDoc = null;
                 for (let i = 0; i < snapshot.docs.length; i++) {
                     const doc = snapshot.docs[i];
+                    // Case-insensitive name match
                     if (doc.data().name.trim().toLowerCase() === studentName.trim().toLowerCase()) {
                         matchedDoc = doc;
                         break;
@@ -40,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (!matchedDoc) {
-                    throw new Error('Name does not match. Please enter the exact name as registered.');
+                    throw new Error('Student name does not match our records for this mobile number.');
                 }
 
                 const data = matchedDoc.data();
@@ -55,10 +65,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         schoolId: window.CURRENT_SCHOOL_ID
                     })
                 );
-                window.location.href = 'student-dashboard.html';
+                
+                // Success feedback before redirect
+                loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Identifying...</span>';
+                
+                setTimeout(() => {
+                    window.location.href = 'student-dashboard.html';
+                }, 800);
+
             } catch (error) {
+                console.error('Login Error:', error);
                 loginError.textContent = error.message;
                 loginError.style.display = 'block';
+                loginSubmitBtn.disabled = false;
+                loginSubmitBtn.innerHTML = originalBtnHtml;
             }
         });
     }
@@ -77,34 +97,56 @@ function logoutStudent() {
     window.location.href = 'student-login.html';
 }
 
+function loginAsGuest() {
+    localStorage.setItem(
+        'student_session',
+        JSON.stringify({
+            role: 'visitor',
+            name: 'Guest Visitor',
+            schoolId: window.CURRENT_SCHOOL_ID
+        })
+    );
+    window.location.href = 'student-dashboard.html';
+}
+
 /**
- * Apply dynamic branding based on school record
+ * Apply dynamic branding based on school record with absolute path resolution
  */
 async function applyAuthBranding() {
     try {
         const schoolDocSnap = await schoolRef().get();
-        if (!schoolDocSnap.exists) return;
+        if (!schoolDocSnap.exists) {
+            console.warn('[StudentAuth] School record not found for:', window.CURRENT_SCHOOL_ID);
+            return;
+        }
 
         const data = schoolDocSnap.data();
         const name = data.schoolName || 'Apex Public School';
-        const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+        let logo = data.logo || '/images/ApexPublicSchoolLogo.png';
 
-        // Update Title
-        if (document.getElementById('portalTitle')) {
-            document.getElementById('portalTitle').innerText = `${name} | Student Portal`;
+        // Robust Absolute Path Resolution
+        if (logo.startsWith('../')) {
+            logo = logo.substring(2);
+        }
+        if (!logo.startsWith('/') && !logo.startsWith('http')) {
+            logo = '/' + logo;
         }
 
-        // Branding
-        if (document.getElementById('portalBrandName')) {
-            document.getElementById('portalBrandName').innerText = `Student Portal`;
+        // Update Global Head Title
+        document.title = `${name} | Student Portal`;
+
+        // Update UI Elements
+        const brandName = document.getElementById('portalBrandName');
+        const brandDesc = document.getElementById('portalDesc');
+        const logoContainer = document.getElementById('schoolLogoContainer');
+
+        if (brandName) brandName.innerText = name;
+        if (brandDesc) brandDesc.innerText = `Student Learning Portal Access`;
+        if (logoContainer) {
+            logoContainer.innerHTML = `<img src="${logo}" alt="${name}" style="height: 64px; margin-bottom: 20px; object-fit: contain;">`;
         }
-        if (document.getElementById('portalDesc')) {
-            document.getElementById('portalDesc').innerText = `Access your ${name} account`;
-        }
-        if (document.getElementById('schoolLogoContainer')) {
-            document.getElementById('schoolLogoContainer').innerHTML = `<img src="${logo}" alt="${name} Logo" style="height: 64px; margin-bottom: 1rem; object-fit: contain;">`;
-        }
+
     } catch (e) {
-        console.error('Branding failed:', e);
+        console.error('[StudentAuth] Branding failed:', e);
     }
 }

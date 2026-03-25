@@ -45,7 +45,7 @@ const ReportCardTool = {
 
             // 4. Get School & Exam Details
             const schoolDoc_ref = await schoolDoc('settings', 'organization').get();
-            const schoolDetails = schoolDoc_ref.exists ? schoolDoc_ref.data() : { name: 'Apex Public School' };
+            const schoolDetails = schoolDoc_ref.exists ? schoolDoc_ref.data() : { name: window.SCHOOL_NAME || 'SCHOOL NAME' };
 
             const examSnap = await schoolDoc('exams', examId).get();
             const examDetails = {

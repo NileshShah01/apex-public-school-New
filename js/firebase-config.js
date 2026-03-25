@@ -47,62 +47,165 @@ Object.defineProperty(window, 'auth', {
 
 // ===================== SNR WORLD: MULTI-TENANT CONTEXT =====================
 /**
- * Automatically extracts School ID from the URL (subdomain or path slug).
- * Priorities:
- * 1. Path slug (e.g. /Apexps/ -> SCH001)
- * 2. Subdomain mapping (e.g. apex.snredu.in -> SCH001)
- * 3. Default (SCH001 for Apex)
+ * Extracts the URL slug from the current path.
+ * Returns the first path segment if it's not a reserved system path.
+ */
+function getURLSlug() {
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(p => p !== '');
+    if (pathParts.length > 0) {
+        const potentialSlug = pathParts[0];
+        const reserved = ['portal', 'images', 'js', 'css', 'assets', 'pdf', 'scripts',
+            'admin-login.html', 'student-login.html', 'platform.html',
+            'school.html', 'about.html', 'academics.html', 'admissions.html',
+            'contact.html', 'facilities.html', 'gallery.html', 'inquiry.html',
+            'provision.html', 'super-admin.html', 'super-admin-pro.html'];
+        if (!reserved.includes(potentialSlug.toLowerCase()) && !potentialSlug.includes('.')) {
+            return potentialSlug;
+        }
+    }
+    return null;
+}
+
+/**
+ * Synchronous School ID getter. Checks (in order):
+ * 1. Query parameter ?schoolId=
+ * 2. Session storage (set by resolveSchoolSlug or login)
+ * 3. URL path analysis with hardcode fallbacks
+ * 4. Default SCH001 for Apex
  */
 function getSchoolIdFromURL() {
-    // 1. Check Query Parameters (Highest priority for explicit testing)
+    // 1. Query parameter override
     const params = new URLSearchParams(window.location.search);
     if (params.has('schoolId')) return params.get('schoolId');
 
-    // 2. Check Session Storage (Set during login - very reliable for admin)
+    // 2. Session Storage (set by resolveSchoolSlug bootstrap or login)
     const storedId = sessionStorage.getItem('CURRENT_SCHOOL_ID');
     if (storedId) return storedId;
 
-    const host = window.location.hostname;
-    const path = window.location.pathname;
-
-    // 3. Path-based Slug Extraction (e.g. /Apexps/portal/...)
-    const pathParts = path.split('/').filter(p => p !== '');
-    if (pathParts.length > 0) {
-        const potentialSlug = pathParts[0].toLowerCase();
-        
-        // Reserved System Path Segments (Not slugs)
-        const reserved = ['portal', 'images', 'js', 'css', 'assets', 'admin-login.html', 'student-login.html', 'platform.html'];
-        
-        // Hard-coded known mappings (Legacy/Special cases)
-        if (potentialSlug === 'apexps') return 'SCH001';
-        if (potentialSlug === 'snrworld') return 'SCH003';
-        
-        // Pattern: If it starts with 'sch' and is followed by numbers (SCH001, SCH002)
-        if (potentialSlug.match(/^sch\d+$/)) return potentialSlug.toUpperCase();
-
-        // AUTOMATIC: If not reserved, treat as a Slug/SchoolID
-        if (!reserved.includes(potentialSlug) && !potentialSlug.includes('.')) {
-            // Check if it's a known slug that needs mapping, or just return as-is (Firestore handles the rest)
-            // For now, if it's not reserved, we treat it as the literal School ID or Slug string
-            return pathParts[0]; // Keep original case just in case
-        }
+    // 3. URL slug - hardcoded legacy mappings
+    const slug = getURLSlug();
+    if (slug) {
+        const lower = slug.toLowerCase();
+        if (lower === 'apexps') return 'SCH001';
+        if (lower === 'snrworld') return 'SCH003';
+        if (lower.match(/^sch\d+$/)) return lower.toUpperCase();
+        // If slug exists but isn't resolved yet, return slug as-is
+        // (resolveSchoolSlug will fix this asynchronously)
+        return slug;
     }
 
-    // 4. Subdomain Mapping
+    // 4. Subdomain mapping
+    const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length >= 3) {
         const tenantSlug = parts[0].toLowerCase();
         if (tenantSlug === 'apex') return 'SCH001';
-        if (tenantSlug === 'greenvalley') return 'SCH002';
         if (tenantSlug.startsWith('sch')) return tenantSlug.toUpperCase();
     }
 
-    // 5. Default Hosting Identity fallbacks
+    // 5. Default host fallback
     if (host.includes('apex-public-school')) return 'SCH001';
 
-    // Fallback to SCH001 (Apex) as the default tenant
     return 'SCH001';
 }
+
+/**
+ * ASYNC SLUG RESOLUTION ENGINE
+ * Queries Firestore to resolve a URL slug (e.g. "greenvalley") to a School ID (e.g. "SCH002").
+ * Caches the result in sessionStorage so getSchoolIdFromURL() returns the correct value.
+ * This must run BEFORE any module accesses CURRENT_SCHOOL_ID.
+ */
+async function resolveSchoolSlug() {
+    // Skip if already resolved in this session
+    const cached = sessionStorage.getItem('CURRENT_SCHOOL_ID');
+    if (cached) {
+        console.log(`[Tenant] Using cached School ID: ${cached}`);
+        return cached;
+    }
+
+    const slug = getURLSlug();
+    if (!slug) {
+        // No slug in URL (root path) — default to SCH001
+        const defaultId = 'SCH001';
+        sessionStorage.setItem('CURRENT_SCHOOL_ID', defaultId);
+        console.log(`[Tenant] No URL slug found, defaulting to: ${defaultId}`);
+        return defaultId;
+    }
+
+    // Check hardcoded mappings first (no Firestore query needed)
+    const lower = slug.toLowerCase();
+    const hardcoded = {
+        'apexps': 'SCH001',
+        'nexorasoftagency': 'SCH003',
+    };
+    if (hardcoded[lower]) {
+        sessionStorage.setItem('CURRENT_SCHOOL_ID', hardcoded[lower]);
+        console.log(`[Tenant] Hardcoded slug "${slug}" → ${hardcoded[lower]}`);
+        return hardcoded[lower];
+    }
+
+    // If slug looks like a School ID already (SCH001, SCH002 etc.)
+    if (lower.match(/^sch\d+$/)) {
+        const id = lower.toUpperCase();
+        sessionStorage.setItem('CURRENT_SCHOOL_ID', id);
+        console.log(`[Tenant] Direct School ID in URL: ${id}`);
+        return id;
+    }
+
+    // DYNAMIC RESOLUTION: Query Firestore for the school with this subdomain/slug
+    try {
+        const firestore = firebase.firestore();
+        console.log(`[Tenant] Resolving slug "${slug}" via Firestore...`);
+
+        // Query by subdomain field (case-insensitive check)
+        const snap = await firestore.collection('schools')
+            .where('subdomain', '==', slug)
+            .limit(1)
+            .get();
+
+        if (!snap.empty) {
+            const schoolId = snap.docs[0].data().schoolId;
+            sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolId);
+            console.log(`[Tenant] ✅ Resolved slug "${slug}" → ${schoolId}`);
+            return schoolId;
+        }
+
+        // Try lowercase match
+        const snapLower = await firestore.collection('schools')
+            .where('subdomain', '==', lower)
+            .limit(1)
+            .get();
+
+        if (!snapLower.empty) {
+            const schoolId = snapLower.docs[0].data().schoolId;
+            sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolId);
+            console.log(`[Tenant] ✅ Resolved slug "${lower}" → ${schoolId}`);
+            return schoolId;
+        }
+
+        // Slug not found — might be the schoolId itself used as slug
+        // Check if a school doc exists with this as the doc ID
+        const directDoc = await firestore.collection('schools').doc(slug).get();
+        if (directDoc.exists) {
+            sessionStorage.setItem('CURRENT_SCHOOL_ID', slug);
+            console.log(`[Tenant] ✅ Direct doc match: ${slug}`);
+            return slug;
+        }
+
+        console.warn(`[Tenant] ⚠️ Could not resolve slug "${slug}". Falling back to SCH001.`);
+        sessionStorage.setItem('CURRENT_SCHOOL_ID', 'SCH001');
+        return 'SCH001';
+    } catch (e) {
+        console.error('[Tenant] Slug resolution error:', e);
+        sessionStorage.setItem('CURRENT_SCHOOL_ID', 'SCH001');
+        return 'SCH001';
+    }
+}
+
+// ===================== BOOTSTRAP PROMISE =====================
+// All modules should await this before accessing CURRENT_SCHOOL_ID
+window.schoolBootstrapReady = resolveSchoolSlug();
 
 // Define CURRENT_SCHOOL_ID as a dynamic property
 Object.defineProperty(window, 'CURRENT_SCHOOL_ID', {
@@ -152,9 +255,14 @@ function withSchool(data) {
 
 // ===================== GLOBAL THEME CONTROL =====================
 async function applyGlobalTheme() {
+    // Wait for slug resolution if it's in progress
+    if (window.schoolBootstrapReady) {
+        await window.schoolBootstrapReady;
+    }
+    
     if (!db) return;
     try {
-        console.log(`Applying dynamic theme for: ${CURRENT_SCHOOL_ID}`);
+        console.log(`[Theme] Applying dynamic theme for school: ${CURRENT_SCHOOL_ID}`);
         let themeDoc = await schoolDoc('settings', 'theme').get();
 
         // Fallback to platform-wide global settings if school-level doesn't exist

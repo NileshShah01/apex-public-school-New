@@ -1,4 +1,4 @@
-// super-admin.js - Advanced Platform Management for SNR World
+// super-admin.js - Advanced Platform Management for Nexorasoftagency
 
 let allSchools = []; // Local cache for filtering
 
@@ -99,7 +99,7 @@ function renderSchools(schools) {
             <tr>
                 <td><code style="color:var(--super-primary); font-weight:700;">${school.schoolId}</code></td>
                 <td style="font-weight:600; color:white;">${school.schoolName}</td>
-                <td>${school.subdomain}.snredu.in</td>
+                <td>${school.subdomain}.nexorasoftagency.com</td>
                 <td><span class="badge badge-stage">Stage ${school.stage}</span></td>
                 <td><span class="badge badge-active" style="background:${school.status === 'active' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}; color:${school.status === 'active' ? '#34d399' : '#f87171'}; border:1px solid ${school.status === 'active' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}">${school.status.toUpperCase()}</span></td>
                 <td style="text-align: right;">

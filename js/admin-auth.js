@@ -1,107 +1,100 @@
 // Admin Authentication Logic
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Apply dynamic branding based on tenant
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for slug resolution to complete FIRST
+    if (window.schoolBootstrapReady) {
+        await window.schoolBootstrapReady;
+    }
+
+    // Apply dynamic branding based on resolved tenant
     applyAuthBranding();
 
     const loginForm = document.getElementById('adminLoginForm');
     const loginError = document.getElementById('loginError');
 
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            
+            submitBtn.disabled = true;
+            btnText.innerText = 'Authenticating...';
+            if (btnSpinner) btnSpinner.style.display = 'block';
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             loginError.style.display = 'none';
 
-            // Sign in with Firebase Auth
-            auth.signInWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    
-                    try {
-                        // Fetch user metadata for school mapping
-                        let userDoc = await db.collection('users').doc(user.uid).get();
-                        
-                        // AUTO-PROVISION: If record is missing, recreate it for the primary admin
-                        if (!userDoc.exists && user.email === 'nileshshah84870@gmail.com') {
-                            console.warn('Admin record missing. Auto-provisioning SCH001 mapping...');
-                            await db.collection('users').doc(user.uid).set({
-                                email: user.email,
-                                schoolId: 'SCH001',
-                                role: 'admin',
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                            // Re-fetch to confirm
-                            userDoc = await db.collection('users').doc(user.uid).get();
-                        }
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
 
-                        if (userDoc.exists) {
-                            const userData = userDoc.data();
-                            
-                            // SECURITY: Fetch the current context school ID (from URL or fallback)
-                            const contextId = window.CURRENT_SCHOOL_ID; 
+                // Fetch user metadata for school mapping
+                let userDoc = await db.collection('users').doc(user.uid).get();
 
-                            // SECURITY: Cross-Tenant Guard
-                            // If the user's schoolId doesn't match the current portal context, redirect them.
-                            if (userData.schoolId && contextId && userData.schoolId !== contextId) {
-                                console.warn(`Tenant Mismatch: User belongs to ${userData.schoolId}, but is on ${contextId} portal.`);
-                                alert(`Unauthorized Access: You belong to ${userData.schoolId}. Redirecting to your portal...`);
-                                
-                                // Construct correct URL
-                                const correctPath = window.location.pathname.replace(new RegExp(`/${contextId}/`, 'i'), `/${userData.schoolId}/`);
-                                window.location.href = correctPath.includes(userData.schoolId) ? correctPath : `/${userData.schoolId}/Admin-Dashboard`;
-                                return;
-                            }
+                // AUTO-PROVISION: If record is missing, recreate it for the primary admin (Safety Net)
+                if (!userDoc.exists && user.email === 'nileshshah84870@gmail.com') {
+                    console.warn('Admin record missing. Auto-provisioning SCH001 mapping...');
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        schoolId: 'SCH001',
+                        role: 'admin',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    userDoc = await db.collection('users').doc(user.uid).get();
+                }
 
-                            // Sync school ID to session storage
-                            sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
-                            
-                            // Success, redirect to dashboard
-                            window.location.href = 'admin-dashboard.html';
-                        } else {
-                            console.error('User record not found in database.');
-                            loginError.textContent = 'Account error: School mapping not found.';
-                            loginError.style.display = 'block';
-                            auth.signOut();
-                        }
-                    } catch (dbErr) {
-                        console.error('Authentication Mapping Error:', dbErr);
-                        loginError.textContent = 'Database Error: ' + dbErr.message;
-                        loginError.style.display = 'block';
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+
+                    // Sync school ID to session storage (authoritative source)
+                    sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
+
+                    // Redirect logic
+                    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+                    let redirectUrl = '/portal/admin-dashboard.html';
+
+                    if (slug) {
+                        redirectUrl = `/${slug}/Admin-Dashboard`;
                     }
-                })
-                .catch((error) => {
-                    loginError.textContent = error.message;
-                    loginError.style.display = 'block';
-                });
+
+                    console.log(`[Auth] Login success. Redirecting to: ${redirectUrl}`);
+                    window.location.href = redirectUrl;
+                } else {
+                    throw new Error('Account error: Your school mapping was not found in our database.');
+                }
+            } catch (error) {
+                console.error('Authentication Error:', error);
+                loginError.textContent = error.message;
+                loginError.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                btnText.innerText = 'Sign In to Dashboard';
+                if (btnSpinner) btnSpinner.style.display = 'none';
+            }
         });
     }
 
     // Protection for admin dashboard
-    if (window.location.pathname.includes('admin-dashboard.html')) {
+    if (window.location.pathname.includes('admin-dashboard')) {
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
-                // Not logged in, redirect to login page
-                window.location.href = 'admin-login.html';
+                const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+                window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
             } else {
                 try {
-                    // Sync session storage if missing or potentially wrong
-                    // This ensures persistent context if someone opens the dashboard directly
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists) {
                         const userData = userDoc.data();
                         if (userData.schoolId && userData.schoolId !== sessionStorage.getItem('CURRENT_SCHOOL_ID')) {
-                            console.log('Syncing correct school ID to session:', userData.schoolId);
                             sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
-                            
-                            // For safety, if it was actually different, a reload might be needed to re-init some modules
-                            // but with our dynamic getters, it's mostly handled.
                         }
                     }
                 } catch (e) {
-                    console.error('Session sync failed:', e);
+                    console.error('[Auth] Session sync failed:', e);
                 }
             }
         });
@@ -109,8 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function logoutAdmin() {
+    sessionStorage.removeItem('CURRENT_SCHOOL_ID');
     auth.signOut().then(() => {
-        window.location.href = 'admin-login.html';
+        const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+        window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
     });
 }
 
@@ -123,23 +118,23 @@ async function applyAuthBranding() {
         if (!schoolDocSnap.exists) return;
 
         const data = schoolDocSnap.data();
-        const name = data.schoolName || 'Apex Public School';
-        const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+        const name = data.schoolName || 'Antigravity ERP';
+        let logo = data.logo || '/images/ApexPublicSchoolLogo.png';
+        
+        // Path safety
+        if (logo.startsWith('../')) logo = logo.substring(2);
+        if (!logo.startsWith('/') && !logo.startsWith('http')) logo = '/' + logo;
 
-        // Update Title
-        if (document.getElementById('portalTitle')) {
-            document.getElementById('portalTitle').innerText = `Admin Login | ${name}`;
-        }
+        // Update Title & Brand
+        document.title = `Admin Login | ${name}`;
+        
+        const brandNameEl = document.getElementById('portalBrandName');
+        const logoImgEl = document.getElementById('schoolLogo');
 
-        // Branding
-        if (document.getElementById('portalBrandName')) {
-            document.getElementById('portalBrandName').innerText = `Admin Portal`;
-        }
-        if (document.getElementById('portalDesc')) {
-            document.getElementById('portalDesc').innerText = `Secure access for ${name} administrators`;
-        }
-        if (document.getElementById('schoolLogoContainer')) {
-            document.getElementById('schoolLogoContainer').innerHTML = `<img src="${logo}" alt="${name} Logo" style="height: 64px; margin-bottom: 1rem; object-fit: contain;">`;
+        if (brandNameEl) brandNameEl.innerText = name;
+        if (logoImgEl) {
+            logoImgEl.src = logo;
+            logoImgEl.alt = `${name} Logo`;
         }
     } catch (e) {
         console.error('Branding failed:', e);

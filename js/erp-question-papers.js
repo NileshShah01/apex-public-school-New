@@ -14,13 +14,13 @@ async function initQuestionPapers() {
 }
 
 async function loadQuestionPapers() {
-    const listBody = document.getElementById('paperLibraryTableBody');
+    const listBody = document.getElementById('erp_paperLibraryTableBody');
     if (!listBody) return;
 
-    const sessionId = document.getElementById('qpSessionFilter').value;
-    const examId = document.getElementById('qpExamFilter').value;
-    const classId = document.getElementById('qpClassFilter').value;
-    const subjectId = document.getElementById('qpSubjectFilter').value;
+    const sessionId = document.getElementById('erp_qpSessionFilter').value;
+    const examId = document.getElementById('erp_qpExamFilter').value;
+    const classId = document.getElementById('erp_qpClassFilter').value;
+    const subjectId = document.getElementById('erp_qpSubjectFilter').value;
 
     listBody.innerHTML =
         '<tr><td colspan="7" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading papers...</td></tr>';
@@ -49,7 +49,7 @@ async function loadQuestionPapers() {
 }
 
 function renderQuestionPapers() {
-    const listBody = document.getElementById('paperLibraryTableBody');
+    const listBody = document.getElementById('erp_paperLibraryTableBody');
     if (!listBody) return;
 
     if (questionPaperState.papers.length === 0) {
@@ -102,10 +102,10 @@ async function handleManualPaperUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const session = document.getElementById('uploadQpSession').value;
-    const exam = document.getElementById('uploadQpExam').value;
-    const className = document.getElementById('uploadQpClass').value;
-    const subjectId = document.getElementById('uploadQpSubject').value;
+    const session = document.getElementById('erp_uploadQpSession').value;
+    const exam = document.getElementById('erp_uploadQpExam').value;
+    const className = document.getElementById('erp_uploadQpClass').value;
+    const subjectId = document.getElementById('erp_uploadQpSubject').value;
 
     if (!session || !exam || !className || !subjectId) {
         alert('Please fill all details before uploading.');
@@ -122,7 +122,7 @@ async function handleManualPaperUpload(event) {
         const downloadUrl = await task.ref.getDownloadURL();
 
         const subjectName =
-            document.getElementById('uploadQpSubject').options[document.getElementById('uploadQpSubject').selectedIndex]
+            document.getElementById('erp_uploadQpSubject').options[document.getElementById('erp_uploadQpSubject').selectedIndex]
                 .text;
 
         const paperPayload = {
@@ -150,7 +150,7 @@ async function handleManualPaperUpload(event) {
 
         showToast('Question Paper uploaded to Storage!', 'success');
         loadQuestionPapers();
-        document.getElementById('manualUploadForm').reset();
+        document.getElementById('erp_manualUploadForm').reset();
     } catch (e) {
         showToast('Upload failed: ' + e.message, 'error');
     } finally {
@@ -228,7 +228,7 @@ async function populateQpFilters() {
     const sessions = await schoolData('sessions').get();
     const sessList = sessions.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    const sessSelects = ['qpSessionFilter', 'uploadQpSession'];
+    const sessSelects = ['erp_qpSessionFilter', 'erp_uploadQpSession'];
     sessSelects.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -253,7 +253,7 @@ async function updateQpExams(sessionId) {
     const exams = await schoolData('exams').where('sessionId', '==', sessionId).get();
     const examList = exams.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    const examSelects = ['qpExamFilter', 'uploadQpExam'];
+    const examSelects = ['erp_qpExamFilter', 'erp_uploadQpExam'];
     examSelects.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -269,7 +269,7 @@ async function updateQpClasses(sessionId) {
     const classes = await schoolData('classes').where('sessionId', '==', sessionId).orderBy('sortOrder', 'asc').get();
     const clsList = classes.docs.map((doc) => doc.data().name);
 
-    const clsSelects = ['qpClassFilter', 'uploadQpClass'];
+    const clsSelects = ['erp_qpClassFilter', 'erp_uploadQpClass'];
     clsSelects.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -285,7 +285,7 @@ async function updateQpSubjects(sessionId) {
     const subjects = await schoolData('subjects').where('sessionId', '==', sessionId).get();
     const subList = subjects.docs.map((doc) => ({ id: doc.id, name: doc.data().name }));
 
-    const subSelects = ['qpSubjectFilter', 'uploadQpSubject'];
+    const subSelects = ['erp_qpSubjectFilter', 'erp_uploadQpSubject'];
     subSelects.forEach((id) => {
         const el = document.getElementById(id);
         if (el) {

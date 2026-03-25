@@ -12,8 +12,8 @@ const ID_TEMPLATES = {
             <div class="header" style="background: linear-gradient(135deg, #00897b 0%, #004d40 100%); padding: 2mm 1.5mm; display: flex; align-items: center; justify-content: center; gap: 2mm; position: relative; z-index: 1;">
                 <img src="${data.schoolLogo}" style="height: 8mm; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
                 <div style="text-align: left; color: #fff;">
-                    <div style="font-weight: 900; font-size: 8.5pt; line-height: 1; letter-spacing: 0.2px;">APEX PUBLIC SCHOOL</div>
-                    <div style="font-size: 4pt; opacity: 0.9; font-weight: 600; letter-spacing: 0.1px;">AN ENGLISH MEDIUM CO-ED SCHOOL</div>
+                    <div style="font-weight: 900; font-size: 8.5pt; line-height: 1; letter-spacing: 0.2px;">${data.schoolName}</div>
+                    <div style="font-size: 4pt; opacity: 0.9; font-weight: 600; letter-spacing: 0.1px;">${data.schoolTagline || 'EDUCATING FOR TOMORROW'}</div>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 3mm; position: relative; z-index: 1;">
@@ -57,7 +57,7 @@ const ID_TEMPLATES = {
             <div class="luxury-bg-logo" style="position:absolute; inset:0; background: url('${data.schoolLogo}') center/contain no-repeat; opacity:0.04; z-index:0;"></div>
             <div class="header-v" style="background: #1e3a8a; padding: 2mm; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; border-bottom: 0.8mm solid #fbbf24;">
                 <img src="${data.schoolLogo}" style="height: 8mm; filter: brightness(0) invert(1); margin-bottom: 1mm;">
-                <div style="font-weight: 900; font-size: 10pt; color: #fff; letter-spacing: 0.3px; text-transform: uppercase;">APEX PUBLIC SCHOOL</div>
+                <div style="font-weight: 900; font-size: 10pt; color: #fff; letter-spacing: 0.3px; text-transform: uppercase;">${data.schoolName}</div>
                 <div style="font-size: 5pt; color: #fbbf24; font-weight: 800; letter-spacing: 1px;">VVIP IDENTITY PASS</div>
             </div>
             <div style="padding: 2.5mm; position: relative; z-index: 1;">
@@ -101,7 +101,7 @@ const ID_TEMPLATES = {
             <div class="luxury-bg-logo" style="position:absolute; inset:0; background: url('${data.schoolLogo}') center/contain no-repeat; opacity:0.04; z-index:0;"></div>
             <div class="luxury-header-wave" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 2.5mm; text-align: center; position: relative; min-height: 25mm; box-sizing: border-box;">
                  <img src="${data.schoolLogo}" style="height: 8mm; filter: drop-shadow(0 0 5px rgba(251,191,36,0.5)); margin-bottom: 1mm;">
-                 <div style="font-weight: 950; font-size: 9.5pt; color: #fff; text-transform: uppercase;">APEX PUBLIC SCHOOL</div>
+                 <div style="font-weight: 950; font-size: 9.5pt; color: #fff; text-transform: uppercase;">${data.schoolName}</div>
                  <div style="font-size: 4.5pt; color: #fbbf24; font-weight: 800; letter-spacing: 1mm;">EXCELLENCE IN EDUCATION</div>
             </div>
             <div style="text-align: center; margin-top: -12mm; position: relative; z-index: 5;">
@@ -143,7 +143,7 @@ const ID_TEMPLATES = {
                  <div style="display: flex; align-items: center; justify-content: center; gap: 2.5mm;">
                      <img src="${data.schoolLogo}" style="height: 8mm; filter: brightness(0) invert(1);">
                      <div style="text-align: left;">
-                         <div style="font-weight: 950; font-size: 9pt; color: #fff; line-height: 1;">APEX PUBLIC SCHOOL</div>
+                         <div style="font-weight: 950; font-size: 9pt; color: #fff; line-height: 1;">${data.schoolName}</div>
                          <div style="font-size: 5pt; font-weight: 900; color: #fbbf24; text-transform: uppercase;">IDENTITY CARD</div>
                      </div>
                  </div>
@@ -190,7 +190,7 @@ const ID_TEMPLATES = {
         <div class="id-card-wrapper temp-luxury-gold ${data.orientation}" style="width: 54mm; height: 86mm; background: #fff; border: 1.25mm solid #fbbf24; outline: 0.8mm solid #1e293b; outline-offset: -2mm; position: relative; font-family: 'Inter', sans-serif; overflow: hidden; box-sizing: border-box;">
             <div style="text-align: center; padding: 4mm 4mm 1.5mm; position: relative; z-index: 1;">
                  <img src="${data.schoolLogo}" style="height: 8mm; margin-bottom: 1.5mm;">
-                 <div style="font-weight: 950; font-size: 10pt; color: #1e293b; text-transform: uppercase; line-height: 1;">APEX PUBLIC SCHOOL</div>
+                 <div style="font-weight: 950; font-size: 10pt; color: #1e293b; text-transform: uppercase; line-height: 1;">${data.schoolName}</div>
                  <div style="font-size: 4.5pt; font-weight: 900; color: #9a3412; letter-spacing: 0.5mm; text-transform: uppercase;">PREMIUM EDUCATION CENTER</div>
             </div>
             <div style="text-align: center; position: relative; z-index: 1;">
@@ -234,7 +234,7 @@ const ID_TEMPLATES = {
             <div class="header" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 3mm 4mm; text-align: center; color: white;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 2.5mm; margin-bottom: 1.5mm;">
                     <img src="${data.schoolLogo}" style="height: 6mm; background: white; border-radius: 50%; padding: 1px;">
-                    <div style="font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; line-height: 1.1;">APEX PUBLIC SCHOOL</div>
+                    <div style="font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; line-height: 1.1;">${data.schoolName}</div>
                 </div>
                 <div style="font-size: 6.5pt; opacity: 0.9; font-weight: 300;">Identity Card 2024-25</div>
             </div>
@@ -283,7 +283,7 @@ const ID_TEMPLATES = {
     format7: (data) => `
         <div class="id-card-wrapper temp-modern-tech-h ${data.orientation}" style="width: 86mm; height: 54mm; background: white; border-radius: 4mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; overflow: hidden; font-family: 'Poppins', sans-serif; box-sizing: border-box; border: 0.2mm solid #ddd;">
             <div class="left-panel" style="width: 30%; background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; position: relative; padding: 2mm;">
-                <div class="school-name-side" style="position: absolute; top: 3mm; font-size: 8pt; font-weight: 800; text-transform: uppercase; text-align: center; width: 90%; line-height: 1.1;">APEX PUBLIC</div>
+                <div class="school-name-side" style="position: absolute; top: 3mm; font-size: 8pt; font-weight: 800; text-transform: uppercase; text-align: center; width: 90%; line-height: 1.1;">${data.schoolName}</div>
                 <div class="photo-frame-side" style="width: 22mm; height: 22mm; background: rgba(255,255,255,0.25); border-radius: 2mm; margin-top: 4mm; display: flex; align-items: center; justify-content: center; border: 0.5mm solid rgba(255,255,255,0.4); overflow: hidden;">
                     ${
                         data.photo
@@ -331,7 +331,7 @@ const ID_TEMPLATES = {
     format8: (data) => `
         <div class="id-card-wrapper temp-modern-tech-v2 ${data.orientation}" style="width: 86mm; height: 54mm; background: white; border-radius: 4mm; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; overflow: hidden; font-family: 'Poppins', sans-serif; box-sizing: border-box; border: 0.2mm solid #ddd;">
             <div class="left-panel" style="width: 34%; background: linear-gradient(145deg, #FF416C 0%, #FF4B2B 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; position: relative; padding: 3mm;">
-                <div class="school-name-side" style="position: absolute; top: 3.5mm; left: 0; right: 0; font-size: 8.5pt; font-weight: 800; text-transform: uppercase; text-align: center; line-height: 1.1;">APEX SCHOOL</div>
+                <div class="school-name-side" style="position: absolute; top: 3.5mm; left: 0; right: 0; font-size: 8.5pt; font-weight: 800; text-transform: uppercase; text-align: center; line-height: 1.1;">${data.schoolName}</div>
                 <div class="photo-frame-side" style="width: 24mm; height: 24mm; background: rgba(255,255,255,0.2); border-radius: 3mm; margin-top: 5mm; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); border: 0.6mm solid rgba(255,255,255,0.35); overflow: hidden;">
                     ${
                         data.photo
@@ -399,8 +399,8 @@ const ID_TEMPLATES = {
             <div style="padding:3mm 3mm 1.5mm;display:flex;align-items:center;justify-content:center;gap:2mm;position:relative;z-index:2;">
                 <img src="${data.schoolLogo}" style="height:9mm;filter:drop-shadow(0 0 6px rgba(255,255,255,0.5));background:white;border-radius:50%;padding:1px;">
                 <div style="color:#fff;text-align:left;">
-                    <div style="font-weight:800;font-size:9pt;line-height:1;text-transform:uppercase;letter-spacing:0.3px;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
-                    <div style="font-size:4.5pt;opacity:0.8;font-weight:500;letter-spacing:1px;text-transform:uppercase;">Excellence · Integrity · Growth</div>
+                     <div style="font-weight:800;font-size:9pt;line-height:1;text-transform:uppercase;letter-spacing:0.3px;">${data.schoolName}</div>
+                    <div style="font-size:4.5pt;opacity:0.8;font-weight:500;letter-spacing:1px;text-transform:uppercase;">${data.schoolTagline || 'Excellence · Integrity · Growth'}</div>
                 </div>
             </div>
 
@@ -485,7 +485,7 @@ const ID_TEMPLATES = {
                 <!-- School Header -->
                 <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:0.5mm solid #e2e8f0;padding-bottom:2mm;margin-bottom:2mm;">
                     <div>
-                        <div style="font-weight:900;font-size:9pt;color:#1e293b;line-height:1;text-transform:uppercase;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                        <div style="font-weight:900;font-size:9pt;color:#1e293b;line-height:1;text-transform:uppercase;">${data.schoolName}</div>
                         <div style="font-size:5pt;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Identity Card — ${data.session || '2025-26'}</div>
                     </div>
                     <img src="${data.schoolLogo}" style="height:8mm;opacity:0.85;">
@@ -546,8 +546,8 @@ const ID_TEMPLATES = {
             <!-- Royal Header -->
             <div style="background:linear-gradient(135deg,#7b0000 0%,#9b1111 60%,#7b0000 100%);padding:3mm 2mm;text-align:center;position:relative;z-index:2;">
                 <img src="${data.schoolLogo}" style="height:10mm;filter:drop-shadow(0 0 4px rgba(212,160,23,0.6));">
-                <div style="color:#d4a017;font-size:9.5pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:1mm;line-height:1;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
-                <div style="color:rgba(255,255,255,0.75);font-size:5pt;font-style:italic;margin-top:0.5mm;">${data.trustName || 'Excellence in Education'}</div>
+                <div style="color:#d4a017;font-size:9.5pt;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:1mm;line-height:1;">${data.schoolName}</div>
+                <div style="color:rgba(255,255,255,0.75);font-size:5pt;font-style:italic;margin-top:0.5mm;">${data.schoolTagline || 'Excellence in Education'}</div>
                 <!-- Gold divider -->
                 <div style="height:0.6mm;background:linear-gradient(90deg,transparent,#d4a017,transparent);margin-top:2mm;"></div>
                 <div style="color:#d4a017;font-size:6pt;font-weight:700;letter-spacing:2px;margin-top:1mm;text-transform:uppercase;">IDENTITY CARD</div>
@@ -605,8 +605,7 @@ const ID_TEMPLATES = {
                 <div style="width:20mm;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;border-right:0.4mm solid #e2e8f0;padding-right:3mm;">
                     <img src="${data.schoolLogo}" style="height:12mm;">
                     <div style="text-align:center;">
-                        <div style="font-size:6pt;font-weight:900;color:#FF9933;text-transform:uppercase;line-height:1.1;">${(data.schoolName || 'APEX PUBLIC SCHOOL').split(' ').slice(0,2).join(' ')}</div>
-                        <div style="font-size:5pt;font-weight:600;color:#138808;text-transform:uppercase;line-height:1.1;">${(data.schoolName || 'APEX PUBLIC SCHOOL').split(' ').slice(2).join(' ')}</div>
+                        <div style="font-size:6pt;font-weight:900;color:#FF9933;text-transform:uppercase;line-height:1.1;">${data.schoolName}</div>
                     </div>
                     <!-- Photo -->
                     <div style="width:18mm;height:22mm;border:0.5mm solid #FF9933;overflow:hidden;background:#f8f8f8;">
@@ -663,7 +662,7 @@ const ID_TEMPLATES = {
             <div style="padding:3.5mm 3mm 2mm;display:flex;align-items:center;justify-content:center;gap:2.5mm;position:relative;z-index:2;">
                 <img src="${data.schoolLogo}" style="height:9mm;filter:drop-shadow(0 0 8px rgba(79,172,254,0.7));background:rgba(255,255,255,0.05);border-radius:50%;padding:1px;">
                 <div style="text-align:left;">
-                    <div style="font-weight:900;font-size:9pt;color:#f8fafc;text-transform:uppercase;line-height:1;letter-spacing:0.3px;">${data.schoolName || 'APEX PUBLIC SCHOOL'}</div>
+                    <div style="font-weight:900;font-size:9pt;color:#f8fafc;text-transform:uppercase;line-height:1;letter-spacing:0.3px;">${data.schoolName}</div>
                     <div style="background:linear-gradient(90deg,#4facfe,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:5pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Student Identity Card</div>
                 </div>
             </div>

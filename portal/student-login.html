@@ -1,74 +1,267 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title id="portalTitle">Student Login</title>
-        <link rel="stylesheet" href="../css/portal.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    </head>
-    <body class="auth-page">
-        <div class="auth-card">
-            <div class="portal-logo text-center mb-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="portalTitle">Student Portal | Login</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind for utilities (minimal use) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(23, 31, 51, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b1120;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        #schoolLogoContainer img {
+            height: 64px;
+            margin: 0 auto 16px;
+            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.2));
+            object-fit: contain;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px 14px 48px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field:focus + i {
+            color: var(--accent-primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        #loginError {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .portal-footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-link:hover {
+            color: var(--accent-secondary);
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: var(--accent-primary);
+            filter: blur(120px);
+            opacity: 0.05;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .blob-1 { top: -10%; left: -10%; }
+        .blob-2 { bottom: -10%; right: -10%; }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="login-container">
+        <div class="glass-card">
+            <div class="brand-section">
                 <div id="schoolLogoContainer">
-                    <i class="fas fa-user-graduate text-3xl color-primary mb-4"></i>
+                    <!-- Dynamic Logo -->
+                    <i class="fas fa-graduation-cap text-5xl text-blue-500 mb-4 opacity-50"></i>
                 </div>
-                <h2 class="text-2xl color-secondary fw-800" id="portalBrandName">Student Portal</h2>
-                <p class="text-muted-p" id="portalDesc">Access your school account</p>
+                <h1 id="portalBrandName" class="text-3xl font-extrabold tracking-tight mb-2 font-['Outfit']">Student Portal</h1>
+                <p id="portalDesc" class="text-slate-400 text-sm">Welcome back! Please enter your details.</p>
             </div>
+
             <form id="studentLoginForm">
-                <div class="form-group">
-                    <label for="student_phone">Mobile Number</label>
-                    <div class="relative">
-                        <i class="fas fa-mobile-alt absolute left-4 top-1/2 -translate-y-1/2 text-muted-p"></i>
-                        <input
-                            type="text"
-                            id="student_phone"
-                            placeholder="Enter your mobile number"
-                            required
-                            class="pl-10"
-                            maxlength="10"
-                        />
-                    </div>
+                <div class="input-group">
+                    <i class="fas fa-mobile-alt"></i>
+                    <input 
+                        type="text" 
+                        id="student_phone" 
+                        class="input-field" 
+                        placeholder="Registered Mobile Number"
+                        required
+                        maxlength="10"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    >
                 </div>
-                <div class="form-group">
-                    <label for="student_name">Student's Full Name</label>
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-muted-p"></i>
-                        <input
-                            type="text"
-                            id="student_name"
-                            placeholder="Enter student's full name"
-                            required
-                            class="pl-10"
-                        />
-                    </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input 
+                        type="text" 
+                        id="student_name" 
+                        class="input-field" 
+                        placeholder="Full Name (as registered)" 
+                        required
+                    >
                 </div>
-                <button
-                    type="submit"
-                    class="btn-portal btn-primary w-full flex-center mt-4 p-3"
-                >
-                    <i class="fas fa-sign-in-alt"></i> Login Securely
+
+                <button type="submit" class="login-btn" id="loginSubmitBtn">
+                    <span>Login Securely</span>
+                    <i class="fas fa-arrow-right text-xs opacity-70"></i>
                 </button>
-                <div
-                    id="loginError"
-                    class="text-error bg-error text-center mt-4 p-2 rounded-lg hidden"
-                ></div>
+
+                <div id="loginError"></div>
             </form>
-            <div class="portal-footer text-center mt-8 pt-4 border-t">
-                <a
-                    href="../school.html"
-                    class="color-primary no-decoration fw-600 d-inline-flex align-items-center gap-sm"
+
+            <div class="mt-6 pt-6 border-t border-white/5 flex flex-col gap-3">
+                <button 
+                    onclick="loginAsGuest()" 
+                    class="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                 >
-                    <i class="fas fa-arrow-left"></i> Back to Website
+                    <i class="fas fa-user-secret opacity-60"></i>
+                    <span>Continue as Visitor</span>
+                </button>
+            </div>
+
+            <div class="portal-footer">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left text-xs"></i>
+                    <span>Back to School Website</span>
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- Firebase SDKs -->
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/student-auth.js"></script>
-    </body>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/student-auth.js"></script>
+</body>
 </html>

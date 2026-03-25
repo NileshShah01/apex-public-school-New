@@ -43,6 +43,9 @@
         { "source": "/*/facilities.html", "destination": "/facilities.html" },
         { "source": "/*/gallery.html", "destination": "/gallery.html" },
         { "source": "/*/inquiry.html", "destination": "/inquiry.html" },
+        { "source": "/*/css/**", "destination": "/css/:splat" },
+        { "source": "/*/js/**", "destination": "/js/:splat" },
+        { "source": "/*/images/**", "destination": "/images/:splat" },
         { "source": "/*/", "destination": "/school.html" },
         { "source": "/*", "destination": "/school.html" },
         { "source": "/*/**", "destination": "/school.html" }

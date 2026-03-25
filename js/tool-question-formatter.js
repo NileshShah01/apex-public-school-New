@@ -47,8 +47,8 @@ async function syncHeaderWithTenant() {
         const schSnap = await schoolRef().get();
         if (schSnap.exists) {
             const data = schSnap.data();
-            document.getElementById('inputSchoolName').value = data.schoolName || 'APEX PUBLIC SCHOOL';
-            document.getElementById('inputSchoolAddress').value = '(ANJANI BAZAR)';
+            document.getElementById('inputSchoolName').value = data.schoolName || 'SCHOOL NAME';
+            document.getElementById('inputSchoolAddress').value = '(SCHOOL ADDRESS)';
             document.getElementById('inputExamName').value = '2nd TERMINAL EXAMINATION';
             document.getElementById('inputSubject').value = 'G.K';
             document.getElementById('inputClass').value = '3rd';

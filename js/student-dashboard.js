@@ -3,6 +3,7 @@ const GITHUB_BASE = 'https://nileshshah01.github.io/Apex-public-school-test-01';
 let currentStudentID = null;
 let currentStudentClass = null;
 let currentStudentData = null;
+let isVisitor = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     // Apply Tenant Branding First
@@ -27,8 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     currentStudentID = sessionData.student_phone || sessionData.student_id;
+    isVisitor = sessionData.role === 'visitor';
 
-    if (!currentStudentID) {
+    if (!currentStudentID && !isVisitor) {
         window.location.href = 'student-login.html';
         return;
     }
@@ -128,6 +130,29 @@ function showPortalSection(sectionId, updateHash = true) {
     if (sectionId === 'transport') fetchTransport();
     if (sectionId === 'library') fetchLibrary();
     if (sectionId === 'materials') loadExamMaterials();
+    if (sectionId === 'results') fetchManualReports();
+
+    // Visitor Access Logic
+    if (isVisitor) {
+        const privateSections = ['homework', 'attendance', 'profile', 'fees', 'exams', 'results', 'library', 'transport'];
+        if (privateSections.includes(sectionId)) {
+            const sectionEl = document.getElementById(sectionId + 'Section');
+            if (sectionEl) {
+                sectionEl.innerHTML = `
+                    <div class="card p-4 text-center">
+                        <i class="fas fa-lock text-4xl mb-1 opacity-20"></i>
+                        <h2 class="text-2xl mb-1">Authenticated Access Required</h2>
+                        <p class="text-muted mb-2">Detailed ${sectionId} records are only available for registered students.</p>
+                        <hr class="mb-2 opacity-10">
+                        <div class="flex gap-1 justify-center">
+                            <a href="student-login.html" class="btn-portal primary">Student Login</a>
+                            <a href="/admissions.html" class="btn-portal">Apply for Admission</a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
 }
 
 function toggleSidebar() {
@@ -217,6 +242,10 @@ async function loadDashboardConfig() {
 async function fetchStudentData() {
     setLoading(true);
     try {
+        if (isVisitor) {
+            displayGuestProfile();
+            return;
+        }
         const sessionData = JSON.parse(localStorage.getItem('student_session'));
         const CACHE_KEY = `student_profile_${sessionData.student_phone || sessionData.student_id}`;
 
@@ -281,6 +310,65 @@ function displayStudentProfile(data) {
 
     // Initial Documents Check
     updateResultLink();
+    if (isVisitor) {
+        applyVisitorSidebarFilter();
+    }
+}
+
+function applyVisitorSidebarFilter() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const allowedHashes = ['#dashboard', '#materials', '#inquiry', '#support'];
+
+    navLinks.forEach((link) => {
+        const hash = link.getAttribute('href');
+        if (hash && hash.startsWith('#') && !allowedHashes.includes(hash)) {
+            link.style.opacity = '0.4';
+            link.classList.add('pointer-events-none');
+            // link.classList.add('locked-item'); // Could add a lock icon via CSS if desired
+            const span = link.querySelector('span');
+            if (span && !span.innerHTML.includes('<i class="fas fa-lock ml-0-5"></i>')) {
+                span.innerHTML += ' <i class="fas fa-lock ml-0-25 text-xs"></i>';
+            }
+        }
+    });
+
+    // Update Logout Button
+    const logoutBtn = document.querySelector('button[onclick="logoutStudent()"]');
+    if (logoutBtn) {
+        const span = logoutBtn.querySelector('span');
+        if (span) span.textContent = 'Exit Visitor Mode';
+        logoutBtn.classList.remove('text-red-300');
+        logoutBtn.classList.add('text-secondary');
+    }
+}
+
+function displayGuestProfile() {
+    // Top Profile Card
+    document.getElementById('disp_student_name').textContent = 'Guest Visitor';
+    document.getElementById('disp_student_id').textContent = 'VISITOR-GUEST';
+    document.getElementById('disp_class').textContent = 'Prospective Student';
+    document.getElementById('disp_section').textContent = 'GUEST';
+
+    // Sidebar & Mobile Profile
+    document.getElementById('sidebarStudentName').textContent = 'Guest Visitor';
+    document.getElementById('sidebarStudentClass').textContent = 'Visitor Mode';
+
+    // Personal Info Section
+    document.getElementById('p_name').textContent = 'Guest Visitor';
+    document.getElementById('p_dob').textContent = 'N/A';
+    document.getElementById('p_father').textContent = 'N/A';
+    document.getElementById('p_mother').textContent = 'N/A';
+    document.getElementById('p_adm').textContent = 'GUEST-001';
+    document.getElementById('p_phone').textContent = 'N/A';
+    document.getElementById('p_address').textContent = 'Anonymous Access';
+
+    // Photo handling
+    const placeholderUrl = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    updateStudentPhoto(placeholderUrl);
+
+    // Disable fee balance on home
+    const feeBal = document.getElementById('homeFeeBalance');
+    if (feeBal) feeBal.textContent = '₹ --';
 }
 
 function updateStudentPhoto(url) {
@@ -684,23 +772,39 @@ async function updateResultLink() {
 
     loadExamMaterials();
 
-    // Check Result Card
+    // Check Result Card (Manual Upload or Generated)
     try {
-        const docRef = await schoolDoc('reports', `${currentStudentID}_${year}`).get();
-        if (docRef.exists) {
-            const pubSnap = await schoolData('publications')
-                .where('className', '==', currentStudentClass)
-                .where('published', '==', true)
-                .get();
-            if (!pubSnap.empty) {
-                resultArea.innerHTML = `<a href="${docRef.data().fileData}" download class="btn-portal btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-download"></i> Result</a>`;
-            } else {
-                resultArea.innerHTML = '<div style="font-size:0.8rem; color:#b45309;">Processing...</div>';
-            }
+        // Priority 1: Check for manual uploads in reports collection
+        const manualSnap = await schoolData('reports')
+            .where('studentId', '==', currentStudentID)
+            .where('session', '==', year)
+            .where('published', '==', true)
+            .orderBy('uploadedAt', 'desc')
+            .limit(1)
+            .get();
+
+        if (!manualSnap.empty) {
+            const reportData = manualSnap.docs[0].data();
+            resultArea.innerHTML = `<a href="${reportData.fileData}" download="${reportData.fileName || 'ReportCard.pdf'}" class="btn-portal btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-file-download"></i> Download Report</a>`;
         } else {
-            throw new Error('404');
+            // Priority 2: Check for generated report card (Legacy/Phase 5 auto-gen)
+            const docRef = await schoolDoc('reports', `${currentStudentID}_${year}`).get();
+            if (docRef.exists) {
+                const pubSnap = await schoolData('publications')
+                    .where('className', '==', currentStudentClass)
+                    .where('published', '==', true)
+                    .get();
+                if (!pubSnap.empty) {
+                    resultArea.innerHTML = `<a href="${docRef.data().fileData}" download class="btn-portal btn-primary" style="width: 100%; justify-content: center;"><i class="fas fa-download"></i> Result</a>`;
+                } else {
+                    resultArea.innerHTML = '<div style="font-size:0.8rem; color:#b45309;">Processing...</div>';
+                }
+            } else {
+                resultArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not published</div>';
+            }
         }
     } catch (e) {
+        console.error("Result check error:", e);
         if (resultArea)
             resultArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not published</div>';
     }
@@ -738,17 +842,26 @@ async function updateResultLink() {
 async function loadExamMaterials() {
     const list = document.getElementById('paperDownloadList');
     const status = document.getElementById('examMaterialsStatusArea');
-    if (!list || !currentStudentClass) return;
+    
+    // Determine search class
+    let searchClass = currentStudentClass;
+    if (isVisitor) searchClass = 'Sample'; // Default for visitors
+
+    if (!list || (!searchClass && !isVisitor)) return;
 
     list.innerHTML = '<p class="text-center p-2">Looking for practice materials...</p>';
     try {
         const year = document.getElementById('academicYear').value;
         const sessionId = `${year - 1}_${year.toString().slice(-2)}`;
-        const snap = await schoolData('questionPapers')
-            .where('class', '==', currentStudentClass)
-            .where('published', '==', true)
-            .orderBy('createdAt', 'desc')
-            .get();
+        
+        let query = schoolData('questionPapers')
+            .where('published', '==', true);
+
+        if (searchClass) {
+            query = query.where('class', '==', searchClass);
+        }
+
+        const snap = await query.orderBy('createdAt', 'desc').get();
 
         if (snap.empty) {
             list.innerHTML = '<p class="text-center text-muted p-2">No practice papers published yet.</p>';
@@ -906,3 +1019,67 @@ window.toggleSidebar = toggleSidebar;
 window.logoutStudent = logoutStudent;
 window.printStudentReceipt = printStudentReceipt;
 window.closePortalModal = closePortalModal;
+
+/**
+ * Fetch and display manually uploaded report cards for the student
+ */
+async function fetchManualReports() {
+    const area = document.getElementById('manualResultsArea');
+    if (!area) return;
+
+    try {
+        area.innerHTML = `
+            <div class="flex-center p-4 text-muted">
+                <i class="fas fa-spinner fa-spin mr-0-5"></i> Searching archives...
+            </div>
+        `;
+
+        const q = schoolData('reports')
+            .where('studentId', 'in', [currentStudentData.studentId || '', currentStudentData.admNo || '', currentStudentID])
+            .where('status', '==', 'published');
+        
+        const snap = await q.get();
+
+        if (snap.empty) {
+            area.innerHTML = `
+                <div class="flex-center p-4 text-muted border-radius-1 bg-secondary dashed">
+                    <p class="m-0 italic">No published report cards found for your ID.</p>
+                </div>
+            `;
+            return;
+        }
+
+        area.innerHTML = snap.docs.map(doc => {
+            const r = doc.data();
+            return `
+                <div class="card flex-between p-1-25 border-left-primary bg-white shadow-sm hover-translate transition-all">
+                    <div class="flex align-center gap-1">
+                        <div class="w-10 h-10 bg-blue-light text-primary flex-center border-radius-0-75 text-lg">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="text-left">
+                            <h4 class="m-0 secondary text-md">${r.title || 'Academic Report Card'}</h4>
+                            <p class="text-xs text-muted m-0">${r.session || 'Current Session'} | ${r.uploadedAt?.toDate()?.toLocaleDateString() || 'Recently Uploaded'}</p>
+                        </div>
+                    </div>
+                    <button onclick="downloadReport('${r.fileData}', '${r.title || 'ReportCard'}')" class="btn-portal btn-white shadow-sm font-bold text-xs p-0-5-1">
+                        <i class="fas fa-download mr-0-5"></i> Download
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+    } catch (e) {
+        console.error('Fetch reports failed:', e);
+        area.innerHTML = `<p class="text-danger p-2 text-center text-xs">Correctional synchronization failed. Please retry later.</p>`;
+    }
+}
+
+function downloadReport(base64, filename) {
+    const link = document.createElement('a');
+    link.href = base64;
+    link.download = `${filename.replace(/\s+/g, '_')}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}

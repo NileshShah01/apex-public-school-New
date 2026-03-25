@@ -4,13 +4,13 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title id="dashboardTitle">Admin Dashboard</title>
-        <link rel="stylesheet" href="../css/portal.css" />
-        <link rel="stylesheet" href="../css/id-cards.css" />
+        <link rel="stylesheet" href="/css/portal.css" />
+        <link rel="stylesheet" href="/css/id-cards.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
         />
     </head>
@@ -43,7 +43,7 @@
                     <i class="fas fa-university"></i>
                 </div>
                 <div class="line-height-1">
-                    <h1 class="text-sm font-800 white-space-nowrap secondary m-0" id="mobileBrandName">Apex Admin</h1>
+                    <h1 class="text-sm font-800 white-space-nowrap secondary m-0 school-name-dynamic" id="mobileBrandName">School Admin</h1>
                     <div id="connectionStatus" class="flex align-center gap-0-5 text-xs text-success">
                         <span class="dot-success"></span> Online
                     </div>
@@ -62,20 +62,15 @@
             <!-- Sidebar -->
             <aside class="sidebar glass-sidebar" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <img
-                        src="../images/ApexPublicSchoolLogo.png"
-                        alt="School Logo"
-                        class="h-32 w-auto object-contain"
-                        id="sidebarLogoImg"
-                    />
-                    <h2 class="text-lg line-height-1-2" id="sidebarSchoolName">Apex Public School</h2>
+                    <img id="sidebarLogoImg" src="/images/ApexPublicSchoolLogo.png" alt="School Logo" class="h-32 w-auto object-contain school-logo-dynamic">
+                    <h2 class="text-lg line-height-1-2 school-name-dynamic" id="sidebarSchoolName">School ERP</h2>
                 </div>
                 <!-- Sidebar Toggle Button -->
                 <button
                     id="sidebarToggleBtn"
                     onclick="toggleSidebar()"
                     title="Toggle Sidebar"
-                    class="w-full bg-white-opacity-10 border-none white-opacity-70 p-0-5 cursor-pointer text-base border-radius-0-5 mb-0-5 flex flex-center gap-0-5 transition-all"
+                    class="w-full bg-light border p-0-5 cursor-pointer text-base border-radius-0-5 mb-0-5 flex flex-center gap-0-5 transition-all text-main"
                 >
                     <i class="fas fa-bars" id="toggleIcon"></i>
                     <span class="sidebar-label">Collapse Menu</span>
@@ -380,42 +375,6 @@
                         </div>
                     </div>
 
-                    <!-- CLASS MANAGEMENT -->
-                    <div class="nav-category" id="navClass" onclick="toggleCategory('catClass')">
-                        <div class="cat-header">
-                            <i class="fas fa-book"></i>
-                            <span>Class Management</span>
-                            <i class="fas fa-chevron-down arrow"></i>
-                        </div>
-                        <div class="cat-submenu" id="catClass">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')"
-                                >Add Class Details</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')"
-                                >Add Non-Subject</a
-                            >
-                        </div>
-                    </div>
-
-                    <!-- TIME TABLE -->
-                    <div class="nav-category" id="navTimeTable" onclick="toggleCategory('catTimeTable')">
-                        <div class="cat-header">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Time Table</span>
-                            <i class="fas fa-chevron-down arrow"></i>
-                        </div>
-                        <div class="cat-submenu" id="catTimeTable">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('createTimetable')"
-                                >Create Timetable</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('viewTimetable')"
-                                >View Timetable</a
-                            >
-                        </div>
-                    </div>
 
                     <!-- ACADEMIC TOOLS -->
                     <div class="nav-category" onclick="toggleCategory('catAcademicTools')">
@@ -432,8 +391,8 @@
                             <a href="#" class="nav-link sub-link" onclick="showSection('parentsNotPaidTool')">
                                 <i class="fas fa-user-clock fa-xs mr-1"></i> Parents Not Paid Tool
                             </a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('questionPaperLibrary')">
-                                <i class="fas fa-book fa-xs mr-1"></i> Paper Library
+                            <a href="#" class="nav-link sub-link" onclick="showSection('manualReportCardUpload')">
+                                <i class="fas fa-file-upload fa-xs mr-1"></i> Report Card Upload
                             </a>
                         </div>
                     </div>
@@ -550,6 +509,9 @@
                             <a href="#" class="nav-link sub-link" onclick="showSection('cmsGlobalStats')"
                                 >School Statistics</a
                             >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('adminPortalCMS')"
+                                >Admin Portal CMS</a
+                            >
                         </div>
                     </div>
 
@@ -573,7 +535,7 @@
                     </div>
                     <div class="flex align-center gap-1">
                         <div class="text-right">
-                            <p class="font-600 text-sm" id="adminEmail">admin@apex.com</p>
+                            <p class="font-600 text-sm" id="adminEmail">admin@school.com</p>
                             <p class="text-xs text-muted">Administrator</p>
                         </div>
                     </div>
@@ -783,143 +745,7 @@
                     <div id="paginationControls" class="mt-1-5 flex justify-center"></div>
                 </section>
 
-                <section id="questionPaperLibrarySection" class="dashboard-section card hidden">
-                    <div class="header mb-1-5">
-                        <div>
-                            <h1>Question Paper Library</h1>
-                            <p>Manage and publish examination question papers</p>
-                        </div>
-                    </div>
 
-                    <div class="grid-2-1 align-start">
-                        <div>
-                            <!-- Filters -->
-                            <div class="card mb-1-5 bg-secondary">
-                                <div class="grid-4">
-                                    <div class="form-group">
-                                        <label>Session</label>
-                                        <select
-                                            id="qpSessionFilter"
-                                            onchange="
-                                                updateQpExams(this.value);
-                                                loadQuestionPapers();
-                                            "
-                                            class="form-control"
-                                            title="Filter by Session"
-                                        ></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Exam</label>
-                                        <select
-                                            id="qpExamFilter"
-                                            onchange="loadQuestionPapers()"
-                                            class="form-control"
-                                            title="Filter by Exam"
-                                        ></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Class</label>
-                                        <select
-                                            id="qpClassFilter"
-                                            onchange="loadQuestionPapers()"
-                                            class="form-control"
-                                            title="Filter by Class"
-                                        ></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Subject</label>
-                                        <select
-                                            id="qpSubjectFilter"
-                                            onchange="loadQuestionPapers()"
-                                            class="form-control"
-                                            title="Filter by Subject"
-                                        ></select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Paper List -->
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Subject</th>
-                                            <th>Class</th>
-                                            <th>Exam</th>
-                                            <th>Created By</th>
-                                            <th>Status</th>
-                                            <th>Publication</th>
-                                            <th class="text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="paperLibraryTableBody">
-                                        <!-- Populated by JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <aside>
-                            <!-- Manual Upload Form -->
-                            <div class="card">
-                                <h3 class="mb-1-25"><i class="fas fa-upload primary"></i> Manual Upload</h3>
-                                <p class="text-xs text-muted mb-1-25">
-                                    Upload existing PDF question papers to the library.
-                                </p>
-
-                                <form id="manualUploadForm" class="space-y-4">
-                                    <div class="form-group">
-                                        <label>Session</label>
-                                        <select
-                                            id="uploadQpSession"
-                                            class="form-control"
-                                            onchange="updateQpExams(this.value)"
-                                            title="Select Session"
-                                        ></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Exam</label>
-                                        <select id="uploadQpExam" class="form-control" title="Select Exam"></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Class</label>
-                                        <select id="uploadQpClass" class="form-control" title="Select Class"></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Subject</label>
-                                        <select
-                                            id="uploadQpSubject"
-                                            class="form-control"
-                                            title="Select Subject"
-                                        ></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Select PDF File</label>
-                                        <input
-                                            type="file"
-                                            id="manualQpFile"
-                                            accept=".pdf"
-                                            class="form-control"
-                                            onchange="handleManualPaperUpload(event)"
-                                            title="Select PDF Question Paper"
-                                        />
-                                    </div>
-                                </form>
-
-                                <div class="mt-1-5 pt-1-5 border-top">
-                                    <a
-                                        href="question-formatter/index.html"
-                                        target="_blank"
-                                        class="btn-portal btn-primary text-center block"
-                                        title="Open AI Formatter"
-                                    >
-                                        <i class="fas fa-magic"></i> Open AI Formatter
-                                    </a>
-                                </div>
-                            </div>
-                        </aside>
-                    </div>
-                </section>
 
                 <!-- Results Status Section -->
                 <section id="resultsStatusSection" class="dashboard-section card hidden">
@@ -1276,65 +1102,7 @@
                     </div>
                 </section>
 
-                <!-- Timetable Management Section -->
-                <section id="classTimetablesSection" class="dashboard-section card hidden">
-                    <div class="header mb-2">
-                        <div>
-                            <h1>Class Timetables</h1>
-                            <p>Upload and manage weekly schedules for each class</p>
-                        </div>
-                    </div>
 
-                    <div class="grid-cols-1-2 gap-2">
-                        <div class="glass-card p-1-5 h-fit">
-                            <h3 class="mb-1-25 text-base">Upload Timetable</h3>
-                            <form onsubmit="handleTimetableUpload(event)">
-                                <div class="form-group">
-                                    <label>Target Class</label>
-                                    <select
-                                        id="tt_classSelect"
-                                        class="form-control"
-                                        required
-                                        title="Select Target Class"
-                                    ></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Timetable File (Image/PDF)</label>
-                                    <input
-                                        type="file"
-                                        id="tt_file"
-                                        class="form-control"
-                                        accept="image/*,application/pdf"
-                                        required
-                                        title="Select Timetable File"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    class="btn-portal btn-primary w-full mt-1"
-                                    title="Upload Timetable"
-                                >
-                                    <i class="fas fa-cloud-upload-alt"></i> Upload Timetable
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="table-container">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Class Name</th>
-                                        <th>Uploaded On</th>
-                                        <th class="text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="timetableListBody">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- Bulk Result Generator Section -->
                 <section id="bulkResultGeneratorSection" class="dashboard-section card hidden">
@@ -1430,184 +1198,810 @@
                     </div>
                 </section>
 
-                <!-- Result Analytics Section -->
-                <section id="resultAnalyticsSection" class="dashboard-section card hidden">
+                <!-- Exam Grading Rules -->
+                <!-- Exam Grading Rules -->
+                <section id="examGradingSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Exam Grading Rules</h1>
+                        <p>Define percentage ranges for automatic grade calculation</p>
+                    </div>
+                    <div class="grid-2 gap-2">
+                        <div class="glass-card p-2">
+                            <h3><i class="fas fa-plus-circle text-primary mr-0-5"></i> Add Grading Rule</h3>
+                            <form id="addGradingForm" onsubmit="handleGradingSubmit(event)" class="mt-1-5">
+                                <div class="form-group">
+                                    <label>Grade Name (e.g., A1)</label>
+                                    <input type="text" id="gradeNameInput" class="form-control" placeholder="A1" required title="Grade Name">
+                                </div>
+                                <div class="grid-2 gap-1">
+                                    <div class="form-group">
+                                        <label>Min %</label>
+                                        <input type="number" id="gradeMinInput" class="form-control" placeholder="91" required title="Minimum Percentage">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Max %</label>
+                                        <input type="number" id="gradeMaxInput" class="form-control" placeholder="100" required title="Maximum Percentage">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Remarks</label>
+                                    <input type="text" id="gradeRemarksInput" class="form-control" placeholder="Outstanding" title="Remarks">
+                                </div>
+                                <button type="submit" class="btn-portal btn-primary w-full mt-1">
+                                    <i class="fas fa-save mr-1"></i> Save Grading Rule
+                                </button>
+                            </form>
+                        </div>
+                        <div class="glass-card p-2">
+                            <div class="flex flex-between align-center mb-1-5">
+                                <h3><i class="fas fa-table text-primary mr-0-5"></i> Grading Schema</h3>
+                                <span class="badge bg-primary-light text-primary">Active</span>
+                            </div>
+                            <div class="table-container">
+                                <table class="portal-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Grade</th>
+                                            <th>Range (%)</th>
+                                            <th>Remarks</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gradingTableBody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Manage Exams -->
+                <section id="manageExamSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Manage Examinations</h1>
+                        <p>Define assessment terms and academic milestones</p>
+                    </div>
+                    <div class="grid-2 gap-2">
+                        <div class="glass-card p-2">
+                            <h3><i class="fas fa-calendar-plus text-primary mr-0-5"></i> Define Exam</h3>
+                            <form id="addExamForm" onsubmit="handleExamSubmit(event)" class="mt-1-5">
+                                <div class="form-group">
+                                    <label>Target Session</label>
+                                    <select id="examSessionSelect" class="form-control" required title="Select Session"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Exam Title (e.g., Term 1)</label>
+                                    <input type="text" id="examNameInput" class="form-control" placeholder="Half Yearly" required title="Exam Title">
+                                </div>
+                                <div class="form-group">
+                                    <label>Result Weightage (%)</label>
+                                    <input type="number" id="examWeightageInput" class="form-control" placeholder="50" required title="Result Weightage">
+                                </div>
+                                <button type="submit" class="btn-portal btn-primary w-full mt-1">
+                                    <i class="fas fa-plus mr-1"></i> Initialize Exam Term
+                                </button>
+                            </form>
+                        </div>
+                        <div class="glass-card p-2">
+                            <div class="flex flex-between align-center mb-1-5">
+                                <h3><i class="fas fa-list-check text-primary mr-0-5"></i> Exam Terms</h3>
+                                <p class="text-xs text-muted">Defined assessments for this session</p>
+                            </div>
+                            <div class="table-container">
+                                <table class="portal-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Assessment Name</th>
+                                            <th>Weightage</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="examsTableBody">
+                                        <!-- Populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Exam Schedule -->
+                <section id="manageExamScheduleSection" class="dashboard-section card hidden">
                     <div class="header mb-2">
                         <div>
-                            <h1>Result & Performance Analytics</h1>
-                            <p>Visualizing student success and subject performance trends</p>
+                            <h1>Manage Exam Schedule</h1>
+                            <p>Search, Add and Edit exam timetables with per-paper details</p>
+                        </div>
+                        <div class="flex gap-0-75">
+                            <button onclick="scheduleDownloadPdf()" class="btn-portal btn-ghost" title="Download as PDF"><i class="fas fa-file-pdf mr-1"></i> Download PDF</button>
+                            <button onclick="saveExamSchedule()" class="btn-portal btn-primary" title="Save Schedule"><i class="fas fa-cloud-upload-alt mr-1"></i> Save Schedule</button>
                         </div>
                     </div>
 
-                    <div class="grid-auto-200 align-flex-end mb-2 bg-secondary p-1-5 border-radius-0-75">
-                        <div class="form-group">
+                    <!-- Filter Bar -->
+                    <div class="glass-card p-1-5 mb-2">
+                        <h4 class="mb-1 text-muted"><i class="fas fa-filter mr-0-5"></i> Exam Selection</h4>
+                        <div class="grid-4 gap-1">
+                            <div class="form-group mb-0">
+                                <label>Session <span class="text-danger">*</span></label>
+                                <select id="scheduleSessionSelect" class="form-control" title="Session" onchange="scheduleLoadClasses()">
+                                    <option value="">Select Session</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Class <span class="text-danger">*</span></label>
+                                <select id="scheduleClassSelect" class="form-control" title="Select Class" onchange="scheduleLoadExams()">
+                                    <option value="">Select Session First</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Year/Semester</label>
+                                <select id="scheduleYearSemSelect" class="form-control" title="Year/Semester">
+                                    <option value="1">1st</option>
+                                    <option value="2">2nd</option>
+                                    <option value="3">3rd</option>
+                                    <option value="4">4th</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Exam <span class="text-danger">*</span></label>
+                                <select id="scheduleExamSelect" class="form-control" title="Assessment Term" onchange="loadScheduleGrid()">
+                                    <option value="">Select Exam</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Per-Paper Cards Container -->
+                    <div class="glass-card p-2">
+                        <div class="flex flex-between align-center mb-1-5">
+                            <h3 class="m-0"><i class="fas fa-file-invoice text-primary mr-0-5"></i> Exam Papers</h3>
+                            <button id="scheduleAddPaperBtn" onclick="scheduleAddPaper()" class="btn-portal btn-ghost hidden" title="Add Paper">
+                                <i class="fas fa-plus mr-1"></i> Add Paper Row
+                            </button>
+                        </div>
+                        <div id="schedulePapersContainer" class="space-y-3">
+                            <div class="text-center p-3 text-muted">
+                                <i class="fas fa-calendar-times text-4xl opacity-20 block mb-1"></i>
+                                <p>Select Session, Class and Exam to view or add papers</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bulk Marks Entry -->
+                 <section id="addResultSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Bulk Marks Entry</h1>
+                        <p>High-speed data entry grid for examination results</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-5 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
                             <label>Session</label>
-                            <select
-                                id="analytic_sessionSelect"
-                                class="form-control"
-                                onchange="ResultAnalytics.loadClasses()"
-                                title="Select Session"
-                            ></select>
+                            <select id="marksSessionSelect" class="form-control" onchange="loadMarksClasses()" title="Select Session"></select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-0">
                             <label>Class</label>
-                            <select
-                                id="analytic_classSelect"
-                                class="form-control"
-                                onchange="ResultAnalytics.loadExams()"
-                                title="Select Class"
-                            ></select>
+                            <select id="marksClassSelect" class="form-control" onchange="loadMarksSections()" title="Select Class"></select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="marksSectionSelect" class="form-control" onchange="loadMarksSubjects()" title="Select Section"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="marksExamSelect" class="form-control" onchange="refreshMarksGrid()" title="Select Exam"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Subject</label>
+                            <select id="marksSubjectSelect" class="form-control" onchange="refreshMarksGrid()" title="Select Subject"></select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-between align-center mb-1-5">
+                        <div class="flex gap-2 text-sm">
+                            <div class="badge bg-secondary p-0-5-1">Students: <span id="marksCountStudents" class="font-700">--</span></div>
+                            <div class="badge bg-success-light text-success p-0-5-1">Entered: <span id="marksCountEntered" class="font-700">--</span></div>
+                        </div>
+                        <div class="flex gap-1">
+                            <label for="marksExcelInput" class="btn-portal btn-ghost cursor-pointer" title="Import from Excel">
+                                <i class="fas fa-file-excel mr-1"></i> Import Excel
+                            </label>
+                            <input type="file" id="marksExcelInput" class="hidden" accept=".xlsx, .xls" onchange="handleMarksExcelUpload(event)">
+                            
+                            <button class="btn-portal btn-secondary" onclick="downloadExcelTemplate('marks')" title="Download Excel Template">
+                                <i class="fas fa-download mr-1"></i> Template
+                            </button>
+
+                            <button class="btn-portal btn-primary" onclick="saveMarksGrid()" title="Finalize Marks">
+                                <i class="fas fa-check-double mr-1"></i> Finalize Marks
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th class="w-100">Roll No</th>
+                                        <th>Student Name</th>
+                                        <th class="min-w-150">Score Obtained</th>
+                                        <th class="w-150">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="marksGridTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View Exam Schedule -->
+                <section id="viewExamScheduleSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Global Exam Calendar</h1>
+                        <p>Visual overview of all scheduled assessments</p>
+                    </div>
+                    <div class="glass-card p-0 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="portal-table" id="viewScheduleTable">
+                                <thead>
+                                    <tr>
+                                        <th>Exam Term</th>
+                                        <th>Class</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Timing</th>
+                                        <th>Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewScheduleTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center p-3 text-muted">Select filters in Manage Schedule to view data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Publish Exam Schedule -->
+                <section id="publishExamScheduleSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Publish Exam Schedules</h1>
+                        <p>Control the visibility of exam timetables in the Student Portal</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2">
+                        <div class="grid-2 gap-1 align-flex-end">
+                            <div class="form-group mb-0">
+                                <label>Session</label>
+                                <select id="publishSchedSessionSelect" class="form-control" onchange="loadPublishScheduleStatus()" title="Filter by Session"></select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Exam Term</label>
+                                <select id="publishSchedExamSelect" class="form-control" onchange="loadPublishScheduleStatus()" title="Select Exam Term"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-0 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Schedule Status</th>
+                                        <th class="text-right">Portal Visibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="publishSchedTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Admit Card Tool -->
+                <section id="admitCardToolSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Admit Card Generator</h1>
+                        <p>Generate and printable hall tickets for students</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="admitSessionSelect" class="form-control" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="admitClassSelect" class="form-control" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam Term</label>
+                            <select id="admitExamSelect" class="form-control" title="Select Exam Term"></select>
+                        </div>
+                        <button class="btn-portal btn-primary h-42" onclick="generateHallTicketsForTool()">
+                            <i class="fas fa-id-card mr-1"></i> Generate PDF
+                        </button>
+                    </div>
+                    <div class="glass-card p-2 text-center text-muted">
+                        <i class="fas fa-id-card text-4xl opacity-20 block mb-1"></i>
+                        <p>Select Session, Class and Exam to generate printable admit cards</p>
+                    </div>
+                </section>
+
+                <!-- Exam Attendance Card -->
+                <section id="examAttendanceCardSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Exam Attendance Sheets</h1>
+                        <p>Generate printable signature sheets for examination halls</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="attnSessionSelect" class="form-control" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="attnClassSelect" class="form-control" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="attnExamSelect" class="form-control" title="Select Exam Term"></select>
+                        </div>
+                        <button class="btn-portal btn-primary h-42" onclick="generateAttendanceCards()">
+                            <i class="fas fa-print mr-1"></i> Generate Sheets
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Student Exam Attendance (Subject Wise Entry) -->
+                <section id="studentExamAttendanceSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Attendance Marking (Subject)</h1>
+                        <p>Record student presence/absence for a specific subject exam</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-5 gap-1 align-flex-end">
+                         <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="examAttSession" class="form-control" onchange="loadExamAttClasses()" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="examAttClass" class="form-control" onchange="loadExamAttSubjects()" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="examAttExam" class="form-control" onchange="refreshExamAttGrid()" title="Select Exam"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Subject</label>
+                            <select id="examAttSubject" class="form-control" onchange="refreshExamAttGrid()" title="Select Subject"></select>
+                        </div>
+                        <button class="btn-portal btn-primary h-42" onclick="saveExamAttendance()">
+                            <i class="fas fa-save mr-1"></i> Save Marks
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll No</th>
+                                        <th>Student Name</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="examAttGridBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View/Preview Report Card -->
+                <section id="viewReportCardSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Report Card Preview</h1>
+                        <p>Generate and verify individual student report cards</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
+                        <div class="form-group mb-0" id="rcPreviewSearchContainer">
+                            <label>Search Student</label>
+                            <!-- Searchable select initialized via JS -->
+                        </div>
+                        <input type="hidden" id="rcPreviewSid">
+                        <div class="form-group mb-0">
+                            <label>Exam Term</label>
+                            <select id="rcPreviewExam" class="form-control" title="Select Exam"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Template Format</label>
+                            <select id="rcPreviewFormat" class="form-control" title="Select Format">
+                                <option value="premium">Premium Glass</option>
+                                <option value="Himalayan">Standard Himalayan</option>
+                            </select>
+                        </div>
+                        <button class="btn-portal btn-primary h-42" onclick="previewSingleReportCard()">
+                            <i class="fas fa-eye mr-1"></i> Preview Report
+                        </button>
+                    </div>
+                    <div class="glass-card p-2 text-center text-muted">
+                        <i class="fas fa-file-pdf text-4xl opacity-20 block mb-1"></i>
+                        <p>Select a student and exam to generate a preview PDF</p>
+                    </div>
+                </section>
+
+                <!-- Publish Exam Results -->
+                <section id="publishResultsSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Publish Exam Results</h1>
+                        <p>Toggle final result visibility for students and parents</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-2 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Academic Session</label>
+                            <select id="publishSessionSelect" class="form-control" onchange="refreshPublishStatus()" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Assessment Term</label>
+                            <select id="publishExamSelect" class="form-control" onchange="refreshPublishStatus()" title="Select Exam Term"></select>
+                        </div>
+                    </div>
+                    <div class="glass-card p-0 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Name</th>
+                                        <th>Evaluation Status</th>
+                                        <th class="text-right">Portal Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="publishStatusTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Result Analytics -->
+                <section id="resultAnalyticsSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Result Analytics</h1>
+                        <p>Visualize student performance across different exams and sessions</p>
+                    </div>
+                    <div class="grid-2 gap-2">
+                        <div class="glass-card p-2 bg-gradient-brand text-white">
+                            <h3>School-wide Performance</h3>
+                            <canvas id="schoolPerformanceChart"></canvas>
+                        </div>
+                        <div class="glass-card p-2">
+                            <h3>Subject Performance</h3>
+                            <canvas id="subjectPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Manage All Results (Bird's Eye View) -->
+                <section id="manageAllResultsSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Examination Birds-Eye View</h1>
+                        <p>Global oversight of result entry status across all classes and subjects</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-5 gap-1 align-flex-end">
+                         <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="manageResultsSession" class="form-control" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="manageResultsClass" class="form-control" onchange="loadManageResultsSections()" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Section</label>
+                            <select id="manageResultsSectionSelect" class="form-control" title="Select Section"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="manageResultsExam" class="form-control" onchange="loadManageResultsSubjects()" title="Select Exam"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Subject</label>
+                            <select id="manageResultsSubject" class="form-control" onchange="refreshManageResultsTable()" title="Select Subject"></select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll</th>
+                                        <th>Name</th>
+                                        <th>Score</th>
+                                        <th>Grade</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="manageResultsTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Report Card Remarks & Co-Scholastic -->
+                <section id="reportCardRemarksSection" class="dashboard-section card hidden">
+                    <div class="header mb-2">
+                        <h1>Remarks & Co-Scholastic</h1>
+                        <p>Enter teacher remarks and grades for non-academic activities</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-2 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="remarkClassSelect" class="form-control" title="Select Class" onchange="loadRemarksGrid()"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="remarkExamSelect" class="form-control" title="Select Exam" onchange="loadRemarksGrid()"></select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>General Remarks</th>
+                                        <th>Art/Craft</th>
+                                        <th>Discipline</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="remarksGridBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Result & Performance Analytics -->
+                <section id="resultAnalyticsSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Result & Performance Analytics</h1>
+                        <p>Visualizing academic performance across classes and sessions</p>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="analytic_sessionSelect" class="form-control" onchange="ResultAnalytics.loadClasses(); ResultAnalytics.loadExams();" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="analytic_classSelect" class="form-control" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
                             <label>Exam</label>
                             <select id="analytic_examSelect" class="form-control" title="Select Exam"></select>
                         </div>
-                        <button class="btn-portal btn-primary" onclick="ResultAnalytics.refresh()" title="Refresh Data">
-                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        <button class="btn-portal btn-primary h-42" onclick="ResultAnalytics.refresh()" title="Generate Analytics">
+                            <i class="fas fa-sync mr-1"></i> Generate
                         </button>
                     </div>
 
-                    <!-- Stats Grid -->
-                    <div class="grid-auto-200 gap-1-5 mb-2">
-                        <div class="card p-1-5 border-left-primary">
-                            <p class="text-xs text-muted text-uppercase">Class Average</p>
-                            <h2 id="an_avgScore" class="text-2xl m-0-5-0">0.0</h2>
+                    <div class="grid-3 gap-1-5 mb-2">
+                        <div class="glass-card p-1-5 border-left-primary">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Average Score</p>
+                            <h2 id="an_avgScore" class="text-xl secondary">0</h2>
                         </div>
-                        <div class="card p-1-5 border-left-success">
-                            <p class="text-xs text-muted text-uppercase">Highest Score</p>
-                            <h2 id="an_highestScore" class="text-2xl m-0-5-0">0</h2>
+                        <div class="glass-card p-1-5 border-left-success">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Highest Score</p>
+                            <h2 id="an_highestScore" class="text-xl secondary">0</h2>
                         </div>
-                        <div class="card p-1-5 border-left-amber">
-                            <p class="text-xs text-muted text-uppercase">Pass Percentage</p>
-                            <h2 id="an_passPercent" class="text-2xl m-0-5-0">0%</h2>
+                        <div class="glass-card p-1-5 border-left-amber">
+                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Pass %</p>
+                            <h2 id="an_passPercent" class="text-xl secondary">0%</h2>
                         </div>
                     </div>
 
-                    <div class="grid-2 gap-2">
-                        <div class="card p-1-5">
-                            <h3 class="mb-1-5">Subject Performance (Average Marks)</h3>
-                            <div class="h-300">
+                    <div class="grid-2 gap-1-5">
+                        <div class="glass-card p-2">
+                            <h3 class="mb-1-5"><i class="fas fa-chart-bar text-primary mr-0-5"></i> Subject Performance</h3>
+                            <div style="position: relative; height:300px; width:100%">
                                 <canvas id="subjectChart"></canvas>
                             </div>
                         </div>
-                        <div class="card p-1-5">
-                            <h3 class="mb-1-5">Score Distribution</h3>
-                            <div class="h-300">
+                        <div class="glass-card p-2">
+                            <h3 class="mb-1-5"><i class="fas fa-chart-pie text-secondary mr-0-5"></i> Score Distribution</h3>
+                            <div style="position: relative; height:300px; width:100%">
                                 <canvas id="distChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Send Notification Section -->
-                <section id="sendNotificationSection" class="dashboard-section card hidden">
+                <!-- Class Timetables -->
+                <section id="classTimetablesSection" class="dashboard-section card hidden">
                     <div class="header mb-2">
                         <div>
-                            <h1>Send Bulk Notification</h1>
-                            <p>Broadcast messages via WhatsApp, SMS, or App Push</p>
+                            <h1>Class Timetables</h1>
+                            <p>Manage weekly schedules for all classes</p>
+                        </div>
+                        <button class="btn-portal btn-primary" onclick="showSection('createTimetable')" title="Add New Timetable">
+                            <i class="fas fa-plus mr-1"></i> Add Timetable
+                        </button>
+                    </div>
+                    <div class="glass-card p-1-5 mb-2 grid-3 gap-1 align-flex-end">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="ttSessionSelect" class="form-control" onchange="initERPTimetable()" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="ttClassSelect" class="form-control" onchange="initERPTimetable()" title="Select Class"></select>
+                        </div>
+                        <button class="btn-portal btn-ghost h-42" onclick="initERPTimetable()" title="Refresh List">
+                            <i class="fas fa-sync mr-1"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Class Schedule</th>
+                                        <th>Last Updated</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timetableListBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </section>
 
-                    <div class="card p-2 max-w-800 mx-auto">
-                        <form id="sendNotifForm" onsubmit="ERPNotifications.sendNotification(event)">
-                            <div class="grid-2 gap-1-5 mb-1-5">
-                                <div class="form-group">
-                                    <label>Notification Channel</label>
-                                    <select id="notif_type" class="form-control" title="Select Channel">
-                                        <option value="WhatsApp">WhatsApp Message</option>
-                                        <option value="SMS">Direct SMS</option>
-                                        <option value="App">Mobile App Push</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
+                <!-- Create/Upload Timetable -->
+                <section id="createTimetableSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Create / Upload Timetable</h1>
+                        <p>Publish weekly schedule to the student portal</p>
+                    </div>
+                    <div class="card max-w-600 mx-auto p-2">
+                        <form id="uploadTimetableForm" onsubmit="handleTimetableUpload(event)">
+                            <div class="grid-2 gap-1 mb-1-5">
+                                <div class="form-group mb-0">
                                     <label>Session</label>
-                                    <select
-                                        id="notif_sessionSelect"
-                                        class="form-control"
-                                        title="Select Session"
-                                        onchange="ERPNotifications.loadClasses()"
-                                    ></select>
+                                    <select id="tt_sessionSelect" class="form-control" required title="Select Session"></select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label>Class</label>
+                                    <select id="tt_classSelect" class="form-control" required title="Select Class"></select>
                                 </div>
                             </div>
-
-                            <div class="grid-2 gap-1-5 mb-1-5">
-                                <div class="form-group">
-                                    <label>Target Class</label>
-                                    <select
-                                        id="notif_classSelect"
-                                        class="form-control"
-                                        title="Select Target Class"
-                                        onchange="ERPNotifications.loadSections()"
-                                    >
-                                        <option value="All">All Classes</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Target Section (if applicable)</label>
-                                    <select id="notif_sectionSelect" class="form-control" title="Select Target Section">
-                                        <option value="All">All Sections</option>
-                                    </select>
+                            <div class="form-group mb-1-5">
+                                <label>Timetable Document (PDF/Image)</label>
+                                <div class="file-upload-zone" id="timetableDropZone">
+                                    <input type="file" id="tt_file" accept=".pdf,image/*" required title="Select File">
+                                    <i class="fas fa-cloud-upload-alt text-3xl mb-1"></i>
+                                    <p class="font-600">Click to browse or drag & drop</p>
+                                    <small>Max file size: 2MB (PDF or Image)</small>
                                 </div>
                             </div>
-
-                            <div class="form-group mb-2">
-                                <label>Message Content</label>
-                                <textarea
-                                    id="notif_message"
-                                    class="form-control resize-v"
-                                    rows="5"
-                                    placeholder="Type your school broadcast message here..."
-                                    required
-                                    title="Message Content"
-                                ></textarea>
-                                <small class="text-muted block mt-0-5">
-                                    <i class="fas fa-info-circle"></i> Messages sent via WhatsApp support emojis. SMS is
-                                    restricted to 160 characters per unit.
-                                </small>
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="btn-portal btn-primary w-full h-50 text-lg border-radius-12"
-                                title="Broadcast Message Now"
-                            >
-                                <i class="fas fa-paper-plane mr-0-5"></i> Broadcast Message Now
+                            <button type="submit" class="btn-portal btn-primary w-full">
+                                <i class="fas fa-upload mr-1"></i> Upload & Publish
                             </button>
                         </form>
                     </div>
                 </section>
 
-                <!-- Notification History Section -->
-                <section id="notificationHistorySection" class="dashboard-section card hidden">
+                <!-- Question Paper Library -->
+                <section id="questionPaperLibrarySection" class="dashboard-section card hidden">
                     <div class="header mb-2">
                         <div>
-                            <h1>Bulk Message Delivery History</h1>
-                            <p>Track statuses of recently sent broadcast communications</p>
+                            <h1>Question Paper Library</h1>
+                            <p>Manage and publish examination papers to students</p>
                         </div>
-                        <button class="btn-portal btn-ghost" onclick="ERPNotifications.loadHistory()">
-                            <i class="fas fa-sync-alt"></i> Refresh Log
-                        </button>
+                        <div class="flex gap-1">
+                            <a href="question-formatter/index.html" target="_blank" class="btn-portal btn-ghost">
+                                <i class="fas fa-magic mr-1"></i> AI Formatter
+                            </a>
+                            <button class="btn-portal btn-primary" onclick="showSection('addManualPaper')" title="Manual Upload">
+                                <i class="fas fa-plus mr-1"></i> Manual Upload
+                            </button>
+                        </div>
                     </div>
-
+                    <div class="glass-card p-1-5 mb-2 grid-4 gap-1">
+                        <div class="form-group mb-0">
+                            <label>Session</label>
+                            <select id="erp_qpSessionFilter" class="form-control" onchange="loadQuestionPapers()" title="Select Session"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Exam</label>
+                            <select id="erp_qpExamFilter" class="form-control" onchange="loadQuestionPapers()" title="Select Exam"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Class</label>
+                            <select id="erp_qpClassFilter" class="form-control" onchange="loadQuestionPapers()" title="Select Class"></select>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>Subject</label>
+                            <select id="erp_qpSubjectFilter" class="form-control" onchange="loadQuestionPapers()" title="Select Subject"></select>
+                        </div>
+                    </div>
                     <div class="table-container">
-                        <table class="portal-table">
-                            <thead>
-                                <tr>
-                                    <th>Channel</th>
-                                    <th>Target Group</th>
-                                    <th>Message Snippet</th>
-                                    <th>Sent On</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="notif_historyBody">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="portal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Class</th>
+                                        <th>Term</th>
+                                        <th>Author</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="erp_paperLibraryTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
+                <!-- Upload Question Paper -->
+                <section id="addManualPaperSection" class="dashboard-section card hidden">
+                    <div class="header mb-2 text-center">
+                        <h1>Upload Question Paper</h1>
+                        <p>Manually upload a PDF or Image of a question paper</p>
+                    </div>
+                    <div class="card max-w-600 mx-auto p-2">
+                        <form id="erp_manualUploadForm" onsubmit="handleManualPaperUpload(event)">
+                            <div class="grid-2 gap-1 mb-1">
+                                <div class="form-group mb-0">
+                                    <label>Session</label>
+                                    <select id="erp_uploadQpSession" class="form-control" required title="Select Session"></select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label>Exam</label>
+                                    <select id="erp_uploadQpExam" class="form-control" required title="Select Exam"></select>
+                                </div>
+                            </div>
+                             <div class="grid-2 gap-1 mb-1-5">
+                                <div class="form-group mb-0">
+                                    <label>Class</label>
+                                    <select id="erp_uploadQpClass" class="form-control" required title="Select Class"></select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label>Subject</label>
+                                    <select id="erp_uploadQpSubject" class="form-control" required title="Select Subject"></select>
+                                </div>
+                            </div>
+                            <div class="form-group mb-1-5">
+                                <label>Paper File (PDF/Image)</label>
+                                <input type="file" id="erp_manualPaperFile" class="form-control" accept=".pdf,image/*" required title="Select File">
+                            </div>
+                            <button type="submit" class="btn-portal btn-primary w-full">
+                                <i class="fas fa-check-circle mr-1"></i> Confirm Upload
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+
+
                 <!-- Book Catalog Section -->
+
                 <section id="bookCatalogSection" class="dashboard-section card hidden">
                     <div class="header mb-2">
                         <div>
@@ -2222,7 +2616,7 @@
                             <p class="font-600">Download Excel Template</p>
                             <p class="text-xs text-muted">Use this format to ensure correct import</p>
                         </div>
-                        <button class="btn-portal btn-secondary" onclick="downloadExcelTemplate()" title="Get Template">
+                        <button class="btn-portal btn-secondary" onclick="downloadExcelTemplate('students')" title="Get Template">
                             <i class="fas fa-file-excel"></i> Get Template
                         </button>
                     </div>
@@ -3497,7 +3891,7 @@
                                 <input
                                     type="text"
                                     id="textHomeHeroTitle"
-                                    placeholder="Welcome to Apex Public School"
+                                    placeholder="Welcome to our School"
                                     class="form-control"
                                     title="Hero Title"
                                 />
@@ -3517,7 +3911,7 @@
                                 <input
                                     type="text"
                                     id="textHomeIntroTitle"
-                                    placeholder="About Apex Public School"
+                                    placeholder="Brief description about the school"
                                     class="form-control"
                                     title="Intro Section Title"
                                 />
@@ -4308,24 +4702,104 @@
                     </form>
                 </section>
 
-                <!-- FEE TOOLS: PARENTS WHO NOT PAID -->
-                <section id="cmsFeeToolsSection" class="dashboard-section hidden card p-2-5 border-3-primary">
-                    <div class="text-center mb-2-5">
-                        <h2 class="text-secondary text-2xl mb-0-5">
-                            <i class="fas fa-file-invoice-dollar text-primary"></i> Parents Who Not Paid
-                        </h2>
-                        <p class="text-muted">
-                            Compare total dues with monthly collections to identify pending payments.
+                </section>
+
+                <!-- MANUAL REPORT CARD UPLOAD -->
+                <section id="manualReportCardUploadSection" class="dashboard-section hidden glass-card p-3 border-radius-2">
+                    <div class="text-center mb-3">
+                        <div class="icon-box bg-indigo-opacity-10 text-indigo mx-auto mb-1-5" style="width: 70px; height: 70px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h2 class="text-secondary text-3xl font-800 mb-0-5">Manual Report Card Upload</h2>
+                        <p class="text-muted max-w-600 mx-auto">
+                            Upload student-specific PDF report cards for students to download from their portal.
                         </p>
                     </div>
 
-                    <div class="grid-2 gap-2 mb-2-5">
+                    <div class="card p-2-5">
+                        <div class="grid-auto-200 gap-1-25">
+                            <div class="form-group">
+                                <label>Session</label>
+                                <select id="mrcu_session" class="form-control" title="Select Academic Session"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class</label>
+                                <select id="mrcu_class" onchange="loadMrcuStudents()" class="form-control" title="Select Class Name">
+                                    <option value="">Select Session First</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Assessment Term</label>
+                                <select id="mrcu_exam" class="form-control" title="Select Examination Term"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-1-5">
+                            <label>Select Student</label>
+                            <div id="mrcu_studentContainer" class="p-1 border border-radius-0-5 bg-white-opacity-50 min-h-100 overflow-auto">
+                                <p class="text-muted text-sm italic">Select a class to see students...</p>
+                            </div>
+                            <input type="hidden" id="mrcu_studentId" />
+                        </div>
+
+                        <div class="grid-2-col gap-1-5 mt-1-5 align-center">
+                            <div class="form-group">
+                                <label>Select Report Card (PDF)</label>
+                                <div class="flex gap-1 align-center">
+                                    <input type="file" id="mrcu_file" accept=".pdf" class="hidden" onchange="updateFileName('mrcu_file', 'mrcu_fileStatus')" />
+                                    <label for="mrcu_file" class="btn-portal bg-indigo text-white cursor-pointer flex-1 text-center py-0-8">
+                                        <i class="fas fa-file-pdf"></i> Choose PDF File
+                                    </label>
+                                    <div id="mrcu_fileStatus" class="text-sm font-600 text-indigo truncate max-w-200">No file chosen</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Visibility Status</label>
+                                <div class="flex gap-1 align-center mt-0-5">
+                                    <label class="switch">
+                                        <input type="checkbox" id="mrcu_published" checked />
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="text-sm font-600">Publish Immediately</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-2-5">
+                            <button onclick="handleManualUpload()" class="btn-portal btn-primary p-1-5 w-100 shadow-lg" style="border-radius: 12px;">
+                                <i class="fas fa-cloud-upload-alt"></i> Upload & Link to Student Portal
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="mrcu_uploadProgress" class="hidden mt-2 p-1-5 bg-white border-radius-1 shadow-sm">
+                        <div class="flex flex-between mb-0-5">
+                            <span class="text-sm font-600">Uploading...</span>
+                            <span id="mrcu_percent" class="text-sm font-800 text-primary">0%</span>
+                        </div>
+                        <div class="h-8 bg-slate-light border-radius-full overflow-hidden">
+                            <div id="mrcu_progressBar" class="h-100 bg-primary transition-all w-0"></div>
+                        </div>
+                    </div>
+                </section>
+                <section id="parentsNotPaidTool" class="dashboard-section hidden glass-card p-3 border-radius-2">
+                    <div class="text-center mb-3">
+                        <div class="icon-box bg-rose-opacity-10 text-rose mx-auto mb-1-5" style="width: 70px; height: 70px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <h2 class="text-secondary text-3xl font-800 mb-0-5">Parents Who Not Paid</h2>
+                        <p class="text-muted max-w-600 mx-auto">
+                            Identify pending payments by comparing total student dues with monthly collection records. Generate premium dark-themed A4 reports.
+                        </p>
+                    </div>
+
+                    <div class="grid-2-col gap-2 mb-3">
                         <!-- BOX 1: TOTAL DUES -->
-                        <div class="p-2 bg-gray-light border-dashed-2 border-radius-1 text-center">
-                            <i class="fas fa-file-excel text-5xl text-success mb-1"></i>
-                            <h4 class="mb-1">Total Students Dues Data</h4>
-                            <p class="text-xs text-muted mb-1-5">
-                                Upload the Excel containing all students and their total due amounts.
+                        <div class="p-2 border-dashed-2 border-radius-1-5 text-center bg-white-opacity-50 hover-bg-white transition-all">
+                            <i class="fas fa-file-excel text-5xl text-emerald mb-1-25"></i>
+                            <h4 class="mb-0-75 text-lg">1. Total Students Dues</h4>
+                            <p class="text-xs text-muted mb-2 px-1">
+                                Upload the master Excel containing all students and their total outstanding dues.
                             </p>
                             <input
                                 type="file"
@@ -4334,22 +4808,31 @@
                                 class="hidden"
                                 onchange="updateFileName('fee_duesFile', 'fee_duesStatus')"
                             />
-                            <label
-                                for="fee_duesFile"
-                                class="btn-portal bg-white border-primary text-primary cursor-pointer"
-                                title="Choose Total Dues File"
-                            >
-                                <i class="fas fa-upload"></i> Choose File
-                            </label>
-                            <div id="fee_duesStatus" class="mt-1 text-xs font-600 text-emerald-dark"></div>
+                             <div class="flex gap-1 justify-center">
+                                <label
+                                    for="fee_duesFile"
+                                    class="btn-portal bg-emerald text-white cursor-pointer shadow-sm hover-shadow-md"
+                                    title="Choose Total Dues File"
+                                >
+                                    <i class="fas fa-upload"></i> Choose File
+                                </label>
+                                <button 
+                                    onclick="downloadExcelTemplate('fee_dues')" 
+                                    class="btn-portal btn-ghost bg-white" 
+                                    title="Download Template"
+                                >
+                                    <i class="fas fa-download"></i> Template
+                                </button>
+                             </div>
+                             <div id="fee_duesStatus" class="mt-1-25 text-sm font-600 text-emerald"></div>
                         </div>
 
                         <!-- BOX 2: MONTHLY PAYMENTS -->
-                        <div class="p-2 bg-gray-light border-dashed-2 border-radius-1 text-center">
-                            <i class="fas fa-receipt text-5xl text-indigo mb-1"></i>
-                            <h4 class="mb-1">Monthly Payment Received</h4>
-                            <p class="text-xs text-muted mb-1-5">
-                                Upload the Excel containing payment records for this specific month.
+                        <div class="p-2 border-dashed-2 border-radius-1-5 text-center bg-white-opacity-50 hover-bg-white transition-all">
+                            <i class="fas fa-receipt text-5xl text-indigo mb-1-25"></i>
+                            <h4 class="mb-0-75 text-lg">2. Monthly Payments</h4>
+                            <p class="text-xs text-muted mb-2 px-1">
+                                Upload the payment records for the specific month you want to reconcile.
                             </p>
                             <input
                                 type="file"
@@ -4358,58 +4841,66 @@
                                 class="hidden"
                                 onchange="updateFileName('fee_paidFile', 'fee_paidStatus')"
                             />
-                            <label
-                                for="fee_paidFile"
-                                class="btn-portal bg-white border-primary text-primary cursor-pointer"
-                                title="Choose Monthly Payment File"
-                            >
-                                <i class="fas fa-upload"></i> Choose File
-                            </label>
-                            <div id="fee_paidStatus" class="mt-1 text-xs font-600 text-indigo-dark"></div>
+                             <div class="flex gap-1 justify-center">
+                                <label
+                                    for="fee_paidFile"
+                                    class="btn-portal bg-indigo text-white cursor-pointer shadow-sm hover-shadow-md"
+                                    title="Choose Monthly Payment File"
+                                >
+                                    <i class="fas fa-upload"></i> Choose File
+                                </label>
+                                <button 
+                                    onclick="downloadExcelTemplate('fee_payments')" 
+                                    class="btn-portal btn-ghost bg-white" 
+                                    title="Download Template"
+                                >
+                                    <i class="fas fa-download"></i> Template
+                                </button>
+                             </div>
+                             <div id="fee_paidStatus" class="mt-1-25 text-sm font-600 text-indigo"></div>
                         </div>
                     </div>
 
-                    <div class="text-center pt-1 border-top">
+                    <div class="text-center pt-2 border-top">
                         <button
                             onclick="processFeeData()"
-                            class="btn-portal btn-primary p-1-3 text-lg"
-                            title="Process & Generate Report"
+                            class="btn-portal btn-primary p-1-5 text-xl shadow-lg hover-scale"
+                            style="border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-light));"
+                            title="Analyze Payments"
                         >
-                            <i class="fas fa-sync-alt"></i> Process & Generate Report
+                            <i class="fas fa-magic"></i> Analyze & Cross-Verify
                         </button>
                     </div>
 
                     <!-- RESULTS AREA -->
                     <div
                         id="fee_resultsArea"
-                        class="hidden mt-2-5 p-2 bg-emerald-opacity-05 border-radius-1 border-emerald-opacity-20"
+                        class="hidden mt-3 p-2 bg-emerald-opacity-05 border-radius-1-5 border-emerald-opacity-20 animate-fade-in"
                     >
-                        <h3 class="mb-1-5 text-emerald-dark flex align-center gap-0-75">
-                            <i class="fas fa-check-circle"></i> Analysis Complete
-                        </h3>
-                        <p id="fee_summaryText" class="mb-2 font-600"></p>
+                        <div class="flex flex-between align-center mb-2">
+                            <h3 class="text-emerald text-xl flex align-center gap-0-75 m-0">
+                                <i class="fas fa-check-circle"></i> Verification Complete
+                            </h3>
+                            <button onclick="resetFeeTool()" class="btn-portal btn-ghost text-xs py-0-5 px-1 bg-white">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                        <p id="fee_summaryText" class="mb-2-5 text-lg font-500 text-secondary"></p>
 
-                        <div class="flex gap-1 flex-wrap">
+                        <div class="flex gap-1-5 flex-wrap">
                             <button
                                 onclick="downloadFeeExcel()"
-                                class="btn-portal bg-emerald text-white"
+                                class="btn-portal bg-emerald text-white flex-1 p-1-2 justify-center shadow-md"
                                 title="Download Class-wise Excel"
                             >
-                                <i class="fas fa-file-excel"></i> Download Class-wise Excel
+                                <i class="fas fa-file-excel text-lg"></i> Download Master Excel
                             </button>
                             <button
                                 onclick="downloadFeePdf()"
-                                class="btn-portal bg-rose text-white"
-                                title="Download A4 PDF Report"
+                                class="btn-portal bg-secondary text-white flex-1 p-1-2 justify-center shadow-md"
+                                title="Download Premium Dark PDF"
                             >
-                                <i class="fas fa-file-pdf"></i> Download A4 PDF Report
-                            </button>
-                            <button
-                                onclick="resetFeeTool()"
-                                class="btn-portal bg-slate-muted text-white ml-auto"
-                                title="Clear Data"
-                            >
-                                <i class="fas fa-trash-alt"></i> Clear Data
+                                <i class="fas fa-file-pdf text-lg"></i> Download Premium Dark PDF
                             </button>
                         </div>
                     </div>
@@ -4526,6 +5017,74 @@
                                     <i class="fas fa-ruler-combined"></i>
                                 </div>
                                 <h4>Classes</h4>
+                                <p>Structure & Stats</p>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ADMIN PORTAL CMS SECTION -->
+                <section id="adminPortalCMSSection" class="dashboard-section hidden card">
+                    <div class="header">
+                        <div>
+                            <h1>Admin Portal CMS</h1>
+                            <p>Customize your dashboard experience and school branding</p>
+                        </div>
+                        <button class="btn-portal btn-primary" onclick="saveAdminPortalCMS()">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="grid-2 gap-2 mt-2">
+                        <!-- Branding Column -->
+                        <div class="card p-1-5">
+                            <h3 class="mb-1-5 border-bottom pb-0-75"><i class="fas fa-brush primary"></i> Branding & Identity</h3>
+                            
+                            <div class="form-group mb-1-5">
+                                <label class="mb-0-5 d-block font-600">School Logo</label>
+                                <div class="flex-center flex-column p-1 border-dashed border-radius-12 bg-light mb-1" style="min-height: 150px;">
+                                    <img id="cms_logoPreview" src="../img/logo.png" style="max-height: 100px; max-width: 100%;" alt="Logo Preview">
+                                    <p id="cms_logoStatus" class="text-xs text-muted mt-0-5">Current Logo</p>
+                                </div>
+                                <input type="file" id="cms_logoInput" class="form-control" accept="image/*" onchange="previewImage(this, 'cms_logoPreview')">
+                                <p class="text-xs text-muted mt-0-5 italic">Recommended: Transparent PNG, 200x200px</p>
+                            </div>
+
+                            <div class="form-group mb-1-5">
+                                <label class="mb-0-5 d-block font-600">Principal's Signature</label>
+                                <div class="flex-center flex-column p-1 border-dashed border-radius-12 bg-light mb-1" style="min-height: 120px;">
+                                    <img id="cms_signaturePreview" src="../img/signature-placeholder.png" style="max-height: 80px; max-width: 100%;" alt="Signature Preview">
+                                    <p id="cms_signatureStatus" class="text-xs text-muted mt-0-5">Current Signature</p>
+                                </div>
+                                <input type="file" id="cms_signatureInput" class="form-control" accept="image/*" onchange="previewImage(this, 'cms_signaturePreview')">
+                                <p class="text-xs text-muted mt-0-5 italic">Used for automated report cards and ID cards</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="flex align-center gap-0-75 cursor-pointer">
+                                    <input type="checkbox" id="cms_showSchoolName" checked style="width: 18px; height: 18px;">
+                                    <span class="font-600">Show School Name in Header</span>
+                                </label>
+                                <p class="text-xs text-muted mt-0-5 ml-1-5">Enable to display school name next to logo in sidebar and header.</p>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links Column -->
+                        <div class="card p-1-5">
+                            <h3 class="mb-1-5 border-bottom pb-0-75"><i class="fas fa-link primary"></i> Dashboard Quick Links</h3>
+                            <p class="text-sm text-muted mb-1-5">Manage the cards appearing on your Dashboard Home page.</p>
+                            
+                            <div id="cms_quickLinksList" class="mb-1-5" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Quick links will be rendered here -->
+                                <div class="text-center p-2 opacity-50">Loading quick links...</div>
+                            </div>
+
+                            <button class="btn-portal btn-ghost w-100" onclick="addQuickLinkRow()">
+                                <i class="fas fa-plus"></i> Add New Quick Link
+                            </button>
+                        </div>
+                    </div>
+                </section>
                                 <p>Section & Teacher</p>
                             </a>
                             <a href="#notices" class="feature-card" onclick="showSection('notices')">
@@ -4943,18 +5502,6 @@
                 </section>
 
 
-                <section id="viewTimetableSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Class Timetables</h1>
-                            <p>View and print schedules for different classes</p>
-                        </div>
-                    </div>
-                    <div class="card text-center p-3">
-                        <i class="fas fa-calendar-alt text-5xl text-primary opacity-30 mb-1-5"></i>
-                        <p>Timetable module is initialized. Select class to view.</p>
-                    </div>
-                </section>
 
                 <!-- ADMISSION SECTIONS -->
                 <section id="addEnquirySection" class="dashboard-section hidden">
@@ -5854,1327 +6401,7 @@
                 <section id="feeCarryForwardSection" class="dashboard-section card hidden">
                     <h2>Fee Carry Forward</h2>
                     <p>Module under development...</p>
-                </section>
-
-                <!-- Parents Who Not Paid Tool (Academic Tools Section) -->
-                <section id="parentsNotPaidToolSection" class="dashboard-section hidden">
-                    <div class="header mb-2">
-                        <div>
-                            <h1><i class="fas fa-user-clock text-primary"></i> Parents Who Didn't Pay Tool</h1>
-                            <p>Quick communication hub for reaching out to parents with fee arrears</p>
-                        </div>
-                    </div>
-
-                    <!-- Control Bar -->
-                    <div class="card mb-1-5 bg-slate-light p-1-25">
-                        <div class="flex flex-between align-center gap-1 flex-wrap">
-                            <div class="flex gap-1 flex-1">
-                                <div class="form-group flex-1 min-w-200 m-0">
-                                    <label>Academic Session</label>
-                                    <select
-                                        id="pnpSessionFilter"
-                                        class="form-control"
-                                        onchange="loadParentsNotPaidTool()"
-                                        title="Select Session"
-                                    ></select>
-                                </div>
-                                <div class="form-group flex-1 min-w-200 m-0">
-                                    <label>Filter by Class</label>
-                                    <select
-                                        id="pnpClassFilter"
-                                        class="form-control"
-                                        onchange="loadParentsNotPaidTool()"
-                                        title="Select Class"
-                                    >
-                                        <option value="">All Classes</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <button onclick="loadParentsNotPaidTool()" class="btn-portal btn-primary">
-                                    <i class="fas fa-sync-alt"></i> Refresh Arrears
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Arrears Grid -->
-                    <div id="pnpArrearsGrid" class="grid-cols-auto-300 gap-1-5">
-                        <!-- Cards will be injected here -->
-                        <div class="col-span-full text-center p-5 text-muted">
-                            <i class="fas fa-search text-3xl opacity-02 mb-1-5 block"></i>
-                            Select session to analyze parent dues
-                        </div>
-                    </div>
-                </section>
-
-                <!-- EXAM SECTIONS -->
-                <section id="examGradingSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Grading Rules</h1>
-                            <p>Configure percentage thresholds and grade labels</p>
-                        </div>
-                    </div>
-                    <div class="grid-cols-2-1">
-                        <div class="card">
-                            <h3 class="mb-1-25"><i class="fas fa-plus-circle text-primary"></i> New Rule</h3>
-                            <form id="addGradingForm" onsubmit="handleGradingSubmit(event)">
-                                <div class="form-group">
-                                    <label>Grade Name (e.g., A1)</label>
-                                    <input
-                                        type="text"
-                                        id="gradeNameInput"
-                                        placeholder="A1"
-                                        required
-                                        class="form-control"
-                                        title="Grade Name"
-                                    />
-                                </div>
-                                <div class="grid-2 gap-1">
-                                    <div class="form-group">
-                                        <label>Min %</label>
-                                        <input
-                                            type="number"
-                                            id="gradeMinInput"
-                                            placeholder="91"
-                                            required
-                                            class="form-control"
-                                            title="Minimum Percentage"
-                                        />
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Max %</label>
-                                        <input
-                                            type="number"
-                                            id="gradeMaxInput"
-                                            placeholder="100"
-                                            required
-                                            class="form-control"
-                                            title="Maximum Percentage"
-                                        />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Remarks</label>
-                                    <input
-                                        type="text"
-                                        id="gradeRemarksInput"
-                                        placeholder="Outstanding"
-                                        class="form-control"
-                                        title="Grade Remarks"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    class="btn-portal btn-primary w-full mt-0-5"
-                                    title="Save Grading Rule"
-                                >
-                                    <i class="fas fa-save"></i> Save Grading Rule
-                                </button>
-                            </form>
-                        </div>
-                        <div class="card">
-                            <div class="flex flex-between align-center mb-1-25">
-                                <h3><i class="fas fa-table text-primary"></i> Grading Schema</h3>
-                                <span class="badge bg-primary-light text-primary">Current Active</span>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="portal-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Grade</th>
-                                            <th>Percentage Range</th>
-                                            <th>Remarks</th>
-                                            <th class="text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="gradingTableBody">
-                                        <!-- Dynamic content -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="manageExamSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Manage Examinations</h1>
-                            <p>Define assessment terms and academic milestones</p>
-                        </div>
-                    </div>
-                    <div class="grid-cols-2-1">
-                        <div class="card">
-                            <h3 class="mb-1-25"><i class="fas fa-calendar-plus text-primary"></i> Define Exam</h3>
-                            <form id="addExamForm" onsubmit="handleExamSubmit(event)">
-                                <div class="form-group">
-                                    <label>Target Session</label>
-                                    <select
-                                        id="examSessionSelect"
-                                        required
-                                        class="form-control"
-                                        title="Target Session"
-                                    ></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Exam Title (e.g., Term 1)</label>
-                                    <input
-                                        type="text"
-                                        id="examNameInput"
-                                        placeholder="Half Yearly"
-                                        required
-                                        class="form-control"
-                                        title="Exam Title"
-                                    />
-                                </div>
-                                <div class="form-group">
-                                    <label>Result Weightage (%)</label>
-                                    <input
-                                        type="number"
-                                        id="examWeightageInput"
-                                        placeholder="50"
-                                        required
-                                        class="form-control"
-                                        title="Result Weightage"
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    class="btn-portal btn-primary w-full mt-0-5"
-                                    title="Initialize Exam Term"
-                                >
-                                    <i class="fas fa-plus"></i> Initialize Exam Term
-                                </button>
-                            </form>
-                        </div>
-                        <div class="card">
-                            <div class="flex flex-between align-center mb-1-25">
-                                <h3><i class="fas fa-list-check text-primary"></i> Exam Terms</h3>
-                                <p class="text-xs text-muted">Defined assessments for this session</p>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="portal-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Assessment Name</th>
-                                            <th>Weightage</th>
-                                            <th class="text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="examsTableBody">
-                                        <!-- Dynamic content -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section id="manageExamScheduleSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Manage Exam Schedule</h1>
-                            <p>Search, Add and Edit exam timetables with per-paper details</p>
-                        </div>
-                        <div class="flex gap-0-75">
-                            <button onclick="scheduleDownloadPdf()" class="btn-portal btn-ghost" title="Download as PDF"><i class="fas fa-file-pdf"></i> Download as PDF</button>
-                            <button onclick="saveExamSchedule()" class="btn-portal btn-primary" title="Save Schedule"><i class="fas fa-cloud-upload-alt"></i> Save Schedule</button>
-                        </div>
-                    </div>
-
-                    <!-- Filter Bar -->
-                    <div class="card mb-1-5">
-                        <h4 class="mb-1 text-muted"><i class="fas fa-filter mr-0-5"></i> Exam Schedule</h4>
-                        <div class="grid-4 gap-1">
-                            <div class="form-group">
-                                <label>Session <span class="text-danger">*</span></label>
-                                <select id="scheduleSessionSelect" class="form-control" title="Session" onchange="scheduleLoadClasses()">
-                                    <option value="">Select Session</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class <span class="text-danger">*</span></label>
-                                <select id="scheduleClassSelect" class="form-control" title="Select Class" onchange="scheduleLoadExams()">
-                                    <option value="">Select Session First</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class (Year/Semester)</label>
-                                <select id="scheduleYearSemSelect" class="form-control" title="Year/Semester">
-                                    <option value="1">1st</option>
-                                    <option value="2">2nd</option>
-                                    <option value="3">3rd</option>
-                                    <option value="4">4th</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam <span class="text-danger">*</span></label>
-                                <select id="scheduleExamSelect" class="form-control" title="Assessment Term" onchange="loadScheduleGrid()">
-                                    <option value="">Select Exam</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Per-Paper Cards Container -->
-                    <div id="schedulePapersContainer">
-                        <div class="text-center p-3 text-muted card">
-                            <i class="fas fa-calendar-times text-4xl opacity-20 block mb-1"></i>
-                            <p>Select Session, Class and Exam to view or add papers</p>
-                        </div>
-                    </div>
-
-                    <!-- Add Paper Button -->
-                    <div id="scheduleAddPaperBtn" class="hidden mt-1">
-                        <button onclick="scheduleAddPaper()" class="btn-portal btn-secondary w-full" title="Add Paper">
-                            <i class="fas fa-plus"></i> Add Paper
-                        </button>
-                    </div>
-                </section>
-
-                <section id="viewExamScheduleSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Global Exam Calendar</h1>
-                            <p>Visual overview of all scheduled assessments</p>
-                        </div>
-                    </div>
-                    <div class="card p-0 overflow-hidden">
-                        <div class="table-responsive">
-                            <table class="portal-table" id="viewScheduleTable">
-                                <thead>
-                                    <tr>
-                                        <th>Exam Term</th>
-                                        <th>Class</th>
-                                        <th>Subject</th>
-                                        <th>Date</th>
-                                        <th>Timing</th>
-                                        <th>Weight</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="viewScheduleTableBody">
-                                    <!-- Dynamic content -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="publishExamScheduleSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Publish Schedules</h1>
-                            <p>Control the visibility of exam timetables in the Student Portal</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-2 align-flex-end mb-1-5">
-                            <div class="form-group">
-                                <label>Session</label>
-                                <select
-                                    id="publishSchedSessionSelect"
-                                    class="form-control"
-                                    onchange="loadPublishScheduleStatus()"
-                                    title="Filter by Session"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam Term</label>
-                                <select
-                                    id="publishSchedExamSelect"
-                                    class="form-control"
-                                    title="Select Exam Term"
-                                    onchange="loadPublishScheduleStatus()"
-                                ></select>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Class Name</th>
-                                        <th>Schedule Status</th>
-                                        <th class="text-right">Portal Visibility</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="publishSchedTableBody">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="admitCardToolSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Hall Ticket Generator</h1>
-                            <p>Batch generate examination admit cards with one click</p>
-                        </div>
-                    </div>
-                    <div class="grid-cols-2-1">
-                        <div class="card">
-                            <div class="grid-auto-180 align-flex-end">
-                                <div class="form-group">
-                                    <label>Target Class</label>
-                                    <select
-                                        id="admitClassSelect"
-                                        class="form-control"
-                                        title="Select Target Class"
-                                    ></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Exam Term</label>
-                                    <select id="admitExamSelect" class="form-control" title="Select Exam Term"></select>
-                                </div>
-                                <button
-                                    onclick="generateHallTicketsForTool()"
-                                    class="btn-portal btn-primary"
-                                    title="Generate Hall Tickets PDF"
-                                >
-                                    <i class="fas fa-file-pdf"></i> Generate PDF
-                                </button>
-                            </div>
-                            <div
-                                class="mt-2 p-1-5 border-2-dashed border-radius-1 bg-slate-light text-center border-slate"
-                            >
-                                <i class="fas fa-file-image text-2xl opacity-02 mb-1 block"></i>
-                                <p class="text-slate-muted">PDF Preview will be rendered after generation</p>
-                            </div>
-                        </div>
-                        <div class="card bg-indigo text-white">
-                            <h3>Quick Stats</h3>
-                            <div class="mt-1-5">
-                                <div class="flex flex-between mb-0-5">
-                                    <span>Total Students</span>
-                                    <span id="admitCardTotalStudents" class="font-bold">--</span>
-                                </div>
-                                <div class="flex flex-between mb-0-5">
-                                    <span>Mapped Records</span>
-                                    <span id="admitCardMappedRecords" class="font-bold">--</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="examAttendanceCardSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Exam Signature Sheets</h1>
-                            <p>Print attendance logs for examination hall supervisors</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-auto-200 align-flex-end">
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select id="attnClassSelect" class="form-control" title="Select Class"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam Term</label>
-                                <select id="attnExamSelect" class="form-control" title="Select Exam Term"></select>
-                            </div>
-                            <button
-                                onclick="generateAttendanceCards()"
-                                class="btn-portal btn-primary"
-                                title="Download Signature Sheet"
-                            >
-                                <i class="fas fa-print"></i> Download Sheet
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="examSittingPlanSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Exam Sitting Plan</h1>
-                            <p>Manage exam hall seating arrangements</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="mt-1 p-1-5 bg-sky-5 border-radius-0-75 border-sky-20">
-                            <p class="text-sky-dark m-0">
-                                <i class="fas fa-info-circle"></i> Sitting plan management is currently optimized for
-                                manual entry. Auto-generation features coming soon.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- RESULT SECTIONS -->
-                <section id="manageResultSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1><i class="fas fa-search-plus text-primary"></i> Result Audit & Review</h1>
-                            <p>Verify and adjust examination marks with full transparency</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-auto-180 align-flex-end mb-1-5">
-                            <div class="form-group">
-                                <label><i class="fas fa-layer-group"></i> Class</label>
-                                <select
-                                    id="manageResultsClass"
-                                    onchange="loadManageResultsSections()"
-                                    class="form-control"
-                                    title="Select Class"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-code-branch"></i> Section</label>
-                                <select
-                                    id="manageResultsSectionSelect"
-                                    onchange="loadManageResultsSubjects()"
-                                    class="form-control"
-                                    title="Select Section"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-file-contract"></i> Exam</label>
-                                <select
-                                    id="manageResultsExam"
-                                    onchange="refreshManageResultsTable()"
-                                    class="form-control"
-                                    title="Select Exam"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-book"></i> Subject</label>
-                                <select
-                                    id="manageResultsSubject"
-                                    onchange="refreshManageResultsTable()"
-                                    class="form-control"
-                                    title="Select Subject"
-                                ></select>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Roll No</th>
-                                        <th>Student Name</th>
-                                        <th>Score Obtained</th>
-                                        <th>Grade</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="manageResultsTableBody">
-                                    <!-- Dynamic content -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-                <section id="addResultSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Bulk Marks Entry</h1>
-                            <p>High-speed data entry grid for examination results</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-auto-180 align-flex-end mb-1-5">
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select
-                                    id="marksClassSelect"
-                                    onchange="loadMarksSections()"
-                                    class="form-control"
-                                    title="Select Class"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Section</label>
-                                <select
-                                    id="marksSectionSelect"
-                                    onchange="loadMarksSubjects()"
-                                    class="form-control"
-                                    title="Select Section"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam</label>
-                                <select
-                                    id="marksExamSelect"
-                                    onchange="refreshMarksGrid()"
-                                    class="form-control"
-                                    title="Select Exam"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <select
-                                    id="marksSubjectSelect"
-                                    onchange="refreshMarksGrid()"
-                                    class="form-control"
-                                    title="Select Subject"
-                                ></select>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-between align-center mb-1-5 bg-slate-light p-1 border-radius-1">
-                            <div class="flex gap-1-5">
-                                <div class="text-center">
-                                    <span class="block text-xs text-muted text-uppercase">Total Students</span>
-                                    <strong id="marksCountStudents">--</strong>
-                                </div>
-                                <div class="text-center">
-                                    <span class="block text-xs text-muted text-uppercase">Entered</span>
-                                    <strong id="marksCountEntered" class="text-success">--</strong>
-                                </div>
-                            </div>
-                            <div class="flex gap-0-75">
-                                <button
-                                    onclick="document.getElementById('excelUploadMarks').click()"
-                                    class="btn-portal btn-ghost"
-                                    title="Import from Excel"
-                                >
-                                    <i class="fas fa-file-excel"></i> Import Excel
-                                </button>
-                                <input
-                                    type="file"
-                                    id="excelUploadMarks"
-                                    hidden
-                                    accept=".xlsx, .xls"
-                                    onchange="handleMarksExcelUpload(event)"
-                                    title="Upload Excel File"
-                                />
-                                <button onclick="saveMarksGrid()" class="btn-portal btn-primary" title="Finalize Marks">
-                                    <i class="fas fa-check-double"></i> Finalize Marks
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th class="w-100">Roll No</th>
-                                        <th>Student Name</th>
-                                        <th class="min-w-200">Score Obtained</th>
-                                        <th class="w-150">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="marksGridTableBody">
-                                    <!-- Student rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-                <section id="publishResultSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Publish Exam Results</h1>
-                            <p>Toggle final result visibility for students and parents</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-2 gap-1-25 align-flex-end mb-1-5">
-                            <div class="form-group">
-                                <label>Academic Session</label>
-                                <select
-                                    id="publishSessionSelect"
-                                    class="form-control"
-                                    onchange="refreshPublishStatus()"
-                                    title="Select Session"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Assessment Term</label>
-                                <select
-                                    id="publishExamSelect"
-                                    class="form-control"
-                                    onchange="refreshPublishStatus()"
-                                    title="Select Exam Term"
-                                ></select>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Class Name</th>
-                                        <th>Evaluation Status</th>
-                                        <th class="text-right">Portal Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="publishStatusTableBody">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="manageAllResultsSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Consolidated Result Manager</h1>
-                            <p>View and manage final results for the entire school</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-auto-180 align-flex-end">
-                            <div class="form-group">
-                                <label>Session</label>
-                                <select
-                                    id="allResultsSessionSelect"
-                                    class="form-control"
-                                    title="Select Session"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select
-                                    id="allResultsClassSelect"
-                                    class="form-control"
-                                    onchange="loadConsolidatedResults()"
-                                    title="Select Class"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam Term</label>
-                                <select
-                                    id="allResultsExamSelect"
-                                    class="form-control"
-                                    onchange="loadConsolidatedResults()"
-                                    title="Select Exam Term"
-                                ></select>
-                            </div>
-                        </div>
-                        <div
-                            id="consolidatedResultsArea"
-                            class="mt-2 text-center text-slate-muted p-3 border-2-dashed border-radius-1 border-slate"
-                        >
-                            <!-- Results table or summary grid -->
-                            <i class="fas fa-layer-group text-2xl mb-1 opacity-02"></i>
-                            <p>Select criteria to view consolidated results</p>
-                        </div>
-                    </div>
-                </section>
-                <section id="reportCardRemarksSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Final Remarks & Co-Scholastic</h1>
-                            <p>Teacher observations and non-academic behavioral grading</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-2 gap-1-25 align-flex-end mb-1-5">
-                            <div class="form-group">
-                                <label><i class="fas fa-id-badge"></i> Select Class</label>
-                                <select id="remarkClassSelect" class="form-control" title="Select Class"></select>
-                            </div>
-                            <div class="form-group">
-                                <label><i class="fas fa-file-invoice"></i> Assessment Term</label>
-                                <select
-                                    id="remarkExamSelect"
-                                    onchange="loadRemarksGrid()"
-                                    class="form-control"
-                                    title="Select Assessment Term"
-                                ></select>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Student Name</th>
-                                        <th class="min-w-250">Teacher's Observations</th>
-                                        <th class="w-20">Art/Craft</th>
-                                        <th class="w-20">Discipline</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="remarksGridBody">
-                                    <!-- Student rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-                <!-- REPORT CARD GENERATION (Phase 5) -->
-                <section id="generateReportCardSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Report Card Generator</h1>
-                            <p>Generate professional, data-driven report cards for students</p>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="grid-auto-200 gap-1-25">
-                            <div class="form-group">
-                                <label>Session</label>
-                                <select
-                                    id="rc_session"
-                                    onchange="loadRcClasses()"
-                                    class="form-control"
-                                    title="Select Session"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select
-                                    id="rc_class"
-                                    onchange="loadRcSections()"
-                                    class="form-control"
-                                    title="Select Class"
-                                >
-                                    <option value="">Select Session First</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Section</label>
-                                <select
-                                    id="rc_section"
-                                    onchange="loadRcStudents()"
-                                    class="form-control"
-                                    title="Select Section"
-                                >
-                                    <option value="">Select Class First</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-cols-2 gap-1-25 mt-1-5">
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Select Student</label>
-                                <div id="rcStudentContainer"></div>
-                                <input type="hidden" id="rc_student" />
-                            </div>
-                            <div class="form-group">
-                                <label>Report Format</label>
-                                <select id="rc_format" class="form-control" title="Select Report Format">
-                                    <option value="premium">Premium Elite (Modern)</option>
-                                    <option value="Himalayan">Himalayan (Main)</option>
-                                    <option value="MCQ_Normal">MCQ - Normal</option>
-                                    <option value="MCQ_Standard">MCQ - Standard</option>
-                                    <option value="MCQ_Advance">MCQ - Advance</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mt-2 flex flex-center">
-                            <button
-                                class="btn-portal btn-primary p-1-5-3"
-                                onclick="processReportCardGeneration()"
-                                title="Generate & Download Report Card"
-                            >
-                                <i class="fas fa-file-pdf"></i> Generate & Download Report Card
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="card mt-1-5 bg-sky-light border-sky">
-                        <p class="text-sm text-sky-dark">
-                            <i class="fas fa-info-circle"></i> <strong>Note:</strong> Ensure marks are entered for the
-                            selected term before generating report cards. Graphs will be generated automatically based
-                            on student performance.
-                        </p>
-                    </div>
-                </section>
-                <!-- DUPLICATE publishResultSection REMOVED -->
-
-                <section id="studentExamAttendanceSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Mark Exam Attendance</h1>
-                            <p>Record student presence for specific examinations</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="grid-cols-auto-180 align-flex-end gap-1">
-                            <div class="form-group">
-                                <label>Session</label>
-                                <select
-                                    id="examAttSession"
-                                    class="form-control"
-                                    onchange="loadExamAttClasses()"
-                                    title="Select Session"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select
-                                    id="examAttClass"
-                                    class="form-control"
-                                    onchange="loadExamAttSections()"
-                                    title="Select Class"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Section</label>
-                                <select
-                                    id="examAttSection"
-                                    class="form-control"
-                                    onchange="loadExamAttSubjects()"
-                                    title="Select Section"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Exam</label>
-                                <select
-                                    id="examAttExam"
-                                    class="form-control"
-                                    onchange="refreshExamAttGrid()"
-                                    title="Select Exam"
-                                ></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Subject</label>
-                                <select
-                                    id="examAttSubject"
-                                    class="form-control"
-                                    onchange="refreshExamAttGrid()"
-                                    title="Select Subject"
-                                ></select>
-                            </div>
-                        </div>
-                        <div class="mt-1-5 flex flex-end">
-                            <button
-                                onclick="saveExamAttendance()"
-                                class="btn-portal btn-primary"
-                                title="Save Attendance"
-                            >
-                                <i class="fas fa-save"></i> Save Attendance
-                            </button>
-                        </div>
-                        <div class="table-responsive mt-2">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th class="w-100">Roll No</th>
-                                        <th>Student Name</th>
-                                        <th>Status (Present/Absent)</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="examAttGridBody">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="viewReportCardSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Report Card Previewer</h1>
-                            <p>Quickly view or generate a report card for an individual student</p>
-                        </div>
-                    </div>
-                    <div class="card max-w-600 mx-auto">
-                        <div class="form-group">
-                            <label>Search Student</label>
-                            <div id="rcPreviewSearchContainer"></div>
-                            <input type="hidden" id="rcPreviewSid" />
-                        </div>
-                        <div class="form-group mt-1-25">
-                            <label>Select Exam</label>
-                            <select id="rcPreviewExam" class="form-control" title="Select Exam for Preview"></select>
-                        </div>
-                        <div class="form-group mt-1-25">
-                            <label>Template Format</label>
-                            <select id="rcPreviewFormat" class="form-control" title="Select Template Format">
-                                <option value="premium">Premium Elite (Modern)</option>
-                                <option value="Himalayan">Himalayan (Standard)</option>
-                                <option value="MCQ_Normal">MCQ Normal</option>
-                                <option value="MCQ_Standard">MCQ Standard</option>
-                                <option value="MCQ_Advance">MCQ Advance</option>
-                            </select>
-                        </div>
-                        <button
-                            onclick="previewSingleReportCard()"
-                            class="btn-portal btn-primary w-full mt-2"
-                            title="Generate & View Preview"
-                        >
-                            <i class="fas fa-eye"></i> Generate & View Preview
-                        </button>
-                    </div>
-                </section>
-
-                <section id="publishReportCardSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Publish Report Cards</h1>
-                            <p>Control visibility of PDF report cards in student portal</p>
-                        </div>
-                    </div>
-                    <div class="card text-center p-3">
-                        <i class="fas fa-file-contract text-sky text-2xl opacity-03 mb-1-5 block"></i>
-                        <p class="text-slate-muted">
-                            This module allows mass-locking of report cards after verification. Linked to Mass Result
-                            Toggle.
-                        </p>
-                        <button
-                            onclick="showSection('publishResult')"
-                            class="btn-portal btn-primary mt-1-5"
-                            title="Go to Publishing Controls"
-                        >
-                            Go to Publishing Controls
-                        </button>
-                    </div>
-                </section>
-                <!-- NOTIFICATION SYSTEM -->
-                <section id="sendNotificationSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Send Bulk Notification</h1>
-                            <p>Broadcast messages to students and parents via Mobile App, SMS, or WhatsApp</p>
-                        </div>
-                    </div>
-                    <div class="grid-2 gap-1-5 mt-1-5">
-                        <div class="card">
-                            <h3 class="mb-1-25"><i class="fas fa-paper-plane primary"></i> Compose Notification</h3>
-                            <form id="sendNotifForm" onsubmit="ERPNotifications.sendNotification(event)">
-                                <div class="grid-2 gap-1 mb-1">
-                                    <div class="form-group">
-                                        <label>Notification Type</label>
-                                        <select id="notif_type" class="form-control" required>
-                                            <option value="App Push">Mobile App Push (Free)</option>
-                                            <option value="SMS">SMS Message</option>
-                                            <option value="WhatsApp">WhatsApp Message</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Academic Session</label>
-                                        <select id="notif_sessionSelect" class="form-control" required onchange="ERPNotifications.loadClasses()"></select>
-                                    </div>
-                                </div>
-                                <div class="grid-2 gap-1 mb-1">
-                                    <div class="form-group">
-                                        <label>Target Class</label>
-                                        <select id="notif_classSelect" class="form-control" onchange="ERPNotifications.loadSections()">
-                                            <option value="All">All Classes</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Target Section</label>
-                                        <select id="notif_sectionSelect" class="form-control">
-                                            <option value="All">All Sections</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group mb-1">
-                                    <label>Notification Title</label>
-                                    <input type="text" id="notif_title" class="form-control" placeholder="e.g. Summer Vacation Circular" required>
-                                </div>
-                                <div class="form-group mb-1-5">
-                                    <label>Message Content</label>
-                                    <textarea id="notif_message" class="form-control" rows="5" placeholder="Type your message here..." required></textarea>
-                                </div>
-                                <div class="flex gap-1">
-                                    <button type="submit" class="btn-portal btn-primary flex-1">
-                                        <i class="fas fa-paper-plane"></i> Send Now
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="flex-col gap-1-5">
-                            <div class="card bg-amber-light border-left-amber">
-                                <h4 class="mb-0-5 text-amber"><i class="fas fa-info-circle"></i> SMS/WhatsApp Credits</h4>
-                                <p class="text-xs line-height-1-5">Bulk messaging via SMS or WhatsApp requires active credits. App Notifications are always free and unlimited.</p>
-                            </div>
-                            <div class="card">
-                                <h4 class="mb-1-25">Quick Templates</h4>
-                                <div class="flex-col gap-0-5">
-                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('holiday')">School Holiday Announcement</button>
-                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('fee')">Fee Payment Reminder</button>
-                                    <button class="btn-portal btn-ghost text-left text-sm" onclick="ERPNotifications.useTemplate('exam')">Examination Schedule Update</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="notificationHistorySection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Notification History</h1>
-                            <p>Track delivery status and message logs</p>
-                        </div>
-                        <button class="btn-portal btn-primary" onclick="showSection('sendNotification')">
-                            <i class="fas fa-plus"></i> New Message
-                        </button>
-                    </div>
-                    <div class="card mt-1-5">
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date & Time</th>
-                                        <th>Target</th>
-                                        <th>Title</th>
-                                        <th>Delivery Status</th>
-                                        <th style="text-align:right;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="notif_historyBody">
-                                    <!-- Loaded via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- RESULT ANALYTICS -->
-                <section id="resultAnalyticsSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Result & Performance Analytics</h1>
-                            <p>Visualizing academic performance across classes and sessions</p>
-                        </div>
-                    </div>
-
-                    <div class="card glass-panel mt-1-5 mb-1-5">
-                        <div class="grid-4 gap-1 align-end">
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Session</label>
-                                <select id="analytic_sessionSelect" class="form-control" onchange="ResultAnalytics.loadClasses(); ResultAnalytics.loadExams();"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Class</label>
-                                <select id="analytic_classSelect" class="form-control"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Exam</label>
-                                <select id="analytic_examSelect" class="form-control"></select>
-                            </div>
-                            <button class="btn-portal btn-primary" onclick="ResultAnalytics.refresh()">
-                                <i class="fas fa-sync"></i> Generate Analytics
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid-3 gap-1-5 mt-1-5">
-                        <div class="card p-1-5 border-left-primary">
-                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Average Score</p>
-                            <h2 id="an_avgScore" class="text-xl secondary">0</h2>
-                        </div>
-                        <div class="card p-1-5 border-left-success">
-                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Highest Score</p>
-                            <h2 id="an_highestScore" class="text-xl secondary">0</h2>
-                        </div>
-                        <div class="card p-1-5 border-left-amber">
-                            <p class="text-xs text-muted uppercase font-bold mb-0-5">Pass Percentage</p>
-                            <h2 id="an_passPercent" class="text-xl secondary">0%</h2>
-                        </div>
-                    </div>
-
-                    <div class="grid-2 gap-1-5 mt-1-5">
-                        <div class="card">
-                            <h3 class="mb-1-5"><i class="fas fa-chart-bar primary"></i> Subject Performance</h3>
-                            <div style="position: relative; height:300px; width:100%">
-                                <canvas id="subjectChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <h3 class="mb-1-5"><i class="fas fa-chart-pie secondary"></i> Score Distribution</h3>
-                            <div style="position: relative; height:300px; width:100%">
-                                <canvas id="distChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- TIMETABLE MANAGEMENT -->
-                <section id="classTimetablesSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Class Timetables</h1>
-                            <p>Manage weekly schedules for all classes</p>
-                        </div>
-                        <button class="btn-portal btn-primary" onclick="showSection('createTimetable')">
-                            <i class="fas fa-plus"></i> Add New Timetable
-                        </button>
-                    </div>
-                    <div class="card glass-panel mt-1-5 mb-1-5">
-                        <div class="grid-3 gap-1 align-end">
-                            <div class="form-group">
-                                <label>Session</label>
-                                <select id="ttSessionSelect" class="form-control" onchange="initERPTimetable()"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Class</label>
-                                <select id="ttClassSelect" class="form-control" onchange="initERPTimetable()"></select>
-                            </div>
-                            <button class="btn-portal btn-ghost" onclick="initERPTimetable()">
-                                <i class="fas fa-sync"></i> Refresh List
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card mt-1-5">
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Class Schedule</th>
-                                        <th>Last Updated</th>
-                                        <th style="text-align:right;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="timetableListBody">
-                                    <!-- Loaded via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="teacherTimetablesSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <h1>Teacher Timetables</h1>
-                        <p>View consolidated schedules for staff members</p>
-                    </div>
-                    <div class="card mt-1-5 text-center p-3">
-                        <i class="fas fa-user-tie text-slate-300 text-3xl mb-1-5 block"></i>
-                        <p class="text-slate-muted">Teacher timetable view is being synchronized with daily substitutions.</p>
-                        <button onclick="showSection('classTimetables')" class="btn-portal btn-ghost mt-1-25">View Class Timetables</button>
-                    </div>
-                </section>
-
-                <section id="createTimetableSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Create / Upload Timetable</h1>
-                            <p>Publish weekly schedule to the student portal</p>
-                        </div>
-                    </div>
-                    <div class="card mt-1-5">
-                        <form id="uploadTimetableForm" onsubmit="handleTimetableUpload(event)">
-                            <div class="grid-2 gap-1-25 mb-1-5">
-                                <div class="form-group">
-                                    <label>Session</label>
-                                    <select id="tt_sessionSelect" class="form-control" required></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Class</label>
-                                    <select id="tt_classSelect" class="form-control" required></select>
-                                </div>
-                            </div>
-                            <div class="form-group mb-1-5">
-                                <label>Timetable Document (PDF/Image)</label>
-                                <div class="file-upload-zone" id="timetableDropZone">
-                                    <input type="file" id="tt_file" accept=".pdf,image/*" required>
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Click to browse or drag & drop</p>
-                                    <small>Max file size: 2MB</small>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn-portal btn-primary w-full">
-                                <i class="fas fa-upload"></i> Upload & Publish
-                            </button>
-                        </form>
-                    </div>
-                </section>
-
-                <section id="viewTimetableSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <h1>Timetable Preview</h1>
-                        <p id="previewTimetableTitle">Viewing Schedule</p>
-                    </div>
-                    <div id="timetablePreviewArea" class="mt-1-5"></div>
-                </section>
-
-                <!-- QUESTION PAPER LIBRARY -->
-                <section id="questionPaperLibrarySection" class="dashboard-section hidden">
-                    <div class="header">
-                        <div>
-                            <h1>Question Paper Library</h1>
-                            <p>Manage and publish examination papers to the student portal</p>
-                        </div>
-                        <div class="flex gap-0-5">
-                            <a href="question-formatter/index.html" target="_blank" class="btn-portal btn-ghost">
-                                <i class="fas fa-magic"></i> AI Formatter
-                            </a>
-                            <button class="btn-portal btn-primary" onclick="showSection('addManualPaper')">
-                                <i class="fas fa-plus"></i> Manual Upload
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card glass-panel mt-1-5 mb-1-5">
-                        <div class="grid-4 gap-1">
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Session</label>
-                                <select id="qpSessionFilter" class="form-control" onchange="loadQuestionPapers()"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Exam</label>
-                                <select id="qpExamFilter" class="form-control" onchange="loadQuestionPapers()"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Class</label>
-                                <select id="qpClassFilter" class="form-control" onchange="loadQuestionPapers()"></select>
-                            </div>
-                            <div class="form-group">
-                                <label class="text-xs font-bold text-muted uppercase">Subject</label>
-                                <select id="qpSubjectFilter" class="form-control" onchange="loadQuestionPapers()"></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="portal-table">
-                                <thead>
-                                    <tr>
-                                        <th>Subject</th>
-                                        <th>Class</th>
-                                        <th>Exam Term</th>
-                                        <th>Created By</th>
-                                        <th>Status</th>
-                                        <th>Published</th>
-                                        <th style="text-align:right;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paperLibraryTableBody">
-                                    <!-- Loaded via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="addManualPaperSection" class="dashboard-section hidden">
-                    <div class="header">
-                        <h1>Upload Question Paper</h1>
-                        <p>Manually upload a PDF or Image of a question paper</p>
-                    </div>
-                    <div class="card mt-1-5 max-w-600 mx-auto">
-                        <form id="manualUploadForm" onsubmit="handleManualPaperUpload(event)">
-                            <div class="grid-2 gap-1 mb-1-5">
-                                <div class="form-group">
-                                    <label>Session</label>
-                                    <select id="uploadQpSession" class="form-control" required></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Exam</label>
-                                    <select id="uploadQpExam" class="form-control" required></select>
-                                </div>
-                            </div>
-                             <div class="grid-2 gap-1 mb-1-5">
-                                <div class="form-group">
-                                    <label>Class</label>
-                                    <select id="uploadQpClass" class="form-control" required></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Subject</label>
-                                    <select id="uploadQpSubject" class="form-control" required></select>
-                                </div>
-                            </div>
-                            <div class="form-group mb-1-5">
-                                <label>Paper File (PDF/Image)</label>
-                                <input type="file" id="manualPaperFile" class="form-control" accept=".pdf,image/*" required>
-                            </div>
-                            <button type="submit" class="btn-portal btn-primary w-full">Confirm Upload</button>
-                        </form>
-                    </div>
+ 
                 </section>
             </main>
         </div>
@@ -7191,30 +6418,31 @@
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
         <!-- Include SheetJS Style for Excel Borders -->
         <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-        <script src="../js/firebase-config.js?v=1.5"></script>
+        <script src="/js/firebase-config.js?v=1.5"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script src="../js/admin-auth.js?v=1.5"></script>
-        <script src="../js/admin-dashboard.js?v=1.5"></script>
-        <script src="../js/cms-admin.js?v=1.5"></script>
-        <script src="../js/erp-class-mgmt.js?v=1.5"></script>
+        <script src="/js/admin-auth.js?v=1.5"></script>
+        <script src="/js/admin-dashboard.js?v=1.5"></script>
+        <script src="/js/cms-admin.js?v=1.5"></script>
+        <script src="/js/fee-dues-tool.js?v=1.5"></script>
+        <script src="/js/erp-class-mgmt.js?v=1.5"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-        <script src="../js/erp-exams.js?v=1.5"></script>
-        <script src="../js/erp-question-papers.js?v=1.5"></script>
-        <script src="../js/erp-fees.js?v=1.5"></script>
-        <script src="../js/erp-id-cards.js?v=1.5"></script>
-        <script src="../js/erp-admission.js?v=1.5"></script>
-        <script src="../js/id-card-templates.js?v=1.5"></script>
-        <script src="../js/report-card-factory.js?v=1.5"></script>
-        <script src="../js/erp-report-card-tool-v2.js"></script>
-        <script src="../js/erp-notifications.js?v=1.5"></script>
-        <script src="../js/erp-library.js?v=1.5"></script>
-        <script src="../js/erp-transport.js?v=1.5"></script>
-        <script src="../js/erp-analytics.js?v=1.5"></script>
-        <script src="../js/erp-attendance.js?v=1.5"></script>
-        <script src="../js/erp-homework.js?v=1.5"></script>
-        <script src="../js/erp-timetable.js?v=1.5"></script>
-        <script src="../js/admin-tools.js?v=1.5"></script>
-        <script src="../js/dashboard-analytics.js?v=1.5"></script>
+        <script src="/js/erp-exams.js?v=1.5"></script>
+        <script src="/js/erp-question-papers.js?v=1.5"></script>
+        <script src="/js/erp-fees.js?v=1.5"></script>
+        <script src="/js/erp-id-cards.js?v=1.5"></script>
+        <script src="/js/erp-admission.js?v=1.5"></script>
+        <script src="/js/id-card-templates.js?v=1.5"></script>
+        <script src="/js/report-card-factory.js?v=1.5"></script>
+        <script src="/js/erp-report-card-tool-v2.js"></script>
+        <script src="/js/erp-notifications.js?v=1.5"></script>
+        <script src="/js/erp-library.js?v=1.5"></script>
+        <script src="/js/erp-transport.js?v=1.5"></script>
+        <script src="/js/erp-analytics.js?v=1.5"></script>
+        <script src="/js/erp-attendance.js?v=1.5"></script>
+        <script src="/js/erp-homework.js?v=1.5"></script>
+        <script src="/js/erp-timetable.js?v=1.5"></script>
+        <script src="/js/admin-tools.js?v=1.5"></script>
+        <script src="/js/dashboard-analytics.js?v=1.5"></script>
         <!-- Fail-safe for loading overlay in case of script errors -->
         <script>
             window.addEventListener('load', function() {
@@ -7445,12 +6673,17 @@
                     font-size: 12px;
                     font-weight: 600;
                 }
+
+                .rp-number-box {
+                    font-size: 14px;
+                    font-weight: 600;
+                }
             </style>
             
             <div id="receiptPrintContent" class="receipt-premium">
                 <div class="rp-header">
                     <div class="rp-school-brand">
-                        <img id="rtcLogo" src="../images/ApexPublicSchoolLogo.png" class="rp-logo" />
+                        <img id="rtcLogo" src="/images/default-logo.png" class="rp-logo" alt="School Logo" title="School Logo" />
                         <div class="rp-school-details">
                             <h1 id="rtcSchoolName">School Name</h1>
                             <p id="rtcSchoolAddress">School Address Line</p>
@@ -7459,7 +6692,7 @@
                     </div>
                     <div class="rp-receipt-label">
                         <h2>Receipt</h2>
-                        <div style="font-size: 14px; font-weight: 600;"># <span id="rtcNo">0000</span></div>
+                        <div class="rp-number-box"># <span id="rtcNo">0000</span></div>
                     </div>
                 </div>
 
@@ -7538,5 +6771,6 @@
                 </div>
             </div>
         </div>
+        <script src="/js/report-card-upload.js"></script>
     </body>
 </html>

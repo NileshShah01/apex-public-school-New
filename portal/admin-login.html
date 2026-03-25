@@ -1,70 +1,296 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title id="portalTitle">Admin Login</title>
-        <link rel="stylesheet" href="../css/portal.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    </head>
-    <body class="auth-page">
-        <div class="auth-card">
-            <div class="portal-logo text-center mb-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Antigravity ERP</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Secure portal access for Antigravity ERP school administrators.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/css/portal.css?v=2.0">
+    
+    <style>
+        :root {
+            --bg-deep: #0b1326;
+            --surface-low: #131b2e;
+            --surface-mid: #171f33;
+            --surface-high: #2d3449;
+            --primary: #7bd0ff;
+            --primary-dark: #008abb;
+            --text-main: #dae2fd;
+            --text-dim: #c6c6cd;
+            --error: #ffb4ab;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-deep);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(123, 208, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 138, 187, 0.05) 0%, transparent 40%);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: rgba(23, 31, 51, 0.6);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        #schoolLogoContainer {
+            margin-bottom: 16px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .school-logo {
+            max-width: 140px;
+            max-height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        }
+
+        .school-name {
+            font-family: 'Manrope', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .login-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 40px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            background: var(--surface-low);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-main);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: var(--surface-mid);
+            box-shadow: 0 0 0 4px rgba(123, 208, 255, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 100px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #00354a;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(123, 208, 255, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        #loginError {
+            background: rgba(147, 0, 10, 0.2);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-bottom: 24px;
+            display: none;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 53, 74, 0.3);
+            border-top-color: #00354a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="glass-card">
+            <div class="brand-section">
                 <div id="schoolLogoContainer">
-                    <i class="fas fa-user-shield text-3xl color-accent mb-4"></i>
+                    <img src="/images/default-logo.png" alt="Portal Logo" class="school-logo" id="schoolLogo">
                 </div>
-                <h2 class="text-2xl color-secondary fw-800" id="portalBrandName">Admin Portal</h2>
-                <p class="text-muted-p" id="portalDesc">Secure access for school administrators</p>
+                <h1 class="school-name" id="portalBrandName">School Portal</h1>
             </div>
+
+            <p class="login-title">Administrator Access</p>
+
+            <div id="loginError"></div>
+
             <form id="adminLoginForm">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-muted-p"></i>
-                        <input
-                            type="email"
-                            id="email"
-                            placeholder="admin@example.com"
-                            required
-                            class="pl-10"
-                        />
+                    <label class="form-label" for="email">Portal Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" placeholder="admin@school.com" required autocomplete="username">
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-muted-p"></i>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="••••••••"
-                            required
-                            class="pl-10"
-                        />
+                    <label class="form-label" for="password">Security Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
                     </div>
                 </div>
-                <button
-                    type="submit"
-                    class="btn-portal btn-primary w-full flex-center mt-4 p-3"
-                >
-                    <i class="fas fa-sign-in-alt"></i> Login to Admin
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span id="btnText">Sign In to Dashboard</span>
+                    <div class="spinner" id="btnSpinner"></div>
                 </button>
-                <div
-                    id="loginError"
-                    class="text-error bg-error text-center mt-4 p-2 rounded-lg hidden"
-                ></div>
             </form>
-            <div class="portal-footer text-center mt-8 pt-4 border-t">
-                <a href="../school.html" class="btn-back"> <i class="fas fa-arrow-left"></i> Back to Website </a>
-            </div>
         </div>
 
-        <!-- Firebase SDKs -->
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/admin-auth.js"></script>
-    </body>
+        <div class="footer">
+            Powered by Antigravity Cloud &bull; Secure Enterprise Management
+        </div>
+    </div>
+
+    <!-- Firebase Key Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- App Scripts -->
+    <script src="/js/firebase-config.js?v=2.0"></script>
+    <script>
+        // Dynamic Branding Initialization
+        (async () => {
+            try {
+                // Wait for firebase-config.js to set CURRENT_SCHOOL_ID
+                const checkInterval = setInterval(async () => {
+                    if (window.CURRENT_SCHOOL_ID) {
+                        clearInterval(checkInterval);
+                        const db = firebase.firestore();
+                        const schoolDoc = await db.collection('schools').doc(window.CURRENT_SCHOOL_ID).get();
+                        if (schoolDoc.exists) {
+                            const data = schoolDoc.data();
+                            if (data.logo) document.getElementById('schoolLogo').src = data.logo;
+                            if (data.name) document.getElementById('portalBrandName').innerText = data.name;
+                            document.title = (data.name || 'Admin') + ' | Antigravity ERP';
+                        }
+                    }
+                }, 100);
+            } catch (e) { console.error("Branding failed", e); }
+        })();
+    </script>
+    <script src="/js/admin-auth.js?v=2.0"></script>
+
+</body>
 </html>

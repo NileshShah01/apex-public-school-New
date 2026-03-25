@@ -28,11 +28,11 @@ const ReportCardFactory = {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(24);
         doc.setTextColor(255);
-        doc.text(schoolDetails.name || 'APEX PUBLIC SCHOOL', W / 2, 20, { align: 'center' });
+        doc.text(schoolDetails.name || 'SCHOOL NAME', W / 2, 20, { align: 'center' });
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text(schoolDetails.address || 'CHETAN PARSA, PARSA, SARAN, BIHAR - 841219', W / 2, 28, { align: 'center' });
+        doc.text(schoolDetails.address || 'SCHOOL ADDRESS', W / 2, 28, { align: 'center' });
         
         doc.setDrawColor(255);
         doc.line(W / 2 - 40, 32, W / 2 + 40, 32);
@@ -345,12 +345,12 @@ const ReportCardFactory = {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(22);
         doc.setTextColor(20, 50, 100);
-        doc.text(school.name || 'APEX PUBLIC SCHOOL', W / 2, margin + 12, { align: 'center' });
+        doc.text(school.name || 'SCHOOL NAME', W / 2, margin + 12, { align: 'center' });
 
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
-        doc.text(school.address || 'CHETAN PARSA, PARSA, SARAN, BIHAR - 841219', W / 2, margin + 18, {
+        doc.text(school.address || 'SCHOOL ADDRESS', W / 2, margin + 18, {
             align: 'center',
         });
 

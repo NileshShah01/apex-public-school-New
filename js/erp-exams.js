@@ -608,7 +608,7 @@ window.scheduleDownloadPdf = async function() {
         const papers = schedSnap.docs.map(d=>d.data()).sort((a,b)=>(a.day||0)-(b.day||0));
 
         doc.setFontSize(16);
-        doc.text('APEX PUBLIC SCHOOL', 105, 15, {align:'center'});
+        doc.text(window.SCHOOL_NAME || 'SCHOOL NAME', 105, 15, {align:'center'});
         doc.setFontSize(12);
         doc.text(`Exam Schedule — ${examName}`, 105, 22, {align:'center'});
         doc.text(`Class: ${className} | Session: ${sessionName}`, 105, 29, {align:'center'});
@@ -896,7 +896,7 @@ async function generateAttendanceCards() {
 
         // Generate signature sheet
         doc.setFontSize(16);
-        doc.text('APEX PUBLIC SCHOOL', 105, 15, { align: 'center' });
+        doc.text(window.SCHOOL_NAME || 'SCHOOL NAME', 105, 15, { align: 'center' });
         doc.setFontSize(12);
         doc.text(`EXAMINATION ATTENDANCE SHEET - ${examName}`, 105, 22, { align: 'center' });
         doc.text(`Class: ${className} | Session: ${sessionName}`, 105, 28, { align: 'center' });
@@ -966,7 +966,7 @@ async function generateHallTickets(examIdParam, classNameParam, sessionNameParam
             // Header
             doc.setFontSize(18);
             doc.setTextColor(40);
-            doc.text('APEX PUBLIC SCHOOL', 105, 20, { align: 'center' });
+            doc.text(window.SCHOOL_NAME || 'SCHOOL NAME', 105, 20, { align: 'center' });
             doc.setFontSize(14);
             doc.text(`EXAM ADMIT CARD - ${sessionName}`, 105, 30, { align: 'center' });
 
