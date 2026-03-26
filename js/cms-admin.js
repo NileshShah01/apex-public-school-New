@@ -38,10 +38,10 @@ async function applyStagePermissions() {
             const el = document.getElementById(id);
             if (el) {
                 if (stage < minStage) {
-                    el.style.display = 'none';
+                    el.classList.add('hidden');
                     console.log(`- Restricted: ${id}`);
                 } else {
-                    el.style.display = 'block';
+                    el.classList.remove('hidden');
                 }
             }
         }
@@ -132,7 +132,7 @@ const CMS_SECTIONS = {
     cmsFeeTools: {
         load: () => {
             window.feeDuesToolResultData = null;
-            document.getElementById('fee_resultsArea').style.display = 'none';
+            document.getElementById('fee_resultsArea').classList.add('hidden');
         },
     },
 };
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const saveBtn = document.getElementById('cmsAdmissionsImgSaveBtn');
         const loading = document.getElementById('cmsAdmissionsImgLoading');
         if (saveBtn) saveBtn.disabled = true;
-        if (loading) loading.style.display = 'block';
+        if (loading) loading.classList.remove('hidden');
 
         try {
             const current = (await schoolDoc('settings', 'admissions').get()).data() || {};
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Error: ' + e.message, 'error');
         } finally {
             if (saveBtn) saveBtn.disabled = false;
-            if (loading) loading.style.display = 'none';
+            if (loading) loading.classList.add('hidden');
         }
     });
 
@@ -733,19 +733,14 @@ function addCmsImportantLink(title = '', url = '') {
     if (!container) return;
 
     const div = document.createElement('div');
-    div.className = 'cms-link-item';
-    div.style.display = 'grid';
-    div.style.gridTemplateColumns = '1fr 1fr auto';
-    div.style.gap = '0.5rem';
-    div.style.alignItems = 'center';
-    div.style.background = '#f1f5f9';
-    div.style.padding = '0.5rem';
-    div.style.borderRadius = '0.4rem';
+    div.className = 'cms-link-item cms-link-item-container';
 
     div.innerHTML = `
-        <input type="text" placeholder="Title (e.g. Video Library)" class="link-title" value="${title}" style="padding:0.4rem; border:1px solid #cbd5e1; border-radius:0.3rem;">
-        <input type="url" placeholder="URL (https://...)" class="link-url" value="${url}" style="padding:0.4rem; border:1px solid #cbd5e1; border-radius:0.3rem;">
-        <button type="button" onclick="this.parentElement.remove()" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.1rem;"><i class="fas fa-trash-alt"></i></button>
+        <input type="text" placeholder="Title (e.g. Video Library)" class="link-title cms-link-input" value="${title}">
+        <input type="url" placeholder="URL (https://...)" class="link-url cms-link-input" value="${url}">
+        <button type="button" onclick="this.parentElement.remove()" class="btn-trash" title="Remove Link">
+            <i class="fas fa-trash-alt"></i>
+        </button>
     `;
     container.appendChild(div);
 }
@@ -1171,14 +1166,14 @@ async function saveCmsModal(type) {
             }
             if (file) {
                 if (saveBtn) saveBtn.disabled = true;
-                if (loading) loading.style.display = 'block';
+                if (loading) loading.classList.remove('hidden');
 
                 try {
                     data[f.id] = await processCmsImage(file);
                 } catch (e) {
                     showToast('Error processing image: ' + e.message, 'error');
                     if (saveBtn) saveBtn.disabled = false;
-                    if (loading) loading.style.display = 'none';
+                    if (loading) loading.classList.add('hidden');
                     return;
                 }
             } else {
@@ -1201,7 +1196,7 @@ async function saveCmsModal(type) {
         showToast('Error: ' + e.message, 'error');
     } finally {
         if (saveBtn) saveBtn.disabled = false;
-        if (loading) loading.style.display = 'none';
+        if (loading) loading.classList.add('hidden');
     }
 }
 
