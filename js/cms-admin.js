@@ -17,21 +17,21 @@ async function applyStagePermissions() {
         }
 
         const data = schoolDocSnap.data();
-        const stage = data.stage || 1;
+        // Fix: Use nullish coalescing to respect Stage 0 (Banned/Inactive)
+        const stage = data.stage ?? 1;
         console.log(`SaaS Level: Stage ${stage}`);
 
         // Apply Branding
         applySchoolBranding(data);
 
-        // Sidebar Elements Mapping
-        const modules = {
-            navAdmission: 4, // Needs Stage 4+
-            navExams: 1, // Restored: Visible for all stages
-            navResults: 1, // Restored: Visible for all stages
-            navFees: 4, // Needs Stage 4+
-            navEmployee: 1, // Restored: Visible for all stages
-            navClass: 1, // Restored: Visible for all stages
-            navTimeTable: 1, // Restored: Visible for all stages
+        // Sidebar Elements Mapping (Synchronized with Centralized SaaS Policy)
+        const modules = window.SAAS_POLICY?.MODULE_PERMISSIONS || {
+            // Fallback if policy fails to load
+            navAdmission: 4,
+            navAttendance: 4,
+            navFees: 4,
+            navExams: 6,
+            navResults: 6
         };
 
         for (const [id, minStage] of Object.entries(modules)) {
@@ -39,7 +39,7 @@ async function applyStagePermissions() {
             if (el) {
                 if (stage < minStage) {
                     el.classList.add('hidden');
-                    console.log(`- Restricted: ${id}`);
+                    console.log(`- Restricted: ${id} (Requires Stage ${minStage})`);
                 } else {
                     el.classList.remove('hidden');
                 }

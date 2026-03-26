@@ -30,6 +30,20 @@
         loadFacilitiesPageData();
         loadGlobalStats();
     }
+
+    // ===================== ERROR HANDLING UI =====================
+    function handleLoadError(containerId, error) {
+        console.warn(`[CMS] Error loading ${containerId}:`, error);
+        const el = document.getElementById(containerId);
+        if (el && (el.innerHTML.includes('Loading') || el.innerHTML === '')) {
+            el.innerHTML = `<div class="p-6 text-center text-slate-400 bg-slate-50/5 rounded-xl border border-dashed border-slate-200 glass-card">
+                <i class="fas fa-wifi-slash mb-3 text-xl opacity-50"></i>
+                <p class="text-xs font-medium">Content temporarily unavailable</p>
+                <p class="text-[10px] opacity-70 mt-1">Please check your connection</p>
+            </div>`;
+        }
+    }
+
     // ===================== ABOUT PAGE HERO =====================
     async function loadAboutHero() {
         const hero = document.getElementById('aboutHeroSection');
@@ -41,7 +55,7 @@
                 hero.style.backgroundImage = `url("${ensureAbsoluteUrl(doc.data().heroUrl)}")`;
             }
         } catch (e) {
-            console.error('Error loading about hero:', e);
+            handleLoadError('aboutHeroSection', e);
         }
     }
 
@@ -84,7 +98,7 @@
                 gallerySliderTrack.innerHTML = imgHtml + imgHtml; // Duplicate for infinite loop
             }
         } catch (e) {
-            console.error('Error loading facilities page data:', e);
+            handleLoadError('facilitiesPage', e);
         }
     }
 
@@ -105,13 +119,12 @@
                     const el = document.getElementById(id);
                     if (el && val !== undefined) {
                         el.setAttribute('data-target', val);
-                        // If counter already finished, update it immediately
-                        if (el.innerText !== '0') el.innerText = val;
+                        if (el.innerText === '0' || el.innerText === '') el.innerText = val + '+';
                     }
                 }
             }
         } catch (e) {
-            console.error('Error loading global stats:', e);
+            handleLoadError('globalStats', e);
         }
     }
 
@@ -161,13 +174,13 @@
             }
 
             if (urls.length === 0) {
-                // Fallback defaults - use generic placeholders or SCH001 specific ones
+                // Fallback defaults
                 if (window.CURRENT_SCHOOL_ID === 'SCH001') {
                     urls = [
-                        '/images/School-Building.jpeg',
-                        '/images/Bihar-Museum-img4.jpeg',
-                        '/images/Science-centre-Patna-img15.jpeg',
-                        '/images/Republic-Day-img1.jpeg',
+                        'images/School-Building.jpeg',
+                        'images/Bihar-Museum-img4.jpeg',
+                        'images/Science-centre-Patna-img15.jpeg',
+                        'images/Republic-Day-img1.jpeg',
                     ];
                 } else {
                     urls = [
@@ -196,15 +209,17 @@
                 initHeroSlider();
             }
         } catch (e) {
-            console.error('Error loading hero slider:', e);
+            handleLoadError('heroSlider', e);
         }
     }
 
-    // Helper to ensure image URLs are absolute root-relative
+    // Helper to ensure image URLs are relative-ready
     function ensureAbsoluteUrl(url) {
         if (!url) return '';
-        if (url.startsWith('http') || url.startsWith('/') || url.startsWith('data:')) return url;
-        return '/' + url;
+        if (url.startsWith('http') || url.startsWith('data:')) return url;
+        // Strip leading slash if present to support relative pathing from root
+        const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+        return './' + cleanUrl;
     }
 
     // ===================== HOME PAGE MEMORIES =====================
@@ -226,17 +241,17 @@
             }
             // Fallback to static defaults
             grid.innerHTML = `
-                <img src="/images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Science-centre-Patna-img1.jpeg" onclick="openLightbox(this)">
-                <img src="/images/Republic-Day-img2.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Bihar-Museum-img1.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Science-centre-Patna-img3.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Republic-Day-img1.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Sports-Event-Prize-Distribution-img1.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Bihar-Museum-img4.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Bihar-Museum-img7.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Science-centre-Patna-img1.jpeg" onclick="openLightbox(this)">
+                <img src="./images/Republic-Day-img2.jpeg" onclick="openLightbox(this)">
             `;
         } catch (e) {
-            console.error('Error loading home memories:', e);
+            handleLoadError('homeMemoriesGrid', e);
         }
     }
 
@@ -261,15 +276,15 @@
                     return;
                 }
             }
-            // Fallback to defaults if no data in DB
+            // Fallback to defaults
             track.innerHTML = `
-                <div class="facility-slide"><img src="/images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
-                <div class="facility-slide"><img src="/images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
-                <div class="facility-slide"><img src="/images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
-                <div class="facility-slide"><img src="/images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
+                <div class="facility-slide"><img src="./images/Classroom-img1.jpeg"><div class="facility-name">Smart Classrooms</div></div>
+                <div class="facility-slide"><img src="./images/School-Building.jpeg"><div class="facility-name">Computer Lab</div></div>
+                <div class="facility-slide"><img src="./images/Sports-Event-Prize-Distribution-img1.jpeg"><div class="facility-name">Sports Ground</div></div>
+                <div class="facility-slide"><img src="./images/Classroom-img1.jpeg"><div class="facility-name">CCTV Security</div></div>
             `;
         } catch (e) {
-            console.error('Error loading home facilities:', e);
+            handleLoadError('homeFacilitiesTrack', e);
         }
     }
 
@@ -305,7 +320,7 @@
                     }
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('admissionsFacilitiesGrid', e));
     }
 
     // ===================== GENERAL SETTINGS =====================
@@ -367,7 +382,7 @@
                         .forEach((el) => (el.href = 'https://wa.me/' + d.phone.replace(/[^0-9]/g, '')));
                 }
 
-                // Stats — update data-target and restart counter animation
+                // Stats
                 const stats = {
                     stat_students: d.stat_students,
                     stat_teachers: d.stat_teachers,
@@ -382,12 +397,6 @@
                     }
                 });
 
-                // Hero Slider Fallback (Legacy check)
-                ['1', '2', '3', '4'].forEach((n) => {
-                    const img = document.getElementById('slide_' + n);
-                    if (img && d['hero_' + n]) img.src = ensureAbsoluteUrl(d['hero_' + n]);
-                });
-
                 // Admission Status
                 const badge = document.getElementById('admissionBadge');
                 const btn = document.getElementById('heroAdmissionBtn');
@@ -398,7 +407,7 @@
                 }
                 if (btn && d.admissionSession) btn.textContent = 'Admission Open ' + d.admissionSession;
             })
-            .catch((e) => console.warn('CMS settings:', e.message));
+            .catch((e) => console.warn('General settings:', e.message));
     }
 
     // ===================== BIRTHDAYS =====================
@@ -407,7 +416,6 @@
         const container = document.getElementById('birthdayContainer');
         if (!container || !section) return;
 
-        // Get today's MM-DD to match against dob strings like "YYYY-MM-DD"
         const today = new Date();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
@@ -419,9 +427,7 @@
             .get()
             .then((snap) => {
                 if (snap.empty) return;
-
                 let birthdayStudents = [];
-
                 snap.forEach((doc) => {
                     const s = doc.data();
                     if (s.dob && s.dob.endsWith(mm_dd)) {
@@ -430,47 +436,33 @@
                 });
 
                 if (birthdayStudents.length > 0) {
-                    section.style.display = 'block'; // Show the section if there are birthdays
-                    container.innerHTML = ''; // clear loading state
-
+                    section.style.display = 'block';
+                    container.innerHTML = '';
                     birthdayStudents.forEach((d, i) => {
                         const c = colors[i % colors.length];
                         let iconHtml = `<i class="fas fa-cake-candles" style="color: ${c}; font-size: 2.5rem; background: ${c}22; width: 80px; height: 80px; line-height: 80px; border-radius: 50%;"></i>`;
-
                         if (d.photo_url) {
                             iconHtml = `<img src="${d.photo_url}" alt="${d.name}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 3px solid ${c}; box-shadow: 0 4px 10px ${c}40;">`;
                         }
-
-                        container.innerHTML += `<div class="premium-card">
-                        ${iconHtml}
-                        <h3>${d.name}</h3>
-                        <p>Class ${d.class || '-'}</p>
-                    </div>`;
+                        container.innerHTML += `<div class="premium-card">${iconHtml}<h3>${d.name}</h3><p>Class ${d.class || '-'}</p></div>`;
                     });
                 } else {
-                    section.style.display = 'none'; // hide if no birthdays
+                    section.style.display = 'none';
                 }
             })
-            .catch((e) => console.warn('Birthdays error:', e));
+            .catch((e) => handleLoadError('birthdayContainer', e));
     }
 
     // ===================== EVENTS =====================
     function loadEvents() {
         const container = document.getElementById('eventsContainer');
         if (!container) return;
-        const icons = [
-            'fa-calendar-day',
-            'fa-hand-holding-heart',
-            'fa-door-open',
-            'fa-star',
-            'fa-flag',
-            'fa-graduation-cap',
-        ];
+        const icons = ['fa-calendar-day', 'fa-hand-holding-heart', 'fa-door-open', 'fa-star', 'fa-flag', 'fa-graduation-cap'];
         schoolData('events')
             .orderBy('createdAt', 'asc')
             .get()
             .then((snap) => {
-                if (snap.empty) return; // keep fallback HTML
+                if (snap.empty) return;
                 container.innerHTML = '';
                 let i = 0;
                 snap.forEach((doc) => {
@@ -483,7 +475,7 @@
                     i++;
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('eventsContainer', e));
     }
 
     // ===================== ACHIEVEMENTS =====================
@@ -510,7 +502,7 @@
                     i++;
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('achievementsContainer', e));
     }
 
     // ===================== TESTIMONIALS =====================
@@ -537,7 +529,7 @@
                 </div>`;
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('testimonialsContainer', e));
     }
 
     // ===================== GALLERY PAGE =====================
@@ -546,50 +538,49 @@
         const filters = document.getElementById('galleryFilters');
         if (!container) return;
 
-        // LEGACY IMAGES INTEGRATION (Only for SCH001)
         let allImages = [];
         if (window.CURRENT_SCHOOL_ID === 'SCH001') {
             const legacyImages = [
-                { url: '/images/Facilities-Slide-img1.jpeg', category: 'Facilities' },
-                { url: '/images/Computer Lap.jpeg', category: 'Facilities' },
-                { url: '/images/Facilities-Slide-img2.jpeg', category: 'Facilities' },
-                { url: '/images/Facilities-Slide-img3.jpeg', category: 'Facilities' },
-                { url: '/images/Facilities-Slide-img4.jpeg', category: 'Facilities' },
-                { url: '/images/Classroom-img1.jpeg', category: 'Facilities' },
-                { url: '/images/Bihar-Museum-img1.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img2.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img3.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img4.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img5.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img6.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img7.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img8.jpeg', category: 'Museum' },
-                { url: '/images/Bihar-Museum-img10.jpeg', category: 'Museum' },
-                { url: '/images/Science-centre-Patna-img3.jpeg', category: 'Science' },
-                { url: '/images/Republic-Day-img1.jpeg', category: 'Events' },
-                { url: '/images/Republic-Day-img2.jpeg', category: 'Events' },
-                { url: '/images/Republic-Day-img3.jpeg', category: 'Events' },
-                { url: '/images/Sports-Event-Prize-Distribution-img1.jpeg', category: 'Sports' },
-                { url: '/images/Sports-Event-Prize-Distribution-img2.jpeg', category: 'Sports' },
-                { url: '/images/Vaisali-School-Trip-img1.jpeg', category: 'Trip' },
-                { url: '/images/Vaisali-School-Trip-img2.jpeg', category: 'Trip' },
-                { url: '/images/Vaisali-School-Trip-img3.jpeg', category: 'Trip' },
-                { url: '/images/Science-centre-Patna-img1.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img2.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img4.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img5.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img6.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img7.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img8.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img9.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img10.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img11.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img12.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img13.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img14.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img15.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img16.jpeg', category: 'Science' },
-                { url: '/images/Science-centre-Patna-img35.jpeg', category: 'Science' },
+                { url: 'images/Facilities-Slide-img1.jpeg', category: 'Facilities' },
+                { url: 'images/Computer Lap.jpeg', category: 'Facilities' },
+                { url: 'images/Facilities-Slide-img2.jpeg', category: 'Facilities' },
+                { url: 'images/Facilities-Slide-img3.jpeg', category: 'Facilities' },
+                { url: 'images/Facilities-Slide-img4.jpeg', category: 'Facilities' },
+                { url: 'images/Classroom-img1.jpeg', category: 'Facilities' },
+                { url: 'images/Bihar-Museum-img1.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img2.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img3.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img4.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img5.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img6.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img7.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img8.jpeg', category: 'Museum' },
+                { url: 'images/Bihar-Museum-img10.jpeg', category: 'Museum' },
+                { url: 'images/Science-centre-Patna-img3.jpeg', category: 'Science' },
+                { url: 'images/Republic-Day-img1.jpeg', category: 'Events' },
+                { url: 'images/Republic-Day-img2.jpeg', category: 'Events' },
+                { url: 'images/Republic-Day-img3.jpeg', category: 'Events' },
+                { url: 'images/Sports-Event-Prize-Distribution-img1.jpeg', category: 'Sports' },
+                { url: 'images/Sports-Event-Prize-Distribution-img2.jpeg', category: 'Sports' },
+                { url: 'images/Vaisali-School-Trip-img1.jpeg', category: 'Trip' },
+                { url: 'images/Vaisali-School-Trip-img2.jpeg', category: 'Trip' },
+                { url: 'images/Vaisali-School-Trip-img3.jpeg', category: 'Trip' },
+                { url: 'images/Science-centre-Patna-img1.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img2.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img4.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img5.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img6.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img7.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img8.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img9.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img10.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img11.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img12.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img13.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img14.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img15.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img16.jpeg', category: 'Science' },
+                { url: 'images/Science-centre-Patna-img35.jpeg', category: 'Science' },
             ];
             allImages = [...legacyImages];
         }
@@ -599,8 +590,6 @@
             .get()
             .then((snap) => {
                 snap.forEach((doc) => allImages.push(doc.data()));
-
-                // Default to the first active category if available
                 const defaultFilter = filters ? filters.querySelector('.active').getAttribute('data-filter') : 'Sports';
                 renderGallery(defaultFilter);
 
@@ -620,21 +609,15 @@
                     });
                 }
             })
-            .catch(() => {
-                // If firebase fails, still render legacy images
-                renderGallery('Sports');
-            });
+            .catch(() => renderGallery('Sports'));
 
         function renderGallery(filter) {
             container.innerHTML = '';
-            // Filter images by selected category
             const filteredImages = allImages.filter((img) => (img.category || 'Others') === filter);
-
             if (filteredImages.length === 0) {
                 container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding:5rem; width:100%;">No images found in this category.</p>`;
                 return;
             }
-
             filteredImages.forEach((d) => {
                 const catBadge = d.category ? `<span class="card-category">${d.category}</span>` : '';
                 const absUrl = ensureAbsoluteUrl(d.url);
@@ -642,9 +625,7 @@
                     <div class="gallery-card" onclick="openLightbox({src:'${absUrl}'})">
                         <img src="${absUrl}" alt="${d.caption || 'Gallery'}" loading="lazy">
                         ${catBadge}
-                        <div class="card-overlay">
-                            ${d.caption ? `<div class="card-caption">${d.caption}</div>` : ''}
-                        </div>
+                        <div class="card-overlay">${d.caption ? `<div class="card-caption">${d.caption}</div>` : ''}</div>
                     </div>`;
             });
         }
@@ -665,14 +646,14 @@
                 snap.forEach((doc) => {
                     const d = doc.data();
                     container.innerHTML += `<div class="premium-card" style="padding:1.5rem; text-align:center;">
-                    <img src="${ensureAbsoluteUrl(d.photoUrl || '/images/default-avatar.png')}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:3px solid var(--primary-light);">
+                    <img src="${ensureAbsoluteUrl(d.photoUrl || 'images/default-avatar.png')}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:1rem; border:3px solid var(--primary-light);">
                     <h3 style="font-size:1.1rem; margin-bottom:0.25rem;">${d.name}</h3>
                     <p style="color:var(--primary); font-weight:600; font-size:0.9rem;">${d.role}</p>
                     ${d.qualifications ? `<p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">${d.qualifications}</p>` : ''}
                 </div>`;
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('staffListAdmin', e));
     }
 
     // ===================== HOLIDAYS (academics.html) =====================
@@ -689,81 +670,39 @@
                 container.innerHTML = '';
                 snap.forEach((doc) => {
                     const d = doc.data();
-                    // Format date manually if needed, or use dateStr directly
                     container.innerHTML += `<div class="premium-card" style="display:flex; align-items:center; gap:1rem; padding:1.25rem; text-align:left;">
-                    <div style="background:var(--primary-light); color:var(--primary); width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">
-                        <i class="fas fa-umbrella-beach"></i>
-                    </div>
-                    <div>
-                        <h3 style="margin:0; font-size:1rem;">${d.name}</h3>
-                        <p style="margin:0; font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">${d.dateStr}</p>
-                    </div>
+                    <div style="background:var(--primary-light); color:var(--primary); width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;"><i class="fas fa-umbrella-beach"></i></div>
+                    <div><h3 style="margin:0; font-size:1rem;">${d.name}</h3><p style="margin:0; font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">${d.dateStr}</p></div>
                 </div>`;
                 });
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('holidaysListAdmin', e));
     }
 
     // ===================== FEE STRUCTURE (admissions.html) =====================
     function loadFees() {
         const container = document.getElementById('feesListAdmin');
         if (!container) return;
+        const classOrder = { 'play-group': 1, nursery: 2, lkg: 3, ukg: 4, 'class-1': 5, 'class-2': 6, 'class-3': 7, 'class-4': 8, 'class-5': 9, 'class-6': 10, 'class-7': 11, 'class-8': 12 };
+        
         schoolData('fees')
             .get()
             .then((snap) => {
                 if (snap.empty) return;
-                let html = `<table class="fee-table">
-                <tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee / Misc (₹)</th></tr>`;
-
-                // Re-order by standard class parsing if possible, else just map
-                const classOrder = {
-                    'play-group': 1,
-                    nursery: 2,
-                    lkg: 3,
-                    ukg: 4,
-                    'class-1': 5,
-                    'class-2': 6,
-                    'class-3': 7,
-                    'class-4': 8,
-                    'class-5': 9,
-                    'class-6': 10,
-                    'class-7': 11,
-                    'class-8': 12,
-                    'class-9': 13,
-                    'class-10': 14,
-                };
                 let docs = [];
-                snap.forEach((d) => {
-                    const data = d.data();
-                    data.id = d.id;
-                    docs.push(data);
-                });
+                snap.forEach((d) => { const data = d.data(); data.id = d.id; docs.push(data); });
                 docs.sort((a, b) => (classOrder[a.id] || 99) - (classOrder[b.id] || 99));
 
+                let html = `<table class="fee-table"><tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee / Misc (₹)</th></tr>`;
                 docs.forEach((d) => {
-                    html += `<tr>
-                    <td style="font-weight:600;">${d.id.replace('-', ' ').toUpperCase()}</td>
-                    <td>₹${d.monthly || 0}</td>
-                    <td>₹${d.annual || 0}</td>
-                </tr>`;
+                    html += `<tr><td style="font-weight:600;">${d.id.replace('-', ' ').toUpperCase()}</td><td>₹${d.monthly || 0}</td><td>₹${d.annual || 0}</td></tr>`;
                 });
                 html += `</table>`;
                 container.innerHTML = html;
             })
-            .catch(() => {});
+            .catch((e) => handleLoadError('feesListAdmin', e));
     }
 
-    // Global Fallback for Lightbox (if not defined in page)
-    window.openLightbox =
-        window.openLightbox ||
-        function (img) {
-            const src = img.src || img;
-            window.open(src, '_blank');
-        };
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', tryApply);
-    } else {
-        tryApply();
-    }
+    window.openLightbox = window.openLightbox || function (img) { const src = img.src || img; window.open(src, '_blank'); };
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', tryApply); } else { tryApply(); }
 })();

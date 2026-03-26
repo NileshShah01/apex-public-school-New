@@ -18,9 +18,9 @@
             content="https://nileshshah01.github.io/Apex-public-school-test-01/images/site-preview.jpg"
         />
         <meta property="og:url" content="https://nileshshah01.github.io/Apex-public-school-test-01/" />
-        <link rel="icon" href="/images/favicon.png" />
+        <link rel="icon" href="./images/favicon.png" />
 
-        <link rel="stylesheet" href="/style.css" />
+        <link rel="stylesheet" href="./style.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,7 +31,7 @@
     </head>
 
     <body>
-        <div id="header"></div>
+        <header id="header" role="banner"></header>
 
         <!-- 1. HERO BANNER -->
         <section class="homepage-hero">
@@ -63,7 +63,7 @@
         <!-- 2.0 SCHOOL INTRODUCTION -->
         <section class="intro-section reveal mt-2">
             <div class="intro-image">
-                <img src="/images/School-Building.jpeg" alt="Apex Public School Building" />
+                <img src="./images/School-Building.jpeg" alt="Apex Public School Building" />
             </div>
             <div class="intro-text">
                 <h2 id="homeIntroTitle">About Apex Public School</h2>
@@ -209,7 +209,7 @@
             <div class="grid">
                 <div class="card">
                     <img
-                        src="/images/Sports-Event-Prize-Distribution-img1.jpeg"
+                        src="./images/Sports-Event-Prize-Distribution-img1.jpeg"
                         alt="Students receiving prizes at sports event"
                         loading="lazy"
                         class="card-img-top"
@@ -219,7 +219,7 @@
                 </div>
                 <div class="card">
                     <img
-                        src="/images/Republic-Day-img1.jpeg"
+                        src="./images/Republic-Day-img1.jpeg"
                         alt="Republic Day celebration at school"
                         loading="lazy"
                         class="card-img-top"
@@ -229,7 +229,7 @@
                 </div>
                 <div class="card">
                     <img
-                        src="/images/Science-centre-Patna-img3.jpeg"
+                        src="./images/Science-centre-Patna-img3.jpeg"
                         alt="Students exploring science exhibits"
                         loading="lazy"
                         class="card-img-top"
@@ -240,8 +240,8 @@
             </div>
         </section>
 
-        <section class="reveal">
-            <h2 class="section-title">Safe & Supportive Campus</h2>
+        <section class="reveal" aria-labelledby="safeCampusTitle">
+            <h2 class="section-title" id="safeCampusTitle">Safe & Supportive Campus</h2>
             <div class="grid">
                 <div class="card">
                     <i class="fas fa-video"></i>
@@ -269,14 +269,14 @@
                 <p class="text-center w-full text-muted p-2">Loading memories...</p>
                 <!-- Static Fallback (Hidden) -->
                 <div class="hidden">
-                    <img src="/images/Bihar-Museum-img1.jpeg" alt="Students at Bihar Museum" />
-                    <img src="/images/Science-centre-Patna-img3.jpeg" alt="Science Center exhibits" />
-                    <img src="/images/Republic-Day-img1.jpeg" alt="Republic Day celebrations" />
-                    <img src="/images/Sports-Event-Prize-Distribution-img1.jpeg" alt="Sports prize distribution" />
-                    <img src="/images/Bihar-Museum-img4.jpeg" alt="Artifacts at Bihar Museum" />
-                    <img src="/images/Bihar-Museum-img7.jpeg" alt="Museum corridors" />
-                    <img src="/images/Science-centre-Patna-img1.jpeg" alt="Science center entrance" />
-                    <img src="/images/Republic-Day-img2.jpeg" alt="Flag hoisting ceremony" />
+                    <img src="./images/Bihar-Museum-img1.jpeg" alt="Students at Bihar Museum" />
+                    <img src="./images/Science-centre-Patna-img3.jpeg" alt="Science Center exhibits" />
+                    <img src="./images/Republic-Day-img1.jpeg" alt="Republic Day celebrations" />
+                    <img src="./images/Sports-Event-Prize-Distribution-img1.jpeg" alt="Sports prize distribution" />
+                    <img src="./images/Bihar-Museum-img4.jpeg" alt="Artifacts at Bihar Museum" />
+                    <img src="./images/Bihar-Museum-img7.jpeg" alt="Museum corridors" />
+                    <img src="./images/Science-centre-Patna-img1.jpeg" alt="Science center entrance" />
+                    <img src="./images/Republic-Day-img2.jpeg" alt="Flag hoisting ceremony" />
                 </div>
             </div>
             <a href="gallery.html" class="btn-secondary" title="View Our Full Photo Gallery">View Full Gallery</a>
@@ -316,16 +316,16 @@
             <button onclick="location.href = 'contact.html'">Admission Inquiry</button>
         </section>
 
-        <div id="footer"></div>
+        <footer id="footer" role="contentinfo"></footer>
 
         <!-- NEW FLOATING BUTTONS CONTAINER -->
         <div id="floating-button"></div>
 
-        <script src="/script.js?v=1.4"></script>
+        <script src="./script.js?v=1.4"></script>
         <!-- Firebase SDK for CMS Settings -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="/js/firebase-config.js?v=1.4"></script>
-        <script src="/js/cms-settings.js?v=1.4"></script>
+        <script src="./js/firebase-config.js?v=1.4"></script>
+        <script src="./js/cms-settings.js?v=1.4"></script>
     </body>
 </html>

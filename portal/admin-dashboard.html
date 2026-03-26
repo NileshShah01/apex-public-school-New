@@ -4,8 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title id="dashboardTitle">Admin Dashboard</title>
-        <link rel="stylesheet" href="/css/portal.css" />
-        <link rel="stylesheet" href="/css/id-cards.css" />
+        <link rel="stylesheet" href="../css/portal.css" />
+        <link rel="stylesheet" href="../css/id-cards.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -62,7 +62,7 @@
             <!-- Sidebar -->
             <aside class="sidebar glass-sidebar" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <img id="sidebarLogoImg" src="/images/ApexPublicSchoolLogo.png" alt="School Logo" class="h-32 w-auto object-contain school-logo-dynamic">
+                    <img id="sidebarLogoImg" src="../images/ApexPublicSchoolLogo.png" alt="School Logo" class="h-32 w-auto object-contain school-logo-dynamic">
                     <h2 class="text-lg line-height-1-2 school-name-dynamic" id="sidebarSchoolName">School ERP</h2>
                 </div>
                 <!-- Sidebar Toggle Button -->
@@ -110,7 +110,7 @@
                     </div>
 
                     <!-- STUDENT -->
-                    <div class="nav-category" onclick="toggleCategory('catStudent')">
+                    <div class="nav-category" id="navStudent" onclick="toggleCategory('catStudent')">
                         <div class="cat-header">
                             <i class="fas fa-user-graduate"></i>
                             <span>Student Management</span>
@@ -377,7 +377,7 @@
 
 
                     <!-- ACADEMIC TOOLS -->
-                    <div class="nav-category" onclick="toggleCategory('catAcademicTools')">
+                    <div class="nav-category" id="navAcademic" onclick="toggleCategory('catAcademicTools')">
                         <div class="cat-header">
                             <i class="fas fa-tools"></i>
                             <span>Academic Tools</span>
@@ -398,7 +398,7 @@
                     </div>
 
                     <!-- WEBSITE CMS: GLOBAL -->
-                    <div class="nav-category" onclick="toggleCategory('catCMS')">
+                    <div class="nav-category" id="navWebsiteCMS" onclick="toggleCategory('catCMS')">
                         <div class="cat-header">
                             <i class="fas fa-globe"></i>
                             <span>Website CMS</span>
@@ -432,7 +432,7 @@
                     </div>
 
                     <!-- WEBSITE CMS: IMAGES -->
-                    <div class="nav-category" onclick="toggleCategory('catPageImages')">
+                    <div class="nav-category" id="navImagery" onclick="toggleCategory('catPageImages')">
                         <div class="cat-header">
                             <i class="fas fa-images"></i>
                             <span>Page Imagery</span>
@@ -461,7 +461,7 @@
                     </div>
 
                     <!-- WEBSITE CMS: TEXT -->
-                    <div class="nav-category" onclick="toggleCategory('catPageText')">
+                    <div class="nav-category" id="navContent" onclick="toggleCategory('catPageText')">
                         <div class="cat-header">
                             <i class="fas fa-font"></i>
                             <span>Page Content</span>
@@ -496,7 +496,7 @@
                     </div>
 
                     <!-- SETTINGS -->
-                    <div class="nav-category" onclick="toggleCategory('catSettings')">
+                    <div class="nav-category" id="navSettings" onclick="toggleCategory('catSettings')">
                         <div class="cat-header">
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
@@ -6463,31 +6463,32 @@
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
         <!-- Include SheetJS Style for Excel Borders -->
         <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-        <script src="/js/firebase-config.js?v=1.5"></script>
+        <script src="../js/firebase-config.js?v=1.5"></script>
+        <script src="../js/saas-policy.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script src="/js/admin-auth.js?v=1.5"></script>
-        <script src="/js/admin-dashboard.js?v=1.5"></script>
-        <script src="/js/cms-admin.js?v=1.5"></script>
-        <script src="/js/fee-dues-tool.js?v=1.5"></script>
-        <script src="/js/erp-class-mgmt.js?v=1.5"></script>
+        <script src="../js/admin-auth.js?v=1.5"></script>
+        <script src="../js/admin-dashboard.js?v=1.5"></script>
+        <script src="../js/cms-admin.js?v=1.5"></script>
+        <script src="../js/fee-dues-tool.js?v=1.5"></script>
+        <script src="../js/erp-class-mgmt.js?v=1.5"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-        <script src="/js/erp-exams.js?v=1.5"></script>
-        <script src="/js/erp-question-papers.js?v=1.5"></script>
-        <script src="/js/erp-fees.js?v=1.5"></script>
-        <script src="/js/erp-id-cards.js?v=1.5"></script>
-        <script src="/js/erp-admission.js?v=1.5"></script>
-        <script src="/js/id-card-templates.js?v=1.5"></script>
-        <script src="/js/report-card-factory.js?v=1.5"></script>
-        <script src="/js/erp-report-card-tool-v2.js"></script>
-        <script src="/js/erp-notifications.js?v=1.5"></script>
-        <script src="/js/erp-library.js?v=1.5"></script>
-        <script src="/js/erp-transport.js?v=1.5"></script>
-        <script src="/js/erp-analytics.js?v=1.5"></script>
-        <script src="/js/erp-attendance.js?v=1.5"></script>
-        <script src="/js/erp-homework.js?v=1.5"></script>
-        <script src="/js/erp-timetable.js?v=1.5"></script>
-        <script src="/js/admin-tools.js?v=1.5"></script>
-        <script src="/js/dashboard-analytics.js?v=1.5"></script>
+        <script src="../js/erp-exams.js?v=1.5"></script>
+        <script src="../js/erp-question-papers.js?v=1.5"></script>
+        <script src="../js/erp-fees.js?v=1.5"></script>
+        <script src="../js/erp-id-cards.js?v=1.5"></script>
+        <script src="../js/erp-admission.js?v=1.5"></script>
+        <script src="../js/id-card-templates.js?v=1.5"></script>
+        <script src="../js/report-card-factory.js?v=1.5"></script>
+        <script src="../js/erp-report-card-tool-v2.js"></script>
+        <script src="../js/erp-notifications.js?v=1.5"></script>
+        <script src="../js/erp-library.js?v=1.5"></script>
+        <script src="../js/erp-transport.js?v=1.5"></script>
+        <script src="../js/erp-analytics.js?v=1.5"></script>
+        <script src="../js/erp-attendance.js?v=1.5"></script>
+        <script src="../js/erp-homework.js?v=1.5"></script>
+        <script src="../js/erp-timetable.js?v=1.5"></script>
+        <script src="../js/admin-tools.js?v=1.5"></script>
+        <script src="../js/dashboard-analytics.js?v=1.5"></script>
         <!-- Fail-safe for loading overlay in case of script errors -->
         <script>
             window.addEventListener('load', function() {
@@ -6728,7 +6729,7 @@
             <div id="receiptPrintContent" class="receipt-premium">
                 <div class="rp-header">
                     <div class="rp-school-brand">
-                        <img id="rtcLogo" src="/images/default-logo.png" class="rp-logo" alt="School Logo" title="School Logo" />
+                        <img id="rtcLogo" src="../images/default-logo.png" class="rp-logo" alt="School Logo" title="School Logo" />
                         <div class="rp-school-details">
                             <h1 id="rtcSchoolName">School Name</h1>
                             <p id="rtcSchoolAddress">School Address Line</p>
@@ -6816,6 +6817,6 @@
                 </div>
             </div>
         </div>
-        <script src="/js/report-card-upload.js"></script>
+        <script src="../js/report-card-upload.js"></script>
     </body>
 </html>

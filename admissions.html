@@ -6,7 +6,7 @@
 
         <title>Admissions | Apex Public School</title>
 
-        <link rel="stylesheet" href="/style.css" />
+        <link rel="stylesheet" href="./style.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -118,8 +118,8 @@
 
         <section class="reveal">
             <div class="ad-banner-row">
-                <img src="/images/Admission Banner 1.png" class="ad-banner" alt="Admission Season 2026-27" title="Admission Banner 1" />
-                <img src="/images/Admission Banner.png" class="ad-banner" alt="Play Group to Class 8 Admissions" title="Admission Banner 2" />
+                <img src="./images/Admission Banner 1.png" class="ad-banner" alt="Admission Season 2026-27" title="Admission Banner 1" />
+                <img src="./images/Admission Banner.png" class="ad-banner" alt="Play Group to Class 8 Admissions" title="Admission Banner 2" />
             </div>
         </section>
 
@@ -134,8 +134,8 @@
                     </p>
                 </a>
 
-                <div class="card" onclick="location.href = 'inquiry.html'">
-                    <i class="fa-solid fa-file"></i>
+                <div class="card" role="button" tabindex="0" onclick="location.href = 'inquiry.html'" onkeypress="if(event.key==='Enter')location.href='inquiry.html'" aria-label="Fill Admission Inquiry Form">
+                    <i class="fa-solid fa-file" aria-hidden="true"></i>
                     <h3>Fill Form</h3>
                     <p>Fill the admission form with student details</p>
                 </div>
@@ -196,8 +196,8 @@
             </p>
 
             <div class="grid" id="admissionsFacilitiesGrid">
-                <div class="card" onclick="toggleFacilityPanel(this)">
-                    <i class="fas fa-chalkboard-teacher"></i>
+                <div class="card" role="button" tabindex="0" onclick="toggleFacilityPanel(this)" onkeypress="if(event.key==='Enter')toggleFacilityPanel(this)" aria-expanded="false" aria-label="Toggle Classrooms Facility Details">
+                    <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
                     <h3>Smart Classrooms</h3>
                     <div class="facility-panel">
                         <div class="facility-images">
@@ -296,13 +296,13 @@
         <!-- NEW FLOATING BUTTONS CONTAINER -->
         <div id="floating-button"></div>
 
-        <script src="/script.js"></script>
+        <script src="./script.js"></script>
 
         <!-- Firebase SDK for CMS -->
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="/js/firebase-config.js"></script>
-        <script src="/js/cms-settings.js"></script>
+        <script src="./js/firebase-config.js"></script>
+        <script src="./js/cms-settings.js"></script>
 
         <script>
             /* FAQ */

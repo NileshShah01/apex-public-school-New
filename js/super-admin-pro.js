@@ -6,14 +6,11 @@
 let allSchools = [];
 let growthChart = null;
 
-const STAGES = [
-    { name: 'Static Website', id: 1, desc: 'Basic online presence with essential school information.' },
-    { name: 'CMS Admin Panel', id: 2, desc: 'Full control over website content via a dedicated admin panel.' },
-    { name: 'Student Dashboard', id: 3, desc: 'Personalized dashboards for students to track progress.' },
-    { name: 'ERP Tools', id: 4, desc: 'Advanced administrative tools for school operations.' },
-    { name: 'Custom Tools', id: 5, desc: 'Custom-built specialized tools for unique requirements.' },
-    { name: 'Full ERP Suite', id: 6, desc: 'The ultimate ERP solution for complete school management.' },
-];
+const STAGES = Object.values(window.SAAS_POLICY?.SAAS_TIERS || {}).map(t => ({
+    name: t.name,
+    id: t.id,
+    desc: t.description
+})).filter(t => t.id > 0); // Hide Stage 0 from grid
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Auth Guard
@@ -328,22 +325,12 @@ async function handleAddSchool(e) {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Module permissions
-            const getModulesForStage = (s) => {
-                const modulesByStage = {
-                    1: ['website'],
-                    2: ['website', 'cms'],
-                    3: ['website', 'cms', 'student_portal'],
-                    4: ['website', 'cms', 'student_portal', 'attendance', 'fees'],
-                    5: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom'],
-                    6: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom', 'exams', 'reports', 'library', 'transport']
-                };
-                return modulesByStage[s] || ['website'];
-            };
+            // Module permissions (Centralized Policy)
+            const modules = window.SAAS_POLICY.getModulesForStage(stage);
 
             batch.set(schoolBase.collection('settings').doc('access'), {
                 maxStage: stage,
-                modules: getModulesForStage(stage),
+                modules,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
@@ -434,17 +421,8 @@ async function handleUpdateSchool(e) {
 
     try {
         showOverlay(true);
-        const getModulesForStage = (s) => {
-            const modulesByStage = {
-                1: ['website'],
-                2: ['website', 'cms'],
-                3: ['website', 'cms', 'student_portal'],
-                4: ['website', 'cms', 'student_portal', 'attendance', 'fees'],
-                5: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom'],
-                6: ['website', 'cms', 'student_portal', 'attendance', 'fees', 'custom', 'exams', 'reports', 'library', 'transport']
-            };
-            return modulesByStage[s] || ['website'];
-        };
+        // Centralized Policy Integration
+        const modules = window.SAAS_POLICY.getModulesForStage(stage);
 
         await db.collection('schools').doc(id).update({ 
             schoolName: name, 
@@ -455,7 +433,7 @@ async function handleUpdateSchool(e) {
         // Update permissions in settings/access
         await db.collection('schools').doc(id).collection('settings').doc('access').set({
             maxStage: stage,
-            modules: getModulesForStage(stage),
+            modules,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 

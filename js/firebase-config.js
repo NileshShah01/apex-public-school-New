@@ -55,11 +55,8 @@ function getURLSlug() {
     const pathParts = path.split('/').filter(p => p !== '');
     if (pathParts.length > 0) {
         const potentialSlug = pathParts[0];
-        const reserved = ['portal', 'images', 'js', 'css', 'assets', 'pdf', 'scripts',
-            'admin-login.html', 'student-login.html', 'platform.html',
-            'school.html', 'about.html', 'academics.html', 'admissions.html',
-            'contact.html', 'facilities.html', 'gallery.html', 'inquiry.html',
-            'provision.html', 'super-admin.html', 'super-admin-pro.html'];
+        const reserved = ['portal', 'images', 'js', 'css', 'assets', 'pdf', 'scripts', '_backups',
+            'admin-login.html', 'student-login.html', 'platform.html', 'super-admin.html', 'super-admin-pro.html'];
         if (!reserved.includes(potentialSlug.toLowerCase()) && !potentialSlug.includes('.')) {
             return potentialSlug;
         }
@@ -87,8 +84,6 @@ function getSchoolIdFromURL() {
     const slug = getURLSlug();
     if (slug) {
         const lower = slug.toLowerCase();
-        if (lower === 'apexps') return 'SCH001';
-        if (lower === 'snrworld') return 'SCH003';
         if (lower.match(/^sch\d+$/)) return lower.toUpperCase();
         // If slug exists but isn't resolved yet, return slug as-is
         // (resolveSchoolSlug will fix this asynchronously)
@@ -164,13 +159,8 @@ async function resolveSchoolSlug() {
             schoolMatch = slug.toUpperCase();
         }
 
-        // 4. Hardcoded fallbacks for local testing or specific known hosts
-        if (!schoolMatch) {
-            if (host.includes('apex-public-school')) schoolMatch = 'SCH001';
-            else if (host.includes('nexorasoft')) schoolMatch = 'SCH003';
-            else if (slug === 'apexps') schoolMatch = 'SCH001';
-            else if (slug === 'snrworld') schoolMatch = 'SCH003';
-        }
+        // Custom Domain & Subdomain mappings are now exclusively handled via Firestore
+        // to ensure zero-maintenance scaling.
 
         if (schoolMatch) {
             sessionStorage.setItem('CURRENT_SCHOOL_ID', schoolMatch);
