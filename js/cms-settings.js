@@ -23,6 +23,7 @@
         loadStaff();
         loadHolidays();
         loadAdmissionFacilities();
+        loadFees();
         loadHomeFacilities();
         loadHomeMemories();
         loadHeroSlider();
@@ -216,10 +217,11 @@
     // Helper to ensure image URLs are relative-ready
     function ensureAbsoluteUrl(url) {
         if (!url) return '';
-        if (url.startsWith('http') || url.startsWith('data:')) return url;
-        // Strip leading slash if present to support relative pathing from root
+        if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('/')) return url;
         const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-        return './' + cleanUrl;
+        // Directory-aware relative pathing
+        const isPortal = window.location.pathname.includes('/portal/');
+        return (isPortal ? '../' : './') + cleanUrl;
     }
 
     // ===================== HOME PAGE MEMORIES =====================
@@ -296,8 +298,7 @@
         schoolDoc('settings', 'admissions')
             .get()
             .then((doc) => {
-                if (!doc.exists) return;
-                const d = doc.data();
+                const d = doc.exists ? doc.data() : {};
 
                 const mapping = {
                     facility_smart_class: d.smart_class_urls,
@@ -312,7 +313,7 @@
                     if (container && urls && urls.length > 0) {
                         container.innerHTML = '';
                         urls.forEach((url) => {
-                            container.innerHTML += `<img src="${ensureAbsoluteUrl(url)}" style="width:100%; height:80px; object-fit:cover; border-radius:0.5rem; cursor:pointer;" onclick="event.stopPropagation(); openLightbox({src:'${ensureAbsoluteUrl(url)}'})">`;
+                            container.innerHTML += `<img src="${ensureAbsoluteUrl(url)}" style="width:100px; height:80px; object-fit:cover; border-radius:0.5rem; cursor:pointer;" onclick="event.stopPropagation(); openLightbox({src:'${ensureAbsoluteUrl(url)}'})">`;
                         });
                     } else if (container) {
                         container.innerHTML =
@@ -688,16 +689,19 @@
         schoolData('fees')
             .get()
             .then((snap) => {
-                if (snap.empty) return;
+                if (snap.empty) {
+                    container.innerHTML = '<p class="text-center text-muted p-5">Fee structure not updated yet.</p>';
+                    return;
+                }
                 let docs = [];
                 snap.forEach((d) => { const data = d.data(); data.id = d.id; docs.push(data); });
                 docs.sort((a, b) => (classOrder[a.id] || 99) - (classOrder[b.id] || 99));
 
-                let html = `<table class="fee-table"><tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee / Misc (₹)</th></tr>`;
+                let html = `<table class="fee-table"><thead><tr><th>Class</th><th>Monthly Fee (₹)</th><th>Annual Fee / Misc (₹)</th></tr></thead><tbody>`;
                 docs.forEach((d) => {
-                    html += `<tr><td style="font-weight:600;">${d.id.replace('-', ' ').toUpperCase()}</td><td>₹${d.monthly || 0}</td><td>₹${d.annual || 0}</td></tr>`;
+                    html += `<tr><td style="font-weight:600;">${d.id.replace(/-/g, ' ').toUpperCase()}</td><td>₹${d.monthly || 0}</td><td>₹${d.annual || 0}</td></tr>`;
                 });
-                html += `</table>`;
+                html += `</tbody></table>`;
                 container.innerHTML = html;
             })
             .catch((e) => handleLoadError('feesListAdmin', e));

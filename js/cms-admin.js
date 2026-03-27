@@ -58,12 +58,13 @@ function applySchoolBranding(data) {
     const name = data.schoolName || window.SCHOOL_NAME || 'School';
     let logo = data.logo || '/images/ApexPublicSchoolLogo.png';
 
-    // Ensure logo path is absolute
-    if (logo.startsWith('../')) {
-        logo = logo.substring(2);
-    }
-    if (!logo.startsWith('/') && !logo.startsWith('http')) {
-        logo = '/' + logo;
+    // Use centralized path normalization
+    if (typeof ensureAbsoluteUrl === 'function') {
+        logo = ensureAbsoluteUrl(logo);
+    } else {
+        // Fallback if utility not loaded
+        if (logo.startsWith('../')) logo = logo.substring(2);
+        if (!logo.startsWith('/') && !logo.startsWith('http')) logo = '/' + logo;
     }
 
     // Update Title

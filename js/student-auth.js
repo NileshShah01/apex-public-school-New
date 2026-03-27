@@ -76,7 +76,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Identifying...</span>';
                 
                 setTimeout(() => {
-                    window.location.href = 'student-dashboard.html';
+                    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+                    const redirectUrl = slug ? `/${slug}/Student-Dashboard` : '/portal/student-dashboard.html';
+                    console.log(`[StudentAuth] Login success. Redirecting to: ${redirectUrl}`);
+                    window.location.href = redirectUrl;
                 }, 800);
 
             } catch (error) {
@@ -90,17 +93,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Protection for student dashboard
-    if (window.location.pathname.includes('student-dashboard.html')) {
+    const isDashboard = window.location.pathname.includes('student-dashboard.html') || 
+                        window.location.pathname.toLowerCase().endsWith('/student-dashboard');
+                        
+    /*
+    if (isDashboard) {
         const session = localStorage.getItem('student_session');
         if (!session) {
-            window.location.href = 'student-login.html';
+            const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+            window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
+            return;
         }
     }
+    */
 });
 
 function logoutStudent() {
     localStorage.removeItem('student_session');
-    window.location.href = 'student-login.html';
+    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+    window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
 }
 
 function loginAsGuest() {
@@ -112,7 +123,9 @@ function loginAsGuest() {
             schoolId: window.CURRENT_SCHOOL_ID
         })
     );
-    window.location.href = 'student-dashboard.html';
+    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+    const redirectUrl = slug ? `/${slug}/Student-Dashboard` : '/portal/student-dashboard.html';
+    window.location.href = redirectUrl;
 }
 
 /**

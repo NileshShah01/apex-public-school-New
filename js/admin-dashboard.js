@@ -280,7 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.showSection(initialSection || 'dashboardOverview');
             }, 100);
         } else {
-            window.location.href = 'admin-login.html';
+            const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+            window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
         }
     });
 
@@ -1950,7 +1951,10 @@ async function handleBulkImport(e) {
 
 
 function logoutAdmin() {
-    auth.signOut().then(() => (window.location.href = 'admin-login.html'));
+    auth.signOut().then(() => {
+        const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+        window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
+    });
 }
 
 function updateStats() {

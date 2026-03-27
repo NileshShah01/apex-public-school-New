@@ -4,15 +4,24 @@
       "target": "school",
       "public": ".",
       "rewrites": [
-        {
-          "source": "/",
-          "destination": "/school.html"
-        },
-        {
-          "source": "/index.html",
-          "destination": "/school.html"
-        }
+        { "source": "/", "destination": "/school.html" },
+        { "source": "/index.html", "destination": "/school.html" },
+        { "source": "/Super-Admin-pro**", "destination": "/portal/super-admin-pro.html" },
+        { "source": "/Super-Admin**", "destination": "/portal/super-admin.html" },
+        { "source": "/*/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
+        { "source": "/*/Student-Dashboard**", "destination": "/portal/student-dashboard.html" },
+        { "source": "/*/Admin-Login**", "destination": "/portal/admin-login.html" },
+        { "source": "/*/Student-Login**", "destination": "/portal/student-login.html" },
+        { "source": "/*/Question-paper-Formator**", "destination": "/portal/tool-question-formatter.html" },
+        { "source": "/*/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
+        { "source": "/*/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
+        { "source": "/*/portal/admin-login.html", "destination": "/portal/admin-login.html" },
+        { "source": "/*/portal/student-login.html", "destination": "/portal/student-login.html" },
+        { "source": "/*/css/**", "destination": "/css/:splat" },
+        { "source": "/*/js/**", "destination": "/js/:splat" },
+        { "source": "/*/images/**", "destination": "/images/:splat" }
       ],
+      "trailingSlash": true,
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -29,9 +38,13 @@
       "rewrites": [
         { "source": "/", "destination": "/platform.html" },
         { "source": "/index.html", "destination": "/platform.html" },
-        { "source": "/*/Admin-Dashboard", "destination": "/portal/admin-dashboard.html" },
-        { "source": "/*/Student-Dashboard", "destination": "/portal/student-dashboard.html" },
-        { "source": "/*/Question-paper-Formator", "destination": "/portal/tool-question-formatter.html" },
+        { "source": "/Super-Admin-pro**", "destination": "/portal/super-admin-pro.html" },
+        { "source": "/Super-Admin**", "destination": "/portal/super-admin.html" },
+        { "source": "/*/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
+        { "source": "/*/Student-Dashboard**", "destination": "/portal/student-dashboard.html" },
+        { "source": "/*/Admin-Login**", "destination": "/portal/admin-login.html" },
+        { "source": "/*/Student-Login**", "destination": "/portal/student-login.html" },
+        { "source": "/*/Question-paper-Formator**", "destination": "/portal/tool-question-formatter.html" },
         { "source": "/*/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
         { "source": "/*/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
         { "source": "/*/portal/admin-login.html", "destination": "/portal/admin-login.html" },

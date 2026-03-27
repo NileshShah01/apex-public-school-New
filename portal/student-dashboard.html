@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title id="studentPortalTitle">Student Dashboard</title>
-        <link rel="stylesheet" href="../css/portal.css" />
+        <link rel="stylesheet" href="/css/portal.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -216,25 +216,25 @@
                                     <i class="fas fa-life-ring primary mr-0-5"></i> Quick Support Hub
                                 </h3>
                                 <div class="actions-hub">
-                                    <a href="../contact.html" class="action-item" title="Contact Support">
+                                    <a href="/contact.html" class="action-item" title="Contact Support">
                                         <div class="icon-box bg-primary white w-12 h-12 shadow-sm">
                                             <i class="fas fa-phone"></i>
                                         </div>
                                         <span class="text-xs font-bold secondary">Help Desk</span>
                                     </a>
-                                    <a href="../holidays.html" class="action-item" title="View School Holidays">
+                                    <a href="/holidays.html" class="action-item" title="View School Holidays">
                                         <div class="icon-box bg-amber-light text-warning w-12 h-12 shadow-sm">
                                             <i class="fas fa-calendar-day"></i>
                                         </div>
                                         <span class="text-xs font-bold secondary">Holidays</span>
                                     </a>
-                                    <a href="../staff.html" class="action-item" title="Meet Our Teachers">
+                                    <a href="/staff.html" class="action-item" title="Meet Our Teachers">
                                         <div class="icon-box bg-green-light text-success w-12 h-12 shadow-sm">
                                             <i class="fas fa-users"></i>
                                         </div>
                                         <span class="text-xs font-bold secondary">Directory</span>
                                     </a>
-                                    <a href="student-login.html" class="action-item" title="Logout from Portal">
+                                    <a href="/portal/student-login.html" class="action-item" onclick="logoutStudent()" title="Logout from Portal">
                                         <div class="icon-box bg-red-light text-danger w-12 h-12 shadow-sm">
                                             <i class="fas fa-sign-out-alt"></i>
                                         </div>
@@ -670,8 +670,8 @@
 
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-        <script src="../js/firebase-config.js"></script>
-        <script src="../js/student-auth.js"></script>
-        <script src="../js/student-dashboard.js"></script>
+        <script src="/js/firebase-config.js"></script>
+        <script src="/js/student-auth.js"></script>
+        <script src="/js/student-dashboard.js"></script>
     </body>
 </html>

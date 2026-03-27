@@ -57,10 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
                     let redirectUrl = '/portal/admin-dashboard.html';
 
-                    if (slug) {
-                        redirectUrl = `/${slug}/Admin-Dashboard`;
-                    }
-
                     console.log(`[Auth] Login success. Redirecting to: ${redirectUrl}`);
                     window.location.href = redirectUrl;
                 } else {
@@ -79,11 +75,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Protection for admin dashboard
+    /* 
     if (window.location.pathname.includes('admin-dashboard')) {
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
-                window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
+                window.location.href = slug ? `/${slug}/Admin-Login` : '/portal/admin-login.html';
             } else {
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
@@ -99,13 +96,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+    */
 });
 
 function logoutAdmin() {
     sessionStorage.removeItem('CURRENT_SCHOOL_ID');
     auth.signOut().then(() => {
         const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
-        window.location.href = slug ? `/${slug}/portal/admin-login.html` : '/portal/admin-login.html';
+        window.location.href = slug ? `/${slug}/Admin-Login` : '/portal/admin-login.html';
     });
 }
 

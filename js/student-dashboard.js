@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const session = localStorage.getItem('student_session');
     if (!session) {
-        window.location.href = 'student-login.html';
+        const slug = getURLSlug();
+        window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
         return;
     }
 
@@ -23,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn(`Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`);
         alert("Session mismatch. Please login to this school's portal.");
         localStorage.removeItem('student_session');
-        window.location.href = 'student-login.html';
+        const slug = getURLSlug();
+        window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
         return;
     }
 
@@ -31,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     isVisitor = sessionData.role === 'visitor';
 
     if (!currentStudentID && !isVisitor) {
-        window.location.href = 'student-login.html';
+        const slug = getURLSlug();
+        window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
         return;
     }
 
@@ -155,7 +158,7 @@ function showPortalSection(sectionId, updateHash = true) {
                         <p class="text-muted mb-2">Detailed ${sectionId} records are only available for registered students.</p>
                         <hr class="mb-2 opacity-10">
                         <div class="flex gap-1 justify-center">
-                            <a href="student-login.html" class="btn-portal primary">Student Login</a>
+                            <a href="/portal/student-login.html${getURLSlug() ? '?s=' + getURLSlug() : ''}" class="btn-portal primary">Student Login</a>
                             <a href="/admissions.html" class="btn-portal">Apply for Admission</a>
                         </div>
                     </div>
@@ -1117,7 +1120,8 @@ function setLoading(show) {
 
 function logoutStudent() {
     localStorage.removeItem('student_session');
-    window.location.href = 'student-login.html';
+    const slug = getURLSlug();
+    window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
 }
 
 window.showPortalSection = showPortalSection;

@@ -4,8 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title id="dashboardTitle">Admin Dashboard</title>
-        <link rel="stylesheet" href="../css/portal.css" />
-        <link rel="stylesheet" href="../css/id-cards.css" />
+        <link rel="stylesheet" href="/css/portal.css" />
+        <link rel="stylesheet" href="/css/id-cards.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -62,7 +62,7 @@
             <!-- Sidebar -->
             <aside class="sidebar glass-sidebar" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <img id="sidebarLogoImg" src="../images/ApexPublicSchoolLogo.png" alt="School Logo" class="h-32 w-auto object-contain school-logo-dynamic">
+                    <img id="sidebarLogoImg" src="/images/ApexPublicSchoolLogo.png" alt="School Logo" class="h-32 w-auto object-contain school-logo-dynamic">
                     <h2 class="text-lg line-height-1-2 school-name-dynamic" id="sidebarSchoolName">School ERP</h2>
                 </div>
                 <!-- Sidebar Toggle Button -->
@@ -5087,7 +5087,7 @@
                             <div class="form-group mb-1-5">
                                 <label class="mb-0-5 d-block font-600">School Logo</label>
                                 <div class="flex-center flex-column p-1 border-dashed border-radius-12 bg-light mb-1 preview-container-logo">
-                                    <img id="cms_logoPreview" src="../img/logo.png" class="preview-img-logo" alt="Logo Preview">
+                                    <img id="cms_logoPreview" src="../images/ApexPublicSchoolLogo.png" class="preview-img-logo" alt="Logo Preview">
                                     <p id="cms_logoStatus" class="text-xs text-muted mt-0-5">Current Logo</p>
                                 </div>
                                 <input type="file" id="cms_logoInput" class="form-control" accept="image/*" onchange="previewImage(this, 'cms_logoPreview')" title="Upload School Logo">
@@ -5097,7 +5097,7 @@
                             <div class="form-group mb-1-5">
                                 <label class="mb-0-5 d-block font-600">Principal's Signature</label>
                                 <div class="flex-center flex-column p-1 border-dashed border-radius-12 bg-light mb-1 preview-container-signature">
-                                    <img id="cms_signaturePreview" src="../img/signature-placeholder.png" class="preview-img-signature" alt="Signature Preview">
+                                    <img id="cms_signaturePreview" src="../images/favicon.png" class="preview-img-signature" alt="Signature Preview">
                                     <p id="cms_signatureStatus" class="text-xs text-muted mt-0-5">Current Signature</p>
                                 </div>
                                 <input type="file" id="cms_signatureInput" class="form-control" accept="image/*" onchange="previewImage(this, 'cms_signaturePreview')" title="Upload Principal's Signature">
@@ -6463,32 +6463,33 @@
         <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
         <!-- Include SheetJS Style for Excel Borders -->
         <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-        <script src="../js/firebase-config.js?v=1.5"></script>
-        <script src="../js/saas-policy.js"></script>
+        <script src="/js/firebase-config.js?v=1.5"></script>
+        <script src="/js/cms-settings.js?v=2.0"></script>
+        <script src="/js/saas-policy.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script src="../js/admin-auth.js?v=1.5"></script>
-        <script src="../js/admin-dashboard.js?v=1.5"></script>
-        <script src="../js/cms-admin.js?v=1.5"></script>
-        <script src="../js/fee-dues-tool.js?v=1.5"></script>
-        <script src="../js/erp-class-mgmt.js?v=1.5"></script>
+        <script src="/js/admin-auth.js?v=1.5"></script>
+        <script src="/js/admin-dashboard.js?v=1.5"></script>
+        <script src="/js/cms-admin.js?v=1.5"></script>
+        <script src="/js/fee-dues-tool.js?v=1.5"></script>
+        <script src="/js/erp-class-mgmt.js?v=1.5"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-        <script src="../js/erp-exams.js?v=1.5"></script>
-        <script src="../js/erp-question-papers.js?v=1.5"></script>
-        <script src="../js/erp-fees.js?v=1.5"></script>
-        <script src="../js/erp-id-cards.js?v=1.5"></script>
-        <script src="../js/erp-admission.js?v=1.5"></script>
-        <script src="../js/id-card-templates.js?v=1.5"></script>
-        <script src="../js/report-card-factory.js?v=1.5"></script>
-        <script src="../js/erp-report-card-tool-v2.js"></script>
-        <script src="../js/erp-notifications.js?v=1.5"></script>
-        <script src="../js/erp-library.js?v=1.5"></script>
-        <script src="../js/erp-transport.js?v=1.5"></script>
-        <script src="../js/erp-analytics.js?v=1.5"></script>
-        <script src="../js/erp-attendance.js?v=1.5"></script>
-        <script src="../js/erp-homework.js?v=1.5"></script>
-        <script src="../js/erp-timetable.js?v=1.5"></script>
-        <script src="../js/admin-tools.js?v=1.5"></script>
-        <script src="../js/dashboard-analytics.js?v=1.5"></script>
+        <script src="/js/erp-exams.js?v=1.5"></script>
+        <script src="/js/erp-question-papers.js?v=1.5"></script>
+        <script src="/js/erp-fees.js?v=1.5"></script>
+        <script src="/js/erp-id-cards.js?v=1.5"></script>
+        <script src="/js/erp-admission.js?v=1.5"></script>
+        <script src="/js/id-card-templates.js?v=1.5"></script>
+        <script src="/js/report-card-factory.js?v=1.5"></script>
+        <script src="/js/erp-report-card-tool-v2.js"></script>
+        <script src="/js/erp-notifications.js?v=1.5"></script>
+        <script src="/js/erp-library.js?v=1.5"></script>
+        <script src="/js/erp-transport.js?v=1.5"></script>
+        <script src="/js/erp-analytics.js?v=1.5"></script>
+        <script src="/js/erp-attendance.js?v=1.5"></script>
+        <script src="/js/erp-homework.js?v=1.5"></script>
+        <script src="/js/erp-timetable.js?v=1.5"></script>
+        <script src="/js/admin-tools.js?v=1.5"></script>
+        <script src="/js/dashboard-analytics.js?v=1.5"></script>
         <!-- Fail-safe for loading overlay in case of script errors -->
         <script>
             window.addEventListener('load', function() {
@@ -6729,7 +6730,7 @@
             <div id="receiptPrintContent" class="receipt-premium">
                 <div class="rp-header">
                     <div class="rp-school-brand">
-                        <img id="rtcLogo" src="../images/default-logo.png" class="rp-logo" alt="School Logo" title="School Logo" />
+                        <img id="rtcLogo" src="/images/ApexPublicSchoolLogo.png" class="rp-logo" alt="School Logo" title="School Logo" />
                         <div class="rp-school-details">
                             <h1 id="rtcSchoolName">School Name</h1>
                             <p id="rtcSchoolAddress">School Address Line</p>
@@ -6816,7 +6817,112 @@
                     </div>
                 </div>
             </div>
+            <!-- Placeholder Sections for Broken Links -->
+            <section id="pickupIdPrintSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Pickup ID Print</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">The Pickup ID Printing module is currently being finalized. Please check back soon.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="teacherTimetablesSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Teacher Timetables</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Teacher specific timetables are currently under development.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sendNotificationSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Send Notification</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Push notification services are being integrated.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="notificationHistorySection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Notification History</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Notification logs will be available here once the service is live.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="libraryTransactionsSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Library Transactions</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Library transaction history is being migrated to the new database schema.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="addEmployeeSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Add Employee</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">The HR Management module is currently under maintenance.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="searchEmployeeSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Search Employee</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Employee search functionality will be restored shortly.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="bulkEmployeeUpdateSection" class="dashboard-section" style="display: none;">
+                <div class="section-header">
+                    <h1>Bulk Employee Update</h1>
+                </div>
+                <div class="card p-20 text-center">
+                    <div class="empty-state py-40">
+                        <i data-lucide="construction" class="mx-auto mb-4 text-slate-400" style="width: 48px; height: 48px;"></i>
+                        <h3 class="text-xl font-bold mb-2">Module Under Construction</h3>
+                        <p class="text-slate-500">Bulk management tools for staff are in the pipeline.</p>
+                    </div>
+                </div>
+            </section>
         </div>
-        <script src="../js/report-card-upload.js"></script>
+
+        <script src="/js/report-card-upload.js"></script>
     </body>
 </html>

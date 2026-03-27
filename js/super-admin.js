@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Auth Guard (Strict)
     const isAuthorized = await checkSuperAdminAuth();
     if (!isAuthorized) {
-        window.location.href = 'admin-login.html';
+        window.location.href = '/portal/admin-login.html';
         return;
     }
 

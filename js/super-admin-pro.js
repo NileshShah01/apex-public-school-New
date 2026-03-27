@@ -14,11 +14,11 @@ const STAGES = Object.values(window.SAAS_POLICY?.SAAS_TIERS || {}).map(t => ({
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Auth Guard
-    const authorized = await checkSuperAdminAuth();
-    if (!authorized) {
-        window.location.href = 'admin-login.html';
-        return;
-    }
+    auth.onAuthStateChanged(user => {
+        if (!user) {
+            window.location.href = 'super-admin-login.html';
+        }
+    });
 
     // 2. Initialize UI
     lucide.createIcons();
@@ -183,8 +183,8 @@ function renderSchoolsTable(schools) {
             (s) => {
                 const slug = s.subdomain || s.schoolId.toLowerCase();
                 const baseUrl = window.location.origin;
-                const websiteUrl = s.subdomain.startsWith('http') ? s.subdomain : `${baseUrl}/${slug}/`;
-                const dashboardUrl = s.subdomain.startsWith('http') ? `${s.subdomain}/Admin-Dashboard` : `${baseUrl}/${slug}/Admin-Dashboard`;
+                const websiteUrl = (s.subdomain && s.subdomain.startsWith('http')) ? s.subdomain : `${baseUrl}/${slug}/`;
+                const dashboardUrl = (s.subdomain && s.subdomain.startsWith('http')) ? `${s.subdomain}/Admin-Dashboard` : `${baseUrl}/${slug}/Admin-Dashboard`;
                 
                 return `
                 <tr class="group hover:bg-white/5 transition-all">
@@ -582,4 +582,5 @@ window.openProEditModal = openProEditModal;
 window.closeModal = closeModal;
 window.toggleSchoolStatus = toggleSchoolStatus;
 window.saveAppearance = saveAppearance;
-window.logoutAdmin = () => auth.signOut().then(() => (window.location.href = 'admin-login.html'));
+window.logoutAdmin = () =>
+    auth.signOut().then(() => (window.location.href = '/portal/admin-login.html'));
