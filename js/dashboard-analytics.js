@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initAnalytics() {
     console.log('Initializing SNR World Analytics...');
 
+    if (window.schoolBootstrapReady) {
+        await window.schoolBootstrapReady;
+    }
+
     // Fetch initial data using the multi-tenant helper
     const studentSnap = await schoolData('students').get();
     const teacherSnap = await schoolData('staff').where('role', '==', 'Teacher').get();

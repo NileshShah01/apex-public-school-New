@@ -244,8 +244,7 @@ window.showSection = function(sectionId, updateHash = true) {
     }
 };
 
-// Set original reference for external scripts (like cms-admin.js or admin-tools.js) to override
-window.originalShowSection = window.showSection;
+// Deprecated: window.originalShowSection is no longer used for extension hooks
 
 document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
@@ -1262,63 +1261,6 @@ const PublishResultsUI = {
     loadClasses() { window.loadPublishClasses(); },
     loadSections() { window.loadPublishSections(); },
     refresh() { if (window.refreshPublishStatus) window.refreshPublishStatus(); }
-};
-
-const BulkReportCardUI = {
-    initUI() {
-        if (typeof RcPreviewUI !== 'undefined') {
-            RcPreviewUI.init();
-        }
-    },
-    loadClasses() { window.loadBulkResClasses(); },
-    loadSections() { window.loadBulkResSections(); },
-    async loadStudents() {
-        const sessEl = document.getElementById('bulkRes_sessionSelect');
-        const sess = sessEl.options[sessEl.selectedIndex].text;
-        const cls = document.getElementById('bulkRes_classSelect').value;
-        const sec = document.getElementById('bulkRes_sectionSelect').value;
-        const body = document.getElementById('bulkRes_studentList');
-        if (!body || !cls || !sec) return;
-
-        try {
-            const q = schoolData('students').where('session', '==', sess).where('class', '==', cls).where('section', '==', sec);
-            const snap = await q.get();
-            body.innerHTML = snap.docs.map(doc => `
-                <div class="flex align-center gap-0-75 p-0-5 surface-hover rounded-sm mb-0-25">
-                    <input type="checkbox" class="bulk-res-check" value="${doc.id}" checked>
-                    <span class="text-sm">${doc.data().name}</span>
-                </div>
-            `).join('');
-        } catch (e) { console.error(e); }
-    },
-    async runBulk() {
-        const selected = Array.from(document.querySelectorAll('.bulk-res-check:checked')).map(cb => cb.value);
-        const examId = document.getElementById('bulkRes_examSelect').value;
-        const format = document.getElementById('bulkRes_formatSelect').value;
-        const sessionId = document.getElementById('bulkRes_sessionSelect').value;
-
-        if (!selected.length || !examId) {
-            showToast('Select students and exam first', 'error');
-            return;
-        }
-
-        if (!confirm(`Generate ${selected.length} report cards?`)) return;
-
-        try {
-            setLoading(true);
-            showToast(`Generating ${selected.length} report cards...`, 'info');
-            for (const id of selected) {
-                if (window.processIndividualReportCard) {
-                    await window.processIndividualReportCard(id, examId, sessionId, format, false);
-                }
-            }
-            showToast('All report cards generated successfully!', 'success');
-        } catch (e) {
-            showToast('Bulk Error: ' + e.message, 'error');
-        } finally {
-            setLoading(false);
-        }
-    }
 };
 
 // Global hooks

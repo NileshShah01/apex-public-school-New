@@ -575,6 +575,41 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Analytics Section -->
+                    <div id="analyticsHub" class="mt-2-5">
+                        <h2 class="text-lg font-bold flex align-center gap-0-5 mb-1-5">
+                            <i class="fas fa-chart-pie"></i> Visual Insights
+                        </h2>
+                        <div class="grid-cols-auto-400 gap-1-5">
+                            <div class="card p-1-5">
+                                <h4 class="mb-1">
+                                    <i class="fas fa-chart-line text-emerald"></i> Fee Collection Trend
+                                </h4>
+                                <canvas id="feeGrowthChart" height="250"></canvas>
+                            </div>
+                            <div class="card p-1-5">
+                                <h4 class="mb-1"><i class="fas fa-chart-area text-sky"></i> Enrollment Growth</h4>
+                                <canvas id="enrollmentChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2-5 grid-cols-2-1 gap-2">
+                        <div class="card p-1-5">
+                            <h3 class="mb-1-5">Recent Admissions</h3>
+                            <div id="recentAdmissionsList" class="text-center text-muted p-2">
+                                <i class="fas fa-user-plus text-3xl mb-1 opacity-30"></i>
+                                <p>No recent admissions to show.</p>
+                            </div>
+                        </div>
+                        <div class="card p-1-5">
+                            <h3 class="mb-1-5">Quick Notices</h3>
+                            <div id="dashboardNotices" class="flex flex-col gap-1">
+                                <p class="text-muted text-sm">No active notices.</p>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 <!-- Student ID Card Generator -->
                 <section id="studentIdPrintSection" class="dashboard-section hidden">
@@ -4842,8 +4877,6 @@
                     </form>
                 </section>
 
-                </section>
-
                 <!-- MANUAL REPORT CARD UPLOAD -->
                 <section id="manualReportCardUploadSection" class="dashboard-section hidden glass-card p-3 border-radius-2">
                     <div class="text-center mb-3">
@@ -5120,58 +5153,6 @@
                             <button class="btn-portal btn-ghost w-100" onclick="addQuickLinkRow()">
                                 <i class="fas fa-plus"></i> Add New Quick Link
                             </button>
-                        </div>
-                    </div>
-                </section>
-                                <p>Section & Teacher</p>
-                            </a>
-                            <a href="#notices" class="feature-card" onclick="showSection('notices')">
-                                <div class="icon-box bg-indigo-light flex-center"><i class="fas fa-edit"></i></div>
-                                <h4>Notices</h4>
-                                <p>Student Updates</p>
-                            </a>
-                            <a href="#website" class="feature-card" onclick="showSection('cmsHero')">
-                                <div class="icon-box bg-green-light flex-center">
-                                    <i class="fas fa-file-invoice"></i>
-                                </div>
-                                <h4>CMS</h4>
-                                <p>Update Website</p>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Analytics Section -->
-                    <div id="analyticsHub" class="mt-2-5">
-                        <h2 class="text-lg font-bold flex align-center gap-0-5 mb-1-5">
-                            <i class="fas fa-chart-pie"></i> Visual Insights
-                        </h2>
-                        <div class="grid-cols-auto-400 gap-1-5">
-                            <div class="card p-1-5">
-                                <h4 class="mb-1">
-                                    <i class="fas fa-chart-line text-emerald"></i> Fee Collection Trend
-                                </h4>
-                                <canvas id="feeGrowthChart" height="250"></canvas>
-                            </div>
-                            <div class="card p-1-5">
-                                <h4 class="mb-1"><i class="fas fa-chart-area text-sky"></i> Enrollment Growth</h4>
-                                <canvas id="enrollmentChart" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-2-5 grid-cols-2-1 gap-2">
-                        <div class="card p-1-5">
-                            <h3 class="mb-1-5">Recent Admissions</h3>
-                            <div id="recentAdmissionsList" class="text-center text-muted p-2">
-                                <i class="fas fa-user-plus text-3xl mb-1 opacity-30"></i>
-                                <p>No recent admissions to show.</p>
-                            </div>
-                        </div>
-                        <div class="card p-1-5">
-                            <h3 class="mb-1-5">Quick Notices</h3>
-                            <div id="dashboardNotices" class="flex flex-col gap-1">
-                                <p class="text-muted text-sm">No active notices.</p>
-                            </div>
                         </div>
                     </div>
                 </section>

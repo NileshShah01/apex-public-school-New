@@ -139,11 +139,12 @@ const CMS_SECTIONS = {
 };
 
 // Hook into existing showSection via unified reference
+const cmsPreviousShowSection = window.showSection;
 window.showSection = function (id, updateHash = true) {
-    if (typeof window.originalShowSection === 'function') {
-        window.originalShowSection(id, updateHash);
+    if (typeof cmsPreviousShowSection === 'function') {
+        cmsPreviousShowSection(id, updateHash);
     } else {
-        console.warn('originalShowSection not found in CMS extension');
+        console.warn('Previous showSection not found in CMS extension');
     }
 
     if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();

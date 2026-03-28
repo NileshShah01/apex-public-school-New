@@ -1,0 +1,210 @@
+539 OPEN 1                 <section id="dashboardOverviewSection" class="dashboard-section active">
+578 CLOSE 0                 </section>
+580 OPEN 1                 <section id="studentIdPrintSection" class="dashboard-section hidden">
+716 CLOSE 0                 </section>
+719 OPEN 1                 <section id="studentListSection" class="dashboard-section card hidden">
+798 CLOSE 0                 </section>
+803 OPEN 1                 <section id="resultsStatusSection" class="dashboard-section card hidden">
+840 CLOSE 0                 </section>
+843 OPEN 1                 <section id="attendanceManagementSection" class="dashboard-section card hidden">
+935 CLOSE 0                 </section>
+938 OPEN 1                 <section id="viewAttendanceStats" class="dashboard-section card hidden">
+1037 CLOSE 0                 </section>
+1040 OPEN 1                 <section id="assignHomeworkSection" class="dashboard-section card hidden">
+1152 CLOSE 0                 </section>
+1155 OPEN 1                 <section id="homeworkHistorySection" class="dashboard-section card hidden">
+1169 CLOSE 0                 </section>
+1174 OPEN 1                 <section id="bulkResultGeneratorSection" class="dashboard-section card hidden">
+1272 CLOSE 0                 </section>
+1276 OPEN 1                 <section id="examGradingSection" class="dashboard-section card hidden">
+1330 CLOSE 0                 </section>
+1333 OPEN 1                 <section id="manageExamSection" class="dashboard-section card hidden">
+1380 CLOSE 0                 </section>
+1383 OPEN 1                 <section id="manageExamScheduleSection" class="dashboard-section card hidden">
+1444 CLOSE 0                 </section>
+1447 OPEN 1                  <section id="addResultSection" class="dashboard-section card hidden">
+1513 CLOSE 0                 </section>
+1516 OPEN 1                 <section id="viewExamScheduleSection" class="dashboard-section card hidden">
+1542 CLOSE 0                 </section>
+1545 OPEN 1                 <section id="publishExamScheduleSection" class="dashboard-section card hidden">
+1578 CLOSE 0                 </section>
+1581 OPEN 1                 <section id="admitCardToolSection" class="dashboard-section card hidden">
+1607 CLOSE 0                 </section>
+1610 OPEN 1                 <section id="examAttendanceCardSection" class="dashboard-section card hidden">
+1632 CLOSE 0                 </section>
+1635 OPEN 1                 <section id="studentExamAttendanceSection" class="dashboard-section card hidden">
+1678 CLOSE 0                 </section>
+1681 OPEN 1                 <section id="viewReportCardSection" class="dashboard-section card hidden">
+1750 CLOSE 0                 </section>
+1753 OPEN 1                 <section id="publishResultsSection" class="dashboard-section card hidden">
+1792 CLOSE 0                 </section>
+1795 OPEN 1                 <section id="resultAnalyticsSection" class="dashboard-section card hidden">
+1810 CLOSE 0                 </section>
+1813 OPEN 1                 <section id="manageAllResultsSection" class="dashboard-section card hidden">
+1858 CLOSE 0                 </section>
+1861 OPEN 1                 <section id="reportCardRemarksSection" class="dashboard-section card hidden">
+1902 CLOSE 0                 </section>
+1905 OPEN 1                 <section id="resultAnalyticsSection" class="dashboard-section card hidden">
+1957 CLOSE 0                 </section>
+1960 OPEN 1                 <section id="classTimetablesSection" class="dashboard-section card hidden">
+1999 CLOSE 0                 </section>
+2002 OPEN 1                 <section id="createTimetableSection" class="dashboard-section card hidden">
+2033 CLOSE 0                 </section>
+2036 OPEN 1                 <section id="questionPaperLibrarySection" class="dashboard-section card hidden">
+2088 CLOSE 0                 </section>
+2091 OPEN 1                 <section id="addManualPaperSection" class="dashboard-section card hidden">
+2127 CLOSE 0                 </section>
+2133 OPEN 1                 <section id="bookCatalogSection" class="dashboard-section card hidden">
+2226 CLOSE 0                 </section>
+2229 OPEN 1                 <section id="issueReturnSection" class="dashboard-section card hidden">
+2290 CLOSE 0                 </section>
+2293 OPEN 1                 <section id="manageRoutesSection" class="dashboard-section card hidden">
+2378 CLOSE 0                 </section>
+2381 OPEN 1                 <section id="mapTransportSection" class="dashboard-section card hidden">
+2421 CLOSE 0                 </section>
+2424 OPEN 1                 <section id="addStudentSection" class="dashboard-section card hidden">
+2738 CLOSE 0                 </section>
+2741 OPEN 1                 <section id="bulkImportSection" class="dashboard-section card hidden">
+2776 CLOSE 0                 </section>
+2779 OPEN 1                 <section id="noticesSection" class="dashboard-section hidden">
+2816 CLOSE 0                 </section>
+2819 OPEN 1                 <section id="promotionsSection" class="dashboard-section card hidden">
+2856 CLOSE 0                 </section>
+2859 OPEN 1                 <section id="websiteSettingsSection" class="dashboard-section card hidden">
+2915 CLOSE 0                 </section>
+2918 OPEN 1                 <section id="inquiriesSection" class="dashboard-section card hidden">
+2958 CLOSE 0                 </section>
+2961 OPEN 1                 <section id="admitCardSplitterSection" class="dashboard-section card hidden">
+3040 CLOSE 0                 </section>
+3043 OPEN 1                 <section id="cmsStatsSection" class="dashboard-section card hidden">
+3071 CLOSE 0                 </section>
+3074 OPEN 1                 <section id="cmsEventsSection" class="dashboard-section card hidden">
+3082 CLOSE 0                 </section>
+3085 OPEN 1                 <section id="cmsAchievementsSection" class="dashboard-section card hidden">
+3097 CLOSE 0                 </section>
+3100 OPEN 1                 <section id="cmsTestimonialsSection" class="dashboard-section card hidden">
+3112 CLOSE 0                 </section>
+3115 OPEN 1                 <section id="cmsAdmissionSection" class="dashboard-section card hidden">
+3172 CLOSE 0                 </section>
+3175 OPEN 1                 <section id="cmsHolidaysSection" class="dashboard-section card hidden">
+3183 CLOSE 0                 </section>
+3186 OPEN 1                 <section id="cmsGallerySection" class="dashboard-section card hidden">
+3194 CLOSE 0                 </section>
+3197 OPEN 1                 <section id="cmsStaffSection" class="dashboard-section card hidden">
+3219 CLOSE 0                 </section>
+3222 OPEN 1                 <section id="cmsTimetableSection" class="dashboard-section card hidden">
+3230 CLOSE 0                 </section>
+3233 OPEN 1                 <section id="cmsFeesSection" class="dashboard-section card hidden">
+3244 CLOSE 0                 </section>
+3247 OPEN 1                 <section id="cmsHeroSection" class="dashboard-section card hidden">
+3305 CLOSE 0                 </section>
+3308 OPEN 1                 <section id="cmsImgAdmissionsSection" class="dashboard-section hidden">
+3431 CLOSE 0                 </section>
+3434 OPEN 1                 <section id="cmsImgHomeFacilitiesSection" class="dashboard-section hidden">
+3559 CLOSE 0                 </section>
+3562 OPEN 1                 <section id="cmsImgHomeMemoriesSection" class="dashboard-section hidden">
+3673 CLOSE 0                 </section>
+3676 OPEN 1                 <section id="cmsImgHomeHeroSection" class="dashboard-section hidden">
+3739 CLOSE 0                 </section>
+3742 OPEN 1                 <section id="cmsImgAboutHeroSection" class="dashboard-section hidden">
+3767 CLOSE 0                 </section>
+3770 OPEN 1                 <section id="cmsImgFacilitiesSection" class="dashboard-section hidden">
+4019 CLOSE 0                 </section>
+4023 OPEN 1                 <section id="cmsTextHomeSection" class="dashboard-section hidden">
+4081 CLOSE 0                 </section>
+4084 OPEN 1                 <section id="cmsTextAboutSection" class="dashboard-section hidden">
+4129 CLOSE 0                 </section>
+4132 OPEN 1                 <section id="cmsTextAcademicsSection" class="dashboard-section hidden">
+4216 CLOSE 0                 </section>
+4217 OPEN 1                 <section id="cmsTextAdmissionsSection" class="dashboard-section hidden">
+4321 CLOSE 0                 </section>
+4322 OPEN 1                 <section id="cmsTextFacilitiesSection" class="dashboard-section hidden">
+4394 CLOSE 0                 </section>
+4395 OPEN 1                 <section id="cmsTextGallerySection" class="dashboard-section hidden">
+4422 CLOSE 0                 </section>
+4423 OPEN 1                 <section id="cmsTextContactSection" class="dashboard-section hidden">
+4441 CLOSE 0                 </section>
+4442 OPEN 1                 <section id="cmsTextInquirySection" class="dashboard-section hidden">
+4469 CLOSE 0                 </section>
+4472 OPEN 1                 <section id="cmsGlobalStatsSection" class="dashboard-section hidden">
+4528 CLOSE 0                 </section>
+4531 OPEN 1                 <section id="cmsStudentDashboardSection" class="dashboard-section hidden">
+4766 CLOSE 0                 </section>
+4769 OPEN 1                 <section id="cmsThemeSection" class="dashboard-section hidden">
+4843 CLOSE 0                 </section>
+4845 CLOSE -1                 </section>
+4848 OPEN 0                 <section id="manualReportCardUploadSection" class="dashboard-section hidden glass-card p-3 border-radius-2">
+4924 CLOSE -1                 </section>
+4925 OPEN 0                 <section id="parentsNotPaidTool" class="dashboard-section hidden glass-card p-3 border-radius-2">
+5046 CLOSE -1                 </section>
+5065 OPEN 0                 <section id="adminPortalCMSSection" class="dashboard-section hidden card">
+5125 CLOSE -1                 </section>
+5177 CLOSE -2                 </section>
+5180 OPEN -1                 <section id="addSessionSection" class="dashboard-section hidden">
+5250 CLOSE -2                 </section>
+5253 OPEN -1                 <section id="addClassSection" class="dashboard-section hidden">
+5314 CLOSE -2                 </section>
+5317 OPEN -1                 <section id="addClassDetailsSection" class="dashboard-section hidden">
+5361 CLOSE -2                 </section>
+5362 OPEN -1                 <section id="addSubjectSection" class="dashboard-section hidden">
+5425 CLOSE -2                 </section>
+5427 OPEN -1                 <section id="addNonSubjectSection" class="dashboard-section hidden">
+5481 CLOSE -2                 </section>
+5482 OPEN -1                 <section id="addSyllabusSection" class="dashboard-section hidden">
+5540 CLOSE -2                 </section>
+5545 OPEN -1                 <section id="addEnquirySection" class="dashboard-section hidden">
+5624 CLOSE -2                 </section>
+5626 OPEN -1                 <section id="searchEnquirySection" class="dashboard-section hidden">
+5660 CLOSE -2                 </section>
+5662 OPEN -1                 <section id="studentAdmissionSection" class="dashboard-section hidden">
+5693 CLOSE -2                 </section>
+5696 OPEN -1                 <section id="electiveMappingSection" class="dashboard-section hidden">
+5762 CLOSE -2                 </section>
+5764 OPEN -1                 <section id="employeeIdPrintSection" class="dashboard-section hidden">
+5786 CLOSE -2                 </section>
+5788 OPEN -1                 <section id="studentBulkUpdateSection" class="dashboard-section hidden">
+5927 CLOSE -2                 </section>
+5928 OPEN -1                 <section id="hostelReportSection" class="dashboard-section card hidden">
+5931 CLOSE -2                 </section>
+5932 OPEN -1                 <section id="transportReportSection" class="dashboard-section card hidden">
+5935 CLOSE -2                 </section>
+5939 OPEN -1                 <section id="feeMasterSection" class="dashboard-section card hidden">
+5999 CLOSE -2                 </section>
+6000 OPEN -1                 <section id="createMonthlyFeeSection" class="dashboard-section hidden">
+6044 CLOSE -2                 </section>
+6045 OPEN -1                 <section id="bulkFeeDiscountSection" class="dashboard-section card hidden">
+6056 CLOSE -2                 </section>
+6057 OPEN -1                 <section id="searchStudentFeeSection" class="dashboard-section hidden">
+6082 CLOSE -2                 </section>
+6085 OPEN -1                 <section id="bulkExtraFeeSection" class="dashboard-section card hidden">
+6123 CLOSE -2                 </section>
+6126 OPEN -1                 <section id="lateFeeRulesSection" class="dashboard-section card hidden">
+6180 CLOSE -2                 </section>
+6182 OPEN -1                 <section id="classFeePaymentSection" class="dashboard-section hidden">
+6340 CLOSE -2                 </section>
+6342 OPEN -1                 <section id="demandReceiptSection" class="dashboard-section hidden">
+6403 CLOSE -2                 </section>
+6405 OPEN -1                 <section id="searchFeeDuesSection" class="dashboard-section hidden">
+6553 CLOSE -2                 </section>
+6554 OPEN -1                 <section id="sendFeeMessageSection" class="dashboard-section card hidden">
+6557 CLOSE -2                 </section>
+6558 OPEN -1                 <section id="manageFeeFineSection" class="dashboard-section card hidden">
+6600 CLOSE -2                 </section>
+6601 OPEN -1                 <section id="feeCarryForwardSection" class="dashboard-section card hidden">
+6605 CLOSE -2                 </section>
+7118 OPEN -1             <section id="pickupIdPrintSection" class="dashboard-section" style="display: none;">
+7129 CLOSE -2             </section>
+7131 OPEN -1             <section id="teacherTimetablesSection" class="dashboard-section" style="display: none;">
+7142 CLOSE -2             </section>
+7144 OPEN -1             <section id="sendNotificationSection" class="dashboard-section" style="display: none;">
+7155 CLOSE -2             </section>
+7157 OPEN -1             <section id="notificationHistorySection" class="dashboard-section" style="display: none;">
+7168 CLOSE -2             </section>
+7170 OPEN -1             <section id="libraryTransactionsSection" class="dashboard-section" style="display: none;">
+7181 CLOSE -2             </section>
+7183 OPEN -1             <section id="addEmployeeSection" class="dashboard-section" style="display: none;">
+7194 CLOSE -2             </section>
+7196 OPEN -1             <section id="searchEmployeeSection" class="dashboard-section" style="display: none;">
+7207 CLOSE -2             </section>
+7209 OPEN -1             <section id="bulkEmployeeUpdateSection" class="dashboard-section" style="display: none;">
+7220 CLOSE -2             </section>

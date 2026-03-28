@@ -152,11 +152,12 @@
     };
 
     // Override or extend showSection via unified reference
+    const toolsPreviousShowSection = window.showSection;
     window.showSection = function (sectionId, updateHash = true) {
-        if (typeof window.originalShowSection === 'function') {
-            window.originalShowSection(sectionId, updateHash);
+        if (typeof toolsPreviousShowSection === 'function') {
+            toolsPreviousShowSection(sectionId, updateHash);
         } else {
-            console.warn('originalShowSection not found in Tools extension');
+            console.warn('Previous showSection not found in Tools extension');
         }
         
         if (sectionId === 'manageFeeFine') loadFeeFineSettings();

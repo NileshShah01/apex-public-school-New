@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     // Redirect logic
                     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
-                    let redirectUrl = '/portal/admin-dashboard.html';
+                    let redirectUrl = slug ? `/${slug}/Admin-Dashboard` : '/portal/admin-dashboard.html';
 
                     console.log(`[Auth] Login success. Redirecting to: ${redirectUrl}`);
                     window.location.href = redirectUrl;
