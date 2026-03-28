@@ -283,22 +283,16 @@
                             <i class="fas fa-chevron-down arrow"></i>
                         </div>
                         <div class="cat-submenu" id="catFees">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMaster')">Fee Master</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFee')"
-                                >Create Monthly Fee</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscount')"
-                                >Bulk Fee Discount</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFee')"
-                                >Search Student Fee</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDues')"
-                                >Search Fee Dues</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessage')"
-                                >Send Fee Message</a
-                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFee')">Student Fee Payment</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFee')">Monthly Fee Payment</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('classFeePaymentSection')">Add Fee Payment</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('demandReceipt')">Demand Receipt</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscount')">Bulk Discount</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkExtraFee')">Bulk Add Extra Fee</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('lateFeeRules')">Late Fee Fine Rule</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMaster')">Fee Setup (Master)</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDues')">Search Fee Dues</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessage')">Send Fee Message</a>
                         </div>
                     </div>
 
@@ -6049,40 +6043,138 @@
                     </div>
                 </section>
                 <section id="bulkFeeDiscountSection" class="dashboard-section card hidden">
-                    <h2>Bulk Fee Discount</h2>
-                    <p>Module under development...</p>
+                    <div class="header mb-1-5">
+                        <div>
+                            <h1>Bulk Fee Discount</h1>
+                            <p>Apply discounts across multiple students or classes</p>
+                        </div>
+                    </div>
+                    <div class="p-3 text-center text-slate-muted">
+                        <i class="fas fa-percent text-3xl opacity-01 mb-1"></i>
+                        <p>Module integration in progress...</p>
+                    </div>
                 </section>
                 <section id="searchStudentFeeSection" class="dashboard-section hidden">
                     <div class="header">
                         <div>
-                            <h1>Student Fee Search & Payment</h1>
-                            <p>Search by Student ID to view history and process payments</p>
+                            <h1><i class="fas fa-file-invoice-dollar primary"></i> Student Fee Ledger</h1>
+                            <p>Detailed payment history and itemized dues (Competitor Benchmark)</p>
                         </div>
                     </div>
-                    <div class="card mb-2 p-1-5">
+                    <div class="card mb-2 p-1-5 border-left-primary-thick">
                         <div class="grid-cols-2-1 gap-1 align-flex-end">
                             <div class="form-group m-0">
                                 <label>Search Student</label>
-                                <div
-                                    id="feeSearchSidContainer"
-                                    class="form-control"
-                                    title="Search Student Container"
-                                ></div>
-                                <input type="hidden" id="feeSearchSid" title="Search Student ID" />
+                                <div id="feeSearchSidContainer" class="form-control" title="Search Student Container"></div>
+                                <input type="hidden" id="feeSearchSid" />
                             </div>
-                            <button
-                                onclick="searchStudentFees()"
-                                class="btn-portal btn-primary h-42"
-                                title="Refresh Fees"
-                            >
-                                <i class="fas fa-search"></i> Refresh Fees
+                            <button onclick="searchStudentFees()" class="btn-portal btn-primary h-42">
+                                <i class="fas fa-search"></i> Refresh Ledger
                             </button>
                         </div>
                     </div>
                     <div id="feeSearchResults" class="card p-0 overflow-hidden">
-                        <div class="p-3 text-center text-slate-muted">
-                            <i class="fas fa-file-invoice-dollar text-3xl opacity-01 mb-1"></i>
-                            <p>Search for a student to see their fee records.</p>
+                        <div class="p-4 text-center text-slate-muted">
+                            <i class="fas fa-search text-3xl opacity-01 mb-1"></i>
+                            <p>Search for a student to see their complete fee lifecycle.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bulk Add Extra Fee Section -->
+                <section id="bulkExtraFeeSection" class="dashboard-section card hidden">
+                    <div class="header mb-1-5">
+                        <div>
+                            <h1 class="text-primary"><i class="fas fa-plus-circle"></i> Bulk Add Extra Fee</h1>
+                            <p>Add one-off charges (Library, Annual, Exam) to a whole class</p>
+                        </div>
+                    </div>
+                    <div class="card p-1-5 border-left-primary-thick bg-slate-50">
+                        <div class="grid-3 gap-1">
+                            <div class="form-group">
+                                <label>Session</label>
+                                <select id="befSession" class="form-control duesSessionFilter"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class</label>
+                                <select id="befClass" class="form-control duesClassFilter"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fee Type</label>
+                                <input type="text" id="befType" class="form-control" placeholder="e.g. Annual Charge">
+                            </div>
+                        </div>
+                        <div class="grid-3 gap-1 mt-1">
+                            <div class="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="befAmount" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Due Date</label>
+                                <input type="date" id="befDueDate" class="form-control">
+                            </div>
+                            <div class="form-group flex align-end">
+                                <button class="btn-portal btn-primary w-full h-42" onclick="applyBulkExtraFee()">
+                                    <i class="fas fa-plus-circle"></i> Apply to All Students
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Late Fee Fine Rule Section -->
+                <section id="lateFeeRulesSection" class="dashboard-section card hidden">
+                    <div class="header mb-1-5">
+                        <div>
+                            <h1 class="text-rose-500"><i class="fas fa-clock"></i> Late Fee Fine Rules</h1>
+                            <p>Configure automated fine calculation for overdue payments</p>
+                        </div>
+                    </div>
+                    <div class="grid-2-1 gap-1-5">
+                        <div class="card p-0 overflow-hidden">
+                            <div class="p-1-25 border-bottom bg-slate-50 font-600">Active Rules</div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Rule Name</th>
+                                            <th>Grace Days</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fineRulesTableBody">
+                                        <tr><td colspan="5" class="text-center p-4 text-muted">No rules defined</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card p-1-5">
+                            <h3 class="mb-1 text-md">Add New Rule</h3>
+                            <div class="form-group">
+                                <label>Rule Name</label>
+                                <input type="text" id="lfrName" class="form-control" placeholder="e.g. Standard Fine">
+                            </div>
+                            <div class="form-group">
+                                <label>Grace Period (Days)</label>
+                                <input type="number" id="lfrGrace" class="form-control" value="5">
+                            </div>
+                            <div class="form-group">
+                                <label>Fine Type</label>
+                                <select id="lfrType" class="form-control">
+                                    <option value="fixed">Fixed Amount (Once)</option>
+                                    <option value="per_day">Per Day Fine</option>
+                                    <option value="percent">Percentage of Due</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fine Amount (₹ / %)</label>
+                                <input type="number" id="lfrAmount" class="form-control" placeholder="Amount">
+                            </div>
+                            <button class="btn-portal btn-primary w-full mt-1" onclick="saveFineRule()">
+                                <i class="fas fa-save"></i> Save Rule
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -6247,6 +6339,69 @@
                     </div>
                 </section>
                 <!-- Search Fee Dues (Parents Who Didn't Pay Tool) -->
+                <section id="demandReceiptSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <h1>Demand Fee Receipt</h1>
+                        <p>Generate batch billing reminders for students</p>
+                    </div>
+
+                    <div class="card mt-1-5">
+                        <h3><i class="fas fa-file-invoice-dollar primary"></i> Student Demand Fee Receipt</h3>
+                        <div class="grid-4 gap-1-5 mt-1-25">
+                            <div class="form-group">
+                                <label>Session*</label>
+                                <select id="demandSessionSelect" class="form-control" title="Select Session"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Class*</label>
+                                <select id="demandClassSelect" class="form-control" title="Select Class"></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Due Date*</label>
+                                <input type="date" id="demandDueDate" class="form-control" title="Select Due Date">
+                            </div>
+                            <div class="form-group">
+                                <label>Till Month*</label>
+                                <select id="demandTillMonth" class="form-control" title="Generate dues till this month">
+                                    <option value="0">January</option>
+                                    <option value="1">February</option>
+                                    <option value="2" selected>March</option>
+                                    <option value="3">April</option>
+                                    <option value="4">May</option>
+                                    <option value="5">June</option>
+                                    <option value="6">July</option>
+                                    <option value="7">August</option>
+                                    <option value="8">September</option>
+                                    <option value="9">October</option>
+                                    <option value="10">November</option>
+                                    <option value="11">December</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 mt-1-5">
+                            <label class="flex align-center gap-0-5 checkbox-label">
+                                <input type="checkbox" id="demandIncludePrevious" checked>
+                                <span>All Previous Year Due Include</span>
+                            </label>
+                            <label class="flex align-center gap-0-5 checkbox-label">
+                                <input type="checkbox" id="demandCombineFees">
+                                <span>Fee Detail Combined</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-2 flex justify-end">
+                            <button class="btn-portal btn-primary" onclick="generateBatchDemandReceipts()">
+                                <i class="fas fa-print"></i> Generate & Print Receipts
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="demandReceiptPreview" class="mt-2 hidden">
+                        <!-- Preview of generated receipts if needed -->
+                    </div>
+                </section>
+
                 <section id="searchFeeDuesSection" class="dashboard-section hidden">
                     <div class="header mb-2">
                         <div>
@@ -6466,6 +6621,7 @@
         <script src="/js/firebase-config.js?v=1.5"></script>
         <script src="/js/cms-settings.js?v=2.0"></script>
         <script src="/js/saas-policy.js"></script>
+        <script src="/js/services/payment-service.js?v=1.0"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
         <script src="/js/admin-auth.js?v=1.5"></script>
         <script src="/js/admin-dashboard.js?v=1.5"></script>
@@ -6476,6 +6632,7 @@
         <script src="/js/erp-exams.js?v=1.5"></script>
         <script src="/js/erp-question-papers.js?v=1.5"></script>
         <script src="/js/erp-fees.js?v=1.5"></script>
+        <script src="/js/demand-receipt.js"></script>
         <script src="/js/erp-id-cards.js?v=1.5"></script>
         <script src="/js/erp-admission.js?v=1.5"></script>
         <script src="/js/id-card-templates.js?v=1.5"></script>
@@ -6741,7 +6898,135 @@
                         <h2>Receipt</h2>
                         <div class="rp-number-box"># <span id="rtcNo">0000</span></div>
                     </div>
-                </div>
+                    <style>
+                .demand-print-page {
+                    width: 210mm;
+                    height: 297mm;
+                    padding: 10mm;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-rows: 1fr 1fr;
+                    gap: 5mm;
+                    page-break-after: always;
+                    background: white;
+                }
+                .demand-receipt-card {
+                    border: 1px solid #1e293b;
+                    padding: 8mm;
+                    display: flex;
+                    flex-direction: column;
+                    font-family: 'Inter', sans-serif;
+                    position: relative;
+                    height: calc(148.5mm - 15mm); /* Half A4 minus gap/padding */
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }
+                .dr-header {
+                    display: flex;
+                    justify-content: space-between;
+                    border-bottom: 1.5px solid #1e293b;
+                    padding-bottom: 3mm;
+                    margin-bottom: 3mm;
+                }
+                .dr-school-info h2 {
+                    margin: 0;
+                    font-size: 14pt;
+                    font-weight: 800;
+                    color: #1e293b;
+                }
+                .dr-school-info p {
+                    margin: 0;
+                    font-size: 8pt;
+                    color: #475569;
+                }
+                .dr-label {
+                    text-align: right;
+                }
+                .dr-label h3 {
+                    margin: 0;
+                    font-size: 10pt;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+                .dr-label p {
+                    margin: 0;
+                    font-size: 8pt;
+                    font-weight: 600;
+                }
+                .dr-student-grid {
+                    display: grid;
+                    grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 1fr;
+                    border: 1px solid #1e293b;
+                    font-size: 7.5pt;
+                    margin-bottom: 3mm;
+                }
+                .dr-student-grid div {
+                    padding: 1.5mm;
+                    border-right: 1px solid #1e293b;
+                }
+                .dr-student-grid div:last-child {
+                    border-right: none;
+                }
+                .dr-grid-header {
+                    background: #f1f5f9;
+                    font-weight: 700;
+                    border-bottom: 1px solid #1e293b;
+                }
+                .dr-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 8pt;
+                    flex-grow: 1;
+                }
+                .dr-table th, .dr-table td {
+                    border: 1px solid #1e293b;
+                    padding: 1.5mm;
+                    text-align: left;
+                }
+                .dr-table th {
+                    background: #f1f5f9;
+                }
+                .dr-table td.text-right, .dr-table th.text-right {
+                    text-align: right;
+                }
+                .dr-summary {
+                    margin-top: 2mm;
+                    padding-top: 2mm;
+                    border-top: 1.5px solid #1e293b;
+                }
+                .dr-total-row {
+                    display: flex;
+                    justify-content: flex-end;
+                    font-weight: 800;
+                    font-size: 10pt;
+                }
+                .dr-note {
+                    font-size: 7.5pt;
+                    color: #475569;
+                    font-style: italic;
+                    margin-top: 2mm;
+                }
+                .dr-footer {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-top: auto;
+                    padding-top: 3mm;
+                }
+                @media print {
+                    body * { visibility: hidden; }
+                    #demandReceiptPrintContainer, #demandReceiptPrintContainer * { visibility: visible; }
+                    #demandReceiptPrintContainer {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 210mm;
+                    }
+                    .no-print { display: none !important; }
+                }
+            </style>
+            <div id="demandReceiptPrintContainer"></div>
+        </div>
 
                 <div class="rp-receipt-meta">
                     <div class="rp-meta-left">
@@ -6759,11 +7044,11 @@
                         <div class="rp-student-info">
                             <p>STUDENT DETAILS</p>
                             <h3 id="rtcName">Student Name</h3>
-                            <p><span id="rtcClass">Class - Section</span> | Adm: <span id="rtcAdm">0000</span></p>
+                            <p><span id="rtcClass">Class - Section</span> | Adm: <span id="rtcAdm">0000</span> | Roll: <span id="rtcRoll">--</span></p>
                         </div>
                         <div class="rp-student-info rp-text-right">
                             <p>FATHER'S NAME</p>
-                            <h3 id="rtcFName" class="font-16">Father's Name</h3>
+                            <h3 id="rtcFName" style="font-size: 16px;">Father's Name</h3>
                         </div>
                     </div>
 
@@ -6771,8 +7056,11 @@
                         <thead>
                             <tr>
                                 <th>Sl</th>
-                                <th>Fee Particulars</th>
-                                <th class="rp-text-right">Amount</th>
+                                <th>Fee Name</th>
+                                <th class="rp-text-right">Fee</th>
+                                <th class="rp-text-right">Discount</th>
+                                <th class="rp-text-right">Due</th>
+                                <th class="rp-text-right">Paid</th>
                             </tr>
                         </thead>
                         <tbody id="rtcTableBody">
@@ -6794,6 +7082,15 @@
                                 <span>Total Paid:</span>
                                 <span id="rtcPaid">₹0</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="rp-amount-sum" style="display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                        <div style="font-size: 13px; color: #475569;">
+                            <b>Current Dues:</b> <span id="rtcCurrentDues">₹0</span>
+                        </div>
+                        <div style="font-size: 13px; color: #475569;">
+                            <b>Received Amount:</b> <span id="rtcReceivedAmount">₹0</span>
                         </div>
                     </div>
 

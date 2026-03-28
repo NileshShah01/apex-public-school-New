@@ -214,14 +214,12 @@
         }
     }
 
-    // Helper to ensure image URLs are relative-ready
+    // Helper to ensure image URLs are root-relative
     function ensureAbsoluteUrl(url) {
         if (!url) return '';
         if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('/')) return url;
         const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-        // Directory-aware relative pathing
-        const isPortal = window.location.pathname.includes('/portal/');
-        return (isPortal ? '../' : './') + cleanUrl;
+        return '/' + cleanUrl;
     }
 
     // ===================== HOME PAGE MEMORIES =====================
