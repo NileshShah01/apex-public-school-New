@@ -22,18 +22,18 @@ service cloud.firestore {
 
     // 2. Compatibility Layer: Top-level Collections
     // Many legacy modules might still hit top-level collections
-    match /sessions/{docId} { allow read, write: if true; }
-    match /classes/{docId} { allow read, write: if true; }
-    match /students/{docId} { allow read, write: if true; }
-    match /marks/{docId} { allow read, write: if true; }
-    match /counters/{docId} { allow read, write: if true; }
-    match /gradingRules/{docId} { allow read, write: if true; }
-    match /exams/{docId} { allow read, write: if true; }
-    match /schedules/{docId} { allow read, write: if true; }
-    match /publications/{docId} { allow read, write: if true; }
-    match /remarks/{docId} { allow read, write: if true; }
-    match /exam_attendance/{docId} { allow read, write: if true; }
-    match /non_subject_marks/{docId} { allow read, write: if true; }
+    match /sessions/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /classes/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /students/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /marks/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /counters/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /gradingRules/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /exams/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /schedules/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /publications/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /remarks/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /exam_attendance/{docId} { allow read: if true; allow write: if request.auth != null; }
+    match /non_subject_marks/{docId} { allow read: if true; allow write: if request.auth != null; }
 
     // CMS & Website Content (Top-level Fallback)
     match /notices/{docId} { allow read: if true; allow write: if isAdmin(); }
@@ -48,7 +48,7 @@ service cloud.firestore {
     match /staff/{docId} { allow read: if true; allow write: if isAdmin(); }
     match /timetables/{docId} { allow read: if true; allow write: if isAdmin(); }
     match /fees/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /website_content/{docId} { allow read, write: if true; }
+    match /website_content/{docId} { allow read: if true; allow write: if request.auth != null; }
 
     match /inquiries/{docId} {
       allow write: if true;
