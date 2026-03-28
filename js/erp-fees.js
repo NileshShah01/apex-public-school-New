@@ -64,6 +64,9 @@ async function initERPFees() {
             console.error('Error loading sessions:', e);
         }
     }
+
+    // 4. Load Fine Rules
+    loadFineRules();
 }
 
 // ===================== LEGACY FEE GENERATION & SEARCH =====================
@@ -111,6 +114,10 @@ async function handleMonthlyFeeGenerate(e) {
                     amount: amount,
                     paidAmount: 0,
                     status: 'pending',
+                    feeType: 'Tuition Fee',
+                    frequency: 'Monthly',
+                    dueDate: `${year}-${monthNum}-10`, // Default 10th of month
+                    discount: 0
                 }),
                 { merge: true }
             );
@@ -130,26 +137,68 @@ async function searchStudentFees() {
     const sid = document.getElementById('feeSearchSid').value.trim();
     if (!sid) return;
     const resultsDiv = document.getElementById('feeSearchResults');
-    resultsDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    resultsDiv.innerHTML = '<div class="p-4 text-center"><i class="fas fa-spinner fa-spin"></i> Fetching lifecycle data...</div>';
 
     try {
-        const snap = await schoolData('fees').where('studentId', '==', sid).orderBy('year', 'desc').get();
-        if (snap.empty) {
-            resultsDiv.innerHTML = '<p>No fee records found for this student.</p>';
+        const data = await PaymentService.getStudentLedger(sid);
+        if (data.ledger.length === 0) {
+            resultsDiv.innerHTML = '<div class="p-4 text-center">No fee records found for this student.</div>';
             return;
         }
 
-        let html =
-            '<table class="portal-table"><thead><tr><th>Month/Year</th><th>Amount</th><th>Paid</th><th>Status</th><th>Action</th></tr></thead><tbody>';
-        snap.forEach((doc) => {
-            const d = doc.data();
-            const statusColor = d.status === 'paid' ? '#10b981' : d.status === 'partial' ? '#f59e0b' : '#ef4444';
-            html += `<tr><td>${d.month} ${d.year}</td><td>₹${d.amount}</td><td>₹${d.paidAmount || 0}</td><td><span class="badge" style="background:${statusColor}; color:white;">${d.status}</span></td><td>${d.status !== 'paid' ? `<button onclick="openPaymentModal('${doc.id}', ${d.amount}, ${d.paidAmount || 0})" class="btn-portal btn-sm btn-primary">Pay</button>` : '<i class="fas fa-check-circle" style="color:#10b981;"></i>'}</td></tr>`;
+        // Summary Bar (Competitor benchmark)
+        let html = `
+            <div class="grid-4 gap-1 p-1-5 bg-slate-50 border-bottom">
+                <div class="text-center"><p class="text-xs text-muted mb-0-25">Total Payable</p><p class="font-700 text-lg">₹${data.summary.total}</p></div>
+                <div class="text-center"><p class="text-xs text-muted mb-0-25">Total Paid</p><p class="font-700 text-lg text-emerald-600">₹${data.summary.paid}</p></div>
+                <div class="text-center"><p class="text-xs text-muted mb-0-25">Discounts</p><p class="font-700 text-lg text-amber-600">₹${data.summary.discount}</p></div>
+                <div class="text-center"><p class="text-xs text-muted mb-0-25">Balance Due</p><p class="font-800 text-lg text-rose-600">₹${data.summary.balance}</p></div>
+            </div>
+            <div class="table-container">
+                <table class="portal-table">
+                    <thead>
+                        <tr>
+                            <th>Fee Type</th>
+                            <th>Freq</th>
+                            <th>Month/Year</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Paid</th>
+                            <th>Discount</th>
+                            <th>Due</th>
+                            <th class="text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.ledger.forEach((f) => {
+            const statusColor = f.status === 'paid' ? '#10b981' : f.status === 'partial' ? '#f59e0b' : '#ef4444';
+            const due = f.amount - (f.paidAmount || 0) - (f.discount || 0);
+            
+            html += `
+                <tr>
+                    <td class="font-600">${f.feeType}</td>
+                    <td><span class="text-xs px-0-5 py-0-25 bg-slate-100 border-radius-4">${f.frequency}</span></td>
+                    <td class="whitespace-nowrap">${f.month} ${f.year}</td>
+                    <td>${f.dueDate}</td>
+                    <td><span class="badge" style="background:${statusColor}; color:white;">${f.status}</span></td>
+                    <td class="font-600">₹${f.amount}</td>
+                    <td class="text-emerald-500">₹${f.paidAmount || 0}</td>
+                    <td class="text-amber-500">₹${f.discount || 0}</td>
+                    <td class="text-rose-500 font-700">₹${due > 0 ? due : 0}</td>
+                    <td class="text-right">
+                        ${due > 0 ? `<button onclick="openPaymentModal('${f.id}', ${f.amount}, ${f.paidAmount || 0})" class="btn-portal btn-sm btn-primary">Pay</button>` : '<i class="fas fa-check-circle text-emerald-500"></i>'}
+                    </td>
+                </tr>
+            `;
         });
-        html += '</tbody></table>';
+
+        html += '</tbody></table></div>';
         resultsDiv.innerHTML = html;
     } catch (e) {
-        resultsDiv.innerHTML = `<p style="color:red;">Error: ${e.message}</p>`;
+        resultsDiv.innerHTML = `<div class="p-4 text-center text-rose-500">Error: ${e.message}</div>`;
     }
 }
 
@@ -371,7 +420,6 @@ async function deleteFeeStructure(id) {
         await schoolDoc('feeStructures', id).delete();
         loadFeeMaster();
     } catch (e) {
-        console.error(e);
     }
 }
 
@@ -383,12 +431,15 @@ async function loadStudentLedgerData(sid) {
     const infoBox = document.getElementById('fcStudentQuickInfo');
     const ledgerTable = document.getElementById('fcLedgerTableBody');
     const historyTable = document.getElementById('fcPaymentsTableBody');
+    
     infoBox.style.display = 'none';
     ledgerTable.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
+    
     try {
+        // 1. Fetch Student Info (UI optimization: check if already in window.allStudents)
         const studentSnap = await schoolData('students').where('studentId', '==', sid).limit(1).get();
         if (studentSnap.empty) {
-            ledgerTable.innerHTML = '<tr><td colspan="6" class="text-center">Not found.</td></tr>';
+            ledgerTable.innerHTML = '<tr><td colspan="6" class="text-center">Student not found.</td></tr>';
             return;
         }
         const s = studentSnap.docs[0].data();
@@ -396,79 +447,93 @@ async function loadStudentLedgerData(sid) {
         document.getElementById('fcStudentClassSection').textContent = `Class ${s.class}`;
         infoBox.style.display = 'block';
 
-        const feeSnap = await schoolData('fees').where('studentId', '==', sid).get();
-        let total = 0,
-            paid = 0;
-        ledgerTable.innerHTML = feeSnap.docs
-            .map((doc) => {
-                const f = doc.data();
-                total += f.amount;
-                paid += f.paidAmount || 0;
-                return `<tr><td>${f.month}</td><td>${f.feeType || 'Fee'}</td><td>₹${f.amount}</td><td>₹${f.paidAmount || 0}</td><td>₹${f.amount - (f.paidAmount || 0)}</td><td>${f.status}</td></tr>`;
-            })
-            .join('');
-        document.getElementById('fcTotalFee').textContent = `₹${total}`;
-        document.getElementById('fcTotalPaid').textContent = `₹${paid}`;
-        document.getElementById('fcTotalBalance').textContent = `₹${total - paid}`;
-        activeStudentLedger = { sid, balance: total - paid };
+        // 2. Fetch Ledger via Service
+        const data = await PaymentService.getStudentLedger(sid);
+        
+        // 3. Render Ledger
+        ledgerTable.innerHTML = data.ledger.length > 0 
+            ? data.ledger.map(f => `
+                <tr>
+                    <td class="whitespace-nowrap">${f.month} ${f.year}</td>
+                    <td class="font-semibold">${f.feeType || 'Tuition Fee'}</td>
+                    <td>${f.frequency || 'Monthly'}</td>
+                    <td>${f.dueDate || '--'}</td>
+                    <td class="font-bold">₹${f.amount}</td>
+                    <td class="text-emerald-500">₹${f.paidAmount || 0}</td>
+                    <td class="text-rose-500">₹${f.amount - (f.paidAmount || 0)}</td>
+                    <td><span class="badge" style="background: ${f.status==='paid'?'#10b981':f.status==='partial'?'#f59e0b':'#ef4444'}">${f.status}</span></td>
+                </tr>`).join('')
+            : '<tr><td colspan="8" class="text-center p-8 text-slate-500">No fee records found for this student.</td></tr>';
 
-        const paySnap = await schoolData('feePayments')
-            .where('studentId', '==', sid)
-            .orderBy('createdAt', 'desc')
-            .limit(5)
-            .get();
-        historyTable.innerHTML =
-            paySnap.docs
-                .map((doc) => {
-                    const p = doc.data();
-                    return `<tr><td>${p.receiptNo}</td><td>${new Date(p.createdAt.seconds * 1000).toLocaleDateString()}</td><td>₹${p.amount}</td><td>${p.paymentMode}</td><td><button onclick="printReceipt('${doc.id}')"><i class="fas fa-print"></i></button></td></tr>`;
-                })
-                .join('') || '<tr><td colspan="5">No history</td></tr>';
+        // 4. Render History
+        historyTable.innerHTML = data.history.length > 0
+            ? data.history.map(p => `
+                <tr>
+                    <td>${p.receiptNo}</td>
+                    <td>${p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
+                    <td>₹${p.amount}</td>
+                    <td>${p.paymentMode}</td>
+                    <td><button onclick="printReceipt('${p.id}')" class="btn-icon"><i class="fas fa-print"></i></button></td>
+                </tr>`).join('')
+            : '<tr><td colspan="5" class="text-center">No history</td></tr>';
+
+        // 5. Update Totals
+        document.getElementById('fcTotalFee').textContent = `₹${data.summary.total}`;
+        document.getElementById('fcTotalPaid').textContent = `₹${data.summary.paid}`;
+        document.getElementById('fcTotalBalance').textContent = `₹${data.summary.balance}`;
+        
+        activeStudentLedger = { sid, balance: data.summary.balance };
+
     } catch (e) {
-        console.error(e);
+        console.error('Error loading ledger:', e);
+        showToast('Error loading ledger records', 'error');
     }
 }
 
 async function handleFeePayment(e) {
-    e.preventDefault();
-    if (!activeStudentLedger) return;
+    if(e) e.preventDefault();
+    if (!activeStudentLedger) {
+        showToast('No student selected', 'error');
+        return;
+    }
+
     const amount = parseFloat(document.getElementById('payAmount').value);
     const mode = document.getElementById('payMode').value;
-    const receiptNo = 'R-' + Math.floor(Math.random() * 900000 + 100000);
+    const reference = document.getElementById('payRef')?.value || '';
+    const remarks = document.getElementById('payRemarks')?.value || 'Dashboard Payment';
+    const session = document.getElementById('feeMasterSessionFilter')?.value || '';
+
+    if (isNaN(amount) || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+    }
+
     try {
-        setLoading(true);
-        const payRef = await schoolData('feePayments').add(
-            withSchool({
-                studentId: activeStudentLedger.sid,
-                amount,
-                paymentMode: mode,
-                receiptNo,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            })
-        );
-        const feeSnap = await schoolData('fees')
-            .where('studentId', '==', activeStudentLedger.sid)
-            .where('status', '!=', 'paid')
-            .get();
-        let rem = amount;
-        const batch = (window.db || firebase.firestore()).batch();
-        feeSnap.forEach((doc) => {
-            if (rem <= 0) return;
-            const f = doc.data();
-            const due = f.amount - (f.paidAmount || 0);
-            const pay = Math.min(rem, due);
-            batch.update(schoolDoc('fees', doc.id), {
-                paidAmount: (f.paidAmount || 0) + pay,
-                status: f.paidAmount + pay >= f.amount ? 'paid' : 'partial',
-            });
-            rem -= pay;
+        setLoading(true, 'Processing Payment...');
+        const result = await PaymentService.recordPayment({
+            studentId: activeStudentLedger.sid,
+            amount: amount,
+            method: mode,
+            session: session,
+            reference: reference,
+            remarks: remarks
         });
-        await batch.commit();
-        showToast('Payment Successful!');
+
+        showToast(`Payment Recorded: ${result.receiptNo}`, 'success');
+        
+        // Refresh UI
         loadStudentLedgerData(activeStudentLedger.sid);
-        printReceipt(payRef.id);
+        
+        // Print Receipt
+        printReceipt(result.paymentId);
+        
+        // Clear input
+        document.getElementById('payAmount').value = '';
+        if (document.getElementById('payRef')) document.getElementById('payRef').value = '';
+        if (document.getElementById('payRemarks')) document.getElementById('payRemarks').value = '';
     } catch (e) {
-        console.error(e);
+        console.error('Payment Error:', e);
+        showToast('Failed to record payment: ' + e.message, 'error');
     } finally {
         setLoading(false);
     }
@@ -505,26 +570,49 @@ async function printReceipt(pid) {
         // Populate Student Info
         document.getElementById('rtcName').textContent = s.name;
         document.getElementById('rtcClass').textContent = `Class ${s.class || '--'} ${s.section || ''}`;
-        document.getElementById('rtcAdm').textContent = s.studentId;
+        document.getElementById('rtcAdm').textContent = s.studentId || s.student_id;
         document.getElementById('rtcFName').textContent = s.fatherName || '--';
+        if (document.getElementById('rtcRoll')) document.getElementById('rtcRoll').textContent = s.rollNo || '--';
         
-        // Populate Table (Simple for now, can be expanded if individual fee linkage is added)
+        // Populate Table (Itemized Allocations)
         const tableBody = document.getElementById('rtcTableBody');
-        tableBody.innerHTML = `
-            <tr>
-                <td>1</td>
-                <td>School Fee Payment (Towards Outstanding Dues)</td>
-                <td style="text-align: right;">₹${p.amount}</td>
-            </tr>
-        `;
+        const allocations = p.allocations || [];
         
-        // Totals
+        if (allocations.length > 0) {
+            tableBody.innerHTML = allocations.map((alt, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${alt.feeType} - ${alt.month} ${alt.year}</td>
+                    <td style="text-align: right;">₹${alt.amount}</td>
+                    <td style="text-align: right;">₹0</td>
+                    <td style="text-align: right;">₹${alt.remainingAfter + alt.paidNow}</td>
+                    <td style="text-align: right; font-weight: bold;">₹${alt.paidNow}</td>
+                </tr>
+            `).join('');
+        } else {
+            tableBody.innerHTML = `
+                <tr>
+                    <td>1</td>
+                    <td>School Fee Payment (Towards Outstanding Dues)</td>
+                    <td style="text-align: right;">₹${p.amount}</td>
+                    <td style="text-align: right;">₹0</td>
+                    <td style="text-align: right;">₹${p.amount}</td>
+                    <td style="text-align: right; font-weight: bold;">₹${p.amount}</td>
+                </tr>
+            `;
+        }
+        
+        // Totals & Footer Info
+        const currentBalance = (window.activeStudentLedger && window.activeStudentLedger.balance) || 0;
         document.getElementById('rtcTotalFee').textContent = `₹${p.amount}`;
-        document.getElementById('rtcTotalDisc').textContent = `-₹0`;
         document.getElementById('rtcPaid').textContent = `₹${p.amount}`;
         document.getElementById('rtcAmountWords').textContent = numberToWords(p.amount) + ' Rupees Only';
         document.getElementById('rtcRemarks').textContent = p.remarks || 'Payment received with thanks.';
         document.getElementById('rtcTime').textContent = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
+        
+        // Match competitor's data points
+        if (document.getElementById('rtcCurrentDues')) document.getElementById('rtcCurrentDues').textContent = `₹${currentBalance}`;
+        if (document.getElementById('rtcReceivedAmount')) document.getElementById('rtcReceivedAmount').textContent = `₹${p.amount}`;
 
         const area = document.getElementById('feeReceiptPrintTemplate');
         area.classList.remove('hidden');
@@ -581,6 +669,129 @@ function numberToWords(n) {
     return str.trim();
 }
 
+// ===================== BULK EXTRA FEE & FINE RULES =====================
+
+async function applyBulkExtraFee() {
+    const session = document.getElementById('befSession').value;
+    const cls = document.getElementById('befClass').value;
+    const type = document.getElementById('befType').value;
+    const amount = parseFloat(document.getElementById('befAmount').value);
+    const dueDate = document.getElementById('befDueDate').value;
+
+    if (!session || !cls || !type || isNaN(amount)) {
+        showToast('Please fill all fields correctly', 'error');
+        return;
+    }
+
+    if (!confirm(`Apply charge of ₹${amount} (${type}) to all students in ${cls}?`)) return;
+
+    setLoading(true, 'Applying bulk charges...');
+    try {
+        const studentsSnap = await schoolData('students').where('class', '==', cls).get();
+        if (studentsSnap.empty) {
+            showToast('No students found in this class', 'error');
+            return;
+        }
+
+        const batch = (window.db || firebase.firestore()).batch();
+        const now = new Date();
+        const monthYear = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const [month, year] = monthYear.split(' ');
+
+        studentsSnap.forEach(doc => {
+            const sid = doc.data().studentId || doc.data().student_id;
+            const feeId = `${sid}_EXTRA_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+            const feeRef = schoolDoc('fees', feeId);
+            
+            batch.set(feeRef, withSchool({
+                studentId: sid,
+                class: cls,
+                month: month,
+                year: year,
+                amount: amount,
+                paidAmount: 0,
+                status: 'pending',
+                feeType: type,
+                frequency: 'One-off',
+                dueDate: dueDate || '--',
+                discount: 0
+            }));
+        });
+
+        await batch.commit();
+        showToast(`Successfully added "${type}" to ${studentsSnap.size} students`);
+        
+        // Reset form
+        document.getElementById('befType').value = '';
+        document.getElementById('befAmount').value = '';
+    } catch (e) {
+        showToast('Operation failed: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function saveFineRule() {
+    const name = document.getElementById('lfrName').value;
+    const grace = parseInt(document.getElementById('lfrGrace').value);
+    const type = document.getElementById('lfrType').value;
+    const amount = parseFloat(document.getElementById('lfrAmount').value);
+
+    if (!name || isNaN(grace) || isNaN(amount)) {
+        showToast('Please fill all rule fields', 'error');
+        return;
+    }
+
+    setLoading(true);
+    try {
+        await schoolData('fineRules').add(withSchool({
+            name, graceDays: grace, fineType: type, amount, active: true
+        }));
+        showToast('Fine rule saved successfully');
+        loadFineRules();
+    } catch (e) {
+        showToast('Error saving rule: ' + e.message, 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function loadFineRules() {
+    const tbody = document.getElementById('fineRulesTableBody');
+    if (!tbody) return;
+    try {
+        const snap = await schoolData('fineRules').get();
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No rules defined</td></tr>';
+            return;
+        }
+        tbody.innerHTML = snap.docs.map(doc => {
+            const r = doc.data();
+            return `
+                <tr>
+                    <td><b>${r.name}</b></td>
+                    <td>${r.graceDays} Days</td>
+                    <td class="capitalize">${r.fineType.replace('_', ' ')}</td>
+                    <td>${r.fineType === 'percent' ? r.amount + '%' : '₹' + r.amount}</td>
+                    <td class="text-center">
+                        <button onclick="deleteFineRule('${doc.id}')" class="text-rose-500 btn-icon"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function deleteFineRule(id) {
+    if (!confirm('Delete this rule?')) return;
+    try {
+        await schoolDoc('fineRules', id).delete();
+        loadFineRules();
+    } catch (e) {}
+}
+
 // ===================== PARENTS NOT PAID TOOL =====================
 
 async function loadParentsNotPaidTool() {
@@ -630,3 +841,7 @@ window.loadStudentLedgerData = loadStudentLedgerData;
 window.handleFeePayment = handleFeePayment;
 window.printReceipt = printReceipt;
 window.loadParentsNotPaidTool = loadParentsNotPaidTool;
+window.applyBulkExtraFee = applyBulkExtraFee;
+window.saveFineRule = saveFineRule;
+window.loadFineRules = loadFineRules;
+window.deleteFineRule = deleteFineRule;
