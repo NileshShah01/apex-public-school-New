@@ -7,7 +7,161 @@ let selectedStudentData = null;
 async function initERPIdCards() {
     console.log('Initializing Premium ID Card Module...');
     populateTemplateGallery();
+    loadIdGenSessions();
+    loadIdIndivSessions();
     loadClassesForIdBatch();
+    loadIdGenSessions();
+    loadIdIndivSessions();
+}
+
+// Load sessions for Batch Generation
+async function loadIdGenSessions() {
+    const select = document.getElementById('idGen_session');
+    if (!select) return;
+    
+    try {
+        const snap = await schoolData('sessions').orderBy('startDate', 'desc').get();
+        select.innerHTML = '<option value="">Select Session</option>';
+        snap.docs.forEach(doc => {
+            const d = doc.data();
+            select.innerHTML += `<option value="${d.name}">${d.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading sessions:', e);
+    }
+}
+
+// Load sessions for Individual Student
+async function loadIdIndivSessions() {
+    const select = document.getElementById('idIndiv_session');
+    if (!select) return;
+    
+    try {
+        const snap = await schoolData('sessions').orderBy('startDate', 'desc').get();
+        select.innerHTML = '<option value="">Select Session</option>';
+        snap.docs.forEach(doc => {
+            const d = doc.data();
+            select.innerHTML += `<option value="${d.name}">${d.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading sessions:', e);
+    }
+}
+
+// Load classes for Individual Student section
+async function idIndivLoadClasses() {
+    const sel = document.getElementById('idIndiv_session');
+    const cls = document.getElementById('idIndiv_class');
+    const stu = document.getElementById('idIndiv_student');
+    if (!cls || !stu) return;
+    
+    if (!sel.value) {
+        cls.innerHTML = '<option value="">Select Session First</option>';
+        stu.innerHTML = '<option value="">Select Class First</option>';
+        return;
+    }
+    
+    try {
+        const snap = await schoolData('classes')
+            .where('sessionId', '==', sel.value)
+            .orderBy('sortOrder', 'asc')
+            .get();
+        
+        cls.innerHTML = '<option value="">Select Class</option>';
+        snap.docs.forEach(doc => {
+            const d = doc.data();
+            cls.innerHTML += `<option value="${d.name}">${d.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading classes:', e);
+    }
+}
+
+// Load students for Individual Student section
+async function idIndivLoadStudents() {
+    const sel = document.getElementById('idIndiv_session');
+    const cls = document.getElementById('idIndiv_class');
+    const stu = document.getElementById('idIndiv_student');
+    if (!stu) return;
+    
+    if (!cls.value) {
+        stu.innerHTML = '<option value="">Select Class First</option>';
+        return;
+    }
+    
+    stu.innerHTML = '<option value="">Loading...</option>';
+    
+    try {
+        const snap = await schoolData('students')
+            .where('session', '==', sel.value)
+            .where('class', '==', cls.value)
+            .orderBy('roll_no', 'asc')
+            .get();
+        
+        stu.innerHTML = '<option value="">Select Student</option>';
+        snap.docs.forEach(doc => {
+            const d = doc.data();
+            stu.innerHTML += `<option value="${doc.id}" data-name="${d.name}">${d.name} - ${d.roll_no || ''}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading students:', e);
+        stu.innerHTML = '<option value="">Error loading</option>';
+    }
+}
+
+// Preview individual student ID card
+async function idIndivPreview() {
+    const stu = document.getElementById('idIndiv_student');
+    if (!stu || !stu.value) return;
+    
+    const opt = stu.options[stu.selectedIndex];
+    const studentName = opt.getAttribute('data-name') || opt.text;
+    
+    try {
+        const doc = await schoolData('students').doc(stu.value).get();
+        if (!doc.exists) return;
+        
+        const data = doc.data();
+        updateIdPreviewWithData(data);
+    } catch (e) {
+        console.error('Error loading student:', e);
+    }
+}
+
+// Update preview with student data
+async function updateIdPreviewWithData(data) {
+    const container = document.getElementById('idCardPreviewContainer');
+    if (!container) return;
+    
+    const selectedTemplate = document.getElementById('selectedIdTemplate')?.value || 'template1';
+    const orientation = document.getElementById('idCardOrientation')?.value || 'vertical';
+    
+    const studentData = {
+        name: data.name || '',
+        studentId: data.studentId || data.admNo || '',
+        class: data.class || '',
+        section: data.section || '',
+        session: data.session || '',
+        fatherName: data.father_name || '',
+        dateOfBirth: data.dob || '',
+        bloodGroup: data.blood_group || '',
+        address: data.address || '',
+        photo: data.photo_url || '',
+        orientation: orientation,
+        schoolName: window.SCHOOL_NAME || 'School ERP',
+        schoolLogo: window.SCHOOL_LOGO || '',
+    };
+    
+    // Use template function
+    if (window.ID_TEMPLATES && window.ID_TEMPLATES[selectedTemplate]) {
+        container.innerHTML = window.ID_TEMPLATES[selectedTemplate](studentData);
+    } else {
+        container.innerHTML = `<div class="id-card-preview">
+            <div class="id-card-header">${studentData.name}</div>
+            <div class="id-card-body">Class ${studentData.class} - ${studentData.section}</div>
+        </div>`;
+    }
+}
 
     // Show initial template preview on load
     setTimeout(() => {
@@ -343,3 +497,9 @@ window.generateSingleIdCard = generateSingleIdCard;
 window.generateBatchIdCards = generateBatchIdCards;
 window.selectTemplate = selectTemplate;
 window.showTemplatePreview = showTemplatePreview;
+window.idIndivLoadClasses = idIndivLoadClasses;
+window.idIndivLoadStudents = idIndivLoadStudents;
+window.idIndivPreview = idIndivPreview;
+window.loadIdGenSessions = loadIdGenSessions;
+window.loadIdIndivSessions = loadIdIndivSessions;
+window.loadClassesForIdBatch = loadClassesForIdBatch;
