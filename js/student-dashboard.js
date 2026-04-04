@@ -17,11 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const sessionData = JSON.parse(session);
-    
+
     // SECURITY: Tenant Validation
     // Ensure the student belongs to the current school portal context
     if (sessionData.schoolId && window.CURRENT_SCHOOL_ID && sessionData.schoolId !== window.CURRENT_SCHOOL_ID) {
-        console.warn(`Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`);
+        console.warn(
+            `Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`
+        );
         alert("Session mismatch. Please login to this school's portal.");
         localStorage.removeItem('student_session');
         const slug = getURLSlug();
@@ -89,7 +91,8 @@ async function applyStudentBranding() {
 
         // Footer & Loading
         if (document.getElementById('portalFooterText')) {
-            document.getElementById('portalFooterText').innerText = `© ${new Date().getFullYear()} ${name}. Powered by Nexorasoftagency.`;
+            document.getElementById('portalFooterText').innerText =
+                `© ${new Date().getFullYear()} ${name}. Powered by Nexorasoftagency.`;
         }
         if (document.getElementById('loadingPortalText')) {
             document.getElementById('loadingPortalText').innerText = `Syncing with ${name} Registry...`;
@@ -103,7 +106,6 @@ async function applyStudentBranding() {
             document.head.appendChild(favicon);
         }
         favicon.href = logo;
-
     } catch (e) {
         console.error('Branding failed:', e);
     }
@@ -147,7 +149,16 @@ function showPortalSection(sectionId, updateHash = true) {
 
     // Visitor Access Logic
     if (isVisitor) {
-        const privateSections = ['homework', 'attendance', 'profile', 'fees', 'exams', 'results', 'library', 'transport'];
+        const privateSections = [
+            'homework',
+            'attendance',
+            'profile',
+            'fees',
+            'exams',
+            'results',
+            'library',
+            'transport',
+        ];
         if (privateSections.includes(sectionId)) {
             const sectionEl = document.getElementById(sectionId + 'Section');
             if (sectionEl) {
@@ -501,7 +512,7 @@ async function fetchDuesAndReceipts() {
     const ledgerTable = document.getElementById('studentLedgerTable');
     if (!paymentsTable || !currentStudentID) return;
 
-    paymentsTable.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading receipts...</td></tr>';
+    paymentsTable.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading receipts...</td></tr>';
     ledgerTable.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading ledger...</td></tr>';
 
     try {
@@ -513,9 +524,15 @@ async function fetchDuesAndReceipts() {
             document.getElementById('feeTotalPaid').textContent = `₹${(l.totalPaid || 0).toLocaleString()}`;
             document.getElementById('feeTotalBalance').textContent = `₹${(l.totalBalance || 0).toLocaleString()}`;
 
+            // Real-time balance indicator color
+            const balanceEl = document.getElementById('feeTotalBalance');
+            if (balanceEl) {
+                const bal = l.totalBalance || 0;
+                balanceEl.style.color = bal > 0 ? 'var(--danger)' : 'var(--success)';
+            }
+
             ledgerTable.innerHTML = '';
             const fees = l.fees || {};
-            // Sort months logically (Academic start April)
             const sortedMonths = [
                 'April',
                 'May',
@@ -539,10 +556,23 @@ async function fetchDuesAndReceipts() {
                         balance <= 0
                             ? '<span class="badge" style="background:#dcfce7; color:#166534;">PAID</span>'
                             : '<span class="badge" style="background:#fef2f2; color:#be123c;">PENDING</span>';
+
+                    // Fee component breakdown
+                    let breakdownHtml = '';
+                    if (f.components && Array.isArray(f.components)) {
+                        breakdownHtml = '<div class="fee-breakdown-mini">';
+                        f.components.forEach((c) => {
+                            breakdownHtml += `<span>${c.name}: ₹${c.amount}</span>`;
+                        });
+                        breakdownHtml += '</div>';
+                    } else {
+                        breakdownHtml = `<span style="font-size: 0.75rem; color: var(--text-muted);">${f.particulars || 'Monthly Fee'}</span>`;
+                    }
+
                     ledgerTable.innerHTML += `
                         <tr>
                             <td>${m}</td>
-                            <td style="font-size: 0.75rem; color: var(--text-muted);">${f.particulars || 'Monthly Fee'}</td>
+                            <td>${breakdownHtml}</td>
                             <td>₹${f.expected}</td>
                             <td>₹${f.paid}</td>
                             <td style="font-weight:700;">₹${balance}</td>
@@ -556,32 +586,45 @@ async function fetchDuesAndReceipts() {
         // 2. Fetch Payments (Receipts)
         const paySnap = await schoolData('feePayments')
             .where('studentId', '==', currentStudentID)
-            .orderBy('paymentDate', 'desc')
+            .orderBy('createdAt', 'desc')
             .get();
 
         if (paySnap.empty) {
             paymentsTable.innerHTML =
-                '<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">No payment history found.</td></tr>';
+                '<tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">No payment history found.</td></tr>';
         } else {
             paymentsTable.innerHTML = '';
             paySnap.forEach((doc) => {
                 const p = doc.data();
-                const d = p.paymentDate ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString() : 'N/A';
+                const d = p.createdAt
+                    ? new Date(p.createdAt.seconds * 1000).toLocaleDateString()
+                    : p.paymentDate
+                      ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString()
+                      : 'N/A';
+                const amt = p.amount || p.amountPaid || 0;
                 paymentsTable.innerHTML += `
                     <tr>
-                        <td style="font-weight:700; color: var(--primary);">${p.receiptNo}</td>
+                        <td style="font-weight:700; color: var(--primary);">${p.receiptNo || '--'}</td>
                         <td>${d}</td>
-                        <td style="text-transform: capitalize;">${p.paymentMode}</td>
-                        <td style="font-weight:700;">₹${p.amountPaid.toLocaleString()}</td>
-                        <td style="text-align: right;">
-                            <button onclick="printStudentReceipt('${doc.id}')" class="btn-portal btn-ghost" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">
-                                <i class="fas fa-print"></i> Receipt
+                        <td style="text-transform: capitalize;">${p.paymentMode || 'Cash'}</td>
+                        <td style="font-weight:700;">₹${amt.toLocaleString()}</td>
+                        <td>
+                            <button onclick="printStudentReceipt('${doc.id}')" class="btn-portal btn-ghost" style="padding: 0.35rem 0.6rem; font-size: 0.7rem;">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                        <td>
+                            <button onclick="downloadStudentReceipt('${doc.id}')" class="btn-portal btn-ghost" style="padding: 0.35rem 0.6rem; font-size: 0.7rem; color: var(--primary);">
+                                <i class="fas fa-file-pdf"></i> PDF
                             </button>
                         </td>
                     </tr>
                 `;
             });
         }
+
+        // 3. Fetch Demand Notices
+        await fetchDemandNotices();
     } catch (e) {
         console.error('Fee fetch error:', e);
     }
@@ -593,13 +636,13 @@ async function printStudentReceipt(paymentId) {
         const payDoc = await schoolData('feePayments').doc(paymentId).get();
         if (!payDoc.exists) return;
         const p = payDoc.data();
-        
+
         const schoolSnap = await schoolRef().get();
         const sc = schoolSnap.data() || {};
-        
+
         const modal = document.getElementById('portalModal');
         const body = document.getElementById('modalBody');
-        
+
         const receiptHtml = `
             <div class="premium-receipt">
                 <div class="receipt-header">
@@ -631,7 +674,7 @@ async function printStudentReceipt(paymentId) {
                     </div>
                     <div class="info-group">
                         <label>Payment Date</label>
-                        <p>${p.paymentDate ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString() : 'N/A'}</p>
+                        <p>${p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString() : p.paymentDate ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString() : 'N/A'}</p>
                     </div>
                 </div>
 
@@ -644,18 +687,18 @@ async function printStudentReceipt(paymentId) {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>School Fee Payment (${p.paymentMode})</td>
-                            <td style="text-align:right; font-weight:700;">₹${p.amountPaid.toLocaleString()}</td>
+                            <td>School Fee Payment (${p.paymentMode || 'Cash'})</td>
+                            <td style="text-align:right; font-weight:700;">₹${(p.amount || p.amountPaid || 0).toLocaleString()}</td>
                         </tr>
                         <tr class="total-row">
                             <td>TOTAL AMOUNT PAID</td>
-                            <td style="text-align:right;">₹${p.amountPaid.toLocaleString()}</td>
+                            <td style="text-align:right;">₹${(p.amount || p.amountPaid || 0).toLocaleString()}</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div style="margin-bottom: 2rem;">
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Amount in Words: <b style="color:var(--secondary); text-transform:capitalize;">${numberToWords(p.amountPaid)} Rupees Only</b></p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Amount in Words: <b style="color:var(--secondary); text-transform:capitalize;">${numberToWords(p.amount || p.amountPaid || 0)} Rupees Only</b></p>
                 </div>
 
                 <div class="receipt-footer">
@@ -670,12 +713,379 @@ async function printStudentReceipt(paymentId) {
                 </div>
             </div>
         `;
-        
+
         body.innerHTML = receiptHtml;
         modal.classList.remove('hidden');
     } catch (e) {
         console.error('Receipt preview failed:', e);
         alert('Failed to generate receipt preview.');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function fetchDemandNotices() {
+    const tbody = document.getElementById('studentDemandNoticesBody');
+    if (!tbody || !currentStudentID) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading demand notices...</td></tr>';
+
+    try {
+        const snap = await schoolData('demand_notices')
+            .where('studentId', '==', currentStudentID)
+            .orderBy('generatedAt', 'desc')
+            .limit(10)
+            .get();
+
+        if (snap.empty) {
+            tbody.innerHTML =
+                '<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--text-muted);">No demand notices found.</td></tr>';
+            return;
+        }
+
+        const now = new Date();
+        tbody.innerHTML = '';
+        snap.forEach((doc) => {
+            const d = doc.data();
+            const dateStr = d.generatedAt ? new Date(d.generatedAt.seconds * 1000).toLocaleDateString() : 'N/A';
+            const dueDateStr = d.dueDate ? new Date(d.dueDate.seconds * 1000).toLocaleDateString() : 'N/A';
+
+            // Check overdue
+            const isOverdue = d.dueDate && new Date(d.dueDate.seconds * 1000) < now && d.status !== 'paid';
+            const statusBadge =
+                d.status === 'paid'
+                    ? '<span class="badge" style="background:#dcfce7; color:#166534;">PAID</span>'
+                    : isOverdue
+                      ? '<span class="overdue-indicator">OVERDUE</span>'
+                      : '<span class="badge" style="background:#fef2f2; color:#be123c;">PENDING</span>';
+
+            // Fee details summary
+            let feeDetails = '';
+            if (d.items && Array.isArray(d.items)) {
+                feeDetails = '<div class="fee-breakdown-mini">';
+                d.items.slice(0, 3).forEach((item) => {
+                    feeDetails += `<span>${item.name}: ₹${(item.amount || 0).toLocaleString()}</span>`;
+                });
+                if (d.items.length > 3) {
+                    feeDetails += `<span>+${d.items.length - 3} more</span>`;
+                }
+                feeDetails += '</div>';
+            } else {
+                feeDetails = `<span style="font-size:0.75rem; color:var(--text-muted);">${d.feeType || 'Fee Demand'}</span>`;
+            }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="font-size:0.75rem;">${dateStr}</td>
+                    <td>${d.month || d.period || 'N/A'}</td>
+                    <td>${feeDetails}</td>
+                    <td style="font-weight:700;">₹${(d.totalDue || 0).toLocaleString()}</td>
+                    <td style="${isOverdue ? 'color:var(--danger); font-weight:600;' : ''}">${dueDateStr}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button onclick="viewDemandNotice('${doc.id}')" class="btn-portal btn-ghost" style="padding: 0.35rem 0.6rem; font-size: 0.7rem;">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (e) {
+        console.error('Demand notices fetch error:', e);
+        tbody.innerHTML =
+            '<tr><td colspan="7" style="text-align:center; color:var(--danger);">Error loading demand notices.</td></tr>';
+    }
+}
+
+async function viewDemandNotice(demandId) {
+    setLoading(true);
+    try {
+        const doc = await schoolData('demand_notices').doc(demandId).get();
+        if (!doc.exists) {
+            alert('Demand notice not found.');
+            return;
+        }
+        const d = doc.data();
+
+        const schoolSnap = await schoolRef().get();
+        const sc = schoolSnap.data() || {};
+
+        const dueDateStr = d.dueDate
+            ? new Date(d.dueDate.seconds * 1000).toLocaleDateString('en-IN', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+              })
+            : 'N/A';
+        const generatedStr = d.generatedAt
+            ? new Date(d.generatedAt.seconds * 1000).toLocaleDateString('en-IN', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+              })
+            : 'N/A';
+
+        let itemsHtml = '';
+        let total = 0;
+        if (d.items && Array.isArray(d.items)) {
+            d.items.forEach((item) => {
+                const amt = item.amount || 0;
+                total += amt;
+                itemsHtml += `
+                    <tr>
+                        <td>${item.name || item.feeType || 'Fee Item'}</td>
+                        <td style="text-align:right; font-weight:600;">₹${amt.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+        } else {
+            total = d.totalDue || 0;
+            itemsHtml = `
+                <tr>
+                    <td>${d.feeType || d.month || 'Fee Demand'}</td>
+                    <td style="text-align:right; font-weight:600;">₹${total.toLocaleString()}</td>
+                </tr>
+            `;
+        }
+
+        const noticeHtml = `
+            <div class="premium-receipt">
+                <div class="receipt-header">
+                    <div class="receipt-logo">
+                        <img src="${sc.logo || '../images/ApexPublicSchoolLogo.png'}" alt="Logo" onerror="this.src='../images/ApexPublicSchoolLogo.png'">
+                        <div>
+                            <h2 style="margin:0; color:var(--primary); font-size:1.4rem;">${sc.schoolName || 'School'}</h2>
+                            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">${sc.address || ''}</p>
+                        </div>
+                    </div>
+                    <div class="receipt-title-box">
+                        <h1>DEMAND NOTICE</h1>
+                        <p style="margin:0; font-weight:700;">Date: ${generatedStr}</p>
+                    </div>
+                </div>
+
+                <div class="receipt-grid">
+                    <div class="info-group">
+                        <label>Student Name</label>
+                        <p>${currentStudentData.name}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Student ID</label>
+                        <p>${currentStudentData.studentId || currentStudentData.admNo || 'N/A'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Class & Section</label>
+                        <p>Class ${currentStudentClass} - ${currentStudentData.section || 'N/A'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Due Date</label>
+                        <p style="${d.dueDate && new Date(d.dueDate.seconds * 1000) < new Date() && d.status !== 'paid' ? 'color:var(--danger); font-weight:700;' : ''}">${dueDateStr}</p>
+                    </div>
+                </div>
+
+                <table class="receipt-table">
+                    <thead>
+                        <tr>
+                            <th>Fee Component</th>
+                            <th style="text-align:right;">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                        <tr class="total-row">
+                            <td>TOTAL DUE</td>
+                            <td style="text-align:right;">₹${total.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Amount in Words: <b style="color:var(--secondary); text-transform:capitalize;">${numberToWords(total)} Rupees Only</b></p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Period: <b>${d.month || d.period || 'N/A'}</b></p>
+                </div>
+
+                <div class="receipt-footer">
+                    <div class="seal-area">SCHOOL SEAL</div>
+                    <div class="signature-box">
+                        <div class="signature-line">Authorized Signatory</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:2rem; font-size:0.65rem; color:#aaa; text-align:center;">
+                    This is a computer generated demand notice. Please pay before the due date to avoid late fees.
+                </div>
+            </div>
+        `;
+
+        document.getElementById('modalBody').innerHTML = noticeHtml;
+        document.getElementById('portalModal').classList.remove('hidden');
+    } catch (e) {
+        console.error('Demand notice view error:', e);
+        alert('Failed to load demand notice.');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function downloadStudentReceipt(paymentId) {
+    setLoading(true);
+    try {
+        const payDoc = await schoolData('feePayments').doc(paymentId).get();
+        if (!payDoc.exists) return;
+        const p = payDoc.data();
+
+        const schoolSnap = await schoolRef().get();
+        const sc = schoolSnap.data() || {};
+
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF) {
+            alert('PDF library not loaded. Please refresh and try again.');
+            return;
+        }
+        const doc = new jsPDF('p', 'mm', 'a4');
+
+        const schoolName = sc.schoolName || 'School';
+        const schoolAddress = sc.address || '';
+        const studentName = currentStudentData.name || 'Student';
+        const studentId = currentStudentData.studentId || currentStudentData.admNo || 'N/A';
+        const className = `Class ${currentStudentClass} - ${currentStudentData.section || 'N/A'}`;
+        const receiptNo = p.receiptNo || 'N/A';
+        const amountPaid = p.amount || p.amountPaid || 0;
+        const paymentMode = p.paymentMode || 'Cash';
+        const paymentDate = p.createdAt
+            ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('en-IN', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+              })
+            : p.paymentDate
+              ? new Date(p.paymentDate.seconds * 1000).toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                })
+              : 'N/A';
+
+        // Header
+        doc.setFillColor(79, 70, 229);
+        doc.rect(0, 0, 210, 40, 'F');
+
+        doc.setFontSize(18);
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.text(schoolName, 105, 15, { align: 'center' });
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text(schoolAddress, 105, 22, { align: 'center' });
+
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('FEE RECEIPT', 105, 33, { align: 'center' });
+
+        // Receipt meta
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Receipt No: ${receiptNo}`, 14, 50);
+        doc.text(`Date: ${paymentDate}`, 150, 50);
+
+        // Divider
+        doc.setDrawColor(226, 232, 240);
+        doc.line(14, 54, 196, 54);
+
+        // Student info
+        doc.setFontSize(10);
+        doc.setTextColor(15, 23, 42);
+
+        const infoY = 62;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Student Name:', 14, infoY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(studentName, 55, infoY);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Student ID:', 120, infoY);
+        doc.setFont('helvetica', 'normal');
+        doc.text(studentId, 150, infoY);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Class:', 14, infoY + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(className, 55, infoY + 8);
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Payment Mode:', 120, infoY + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(paymentMode.charAt(0).toUpperCase() + paymentMode.slice(1), 160, infoY + 8);
+
+        // Divider
+        doc.line(14, infoY + 14, 196, infoY + 14);
+
+        // Payment table
+        const tableY = infoY + 20;
+        doc.setFillColor(241, 245, 249);
+        doc.rect(14, tableY, 182, 10, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Description', 18, tableY + 7);
+        doc.text('Amount', 180, tableY + 7, { align: 'right' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 41, 59);
+        doc.text(`School Fee Payment (${paymentMode})`, 18, tableY + 18);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`INR ${amountPaid.toLocaleString('en-IN')}`, 180, tableY + 18, { align: 'right' });
+
+        // Total row
+        doc.setFillColor(241, 245, 249);
+        doc.rect(14, tableY + 24, 182, 10, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('TOTAL AMOUNT PAID', 18, tableY + 31);
+        doc.text(`INR ${amountPaid.toLocaleString('en-IN')}`, 180, tableY + 31, { align: 'right' });
+
+        // Amount in words
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Amount in Words: ${numberToWords(amountPaid)} Rupees Only`, 14, tableY + 44);
+
+        // Footer
+        doc.setDrawColor(226, 232, 240);
+        doc.line(14, 250, 196, 250);
+
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text('This is a computer generated receipt and does not require a physical signature.', 105, 258, {
+            align: 'center',
+        });
+
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text('SCHOOL SEAL', 40, 270, { align: 'center' });
+        doc.text('Authorized Signatory', 170, 270, { align: 'center' });
+
+        doc.setDrawColor(100, 116, 139);
+        doc.line(140, 268, 200, 268);
+
+        // Save
+        const blob = doc.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Receipt_${receiptNo.replace(/\s+/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        if (typeof showToast === 'function') {
+            showToast('Receipt downloaded!', 'success');
+        }
+    } catch (e) {
+        console.error('Receipt download error:', e);
+        alert('Failed to generate receipt PDF.');
     } finally {
         setLoading(false);
     }
@@ -687,19 +1097,50 @@ function closePortalModal() {
 
 function numberToWords(amount) {
     // Simple enough for 5 digits for now
-    const words = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    
-    if (amount === 0) return "Zero";
-    
+    const words = [
+        '',
+        'One',
+        'Two',
+        'Three',
+        'Four',
+        'Five',
+        'Six',
+        'Seven',
+        'Eight',
+        'Nine',
+        'Ten',
+        'Eleven',
+        'Twelve',
+        'Thirteen',
+        'Fourteen',
+        'Fifteen',
+        'Sixteen',
+        'Seventeen',
+        'Eighteen',
+        'Nineteen',
+    ];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    if (amount === 0) return 'Zero';
+
     if (amount < 20) return words[amount];
-    
-    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? " " + words[amount % 10] : "");
-    
-    if (amount < 1000) return words[Math.floor(amount / 100)] + " Hundred" + (amount % 100 !== 0 ? " and " + numberToWords(amount % 100) : "");
-    
-    if (amount < 100000) return numberToWords(Math.floor(amount / 1000)) + " Thousand" + (amount % 1000 !== 0 ? " " + numberToWords(amount % 1000) : "");
-    
+
+    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? ' ' + words[amount % 10] : '');
+
+    if (amount < 1000)
+        return (
+            words[Math.floor(amount / 100)] +
+            ' Hundred' +
+            (amount % 100 !== 0 ? ' and ' + numberToWords(amount % 100) : '')
+        );
+
+    if (amount < 100000)
+        return (
+            numberToWords(Math.floor(amount / 1000)) +
+            ' Thousand' +
+            (amount % 1000 !== 0 ? ' ' + numberToWords(amount % 1000) : '')
+        );
+
     return amount.toString(); // Fallback
 }
 
@@ -819,7 +1260,7 @@ async function updateResultLink() {
             }
         }
     } catch (e) {
-        console.error("Result check error:", e);
+        console.error('Result check error:', e);
         if (resultArea)
             resultArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not published</div>';
     }
@@ -861,7 +1302,11 @@ async function fetchUnifiedReports() {
     try {
         // 1. Fetch Manual Uploads
         const manualSnap = await schoolData('reports')
-            .where('studentId', 'in', [currentStudentData.studentId || '', currentStudentData.admNo || '', currentStudentID])
+            .where('studentId', 'in', [
+                currentStudentData.studentId || '',
+                currentStudentData.admNo || '',
+                currentStudentID,
+            ])
             .where('published', '==', true)
             .get();
 
@@ -899,15 +1344,15 @@ async function fetchUnifiedReports() {
                     session: year,
                     fileData: autoDoc.data().fileData,
                     uploadedAt: autoDoc.data().generatedAt || null,
-                    type: 'System Generated'
+                    type: 'System Generated',
                 });
             }
 
             // Add manuals
-            manualSnap.forEach(doc => {
+            manualSnap.forEach((doc) => {
                 reportsHtml += renderReportRow({
                     ...doc.data(),
-                    type: 'Official Upload'
+                    type: 'Official Upload',
                 });
             });
 
@@ -921,15 +1366,18 @@ async function fetchUnifiedReports() {
                 manualArea.innerHTML = reportsHtml;
             }
         }
-
     } catch (e) {
-        console.error("Unified Report Fetch Error:", e);
+        console.error('Unified Report Fetch Error:', e);
         if (manualArea) manualArea.innerHTML = '<p class="text-xs text-danger">Failed to load reports archive.</p>';
     }
 }
 
 function renderReportRow(r) {
-    const dateStr = r.uploadedAt ? (r.uploadedAt.toDate ? r.uploadedAt.toDate().toLocaleDateString() : new Date(r.uploadedAt).toLocaleDateString()) : 'Institutional Record';
+    const dateStr = r.uploadedAt
+        ? r.uploadedAt.toDate
+            ? r.uploadedAt.toDate().toLocaleDateString()
+            : new Date(r.uploadedAt).toLocaleDateString()
+        : 'Institutional Record';
     return `
         <div class="card flex-between p-1 border-left-primary bg-white shadow-sm hover-translate transition-all" style="margin-bottom: 0.75rem;">
             <div class="flex align-center gap-1">
@@ -951,7 +1399,7 @@ function renderReportRow(r) {
 async function loadExamMaterials() {
     const list = document.getElementById('paperDownloadList');
     const status = document.getElementById('examMaterialsStatusArea');
-    
+
     // Determine search class
     let searchClass = currentStudentClass;
     if (isVisitor) searchClass = 'Sample'; // Default for visitors
@@ -962,9 +1410,8 @@ async function loadExamMaterials() {
     try {
         const year = document.getElementById('academicYear').value;
         const sessionId = `${year - 1}_${year.toString().slice(-2)}`;
-        
-        let query = schoolData('questionPapers')
-            .where('published', '==', true);
+
+        let query = schoolData('questionPapers').where('published', '==', true);
 
         if (searchClass) {
             query = query.where('class', '==', searchClass);
@@ -980,14 +1427,14 @@ async function loadExamMaterials() {
 
         if (status)
             status.innerHTML = `<span class="badge" style="background:#dcfce7; color:#166534;">${snap.size} Materials Available</span>`;
-        
+
         list.innerHTML = '';
         snap.forEach((doc) => {
             const d = doc.data();
             const card = document.createElement('div');
             card.className = 'card p-1-25 flex-col gap-0-75';
             card.style.background = 'rgba(255,255,255,0.05)';
-            
+
             const url = d.fileUrl || '#';
             const isManual = d.paperType === 'manualUpload';
 
@@ -1015,32 +1462,33 @@ async function fetchNotices() {
     const container = document.getElementById('noticesContainer');
     if (!container) return;
     try {
-        const snap = await schoolData('notifications')
-            .orderBy('sentAt', 'desc')
-            .limit(10)
-            .get();
+        const snap = await schoolData('notifications').orderBy('sentAt', 'desc').limit(10).get();
 
         if (snap.empty) {
-            container.innerHTML = '<div class="text-center py-3 opacity-05"><i class="fas fa-bell-slash text-2xl mb-1 block"></i><p class="text-sm">No recent notifications.</p></div>';
+            container.innerHTML =
+                '<div class="text-center py-3 opacity-05"><i class="fas fa-bell-slash text-2xl mb-1 block"></i><p class="text-sm">No recent notifications.</p></div>';
             return;
         }
 
-        container.innerHTML = snap.docs.map(doc => {
-            const d = doc.data();
-            const date = d.sentAt ? new Date(d.sentAt.seconds * 1000).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) : 'Just now';
-            
-            // Filter target (optional but good for privacy/relevance)
-            // If class is specified and doesn't match current student, skip (unless target is 'All')
-            if (d.target && d.target.class !== 'All' && d.target.class !== currentStudentClass) {
-                return '';
-            }
+        container.innerHTML = snap.docs
+            .map((doc) => {
+                const d = doc.data();
+                const date = d.sentAt
+                    ? new Date(d.sentAt.seconds * 1000).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                    : 'Just now';
 
-            return `
+                // Filter target (optional but good for privacy/relevance)
+                // If class is specified and doesn't match current student, skip (unless target is 'All')
+                if (d.target && d.target.class !== 'All' && d.target.class !== currentStudentClass) {
+                    return '';
+                }
+
+                return `
                 <div class="notice-item p-1 border-bottom-soft">
                     <div class="flex justify-between align-start mb-0-25">
                         <h4 class="text-sm font-bold text-secondary">${d.type === 'WhatsApp' ? '<i class="fab fa-whatsapp text-success mr-0-5"></i>' : ''}${d.title || 'Notification'}</h4>
@@ -1049,7 +1497,8 @@ async function fetchNotices() {
                     <p class="text-xs line-height-1-5 opacity-90">${d.message}</p>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     } catch (error) {
         console.error('Notice fetch failed:', error);
     }
@@ -1128,6 +1577,8 @@ window.showPortalSection = showPortalSection;
 window.toggleSidebar = toggleSidebar;
 window.logoutStudent = logoutStudent;
 window.printStudentReceipt = printStudentReceipt;
+window.downloadStudentReceipt = downloadStudentReceipt;
+window.viewDemandNotice = viewDemandNotice;
 window.closePortalModal = closePortalModal;
 
 /**

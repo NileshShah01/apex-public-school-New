@@ -92,20 +92,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Protection for student dashboard
+    // Protection for student dashboard — TENANT ISOLATION ENABLED
     const isDashboard = window.location.pathname.includes('student-dashboard.html') || 
                         window.location.pathname.toLowerCase().endsWith('/student-dashboard');
                         
-    /*
     if (isDashboard) {
         const session = localStorage.getItem('student_session');
+        const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+        const loginUrl = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
+
         if (!session) {
-            const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
-            window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
+            window.location.href = loginUrl;
+            return;
+        }
+
+        // TENANT CHECK: Verify the student session belongs to this school context
+        try {
+            const sessionData = JSON.parse(session);
+            const urlSchoolId = window.CURRENT_SCHOOL_ID;
+            if (sessionData.schoolId && urlSchoolId && sessionData.schoolId !== urlSchoolId) {
+                console.error(`[StudentAuth Guard] TENANT MISMATCH: Session=${sessionData.schoolId}, URL=${urlSchoolId}. Clearing session.`);
+                localStorage.removeItem('student_session');
+                alert('Access denied: Your student session belongs to a different school portal. Please login again.');
+                window.location.href = loginUrl;
+                return;
+            }
+        } catch (e) {
+            // Malformed session — force re-login
+            localStorage.removeItem('student_session');
+            window.location.href = loginUrl;
             return;
         }
     }
-    */
 });
 
 function logoutStudent() {

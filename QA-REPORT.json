@@ -1,0 +1,355 @@
+{
+    "report": {
+        "title": "SNR Edu ERP Platform - QA Verification Report (UPDATED)",
+        "url": "https://snredu-erp.web.app/",
+        "date": "2026-03-29T10:15:00+05:30",
+        "tester": "Automated QA",
+        "credentials_used": "nileshshah84870@gmail.com",
+        "environment": {
+            "os": "Windows 11",
+            "browser": "Chrome (Playwright Headless)",
+            "resolution": "1920x1080",
+            "network": "Broadband",
+            "build": "Latest (deployed 2026-03-29)"
+        },
+        "summary": {
+            "total_features_tested": 52,
+            "passed": 37,
+            "failed": 7,
+            "section_not_found": 8,
+            "overall_readiness": "68%"
+        },
+        "admin_dashboard_features": [
+            {
+                "name": "Dashboard Overview",
+                "section": "dashboardOverview",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Stats cards (Students: 2), Visual Insights, Recent Admissions, Quick Notices",
+                "expected": "Dashboard with school statistics and quick actions",
+                "time_spent": "5s"
+            },
+            {
+                "name": "Add Session",
+                "section": "addSession",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session form with name input, active toggle, create button, session list",
+                "expected": "Session management form and list",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Add Class",
+                "section": "addClass",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session dropdown, class name, sort order, sections input, class table",
+                "expected": "Class management with section support",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Add Subject",
+                "section": "addSubject",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class dropdowns, subject name, code, teacher, subject table",
+                "expected": "Subject management per class/session",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Add Non-Subject",
+                "section": "addNonSubject",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Similar to Add Subject for co-curricular",
+                "expected": "Non-subject management",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Add Student",
+                "section": "addStudent",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Complete form: photo, name, DOB, class, parent details, address, Aadhaar",
+                "expected": "Student registration form",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Search Student",
+                "section": "studentList",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Class dropdown, student table with ID/Roll/Name, Export Excel",
+                "expected": "Student search with filters and export",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Upload Student (Bulk Import)",
+                "section": "bulkImport",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Download Template button, file upload, import instructions",
+                "expected": "Excel bulk import functionality",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Promote Student",
+                "section": "promoteStudent",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section ID not found in HTML, defaults to dashboard",
+                "expected": "Student promotion between classes",
+                "time_spent": "2s"
+            },
+            {
+                "name": "Pickup ID Print",
+                "section": "pickupIdPrint",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section renders but console error: DocumentReference.collection() called with empty path",
+                "expected": "Print pickup ID cards for students",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Student RFID Update",
+                "section": "studentRfidUpdate",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section renders but console error: DocumentReference.collection() called with empty path",
+                "expected": "Bulk RFID tag assignment",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Class Timetables",
+                "section": "classTimetables",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session dropdown, class list, timetable upload/display",
+                "expected": "Class-wise timetable management",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Timetable Builder",
+                "section": "timetableBuilder",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class dropdowns, period config, weekly grid with time slots",
+                "expected": "Period-based timetable builder",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Grading Rules",
+                "section": "gradingRules",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section ID not found, defaults to dashboard",
+                "expected": "Grading scale configuration",
+                "time_spent": "2s"
+            },
+            {
+                "name": "Create Exams",
+                "section": "createExams",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section ID not found, defaults to dashboard",
+                "expected": "Exam creation and management",
+                "time_spent": "2s"
+            },
+            {
+                "name": "Bulk Marks Entry",
+                "section": "bulkMarksEntry",
+                "status": "Failed",
+                "severity": "Major",
+                "observed": "Section ID not found, defaults to dashboard",
+                "expected": "Bulk marks entry for exams",
+                "time_spent": "2s"
+            },
+            {
+                "name": "View Report Card",
+                "section": "viewReportCard",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class/Student dropdowns, Generate Report button",
+                "expected": "Report card preview and generation",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Publish Results",
+                "section": "publishResults",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session selector, student results table with publish toggles",
+                "expected": "Result publication management",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Student Fee Payment",
+                "section": "classFeePayment",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Student search, ledger table, payment form, receipt generation",
+                "expected": "Fee collection dashboard with receipts",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Demand Receipt",
+                "section": "demandReceipt",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class/Due Date/Till Month, Preview, Generate & Print, Export PDF, Overdue filter",
+                "expected": "Batch demand notice generation",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Bulk Discount",
+                "section": "bulkFeeDiscount",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Fixed/Percentage discount, Apply to Selected/All",
+                "expected": "Bulk fee discount application",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Bulk Extra Fee",
+                "section": "bulkExtraFee",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class/Fee Type/Amount/Due Date, Apply button",
+                "expected": "Bulk extra fee for classes",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Late Fee Fine Rule",
+                "section": "manageFeeFine",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Fine Amount, Type (Fixed/Daily/Percentage), Grace Period",
+                "expected": "Automatic late fee configuration",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Fee Master",
+                "section": "feeMaster",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session filter, fee structure table with Name/Class/Amount/Frequency",
+                "expected": "Fee structure configuration",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Search Fee Dues",
+                "section": "searchFeeDues",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Defaulter list, Session/Class filters, Export Excel, summary bar",
+                "expected": "Outstanding fee tracking",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Send Fee Message",
+                "section": "sendFeeMessage",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Session/Class/Filter, Message template with variables, Send buttons",
+                "expected": "Fee reminder messaging",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Fee Carry Forward",
+                "section": "feeCarryForward",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "From/To Session, Preview Dues, Execute button",
+                "expected": "Cross-session fee carry forward",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Book Catalog",
+                "section": "bookCatalog",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Add New Book form, catalog table",
+                "expected": "Library book management",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Manage Routes",
+                "section": "manageRoutes",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Route management with stops and bus details",
+                "expected": "Transport route configuration",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Add Employee",
+                "section": "addEmployee",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Employee registration form",
+                "expected": "Staff registration",
+                "time_spent": "3s"
+            },
+            {
+                "name": "Search Employee",
+                "section": "searchEmployee",
+                "status": "Passed",
+                "severity": "None",
+                "observed": "Employee search/list",
+                "expected": "Staff directory",
+                "time_spent": "3s"
+            }
+        ],
+        "defects": [
+            {
+                "id": "DEF-001",
+                "severity": "Critical",
+                "description": "34 Firestore 'query requires an index' errors across exams, classes, library modules",
+                "reproduction": "Login → navigate to Exam, Library, or Class sections",
+                "recommendation": "Create composite indexes via Firebase console links in error messages"
+            },
+            {
+                "id": "DEF-002",
+                "severity": "Critical",
+                "description": "11 image assets returning 404 on snredu-erp.web.app",
+                "reproduction": "Navigate to school website pages",
+                "recommendation": "Upload missing images or fix asset paths"
+            },
+            {
+                "id": "DEF-003",
+                "severity": "Major",
+                "description": "DocumentReference.collection() called with empty path in Pickup ID and RFID modules",
+                "reproduction": "Navigate to Pickup ID Print or Student RFID Update",
+                "recommendation": "Fix schoolData() calls to resolve schoolId before collection access"
+            },
+            {
+                "id": "DEF-004",
+                "severity": "Major",
+                "description": "8 sidebar menu items have section IDs that don't match HTML elements",
+                "reproduction": "Click Promote Student, Monthly Fee Payment, Add Fee Payment, Grading Rules, Create Exams, Bulk Marks Entry, Holiday List, Events & News",
+                "recommendation": "Fix showSection() onclick handlers to match actual HTML section IDs"
+            },
+            {
+                "id": "DEF-005",
+                "severity": "Major",
+                "description": "Dashboard stats Loading indefinitely for Teachers, Monthly Fees, Attendance",
+                "reproduction": "Login → view dashboard",
+                "recommendation": "Fix Firestore queries for dashboard statistics"
+            },
+            {
+                "id": "DEF-006",
+                "severity": "Major",
+                "description": "Super Admin portal redirects to school website",
+                "reproduction": "Click 'Enter Super Admin' on landing page",
+                "recommendation": "Fix tenant resolution for super-admin-pro.html"
+            },
+            {
+                "id": "DEF-007",
+                "severity": "Minor",
+                "description": "Student Portal Resources section shows 'Error loading materials'",
+                "reproduction": "Click Resources in Student Portal sidebar",
+                "recommendation": "Create Firestore composite index for materials collection"
+            }
+        ]
+    }
+}

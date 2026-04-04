@@ -1,10 +1,14 @@
-// Admin Authentication Logic
+// Admin Authentication Logic - Tenant-Isolated
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for slug resolution to complete FIRST
     if (window.schoolBootstrapReady) {
         await window.schoolBootstrapReady;
     }
+
+    // Store the URL-resolved school context (before login overrides it)
+    const urlSchoolId = window.CURRENT_SCHOOL_ID;
+    console.log(`[Auth] Page loaded. URL Tenant Context: ${urlSchoolId}`);
 
     // Apply dynamic branding based on resolved tenant
     applyAuthBranding();
@@ -50,6 +54,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (userDoc.exists) {
                     const userData = userDoc.data();
 
+                    // ═══════ CRITICAL TENANT VALIDATION ═══════
+                    // The user's assigned schoolId MUST match the school context
+                    // determined by the URL slug. This prevents cross-tenant login.
+                    if (urlSchoolId && userData.schoolId && userData.schoolId !== urlSchoolId) {
+                        // Sign out immediately — this user doesn't belong to this portal
+                        await auth.signOut();
+                        throw new Error(
+                            `Access denied. Your admin account belongs to a different school portal. ` +
+                            `Please login through your own school's website.`
+                        );
+                    }
+                    // ═══════════════════════════════════════════
+
                     // Sync school ID to session storage (authoritative source)
                     sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
 
@@ -57,10 +74,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
                     let redirectUrl = slug ? `/${slug}/Admin-Dashboard` : '/portal/admin-dashboard.html';
 
-                    console.log(`[Auth] Login success. Redirecting to: ${redirectUrl}`);
+                    console.log(`[Auth] Login success for ${userData.schoolId}. Redirecting to: ${redirectUrl}`);
                     window.location.href = redirectUrl;
                 } else {
-                    throw new Error('Account error: Your school mapping was not found in our database.');
+                    // No user record — sign out and block
+                    await auth.signOut();
+                    throw new Error('Account error: Your school mapping was not found in our database. Contact your administrator.');
                 }
             } catch (error) {
                 console.error('Authentication Error:', error);
@@ -74,29 +93,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Protection for admin dashboard
-    /* 
-    if (window.location.pathname.includes('admin-dashboard')) {
+    // ═══════ DASHBOARD AUTH GUARD — TENANT ISOLATION ═══════
+    // Active on admin-dashboard pages: verifies the logged-in user
+    // actually belongs to the school whose slug is in the URL.
+    const isDashboard = window.location.pathname.toLowerCase().includes('admin-dashboard');
+    if (isDashboard) {
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
+                // Not logged in — redirect to login
                 const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
                 window.location.href = slug ? `/${slug}/Admin-Login` : '/portal/admin-login.html';
-            } else {
-                try {
-                    const userDoc = await db.collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        if (userData.schoolId && userData.schoolId !== sessionStorage.getItem('CURRENT_SCHOOL_ID')) {
-                            sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
-                        }
-                    }
-                } catch (e) {
-                    console.error('[Auth] Session sync failed:', e);
+                return;
+            }
+
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists) {
+                    console.error('[Auth Guard] No user record found — logging out.');
+                    await auth.signOut();
+                    sessionStorage.removeItem('CURRENT_SCHOOL_ID');
+                    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+                    window.location.href = slug ? `/${slug}/Admin-Login` : '/portal/admin-login.html';
+                    return;
                 }
+
+                const userData = userDoc.data();
+
+                // TENANT CHECK: user's schoolId must match the URL school context
+                if (urlSchoolId && userData.schoolId && userData.schoolId !== urlSchoolId) {
+                    console.error(`[Auth Guard] TENANT MISMATCH! User belongs to ${userData.schoolId} but URL is ${urlSchoolId}. Blocking access.`);
+                    await auth.signOut();
+                    sessionStorage.removeItem('CURRENT_SCHOOL_ID');
+                    alert('Access denied: You are not authorized to access this school\'s dashboard. Redirecting to your school\'s login page.');
+                    const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
+                    window.location.href = slug ? `/${slug}/Admin-Login` : '/portal/admin-login.html';
+                    return;
+                }
+
+                // Sync session if all checks pass
+                if (userData.schoolId) {
+                    sessionStorage.setItem('CURRENT_SCHOOL_ID', userData.schoolId);
+                }
+                console.log(`[Auth Guard] ✅ Tenant verified: ${userData.schoolId}`);
+            } catch (e) {
+                console.error('[Auth Guard] Session sync failed:', e);
             }
         });
     }
-    */
+    // ═══════════════════════════════════════════════════════
 });
 
 function logoutAdmin() {

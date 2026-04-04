@@ -138,23 +138,27 @@ const CMS_SECTIONS = {
     },
 };
 
-// Hook into existing showSection via unified reference
-const cmsPreviousShowSection = window.showSection;
-window.showSection = function (id, updateHash = true) {
-    if (typeof cmsPreviousShowSection === 'function') {
-        cmsPreviousShowSection(id, updateHash);
-    } else {
-        console.warn('Previous showSection not found in CMS extension');
-    }
+// Register callback for section changes via robust hook system
+if (typeof window.addShowSectionHook === 'function') {
+    window.addShowSectionHook((id, updateHash) => {
+        if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
 
-    if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
-
-    // Close mobile sidebar if open
-    const sidebar = document.getElementById('adminSidebar');
-    if (sidebar && sidebar.classList.contains('mobile-open')) {
-        toggleMobileSidebar();
-    }
-};
+        // Close mobile sidebar if open
+        const sidebar = document.getElementById('adminSidebar');
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+            if (typeof toggleMobileSidebar === 'function') toggleMobileSidebar();
+        }
+    });
+} else {
+    // Fallback for older configurations (deprecated)
+    const cmsPreviousShowSection = window.showSection;
+    window.showSection = function (id, updateHash = true) {
+        if (typeof cmsPreviousShowSection === 'function') cmsPreviousShowSection(id, updateHash);
+        if (CMS_SECTIONS[id]) CMS_SECTIONS[id].load();
+        const sidebar = document.getElementById('adminSidebar');
+        if (sidebar && sidebar.classList.contains('mobile-open')) toggleMobileSidebar();
+    };
+}
 
 // ===================== STATS =====================
 async function loadCmsStats() {

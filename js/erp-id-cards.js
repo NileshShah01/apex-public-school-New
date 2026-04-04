@@ -16,20 +16,16 @@ function populateTemplateGallery() {
 
     gallery.innerHTML = '';
     const templates = [
-        { key: 'format1', title: 'Teal Amber', iconColor: '#00897b' },
-        { key: 'format2', title: 'Corporate Blue', iconColor: '#1e3a8a' },
-        { key: 'format3', title: 'Wave Dark', iconColor: '#312e81' },
-        { key: 'format4', title: 'Curve Primary', iconColor: '#0f172a' },
-        { key: 'format5', title: 'Gold Premium', iconColor: '#9a3412' },
         { key: 'format6', title: 'Poppins Elite', iconColor: '#1e3c72' },
-        { key: 'format7', title: 'Modern Tech H1', iconColor: '#FF416C' },
-        { key: 'format8', title: 'Modern Tech H2', iconColor: '#FF4B2B' },
-        // 5 NEW PREMIUM TEMPLATES
-        { key: 'format9',  title: '✨ Gradient Elite', iconColor: '#2a5298', badge: 'NEW' },
-        { key: 'format10', title: '✨ Stark Modern', iconColor: '#7c3aed', badge: 'NEW' },
-        { key: 'format11', title: '✨ Royal Maroon', iconColor: '#7b0000', badge: 'NEW' },
-        { key: 'format12', title: '✨ Saffron India', iconColor: '#FF9933', badge: 'NEW' },
-        { key: 'format13', title: '✨ Deep Space', iconColor: '#0a0a1a', badge: 'NEW' },
+        { key: 'format7', title: 'Modern Tech H', iconColor: '#FF416C' },
+        { key: 'format8', title: 'Modern Tech V2', iconColor: '#FF4B2B' },
+        { key: 'format9', title: 'Gradient Elite', iconColor: '#2a5298' },
+        { key: 'format10', title: 'Stark Modern', iconColor: '#7c3aed' },
+        { key: 'format11', title: 'Royal Maroon', iconColor: '#7b0000' },
+        { key: 'format12', title: 'Saffron India', iconColor: '#FF9933' },
+        { key: 'format13', title: 'Deep Space', iconColor: '#0a0a1a' },
+        { key: 'format14', title: 'Naval Prestige', iconColor: '#1b3a5f', badge: 'NEW' },
+        { key: 'format15', title: 'Mono Elite', iconColor: '#374151', badge: 'NEW' },
     ];
 
     templates.forEach((temp, i) => {
@@ -90,7 +86,8 @@ async function updateIdPreview() {
             class: selectedStudentData.class || selectedStudentData.student_class || 'N/A',
             section: selectedStudentData.section || '',
             session: selectedStudentData.session || selectedStudentData.academic_session || '2025-26',
-            bloodGroup: selectedStudentData.bloodGroup || selectedStudentData.blood_group || selectedStudentData.blood || 'N/A',
+            bloodGroup:
+                selectedStudentData.bloodGroup || selectedStudentData.blood_group || selectedStudentData.blood || 'N/A',
             photo: selectedStudentData.photo_url || selectedStudentData.photo || '', // Handled by template if empty
         };
 
@@ -180,7 +177,7 @@ async function generateBatchIdCards() {
             return;
         }
 
-        const templateKey = document.getElementById('selectedIdTemplate').value || 'format1';
+        const templateKey = document.getElementById('selectedIdTemplate').value || 'format6';
         const orientation = document.getElementById('idCardOrientation').value;
         const templateFn = window.ID_TEMPLATES[templateKey] || window.ID_TEMPLATES.format1;
 
@@ -228,7 +225,6 @@ async function generateBatchIdCards() {
                 bloodGroup: s.bloodGroup || s.blood_group || s.blood || 'N/A',
                 photo: s.photo_url || s.photo || '',
             };
-
 
             renderDiv.innerHTML = templateFn(data);
             const cardEl = renderDiv.querySelector('.id-card-wrapper');

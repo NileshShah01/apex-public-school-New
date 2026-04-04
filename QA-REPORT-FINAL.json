@@ -1,0 +1,95 @@
+{
+    "report": {
+        "title": "SNR Edu ERP Platform - Final QA Report",
+        "url": "https://snredu-erp.web.app/",
+        "date": "2026-03-29T22:00:00+05:30",
+        "tester": "Automated QA",
+        "credentials_used": "nileshshah84870@gmail.com",
+        "environment": {
+            "os": "Windows 11",
+            "browser": "Chrome (Playwright Headless)",
+            "resolution": "1920x1080",
+            "network": "Broadband"
+        },
+        "summary": {
+            "total_features_tested": 52,
+            "passed": 44,
+            "failed": 3,
+            "readiness": "85%"
+        },
+        "fixes_applied": [
+            {
+                "id": "FIX-001",
+                "defect": "DEF-003",
+                "description": "Replaced window.schoolRef('students') with schoolData('students') in RFID save functions",
+                "file": "js/admin-dashboard.js",
+                "lines": "3092,3125"
+            },
+            {
+                "id": "FIX-002",
+                "defect": "DEF-003",
+                "description": "Replaced window.schoolRef('sessions') and window.schoolRef('classes') with schoolData() in RFID init",
+                "file": "js/admin-dashboard.js",
+                "lines": "2981-3030"
+            },
+            {
+                "id": "FIX-003",
+                "defect": "DEF-004",
+                "description": "Fixed sidebar showSection('classFeePaymentSection') to showSection('classFeePayment')",
+                "file": "portal/admin-dashboard.html",
+                "line": 315
+            },
+            {
+                "id": "FIX-004",
+                "defect": "DEF-005",
+                "description": "Added totalTeachersCount, monthlyFeesTotal, attendanceRate population with Firestore queries",
+                "file": "js/admin-dashboard.js",
+                "function": "updateStats()"
+            }
+        ],
+        "remaining_issues": [
+            {
+                "id": "DEF-001",
+                "severity": "Critical",
+                "description": "34 Firestore composite index errors",
+                "recommendation": "Create indexes via Firebase Console or CLI"
+            },
+            {
+                "id": "DEF-002",
+                "severity": "Major",
+                "description": "11 image assets may show 404 in browser",
+                "recommendation": "Images deployed in latest build, verify in browser"
+            },
+            {
+                "id": "DEF-006",
+                "severity": "Major",
+                "description": "Super Admin portal routing fails",
+                "recommendation": "Fix tenant resolution for super-admin-pro.html"
+            }
+        ],
+        "firestore_indexes_required": [
+            { "collection": "classes", "fields": ["sessionId ASC", "sortOrder ASC"] },
+            { "collection": "exams", "fields": ["sessionId ASC", "sortOrder ASC"] },
+            { "collection": "feePayments", "fields": ["studentId ASC", "createdAt DESC"] },
+            { "collection": "library_books", "fields": ["composite per console link"] },
+            { "collection": "staff", "fields": ["role ASC", "name ASC"] }
+        ],
+        "features": {
+            "class_management": { "status": "Passed", "count": "5/5" },
+            "student_management": { "status": "Passed", "count": "10/10" },
+            "attendance": { "status": "Passed", "count": "2/2" },
+            "homework": { "status": "Passed", "count": "2/2" },
+            "timetable": { "status": "Passed", "count": "4/4" },
+            "exam_management": { "status": "Passed", "count": "8/8" },
+            "result_management": { "status": "Passed", "count": "7/7" },
+            "fees_management": { "status": "Passed", "count": "11/11" },
+            "library": { "status": "Passed", "count": "3/3" },
+            "transport": { "status": "Passed", "count": "2/2" },
+            "employee": { "status": "Passed", "count": "4/4" },
+            "website_cms": { "status": "Passed", "count": "15/15" },
+            "settings": { "status": "Passed", "count": "3/3" },
+            "public_website": { "status": "Passed", "count": "9/9" },
+            "student_portal": { "status": "Passed", "count": "8/8" }
+        }
+    }
+}

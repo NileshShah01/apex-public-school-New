@@ -151,17 +151,20 @@
         }
     };
 
-    // Override or extend showSection via unified reference
-    const toolsPreviousShowSection = window.showSection;
-    window.showSection = function (sectionId, updateHash = true) {
-        if (typeof toolsPreviousShowSection === 'function') {
-            toolsPreviousShowSection(sectionId, updateHash);
-        } else {
-            console.warn('Previous showSection not found in Tools extension');
-        }
-        
-        if (sectionId === 'manageFeeFine') loadFeeFineSettings();
-        if (sectionId === 'addSyllabus') loadSyllabusList();
-    };
+    // Register callback for section changes via robust hook system
+    if (typeof window.addShowSectionHook === 'function') {
+        window.addShowSectionHook((sectionId) => {
+            if (sectionId === 'manageFeeFine') loadFeeFineSettings();
+            if (sectionId === 'addSyllabus') loadSyllabusList();
+        });
+    } else {
+        // Fallback for older configurations (deprecated)
+        const toolsPreviousShowSection = window.showSection;
+        window.showSection = function (sectionId, updateHash = true) {
+            if (typeof toolsPreviousShowSection === 'function') toolsPreviousShowSection(sectionId, updateHash);
+            if (sectionId === 'manageFeeFine') loadFeeFineSettings();
+            if (sectionId === 'addSyllabus') loadSyllabusList();
+        };
+    }
 
 })();

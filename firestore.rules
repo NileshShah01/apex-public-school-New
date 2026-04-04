@@ -3,61 +3,87 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper functions
-    function isAdmin() {
+    function isAuthenticated() {
       return request.auth != null;
     }
 
-    // 1. School Hierarchy Support (Primary Multi-tenant Path)
+    // Check if the authenticated user has a custom claim for a specific school
+    // This provides server-side tenant isolation when custom claims are set
+    function isSchoolAdmin(schoolId) {
+      return isAuthenticated() && (
+        // Allow if user has the matching schoolId custom claim
+        request.auth.token.schoolId == schoolId ||
+        // Allow super-admin access (platform-level admins)
+        request.auth.token.superAdmin == true
+      );
+    }
+
+    // ═══════ USERS COLLECTION — Global user→school mapping ═══════
+    // Each user doc stores { email, schoolId, role }
+    // Users can only read their own record; only super-admins can write others
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        request.auth.token.superAdmin == true
+      );
+    }
+
+    // ═══════ SCHOOL HIERARCHY — Primary Multi-tenant Path ═══════
     match /schools/{schoolId} {
+      // Public read for school branding/info (website pages need this)
       allow read: if true;
+      // Only allow writes from admins of THIS school
+      allow write: if isSchoolAdmin(schoolId);
       
-      // Enforce school-level isolation for writes
+      // All subcollections under a school
       match /{allSubcollections=**} {
+        // Read: public (student portal, website need to read data)
         allow read: if true;
-        // Allow write if the user is authenticated (admin).
-        // Removed strict users collection link temporarily to fix 'Error Saving Sessions'
-        allow write: if request.auth != null;
+        // Write: only authenticated users belonging to this school
+        // Falls back to just isAuthenticated() until custom claims are set up
+        allow write: if isAuthenticated();
       }
     }
 
-    // 2. Compatibility Layer: Top-level Collections
-    // Many legacy modules might still hit top-level collections
-    match /sessions/{docId} { allow read, write: if true; }
-    match /classes/{docId} { allow read, write: if true; }
-    match /students/{docId} { allow read, write: if true; }
-    match /marks/{docId} { allow read, write: if true; }
-    match /counters/{docId} { allow read, write: if true; }
-    match /gradingRules/{docId} { allow read, write: if true; }
-    match /exams/{docId} { allow read, write: if true; }
-    match /schedules/{docId} { allow read, write: if true; }
-    match /publications/{docId} { allow read, write: if true; }
-    match /remarks/{docId} { allow read, write: if true; }
-    match /exam_attendance/{docId} { allow read, write: if true; }
-    match /non_subject_marks/{docId} { allow read, write: if true; }
+    // ═══════ COMPATIBILITY LAYER: Top-level Collections ═══════
+    // Legacy modules — restrict writes to authenticated users
+    match /sessions/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /classes/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /students/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /marks/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /counters/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /gradingRules/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /exams/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /schedules/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /publications/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /remarks/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /exam_attendance/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /non_subject_marks/{docId} { allow read: if true; allow write: if isAuthenticated(); }
 
-    // CMS & Website Content (Top-level Fallback)
-    match /notices/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /reports/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /admitcards/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /events/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /achievements/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /testimonials/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /holidays/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /gallery/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /staff/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /timetables/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /fees/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /website_content/{docId} { allow read, write: if true; }
+    // CMS & Website Content
+    match /notices/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /reports/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /admitcards/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /settings/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /events/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /achievements/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /testimonials/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /holidays/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /gallery/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /staff/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /timetables/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /fees/{docId} { allow read: if true; allow write: if isAuthenticated(); }
+    match /website_content/{docId} { allow read: if true; allow write: if isAuthenticated(); }
 
     match /inquiries/{docId} {
       allow write: if true;
-      allow read: if isAdmin();
+      allow read: if isAuthenticated();
     }
 
-    // 3. Global Fallback
+    // Global Fallback — require authentication for any other path
     match /{document=**} {
-      allow read, write: if isAdmin();
+      allow read, write: if isAuthenticated();
     }
   }
 }
