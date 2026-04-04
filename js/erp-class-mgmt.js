@@ -494,6 +494,17 @@ async function updateClassDropdowns() {
 }
 
 async function updateSessionDropdowns() {
+    // Load sessions if not already loaded
+    if (!erpState.sessions || erpState.sessions.length === 0) {
+        await loadSessions();
+    }
+
+    // If still no sessions, show empty options
+    if (!erpState.sessions || erpState.sessions.length === 0) {
+        console.warn('No sessions found - please add a session first');
+        return;
+    }
+
     // Standard options with ID as value
     const idOptions =
         '<option value="">Select Session</option>' +
@@ -505,15 +516,36 @@ async function updateSessionDropdowns() {
         'classSessionSelect',
         'bulk_student_session',
         'idGen_session',
+        'idIndiv_session',
         'notif_sessionSelect',
         'analytic_sessionSelect',
         'qpSessionFilter',
         'uploadQpSession',
+        'att_sessionSelect',
+        'repAtt_sessionSelect',
+        'hw_sessionSelect',
+        'bulkRes_sessionSelect',
+        'tt_sessionSelect',
+        'student_session',
+        'rfid_student_session',
+        'pickup_session',
+        'addSessionSelect',
     ];
 
     sessOptions.forEach((id) => {
         const el = document.getElementById(id);
-        if (el) el.innerHTML = idOptions;
+        if (el) {
+            el.innerHTML = idOptions;
+            // Add change listener to load classes when session is selected
+            if (!el.getAttribute('data-listener')) {
+                el.addEventListener('change', (e) => {
+                    if (typeof loadClasses === 'function') {
+                        loadClasses(e.target.value);
+                    }
+                });
+                el.setAttribute('data-listener', 'true');
+            }
+        }
     });
 
     // Student Registration options with Name as value (for storage consistency)
