@@ -71,8 +71,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         student_id: data.student_id || matchedDoc.id,
                         name: data.name,
                         schoolId: window.CURRENT_SCHOOL_ID,
+                        role: 'student',
                     })
                 );
+
+                // Initialize Access Control for Student
+                if (typeof ACCESS_CONTROL !== 'undefined') {
+                    ACCESS_CONTROL.init({
+                        role: 'student',
+                        id: data.student_id || matchedDoc.id,
+                        studentId: data.student_id || matchedDoc.id,
+                    });
+                }
 
                 // Success feedback before redirect
                 loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Identifying...</span>';
@@ -112,6 +122,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function logoutStudent() {
     localStorage.removeItem('student_session');
+
+    // Clear Access Control
+    if (typeof ACCESS_CONTROL !== 'undefined') {
+        ACCESS_CONTROL.clear();
+    }
+
     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
     window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
 }

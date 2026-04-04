@@ -5,18 +5,46 @@ let currentStudentClass = null;
 let currentStudentData = null;
 let isVisitor = false;
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Apply Tenant Branding First
-    applyStudentBranding();
-
+// Check Access Control on load
+function checkStudentAccess() {
     const session = localStorage.getItem('student_session');
     if (!session) {
+        return false;
+    }
+
+    const sessionData = JSON.parse(session);
+
+    // Initialize Access Control
+    if (typeof ACCESS_CONTROL !== 'undefined') {
+        ACCESS_CONTROL.init({
+            role: 'student',
+            id: sessionData.student_id,
+            studentId: sessionData.student_id,
+        });
+
+        // Verify dashboard access
+        if (!ACCESS_CONTROL.can('dashboard', 'read')) {
+            console.error('Access denied to student dashboard');
+            showToast('Access Denied', 'error');
+            return false;
+        }
+    }
+
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check Access Control First
+    if (!checkStudentAccess()) {
         const slug = getURLSlug();
         window.location.href = slug ? `/${slug}/Student-Login` : '/portal/student-login.html';
         return;
     }
 
-    const sessionData = JSON.parse(session);
+    // Apply Tenant Branding First
+    applyStudentBranding();
+
+    const sessionData = JSON.parse(localStorage.getItem('student_session'));
 
     // SECURITY: Tenant Validation
     // Ensure the student belongs to the current school portal context
