@@ -152,13 +152,11 @@ async function updateIdPreviewWithData(data) {
     
     // Use template function
     if (window.ID_TEMPLATES && window.ID_TEMPLATES[selectedTemplate]) {
-        container.innerHTML = window.ID_TEMPLATES[selectedTemplate](studentData);
-    } else {
-        container.innerHTML = `<div class="id-card-preview">
-            <div class="id-card-header">${studentData.name}</div>
-            <div class="id-card-body">Class ${studentData.class} - ${studentData.section}</div>
-        </div>`;
+container.innerHTML = window.ID_TEMPLATES[selectedTemplate](studentData);
     }
+}
+
+// Helper: Show initial template preview on load
 }
 
     // Show initial template preview on load

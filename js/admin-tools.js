@@ -218,11 +218,6 @@
         }
     };
 
-    // Initialize syllabus when section loads
-    if (sectionId === 'addSyllabusSection') {
-        loadSyllabusList();
-    }
-
     // Override or extend showSection via unified reference
     const toolsPreviousShowSection = window.showSection;
     window.showSection = function (sectionId, updateHash = true) {
@@ -233,6 +228,6 @@
         }
 
         if (sectionId === 'manageFeeFine') loadFeeFineSettings();
-        if (sectionId === 'addSyllabus') loadSyllabusList();
+        if (sectionId === 'addSyllabusSection') loadSyllabusList();
     };
 })();
