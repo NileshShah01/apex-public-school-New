@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const submitBtn = document.getElementById('loginBtn');
             const btnText = document.getElementById('btnText');
             const btnSpinner = document.getElementById('btnSpinner');
-            
+
             submitBtn.disabled = true;
             btnText.innerText = 'Authenticating...';
             if (btnSpinner) btnSpinner.style.display = 'block';
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         email: user.email,
                         schoolId: 'SCH001',
                         role: 'admin',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     });
                     userDoc = await db.collection('users').doc(user.uid).get();
                 }
@@ -118,20 +118,24 @@ async function applyAuthBranding() {
         const data = schoolDocSnap.data();
         const name = data.schoolName || 'Antigravity ERP';
         let logo = data.logo || '/images/ApexPublicSchoolLogo.png';
-        
+
         // Path safety
         if (logo.startsWith('../')) logo = logo.substring(2);
         if (!logo.startsWith('/') && !logo.startsWith('http')) logo = '/' + logo;
 
+        // Add cache-busting query parameter to prevent stale images
+        const timestamp = Date.now();
+        const logoWithCache = logo.includes('?') ? logo + '&t=' + timestamp : logo + '?t=' + timestamp;
+
         // Update Title & Brand
         document.title = `Admin Login | ${name}`;
-        
+
         const brandNameEl = document.getElementById('portalBrandName');
         const logoImgEl = document.getElementById('schoolLogo');
 
         if (brandNameEl) brandNameEl.innerText = name;
         if (logoImgEl) {
-            logoImgEl.src = logo;
+            logoImgEl.src = logoWithCache;
             logoImgEl.alt = `${name} Logo`;
         }
     } catch (e) {

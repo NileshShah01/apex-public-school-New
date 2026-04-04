@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             // UI States
             const originalBtnHtml = loginSubmitBtn.innerHTML;
             loginSubmitBtn.disabled = true;
@@ -58,7 +58,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // SECURITY: Explicit Tenant Validation
                 // Even if the query was scoped, double-check that the student belongs to the current portal context
                 if (data.schoolId && window.CURRENT_SCHOOL_ID && data.schoolId !== window.CURRENT_SCHOOL_ID) {
-                    throw new Error('This account is registered with a different school portal. Please login at your school\'s official website.');
+                    throw new Error(
+                        "This account is registered with a different school portal. Please login at your school's official website."
+                    );
                 }
 
                 // Success - store session and redirect
@@ -68,20 +70,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         student_phone: studentPhone,
                         student_id: data.student_id || matchedDoc.id,
                         name: data.name,
-                        schoolId: window.CURRENT_SCHOOL_ID
+                        schoolId: window.CURRENT_SCHOOL_ID,
                     })
                 );
-                
+
                 // Success feedback before redirect
                 loginSubmitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Identifying...</span>';
-                
+
                 setTimeout(() => {
                     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
                     const redirectUrl = slug ? `/${slug}/Student-Dashboard` : '/portal/student-dashboard.html';
                     console.log(`[StudentAuth] Login success. Redirecting to: ${redirectUrl}`);
                     window.location.href = redirectUrl;
                 }, 800);
-
             } catch (error) {
                 console.error('Login Error:', error);
                 loginError.textContent = error.message;
@@ -93,9 +94,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Protection for student dashboard
-    const isDashboard = window.location.pathname.includes('student-dashboard.html') || 
-                        window.location.pathname.toLowerCase().endsWith('/student-dashboard');
-                        
+    const isDashboard =
+        window.location.pathname.includes('student-dashboard.html') ||
+        window.location.pathname.toLowerCase().endsWith('/student-dashboard');
+
     /*
     if (isDashboard) {
         const session = localStorage.getItem('student_session');
@@ -120,7 +122,7 @@ function loginAsGuest() {
         JSON.stringify({
             role: 'visitor',
             name: 'Guest Visitor',
-            schoolId: window.CURRENT_SCHOOL_ID
+            schoolId: window.CURRENT_SCHOOL_ID,
         })
     );
     const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
@@ -151,6 +153,10 @@ async function applyAuthBranding() {
             logo = '/' + logo;
         }
 
+        // Add cache-busting to prevent stale images
+        const timestamp = Date.now();
+        const logoWithCache = logo.includes('?') ? logo + '&t=' + timestamp : logo + '?t=' + timestamp;
+
         // Update Global Head Title
         document.title = `${name} | Student Portal`;
 
@@ -162,9 +168,8 @@ async function applyAuthBranding() {
         if (brandName) brandName.innerText = name;
         if (brandDesc) brandDesc.innerText = `Student Learning Portal Access`;
         if (logoContainer) {
-            logoContainer.innerHTML = `<img src="${logo}" alt="${name}" style="height: 64px; margin-bottom: 20px; object-fit: contain;">`;
+            logoContainer.innerHTML = `<img src="${logoWithCache}" alt="${name}" style="height: 64px; margin-bottom: 20px; object-fit: contain;">`;
         }
-
     } catch (e) {
         console.error('[StudentAuth] Branding failed:', e);
     }

@@ -63,7 +63,11 @@ async function applyStudentBranding() {
 
         const data = schoolDocSnap.data();
         const name = data.schoolName || 'Apex Public School';
-        const logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+        let logo = data.logo || '../images/ApexPublicSchoolLogo.png';
+
+        // Add cache-busting to prevent stale images
+        const timestamp = Date.now();
+        const logoWithCache = logo.includes('?') ? logo + '&t=' + timestamp : logo + '?t=' + timestamp;
 
         // Update Title
         if (document.getElementById('studentPortalTitle')) {
@@ -75,7 +79,7 @@ async function applyStudentBranding() {
             document.getElementById('sidebarBrandName').innerText = name;
         }
         if (document.getElementById('sidebarLogoImg')) {
-            document.getElementById('sidebarLogoImg').src = logo;
+            document.getElementById('sidebarLogoImg').src = logoWithCache;
             document.getElementById('sidebarLogoImg').style.display = 'block';
         }
 
