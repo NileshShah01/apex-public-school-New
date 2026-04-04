@@ -10,8 +10,6 @@ async function initERPIdCards() {
     loadIdGenSessions();
     loadIdIndivSessions();
     loadClassesForIdBatch();
-    loadIdGenSessions();
-    loadIdIndivSessions();
 }
 
 // Load sessions for Batch Generation
