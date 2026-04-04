@@ -95,153 +95,76 @@
                         </a>
                     </div>
 
-                    <!-- CLASS MANAGEMENT (Moved to Top) -->
+<!-- CLASS & SUBJECTS -->
                     <div class="nav-category" id="navClass" onclick="toggleCategory('catClass')">
                         <div class="cat-header">
-                            <i class="fas fa-book"></i>
-                            <span>Class Management</span>
-                            <i class="fas fa-chevron-down arrow"></i>
+                            <i class="fas fa-school"></i>
+                            <span>Setup</span>
                         </div>
                         <div class="cat-submenu" id="catClass">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Add Session</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Add Class</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addClassDetails')"
-                                >Add Class Details</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Add Subject</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addSyllabusSection')"
-                                >Syllabus & Resources</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addNonSubject')"
-                                >Add Non-Subject</a
-                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addSession')">Sessions</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addClass')">Classes</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addSubject')">Subjects</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addSyllabusSection')">Syllabus</a>
                         </div>
                     </div>
 
-                    <!-- ID GENERATOR -->
-                    <div class="nav-item" onclick="showSection('studentIdPrint')">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-id-card"></i>
-                            <span>ID Generator</span>
-                        </a>
-                    </div>
-
-                    <!-- STUDENT -->
+                    <!-- STUDENTS -->
                     <div class="nav-category" id="navStudent" onclick="toggleCategory('catStudent')">
                         <div class="cat-header">
-                            <i class="fas fa-user-graduate"></i>
-                            <span>Student Management</span>
-                            <i class="fas fa-chevron-down arrow"></i>
+                            <i class="fas fa-users"></i>
+                            <span>Students</span>
                         </div>
                         <div class="cat-submenu" id="catStudent">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addStudent')">Add Student</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('studentList')"
-                                >Search Student</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Upload Student</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('electiveMapping')"
-                                >Elective Subject Mapping</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('promotions')"
-                                >Promote Student</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('pickupIdPrint')"
-                                >Pickup ID Print</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('studentBulkUpdate')"
-                                >Student Bulk Update</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('studentRfidUpdate')"
-                                >RFID Update</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('hostelReport')"
-                                >Hostel Student Report</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('transportReport')"
-                                >Transport Student Report</a
-                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addStudent')">Add New</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('studentList')">Search/List</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkImport')">Bulk Upload</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('promotions')">Promote</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('studentRfidUpdate')">RFID</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('pickupIdPrint')">Pickup Card</a>
                         </div>
                     </div>
 
-                    <!-- ADMISSION & ENQUIRY -->
+                    <!-- ADMISSION -->
                     <div class="nav-category" id="navAdmission" onclick="toggleCategory('catAdmission')">
                         <div class="cat-header">
-                            <i class="fas fa-hashtag"></i>
-                            <span>Admission & Enquiry</span>
-                            <i class="fas fa-chevron-down arrow"></i>
+                            <i class="fas fa-user-plus"></i>
+                            <span>Admission</span>
                         </div>
                         <div class="cat-submenu" id="catAdmission">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('addEnquiry')">Add Enquiry</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('searchEnquiry')"
-                                >Search Enquiry</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('studentAdmission')"
-                                >Student Admission</a
-                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('addEnquiry')">New Enquiry</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('searchEnquiry')">Enquiries</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('studentAdmission')">Admission Form</a>
                         </div>
                     </div>
 
-                    <!-- ATTENDANCE MANAGEMENT -->
+                    <!-- ATTENDANCE -->
                     <div class="nav-category" id="navAttendance" onclick="toggleCategory('catAttendance')">
                         <div class="cat-header">
                             <i class="fas fa-calendar-check"></i>
                             <span>Attendance</span>
-                            <i class="fas fa-chevron-down arrow"></i>
                         </div>
                         <div class="cat-submenu" id="catAttendance">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('attendanceManagement')"
-                                >Mark Attendance</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('viewAttendanceStats')"
-                                >Attendance Reports</a
-                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('attendanceManagement')">Mark Daily</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('viewAttendanceStats')">Reports</a>
                         </div>
                     </div>
 
-                    <!-- HOMEWORK MANAGEMENT -->
-                    <div class="nav-category" id="navHomework" onclick="toggleCategory('catHomework')">
+                    <!-- FEES -->
+                    <div class="nav-category" id="navFees" onclick="toggleCategory('catFees')">
                         <div class="cat-header">
-                            <i class="fas fa-edit"></i>
-                            <span>Homework</span>
-                            <i class="fas fa-chevron-down arrow"></i>
+                            <i class="fas fa-rupee-sign"></i>
+                            <span>Fees</span>
                         </div>
-                        <div class="cat-submenu" id="catHomework">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('assignHomework')"
-                                >Assign Homework</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('homeworkHistory')"
-                                >Homework History</a
-                            >
+                        <div class="cat-submenu" id="catFees">
+                            <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFeeSection')">Collect Fee</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFeeSection')">Generate Monthly</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('classFeePaymentSection')">Collection Dashboard</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMasterSection')">Fee Master</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDuesSection')">Search Dues</a>
+                            <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessageSection')">Send Message</a>
                         </div>
                     </div>
-
-                    <!-- TIMETABLE MANAGEMENT -->
-                    <div class="nav-category" id="navTimetable" onclick="toggleCategory('catTimetable')">
-                        <div class="cat-header">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Timetable</span>
-                            <i class="fas fa-chevron-down arrow"></i>
-                        </div>
-                        <div class="cat-submenu" id="catTimetable">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('classTimetables')"
-                                >Class Timetables</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('teacherTimetables')"
-                                >Teacher Timetables</a
-                            >
-                        </div>
-                    </div>
-
-                    <!-- EXAM MANAGEMENT -->
-                    <div class="nav-category" id="navExams" onclick="toggleCategory('catExams')">
-                        <div class="cat-header">
-                            <i class="fas fa-file-contract"></i>
-                            <span>Exam Management</span>
-                            <i class="fas fa-chevron-down arrow"></i>
-                        </div>
-                        <div class="cat-submenu" id="catExams">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('examGrading')">Grading Rules</a>
-                            <a href="#" class="nav-link sub-link" onclick="showSection('manageExam')">Create Exams</a>
                             <a href="#" class="nav-link sub-link" onclick="showSection('manageExamSchedule')"
                                 >Exam Timetable</a
                             >
