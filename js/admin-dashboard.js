@@ -119,6 +119,7 @@ window.showSection = function (sectionId, updateHash = true) {
         academicSession: { title: 'Academic Sessions', sub: 'Configure and switch between academic years' },
         addClass: { title: 'Classes & Sections', sub: 'Manage school structure and class levels' },
         addSubject: { title: 'Subject Management', sub: 'Define and assign subjects to classes' },
+        addSyllabusSection: { title: 'Syllabus & Resources', sub: 'Upload PDFs, books, and study materials' },
         idCardPrint: { title: 'ID Card Generator', sub: 'Design and print student identity cards' },
         adminPortalCMS: { title: 'Admin Portal CMS', sub: 'Customize portal settings and branding' },
         parentsNotPaidTool: { title: 'Fee Default Tracking', sub: 'Identify and notify parents with pending dues' },
