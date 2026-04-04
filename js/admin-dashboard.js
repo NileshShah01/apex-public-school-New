@@ -30,7 +30,7 @@ window.onerror = function (msg, url, line, col, error) {
  * Core function to switch between dashboard sections
  * Exposed to window for global access/extensibility
  */
-window.showSection = function(sectionId, updateHash = true) {
+window.showSection = function (sectionId, updateHash = true) {
     if (!sectionId) sectionId = 'dashboardOverview';
 
     console.log(`Showing section request: ${sectionId}`);
@@ -49,7 +49,7 @@ window.showSection = function(sectionId, updateHash = true) {
         s.classList.add('hidden');
         s.classList.remove('active');
     });
-    
+
     document.querySelectorAll('.nav-link').forEach((l) => l.classList.remove('active'));
     document.querySelectorAll('.cat-header').forEach((h) => h.classList.remove('active'));
 
@@ -75,11 +75,12 @@ window.showSection = function(sectionId, updateHash = true) {
     }
 
     // Active link highlighting
-    const activeLink = document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`) || 
-                      document.querySelector(`.nav-link[href="#${sectionId}"]`);
+    const activeLink =
+        document.querySelector(`.nav-link[onclick*="'${sectionId}'"]`) ||
+        document.querySelector(`.nav-link[href="#${sectionId}"]`);
     if (activeLink) {
         activeLink.classList.add('active');
-        
+
         // Also highlight parent category header if it's a sub-link
         if (activeLink.classList.contains('sub-link')) {
             const parentCat = activeLink.closest('.nav-category');
@@ -114,6 +115,8 @@ window.showSection = function(sectionId, updateHash = true) {
         searchEnquiry: { title: 'Search Enquiries', sub: 'Filter and manage admission enquiries' },
         studentAdmission: { title: 'Student Admission', sub: 'Register new student profiles in the system' },
         viewAttendanceStats: { title: 'Attendance Reports', sub: 'Analyze student attendance trends' },
+        studentRfidUpdate: { title: 'Student RFID Update', sub: 'Update RFID numbers for student identification' },
+        pickupIdPrint: { title: 'Pickup ID Print', sub: 'Generate pickup cards for students' },
         assignHomework: { title: 'Assign Homework', sub: 'Create and distribute homework to classes' },
         homeworkHistory: { title: 'Homework History', sub: 'Review and manage past homework assignments' },
         classTimetables: { title: 'Class Timetables', sub: 'Manage and view class-wise schedules' },
@@ -139,23 +142,34 @@ window.showSection = function(sectionId, updateHash = true) {
         searchEmployee: { title: 'Search Employee', sub: 'Filter and manage staff profiles' },
         cmsHero: { title: 'Hero Slider CMS', sub: 'Manage home page banner images' },
         cmsGallery: { title: 'Photo Gallery CMS', sub: 'Update website image gallery' },
-        cmsStaff: { title: 'Staff Directory CMS', sub: 'Manage staff profiles on the website' }
+        cmsStaff: { title: 'Staff Directory CMS', sub: 'Manage staff profiles on the website' },
     };
-    
+
     const titleEl = document.getElementById('sectionTitle');
     const subtextEl = document.getElementById('headerSubtext');
-    
+
     if (titleEl && sectionMetadata[sectionId]) {
         titleEl.textContent = sectionMetadata[sectionId].title;
         if (subtextEl) subtextEl.textContent = sectionMetadata[sectionId].sub;
     }
-    
+
     // ERP Integration: Auto-populate dropdowns when entering registration sections
-    if ((sectionId === 'addStudentSection' || sectionId === 'studentList') && typeof updateSessionDropdowns === 'function') {
+    if (
+        (sectionId === 'addStudentSection' || sectionId === 'studentList') &&
+        typeof updateSessionDropdowns === 'function'
+    ) {
         updateSessionDropdowns();
     }
     // Bulk Student Update: auto-populate session dropdown
     if (sectionId === 'studentBulkUpdateSection' && typeof updateSessionDropdowns === 'function') {
+        updateSessionDropdowns();
+    }
+    // Student RFID Update: auto-populate session dropdown
+    if (sectionId === 'studentRfidUpdateSection' && typeof updateSessionDropdowns === 'function') {
+        updateSessionDropdowns();
+    }
+    // Pickup ID Print: auto-populate session dropdown
+    if (sectionId === 'pickupIdPrintSection' && typeof updateSessionDropdowns === 'function') {
         updateSessionDropdowns();
     }
 
@@ -183,36 +197,56 @@ window.showSection = function(sectionId, updateHash = true) {
     if ((sectionId === 'assignHomework' || sectionId === 'homeworkHistory') && typeof initERPHomework === 'function') {
         initERPHomework();
     }
-    
+
     // Library Management hook
     if ((sectionId === 'bookCatalog' || sectionId === 'issueReturn') && typeof ERPLibrary !== 'undefined') {
         ERPLibrary.init();
     }
-    
+
     // Transport Management hook
-    if ((sectionId === 'manageRoutes' || sectionId === 'assignTransport' || sectionId === 'transportReport') && typeof initERPTransport === 'function') {
+    if (
+        (sectionId === 'manageRoutes' || sectionId === 'assignTransport' || sectionId === 'transportReport') &&
+        typeof initERPTransport === 'function'
+    ) {
         initERPTransport();
     }
 
     // Attendance Management hook
-    if ((sectionId === 'attendanceManagement' || sectionId === 'viewAttendanceStats') && typeof initERPAttendance === 'function') {
+    if (
+        (sectionId === 'attendanceManagement' || sectionId === 'viewAttendanceStats') &&
+        typeof initERPAttendance === 'function'
+    ) {
         initERPAttendance();
     }
 
     // Exam & Report Card hook
     const examSections = [
-        'examGrading', 'manageExam', 'manageExamSchedule', 
-        'viewExamSchedule', 'publishExamSchedule', 'admitCardTool', 'examAttendanceCard', 
-        'studentExamAttendance', 'addResult', 'viewReportCard', 
-        'publishResults', 'bulkResultGenerator', 'resultAnalytics', 
-        'manageAllResults', 'reportCardRemarks', 'manualReportCardUpload'
+        'examGrading',
+        'manageExam',
+        'manageExamSchedule',
+        'viewExamSchedule',
+        'publishExamSchedule',
+        'admitCardTool',
+        'examAttendanceCard',
+        'studentExamAttendance',
+        'addResult',
+        'viewReportCard',
+        'publishResults',
+        'bulkResultGenerator',
+        'resultAnalytics',
+        'manageAllResults',
+        'reportCardRemarks',
+        'manualReportCardUpload',
     ];
     if (examSections.includes(sectionId) && typeof initERPExams === 'function') {
         initERPExams();
     }
 
     // Notification System hook
-    if ((sectionId === 'sendNotification' || sectionId === 'notificationHistory') && typeof ERPNotifications !== 'undefined') {
+    if (
+        (sectionId === 'sendNotification' || sectionId === 'notificationHistory') &&
+        typeof ERPNotifications !== 'undefined'
+    ) {
         ERPNotifications.init();
     }
 
@@ -222,7 +256,10 @@ window.showSection = function(sectionId, updateHash = true) {
     }
 
     // Timetable hook
-    if (['classTimetables', 'teacherTimetables', 'createTimetable', 'viewTimetable'].includes(sectionId) && typeof initERPTimetable === 'function') {
+    if (
+        ['classTimetables', 'teacherTimetables', 'createTimetable', 'viewTimetable'].includes(sectionId) &&
+        typeof initERPTimetable === 'function'
+    ) {
         initERPTimetable();
     }
 
@@ -267,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.onAuthStateChanged((user) => {
         if (user) {
             document.getElementById('adminEmail').textContent = user.email;
-            
+
             // Only initialize once
             if (!isInitializing) {
                 initializeApp();
@@ -293,13 +330,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initializeApp() {
     if (isInitializing) return;
-    
+
     // Ensure school resolution is complete before any data fetching
     if (window.schoolBootstrapReady) {
         console.log('Admin Dashboard: Waiting for school bootstrap...');
         await window.schoolBootstrapReady;
     }
-    
+
     isInitializing = true;
     console.log('Initializing App for School:', CURRENT_SCHOOL_ID);
     setLoading(true);
@@ -325,7 +362,7 @@ async function initializeApp() {
         if (typeof initERPFees === 'function') safeInit(initERPFees, 'initERPFees');
         if (typeof initERPAdmission === 'function') safeInit(initERPAdmission, 'initERPAdmission');
         if (typeof initQuestionPapers === 'function') safeInit(initQuestionPapers, 'initQuestionPapers');
-        
+
         // Final Branding Cleanup
         if (typeof applyAdminBranding === 'function') applyAdminBranding();
     } catch (error) {
@@ -417,10 +454,10 @@ async function loadDashboardOverview() {
     // Other counts (Mocked for now, will connect to real collections in Phase 3)
     const teachers = document.getElementById('totalTeachersCount');
     if (teachers) teachers.textContent = '12';
-    
+
     const fees = document.getElementById('monthlyFeesTotal');
     if (fees) fees.textContent = '₹ 1,45,000';
-    
+
     const attendance = document.getElementById('attendanceRate');
     if (attendance) attendance.textContent = '94%';
 
@@ -443,8 +480,8 @@ let adminPortalSettings = {
         { title: 'Fee Management', icon: 'fa-credit-card', sectionId: 'feeMaster', color: 'amber' },
         { title: 'Exams', icon: 'fa-magic', sectionId: 'manageExam', color: 'indigo' },
         { title: 'Attendance', icon: 'fa-check-double', sectionId: 'attendanceManagement', color: 'red' },
-        { title: 'Classes', icon: 'fa-ruler-combined', sectionId: 'addClass', color: 'amber' }
-    ]
+        { title: 'Classes', icon: 'fa-ruler-combined', sectionId: 'addClass', color: 'amber' },
+    ],
 };
 
 async function initAdminPortalCMS() {
@@ -461,7 +498,8 @@ async function initAdminPortalCMS() {
         const showNameCheck = document.getElementById('cms_showSchoolName');
 
         if (logoPreview && adminPortalSettings.logoUrl) logoPreview.src = adminPortalSettings.logoUrl;
-        if (sigPreview && adminPortalSettings.principalSignatureUrl) sigPreview.src = adminPortalSettings.principalSignatureUrl;
+        if (sigPreview && adminPortalSettings.principalSignatureUrl)
+            sigPreview.src = adminPortalSettings.principalSignatureUrl;
         if (showNameCheck) showNameCheck.checked = adminPortalSettings.showSchoolName !== false;
 
         renderAdminQuickLinksEditor();
@@ -511,7 +549,12 @@ function updateQuickLink(index, field, value) {
 }
 
 function addQuickLinkRow() {
-    adminPortalSettings.quickLinks.push({ title: 'New Link', icon: 'fa-link', sectionId: 'dashboardOverview', color: 'blue' });
+    adminPortalSettings.quickLinks.push({
+        title: 'New Link',
+        icon: 'fa-link',
+        sectionId: 'dashboardOverview',
+        color: 'blue',
+    });
     renderAdminQuickLinksEditor();
 }
 
@@ -523,10 +566,10 @@ function removeQuickLinkRow(index) {
 /**
  * Global helper for image previews
  */
-window.previewImage = function(input, previewId) {
+window.previewImage = function (input, previewId) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.getElementById(previewId).src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
@@ -551,10 +594,10 @@ async function saveAdminPortalCMS() {
         adminPortalSettings.showSchoolName = showNameCheck ? showNameCheck.checked : true;
 
         await schoolData('settings').doc('admin_portal').set(withSchool(adminPortalSettings));
-        
+
         // Update global branding instantly
         if (typeof applyAdminBranding === 'function') applyAdminBranding();
-        
+
         showToast('Settings saved successfully!');
     } catch (error) {
         console.error('Error saving Admin CMS settings:', error);
@@ -569,7 +612,7 @@ function toBase64(file) {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        reader.onerror = (error) => reject(error);
     });
 }
 
@@ -592,7 +635,7 @@ async function loadCustomQuickLinks() {
 
         // Render links
         hub.innerHTML = '';
-        adminPortalSettings.quickLinks.forEach(link => {
+        adminPortalSettings.quickLinks.forEach((link) => {
             const card = document.createElement('div');
             card.className = 'feature-card';
             card.onclick = () => showSection(link.sectionId);
@@ -605,7 +648,6 @@ async function loadCustomQuickLinks() {
             `;
             hub.appendChild(card);
         });
-
     } catch (e) {
         console.warn('Could not load custom quick links, using defaults', e);
     }
@@ -617,25 +659,25 @@ async function loadCustomQuickLinks() {
 function applyAdminBranding() {
     const sNameElements = document.querySelectorAll('.school-name-dynamic');
     const sLogoElements = document.querySelectorAll('.school-logo-dynamic');
-    
+
     const showName = adminPortalSettings.showSchoolName !== false;
     const logoUrl = adminPortalSettings.logoUrl || window.SCHOOL_LOGO || '/images/ApexPublicSchoolLogo.png';
     const name = window.SCHOOL_NAME || 'School Portal';
 
-    sNameElements.forEach(el => {
+    sNameElements.forEach((el) => {
         el.textContent = name;
         el.style.display = showName ? 'block' : 'none';
     });
 
-    sLogoElements.forEach(el => {
+    sLogoElements.forEach((el) => {
         el.src = logoUrl;
     });
 
     // Update global variables for other modules
     if (adminPortalSettings.logoUrl) window.SCHOOL_LOGO = adminPortalSettings.logoUrl;
-    if (adminPortalSettings.principalSignatureUrl) window.PRINCIPAL_SIGNATURE = adminPortalSettings.principalSignatureUrl;
+    if (adminPortalSettings.principalSignatureUrl)
+        window.PRINCIPAL_SIGNATURE = adminPortalSettings.principalSignatureUrl;
 }
-
 
 async function updateStudentAttendance() {
     const studentId = document.getElementById('att_studentId').value;
@@ -723,7 +765,7 @@ async function filterAndDisplayStudents() {
             <td>${student.religion || '-'}</td>
             <td>${student.aadhar || '-'}</td>
             <td>${student.pen || '-'}</td>
-            <td>${student.smart_card_no || '-'}</td>
+            <td>${student.rfid_no || student.rfid || student.smart_card_no || '-'}</td>
             <td>${student.guardian_name || '-'}</td>
             <td>${student.guardian_phone || '-'}</td>
             <td>${student.address || '-'}</td>
@@ -1051,7 +1093,8 @@ const BulkReportCardUI = {
             document.getElementById('startBulkGenBtn').disabled = false;
         } catch (e) {
             console.error(e);
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
+            body.innerHTML =
+                '<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error loading students.</td></tr>';
         }
     },
 
@@ -1091,13 +1134,16 @@ const BulkReportCardUI = {
                 if (window.processIndividualReportCard) {
                     await window.processIndividualReportCard(sid, examId, sessionId, format);
                     successCount++;
-                    if (nameEl) nameEl.innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> Generated';
+                    if (nameEl)
+                        nameEl.innerHTML =
+                            '<i class="fas fa-check-circle" style="color:var(--success);"></i> Generated';
                 } else {
                     throw new Error('Generation logic not found');
                 }
             } catch (err) {
                 console.error(err);
-                if (nameEl) nameEl.innerHTML = `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Failed`;
+                if (nameEl)
+                    nameEl.innerHTML = `<i class="fas fa-times-circle" style="color:var(--danger);"></i> Failed`;
             }
 
             const p = Math.round(((i + 1) / selected.length) * 100);
@@ -1108,7 +1154,7 @@ const BulkReportCardUI = {
 
         showToast(`Bulk processing complete! ${successCount}/${selected.length} success.`);
         document.getElementById('startBulkGenBtn').disabled = false;
-    }
+    },
 };
 
 const IdCardPreviewUI = {
@@ -1116,8 +1162,11 @@ const IdCardPreviewUI = {
         const sessEl = document.getElementById('idIndiv_session');
         if (!sessEl) return;
         if (typeof erpState !== 'undefined' && erpState.sessions) {
-            const options = '<option value="">Select Session</option>' +
-                erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+            const options =
+                '<option value="">Select Session</option>' +
+                erpState.sessions
+                    .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+                    .join('');
             sessEl.innerHTML = options;
             if (erpState.activeSessionId) {
                 setTimeout(() => this.loadClasses(), 100);
@@ -1129,8 +1178,9 @@ const IdCardPreviewUI = {
         const el = document.getElementById('idIndiv_class');
         if (!el || !sessId) return;
         const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
-        el.innerHTML = '<option value="">Select Class</option>' + 
-            snap.docs.map(doc => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+        el.innerHTML =
+            '<option value="">Select Class</option>' +
+            snap.docs.map((doc) => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
     },
     async loadStudents() {
         const sessEl = document.getElementById('idIndiv_session');
@@ -1140,40 +1190,44 @@ const IdCardPreviewUI = {
         if (!el || !cls || !sess) return;
 
         const snap = await schoolData('students').where('session', '==', sess).where('class', '==', cls).get();
-        el.innerHTML = '<option value="">Select Student</option>' + 
-            snap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+        el.innerHTML =
+            '<option value="">Select Student</option>' +
+            snap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
     },
     preview() {
         const sid = document.getElementById('idIndiv_student').value;
         if (!sid) return;
         document.getElementById('idPrintSid').value = sid;
         if (window.updateIdPreview) window.updateIdPreview();
-    }
+    },
 };
 
 const RcPreviewUI = {
     async init() {
         const sessionDropdowns = [
-            'rcPreviewSession', 
-            'publishSessionSelect', 
-            'bulkRes_sessionSelect', 
+            'rcPreviewSession',
+            'publishSessionSelect',
+            'bulkRes_sessionSelect',
             'remarkSessionSelect',
-            'manageResultsSession'
+            'manageResultsSession',
         ];
-        
+
         // Find at least one existing dropdown to proceed
-        const exists = sessionDropdowns.some(id => document.getElementById(id));
+        const exists = sessionDropdowns.some((id) => document.getElementById(id));
         if (!exists) return;
 
         if (typeof erpState !== 'undefined' && erpState.sessions) {
-            const options = '<option value="">Select Session</option>' +
-                erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
-            
-            sessionDropdowns.forEach(id => {
+            const options =
+                '<option value="">Select Session</option>' +
+                erpState.sessions
+                    .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+                    .join('');
+
+            sessionDropdowns.forEach((id) => {
                 const el = document.getElementById(id);
                 if (el && el.options.length <= 1) el.innerHTML = options;
             });
-            
+
             if (erpState.activeSessionId) {
                 setTimeout(() => {
                     this.loadClasses('rcPreviewSession', 'rcPreviewClass');
@@ -1191,10 +1245,11 @@ const RcPreviewUI = {
         const sessId = document.getElementById(sessIdStr)?.value;
         const el = document.getElementById(targetIdStr);
         if (!el || !sessId) return;
-        
+
         const snap = await schoolData('classes').where('sessionId', '==', sessId).orderBy('sortOrder', 'asc').get();
-        const options = '<option value="">Select Class</option>' +
-            snap.docs.map(doc => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+        const options =
+            '<option value="">Select Class</option>' +
+            snap.docs.map((doc) => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
         el.innerHTML = options;
     },
 
@@ -1204,11 +1259,16 @@ const RcPreviewUI = {
         const el = document.getElementById(targetIdStr);
         if (!el || !cls || !sessId) return;
 
-        const snap = await schoolData('classes').where('sessionId', '==', sessId).where('name', '==', cls).limit(1).get();
+        const snap = await schoolData('classes')
+            .where('sessionId', '==', sessId)
+            .where('name', '==', cls)
+            .limit(1)
+            .get();
         if (!snap.empty) {
             const sections = snap.docs[0].data().sections || ['A'];
-            const options = '<option value="">Select Section</option>' +
-                sections.map(s => `<option value="${s}">${s}</option>`).join('');
+            const options =
+                '<option value="">Select Section</option>' +
+                sections.map((s) => `<option value="${s}">${s}</option>`).join('');
             el.innerHTML = options;
         }
     },
@@ -1222,27 +1282,31 @@ const RcPreviewUI = {
 
         if (!cls || !sec) return;
 
-        const q = schoolData('students').where('session', '==', sess).where('class', '==', cls).where('section', '==', sec);
+        const q = schoolData('students')
+            .where('session', '==', sess)
+            .where('class', '==', cls)
+            .where('section', '==', sec);
         const snap = await q.get();
-        
-        studentSelect.innerHTML = '<option value="All">All Students</option>' +
-            snap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+
+        studentSelect.innerHTML =
+            '<option value="All">All Students</option>' +
+            snap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
     },
 
     async loadExams() {
         const sessionDropdowns = [
-            'rcPreviewSession', 
-            'publishSessionSelect', 
-            'bulkRes_sessionSelect', 
+            'rcPreviewSession',
+            'publishSessionSelect',
+            'bulkRes_sessionSelect',
             'remarkSessionSelect',
-            'manageResultsSession'
+            'manageResultsSession',
         ];
         const examDropdowns = [
-            'rcPreviewExam', 
-            'publishExamSelect', 
-            'bulkRes_examSelect', 
+            'rcPreviewExam',
+            'publishExamSelect',
+            'bulkRes_examSelect',
             'remarkExamSelect',
-            'manageResultsExam'
+            'manageResultsExam',
         ];
 
         for (let i = 0; i < sessionDropdowns.length; i++) {
@@ -1251,16 +1315,23 @@ const RcPreviewUI = {
             if (!sessId || !exEl) continue;
 
             const exSnap = await schoolData('exams').where('sessionId', '==', sessId).get();
-            exEl.innerHTML = '<option value="">Select Exam</option>' +
-                exSnap.docs.map(doc => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
+            exEl.innerHTML =
+                '<option value="">Select Exam</option>' +
+                exSnap.docs.map((doc) => `<option value="${doc.id}">${doc.data().name}</option>`).join('');
         }
-    }
+    },
 };
 
 const PublishResultsUI = {
-    loadClasses() { window.loadPublishClasses(); },
-    loadSections() { window.loadPublishSections(); },
-    refresh() { if (window.refreshPublishStatus) window.refreshPublishStatus(); }
+    loadClasses() {
+        window.loadPublishClasses();
+    },
+    loadSections() {
+        window.loadPublishSections();
+    },
+    refresh() {
+        if (window.refreshPublishStatus) window.refreshPublishStatus();
+    },
 };
 
 // Global hooks
@@ -1425,74 +1496,79 @@ async function handleWebsiteSettingsSave(e) {
 
 // Export Data
 function exportStudentData() {
-    if (allStudents.length === 0) { showToast('No students to export', 'info'); return; }
+    if (allStudents.length === 0) {
+        showToast('No students to export', 'info');
+        return;
+    }
     try {
         const formattedData = allStudents.map((s) => ({
             // ── Identifiers ──────────────────────────────────
-            'Student ID':           s.student_id || '',
-            'Registration No':      s.reg_no || '',
-            'Admission No':         s.admission_no || '',
-            'PEN No':               s.pen || '',
-            'Smart Card No':        s.smart_card_no || '',
-            'Aadhar No':            s.aadhar || '',
+            'Student ID': s.student_id || '',
+            'Registration No': s.reg_no || '',
+            'Admission No': s.admission_no || '',
+            'PEN No': s.pen || '',
+            'Smart Card No': s.smart_card_no || '',
+            'Aadhar No': s.aadhar || '',
 
             // ── Personal ─────────────────────────────────────
-            'Name':                 s.name || '',
-            'Gender':               s.gender || '',
-            'Date of Birth':        s.dob || '',
-            'Religion':             s.religion || '',
-            'Category':             s.category || '',
-            'Caste':                s.caste || '',
-            'Blood Group':          s.blood_group || '',
-            'Nationality':          s.nationality || '',
+            Name: s.name || '',
+            Gender: s.gender || '',
+            'Date of Birth': s.dob || '',
+            Religion: s.religion || '',
+            Category: s.category || '',
+            Caste: s.caste || '',
+            'Blood Group': s.blood_group || '',
+            Nationality: s.nationality || '',
 
             // ── Academic ─────────────────────────────────────
-            'Session':              s.session || '',
-            'Class':                s.class || '',
-            'Section':              s.section || '',
-            'Roll No':              s.roll_no || '',
-            'Join Date':            s.join_date || s.joinDate || '',
-            'Previous School':      s.previous_school || '',
-            'TC No':                s.tc_no || '',
+            Session: s.session || '',
+            Class: s.class || '',
+            Section: s.section || '',
+            'Roll No': s.roll_no || '',
+            'Join Date': s.join_date || s.joinDate || '',
+            'Previous School': s.previous_school || '',
+            'TC No': s.tc_no || '',
 
             // ── Parents / Guardian ────────────────────────────
-            "Father's Name":        s.father_name || s.fatherName || '',
-            "Father's Aadhar":      s.father_aadhar || '',
-            "Father's Mobile":      s.father_mobile || '',
-            "Father's Occupation":  s.father_occupation || '',
-            "Mother's Name":        s.mother_name || s.motherName || '',
-            "Mother's Aadhar":      s.mother_aadhar || '',
-            "Mother's Mobile":      s.mother_mobile || '',
-            'Guardian Name':        s.guardian_name || '',
-            'Guardian Phone':       s.guardian_phone || '',
-            'Guardian Relation':    s.guardian_relation || '',
+            "Father's Name": s.father_name || s.fatherName || '',
+            "Father's Aadhar": s.father_aadhar || '',
+            "Father's Mobile": s.father_mobile || '',
+            "Father's Occupation": s.father_occupation || '',
+            "Mother's Name": s.mother_name || s.motherName || '',
+            "Mother's Aadhar": s.mother_aadhar || '',
+            "Mother's Mobile": s.mother_mobile || '',
+            'Guardian Name': s.guardian_name || '',
+            'Guardian Phone': s.guardian_phone || '',
+            'Guardian Relation': s.guardian_relation || '',
             'SMS Contact (Mobile)': s.sms_contact || s.phone || '',
 
             // ── Contact ───────────────────────────────────────
-            'Mobile / Phone':       s.phone || s.mobile || '',
-            'Email':                s.email || '',
-            'Current Address':      s.address || '',
-            'Permanent Address':    s.permanent_address || '',
-            'City':                 s.city || '',
-            'State':                s.state || '',
-            'Pincode':              s.pincode || '',
+            'Mobile / Phone': s.phone || s.mobile || '',
+            Email: s.email || '',
+            'Current Address': s.address || '',
+            'Permanent Address': s.permanent_address || '',
+            City: s.city || '',
+            State: s.state || '',
+            Pincode: s.pincode || '',
 
             // ── Facilities ────────────────────────────────────
-            'Hostel':               s.hostel || '',
-            'Transport':            s.transport || '',
-            'Bus Route':            s.bus_route || '',
-            'Bus Stop':             s.bus_stop || '',
+            Hostel: s.hostel || '',
+            Transport: s.transport || '',
+            'Bus Route': s.bus_route || '',
+            'Bus Stop': s.bus_stop || '',
 
             // ── Status ────────────────────────────────────────
-            'Status':               s.status || 'Active',
-            'Remarks':              s.remarks || '',
-            'Photo URL':            s.photo || s.photoUrl || '',
-            'Created At':           s.createdAt ? new Date(s.createdAt.seconds ? s.createdAt.seconds * 1000 : s.createdAt).toLocaleDateString() : '',
+            Status: s.status || 'Active',
+            Remarks: s.remarks || '',
+            'Photo URL': s.photo || s.photoUrl || '',
+            'Created At': s.createdAt
+                ? new Date(s.createdAt.seconds ? s.createdAt.seconds * 1000 : s.createdAt).toLocaleDateString()
+                : '',
         }));
 
         const ws = XLSX.utils.json_to_sheet(formattedData);
         // Auto-fit column widths
-        const colWidths = Object.keys(formattedData[0]).map(k => ({ wch: Math.max(k.length + 2, 14) }));
+        const colWidths = Object.keys(formattedData[0]).map((k) => ({ wch: Math.max(k.length + 2, 14) }));
         ws['!cols'] = colWidths;
 
         const wb = XLSX.utils.book_new();
@@ -1503,7 +1579,6 @@ function exportStudentData() {
         showToast('Export failed: ' + e.message, 'error');
     }
 }
-
 
 // Student Management Core
 async function handleStudentSubmit(e) {
@@ -1779,7 +1854,7 @@ async function editStudent(id) {
 }
 
 // Added Photo Preview helper
-window.previewPhoto = function(event) {
+window.previewPhoto = function (event) {
     const file = event.target.files[0];
     const previewImg = document.getElementById('proto_preview_img');
     const placeholderIcon = document.getElementById('photo_placeholder_icon');
@@ -1788,7 +1863,7 @@ window.previewPhoto = function(event) {
     if (file) {
         if (fileNameSpan) fileNameSpan.textContent = file.name;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             if (previewImg) {
                 previewImg.src = e.target.result;
                 previewImg.classList.remove('hidden');
@@ -1891,7 +1966,6 @@ async function handleBulkImport(e) {
     reader.readAsArrayBuffer(file);
 }
 
-
 function logoutAdmin() {
     auth.signOut().then(() => {
         const slug = typeof getURLSlug === 'function' ? getURLSlug() : null;
@@ -1904,7 +1978,7 @@ function updateStats() {
     if (totalStudents) {
         totalStudents.textContent = allStudents.length;
     }
-    
+
     const totalClasses = document.getElementById('statTotalClasses');
     if (totalClasses) {
         const classes = new Set(allStudents.map((s) => s.class));
@@ -2259,7 +2333,7 @@ function initSearchableSelect(containerId, dataArray, onSelect) {
     window[`${containerId}_select`] = (sJson) => {
         const s = JSON.parse(decodeURIComponent(sJson));
         // Default label formatting for students vs classes
-        const labelText = s.student_id ? `${s.name} [${s.father_name || ''}] [${s.student_id}]` : (s.name || s.id);
+        const labelText = s.student_id ? `${s.name} [${s.father_name || ''}] [${s.student_id}]` : s.name || s.id;
         document.getElementById(`${containerId}_label`).textContent = labelText;
         document.getElementById(`${containerId}_dropdown`).style.display = 'none';
         if (onSelect) onSelect(s);
@@ -2302,14 +2376,17 @@ function renderDropdownList(id, list) {
     const el = document.getElementById(`${id}_list`);
     if (!el) return; // Added check for el
     if (!list || list.length === 0) {
-        el.innerHTML = '<div style="padding:0.75rem; text-align:center; color:var(--text-muted);">No results found</div>';
+        el.innerHTML =
+            '<div style="padding:0.75rem; text-align:center; color:var(--text-muted);">No results found</div>';
         return;
     }
 
     el.innerHTML = list
         .map((s) => {
-            const labelText = s.student_id ? `${s.name} (${s.student_id})` : (s.name || s.id);
-            const subText = s.father_name ? `<br><small style="color:var(--text-muted)">Father: ${s.father_name}</small>` : '';
+            const labelText = s.student_id ? `${s.name} (${s.student_id})` : s.name || s.id;
+            const subText = s.father_name
+                ? `<br><small style="color:var(--text-muted)">Father: ${s.father_name}</small>`
+                : '';
             return `<div onclick="window['${id}_select']('${encodeURIComponent(JSON.stringify(s))}')" style="padding:0.75rem 1rem; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s;">
                 <div style="font-weight:500;">${labelText}</div>
                 ${subText}
@@ -2732,10 +2809,10 @@ function downloadExcelTemplate(type) {
     try {
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet([headers, ...sampleData]);
-        
+
         // Basic column widths
         ws['!cols'] = headers.map(() => ({ wch: 15 }));
-        
+
         XLSX.utils.book_append_sheet(wb, ws, 'Template');
         XLSX.writeFile(wb, filename);
         showToast(`Downloaded ${filename}`, 'success');
@@ -2747,3 +2824,471 @@ function downloadExcelTemplate(type) {
 
 // Global Exports for templates
 window.downloadExcelTemplate = downloadExcelTemplate;
+
+// ==================== Student RFID Update Functions ====================
+
+async function loadClassesForRfidUpdate() {
+    const sessionSelect = document.getElementById('rfid_student_session');
+    const classSelect = document.getElementById('rfid_student_class');
+    if (!sessionSelect || !classSelect) return;
+
+    const sessionId = sessionSelect.value;
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
+
+    try {
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc')
+            .get();
+
+        classSelect.innerHTML = '<option value="">Select Class</option>';
+        snapshot.docs.forEach((doc) => {
+            const c = doc.data();
+            classSelect.innerHTML += `<option value="${c.name}" data-id="${c.id}">${c.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading classes for RFID:', e);
+    }
+}
+
+function loadSectionsForRfidUpdate() {
+    const classSelect = document.getElementById('rfid_student_class');
+    const secSelect = document.getElementById('rfid_student_section');
+    if (!classSelect || !secSelect) return;
+
+    const selectedOption = classSelect.options[classSelect.selectedIndex];
+    const classId = selectedOption?.getAttribute('data-id');
+
+    if (!classId) {
+        secSelect.innerHTML = '<option value="">Select Class First</option>';
+        return;
+    }
+
+    const cls = erpState.classes.find((c) => c.id === classId);
+    if (!cls || !cls.sections || cls.sections.length === 0) {
+        secSelect.innerHTML = '<option value="">No Sections</option>';
+        return;
+    }
+
+    secSelect.innerHTML =
+        '<option value="">All Sections</option>' +
+        cls.sections.map((sec) => `<option value="${sec}">${sec}</option>`).join('');
+}
+
+async function loadStudentsForRfidUpdate() {
+    const sessionSelect = document.getElementById('rfid_student_session');
+    const classSelect = document.getElementById('rfid_student_class');
+    const secSelect = document.getElementById('rfid_student_section');
+    const tbody = document.getElementById('rfidUpdateTableBody');
+
+    if (!classSelect.value) {
+        tbody.innerHTML = `<tr>
+            <td colspan="5" class="text-center p-3 text-slate-muted">
+                <i class="fas fa-wifi text-2xl opacity-03 mb-1 block"></i>
+                Select Session, Class and Section to load students
+            </td>
+        </tr>`;
+        return;
+    }
+
+    tbody.innerHTML = `<tr>
+        <td colspan="5" class="text-center p-3">
+            <i class="fas fa-spinner fa-spin"></i> Loading students...
+        </td>
+    </tr>`;
+
+    const selectedSession = sessionSelect.options[sessionSelect.selectedIndex]?.text || '';
+    const selectedClass = classSelect.value;
+    const selectedSection = secSelect.value;
+
+    try {
+        let query = schoolData('students').where('session', '==', selectedSession).where('class', '==', selectedClass);
+
+        if (selectedSection) {
+            query = query.where('section', '==', selectedSection);
+        }
+
+        const snapshot = await query.orderBy('roll_no', 'asc').get();
+
+        if (snapshot.empty) {
+            tbody.innerHTML = `<tr>
+                <td colspan="5" class="text-center p-3 text-slate-muted">No students found</td>
+            </tr>`;
+            return;
+        }
+
+        tbody.innerHTML = snapshot.docs
+            .map((doc) => {
+                const s = doc.data();
+                const rfid = s.rfid_no || s.rfid || s.smart_card_no || s.smartCardNo || '';
+                return `<tr>
+                <td>${s.studentId || s.student_id || doc.id}</td>
+                <td>${s.name || s.student_name || ''}</td>
+                <td>${s.class || ''} ${s.section || ''}</td>
+                <td>${rfid || '-'}</td>
+                <td>
+                    <input type="text" 
+                        class="form-control" 
+                        placeholder="Enter RFID No" 
+                        data-student-id="${doc.id}"
+                        value="${rfid || ''}"
+                        style="width: 150px;"
+                    />
+                </td>
+            </tr>`;
+            })
+            .join('');
+    } catch (e) {
+        console.error('Error loading students for RFID:', e);
+        tbody.innerHTML = `<tr>
+            <td colspan="5" class="text-center p-3 text-red">Error loading students</td>
+        </tr>`;
+    }
+}
+
+async function saveRfidUpdates() {
+    const inputs = document.querySelectorAll('#rfidUpdateTableBody input');
+    const updates = [];
+
+    inputs.forEach((input) => {
+        const studentId = input.getAttribute('data-student-id');
+        const newRfid = input.value.trim();
+        if (studentId && newRfid) {
+            updates.push({ studentId, rfid: newRfid });
+        }
+    });
+
+    if (updates.length === 0) {
+        showToast('No RFID updates to save', 'info');
+        return;
+    }
+
+    try {
+        setLoading(true);
+
+        const batch = db.batch();
+
+        for (const upd of updates) {
+            const docRef = schoolData('students').doc(upd.studentId);
+            batch.update(docRef, { rfid_no: upd.rfid });
+        }
+
+        await batch.commit();
+        showToast(`Successfully updated ${updates.length} RFID numbers`, 'success');
+        loadStudentsForRfidUpdate(); // Refresh the table
+    } catch (e) {
+        console.error('Error saving RFID updates:', e);
+        showToast('Failed to save RFID updates', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Export functions to window
+window.loadClassesForRfidUpdate = loadClassesForRfidUpdate;
+window.loadSectionsForRfidUpdate = loadSectionsForRfidUpdate;
+window.loadStudentsForRfidUpdate = loadStudentsForRfidUpdate;
+window.saveRfidUpdates = saveRfidUpdates;
+
+// ==================== Pickup ID Print Functions ====================
+
+let pickupSelectedStudents = new Set();
+
+async function loadClassesForPickupId() {
+    const sessionSelect = document.getElementById('pickup_session');
+    const classSelect = document.getElementById('pickup_class');
+    if (!sessionSelect || !classSelect) return;
+
+    const sessionId = sessionSelect.value;
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
+
+    try {
+        const snapshot = await schoolData('classes')
+            .where('sessionId', '==', sessionId)
+            .orderBy('sortOrder', 'asc')
+            .get();
+
+        classSelect.innerHTML = '<option value="">Select Class</option>';
+        snapshot.docs.forEach((doc) => {
+            const c = doc.data();
+            classSelect.innerHTML += `<option value="${c.name}" data-id="${c.id}">${c.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading classes for pickup:', e);
+    }
+}
+
+function loadSectionsForPickupId() {
+    const classSelect = document.getElementById('pickup_class');
+    const secSelect = document.getElementById('pickup_section');
+    if (!classSelect || !secSelect) return;
+
+    const selectedOption = classSelect.options[classSelect.selectedIndex];
+    const classId = selectedOption?.getAttribute('data-id');
+
+    if (!classId) {
+        secSelect.innerHTML = '<option value="">Select Class First</option>';
+        return;
+    }
+
+    const cls = erpState.classes.find((c) => c.id === classId);
+    if (!cls || !cls.sections || cls.sections.length === 0) {
+        secSelect.innerHTML = '<option value="">No Sections</option>';
+        return;
+    }
+
+    secSelect.innerHTML =
+        '<option value="">All Sections</option>' +
+        cls.sections.map((sec) => `<option value="${sec}">${sec}</option>`).join('');
+}
+
+async function loadStudentsForPickupId() {
+    const sessionSelect = document.getElementById('pickup_session');
+    const classSelect = document.getElementById('pickup_class');
+    const secSelect = document.getElementById('pickup_section');
+    const listContainer = document.getElementById('pickupStudentList');
+    const previewContainer = document.getElementById('pickupIdPreviewContainer');
+    const countSpan = document.getElementById('pickupSelectedCount');
+
+    pickupSelectedStudents.clear();
+    if (countSpan) countSpan.textContent = '0';
+
+    if (!classSelect.value) {
+        listContainer.innerHTML = '<p class="text-muted text-center p-2">Select session and class to load students</p>';
+        return;
+    }
+
+    listContainer.innerHTML = '<p class="text-center p-2"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+
+    const selectedSession = sessionSelect.options[sessionSelect.selectedIndex]?.text || '';
+    const selectedClass = classSelect.value;
+    const selectedSection = secSelect.value;
+
+    try {
+        let query = schoolData('students').where('session', '==', selectedSession).where('class', '==', selectedClass);
+
+        if (selectedSection) {
+            query = query.where('section', '==', selectedSection);
+        }
+
+        const snapshot = await query.orderBy('roll_no', 'asc').get();
+
+        if (snapshot.empty) {
+            listContainer.innerHTML = '<p class="text-muted text-center p-2">No students found</p>';
+            return;
+        }
+
+        listContainer.innerHTML = snapshot.docs
+            .map((doc) => {
+                const s = doc.data();
+                return `<div class="flex align-center gap-1 p-0-5 border-bottom">
+                <input type="checkbox" class="pickup-student-checkbox" 
+                    data-student-id="${doc.id}" 
+                    data-student-name="${s.name || ''}"
+                    data-father-name="${s.father_name || s.fatherName || ''}"
+                    data-class="${s.class || ''} ${s.section || ''}"
+                    onchange="updatePickupSelection(this)">
+                <div>
+                    <div class="font-600">${s.name || ''}</div>
+                    <div class="text-xs text-muted">${s.class || ''} ${s.section || ''} - Father: ${s.father_name || s.fatherName || '-'}</div>
+                </div>
+            </div>`;
+            })
+            .join('');
+
+        previewContainer.innerHTML = `<div class="text-muted text-center">
+            <i class="fas fa-eye-slash text-4xl opacity-20 block mb-1"></i>
+            Select students to see preview
+        </div>`;
+    } catch (e) {
+        console.error('Error loading students for pickup:', e);
+        listContainer.innerHTML = '<p class="text-danger text-center p-2">Error loading students</p>';
+    }
+}
+
+function updatePickupSelection(checkbox) {
+    const studentId = checkbox.getAttribute('data-student-id');
+    if (checkbox.checked) {
+        pickupSelectedStudents.add(studentId);
+    } else {
+        pickupSelectedStudents.delete(studentId);
+    }
+
+    const countSpan = document.getElementById('pickupSelectedCount');
+    if (countSpan) countSpan.textContent = pickupSelectedStudents.size;
+
+    updatePickupPreview();
+}
+
+function selectAllPickupStudents() {
+    document.querySelectorAll('.pickup-student-checkbox').forEach((cb) => {
+        cb.checked = true;
+        pickupSelectedStudents.add(cb.getAttribute('data-student-id'));
+    });
+    const countSpan = document.getElementById('pickupSelectedCount');
+    if (countSpan) countSpan.textContent = pickupSelectedStudents.size;
+    updatePickupPreview();
+}
+
+function deselectAllPickupStudents() {
+    document.querySelectorAll('.pickup-student-checkbox').forEach((cb) => {
+        cb.checked = false;
+    });
+    pickupSelectedStudents.clear();
+    const countSpan = document.getElementById('pickupSelectedCount');
+    if (countSpan) countSpan.textContent = '0';
+    updatePickupPreview();
+}
+
+function updatePickupPreview() {
+    const previewContainer = document.getElementById('pickupIdPreviewContainer');
+    const template = document.getElementById('pickup_template')?.value || 'simple';
+    const orientation = document.getElementById('pickup_orientation')?.value || 'portrait';
+
+    if (pickupSelectedStudents.size === 0) {
+        previewContainer.innerHTML = `<div class="text-muted text-center">
+            <i class="fas fa-eye-slash text-4xl opacity-20 block mb-1"></i>
+            Select students to see preview
+        </div>`;
+        return;
+    }
+
+    // Get selected student data
+    const checkboxes = document.querySelectorAll('.pickup-student-checkbox:checked');
+    const students = Array.from(checkboxes).map((cb) => ({
+        id: cb.getAttribute('data-student-id'),
+        name: cb.getAttribute('data-student-name'),
+        fatherName: cb.getAttribute('data-father-name'),
+        class: cb.getAttribute('data-class'),
+    }));
+
+    if (students.length === 0) return;
+
+    const isLandscape = orientation === 'landscape';
+    const cardClass = isLandscape ? 'pickup-card-landscape' : 'pickup-card-portrait';
+
+    previewContainer.innerHTML = `
+        <div class="flex flex-col gap-1">
+            ${students
+                .slice(0, 3)
+                .map(
+                    (s) => `
+                <div class="${cardClass} pickup-card-preview">
+                    <div class="pickup-card-header">
+                        <i class="fas fa-id-card"></i> PICKUP PASS
+                    </div>
+                    <div class="pickup-card-body">
+                        <div class="pickup-student-name">${s.name}</div>
+                        <div class="pickup-class-section">${s.class}</div>
+                        <div class="pickup-father-name">Father: ${s.fatherName}</div>
+                    </div>
+                </div>
+            `
+                )
+                .join('')}
+            ${students.length > 3 ? `<div class="text-xs text-muted">+ ${students.length - 3} more students</div>` : ''}
+        </div>
+    `;
+}
+
+async function generatePickupIdCards() {
+    if (pickupSelectedStudents.size === 0) {
+        showToast('Please select at least one student', 'info');
+        return;
+    }
+
+    const checkboxes = document.querySelectorAll('.pickup-student-checkbox:checked');
+    const students = Array.from(checkboxes).map((cb) => ({
+        id: cb.getAttribute('data-student-id'),
+        name: cb.getAttribute('data-student-name'),
+        fatherName: cb.getAttribute('data-father-name'),
+        class: cb.getAttribute('data-class'),
+    }));
+
+    try {
+        setLoading(true);
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const orientation = document.getElementById('pickup_orientation')?.value || 'portrait';
+        const isLandscape = orientation === 'landscape';
+
+        // Card dimensions
+        const cardW = isLandscape ? 85 : 54;
+        const cardH = isLandscape ? 54 : 85;
+        const margin = 10;
+        const gap = 5;
+
+        let x = margin,
+            y = margin;
+
+        // Render container
+        const renderDiv = document.createElement('div');
+        renderDiv.style.position = 'absolute';
+        renderDiv.style.left = '-9999px';
+        document.body.appendChild(renderDiv);
+
+        for (const s of students) {
+            // Simple pickup card template
+            renderDiv.innerHTML = `
+                <div class="pickup-card" style="width:${cardW}mm;height:${cardH}mm;border:2px solid #333;padding:5px;font-family:Arial,sans-serif;">
+                    <div style="background:#333;color:#fff;padding:3px;text-align:center;font-weight:bold;font-size:10px;">
+                        PICKUP PASS
+                    </div>
+                    <div style="padding:5px;text-align:center;">
+                        <div style="font-size:12px;font-weight:bold;">${s.name}</div>
+                        <div style="font-size:9px;color:#666;">${s.class}</div>
+                        <div style="font-size:9px;margin-top:3px;">Father: ${s.fatherName}</div>
+                    </div>
+                    <div style="border-top:1px dashed #999;padding:3px;text-align:center;font-size:8px;">
+                        Valid for Pickup
+                    </div>
+                </div>
+            `;
+
+            const cardEl = renderDiv.firstElementChild;
+            if (!cardEl) continue;
+
+            const canvas = await html2canvas(cardEl, { scale: 2, backgroundColor: '#ffffff' });
+            const imgData = canvas.toDataURL('image/png');
+
+            if (y + cardH > (isLandscape ? 200 : 280)) {
+                pdf.addPage();
+                x = margin;
+                y = margin;
+            }
+
+            pdf.addImage(imgData, 'PNG', x, y, cardW, cardH);
+            x += cardW + gap;
+            if (x + cardW > (isLandscape ? 290 : 200)) {
+                x = margin;
+                y += cardH + gap;
+            }
+        }
+
+        document.body.removeChild(renderDiv);
+        pdf.save(`Pickup_ID_Cards_${new Date().toISOString().split('T')[0]}.pdf`);
+        showToast(`Generated pickup IDs for ${students.length} students`, 'success');
+    } catch (e) {
+        console.error('Error generating pickup IDs:', e);
+        showToast('Failed to generate pickup IDs', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+// Export functions to window
+window.loadClassesForPickupId = loadClassesForPickupId;
+window.loadSectionsForPickupId = loadSectionsForPickupId;
+window.loadStudentsForPickupId = loadStudentsForPickupId;
+window.updatePickupSelection = updatePickupSelection;
+window.selectAllPickupStudents = selectAllPickupStudents;
+window.deselectAllPickupStudents = deselectAllPickupStudents;
+window.updatePickupPreview = updatePickupPreview;
+window.generatePickupIdCards = generatePickupIdCards;

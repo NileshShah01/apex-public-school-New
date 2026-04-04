@@ -8,6 +8,12 @@ async function initERPIdCards() {
     console.log('Initializing Premium ID Card Module...');
     populateTemplateGallery();
     loadClassesForIdBatch();
+
+    // Show initial template preview on load
+    setTimeout(() => {
+        const selectedTemplate = document.getElementById('selectedIdTemplate')?.value || 'format1';
+        showTemplatePreview(selectedTemplate);
+    }, 500);
 }
 
 function populateTemplateGallery() {
@@ -25,7 +31,7 @@ function populateTemplateGallery() {
         { key: 'format7', title: 'Modern Tech H1', iconColor: '#FF416C' },
         { key: 'format8', title: 'Modern Tech H2', iconColor: '#FF4B2B' },
         // 5 NEW PREMIUM TEMPLATES
-        { key: 'format9',  title: '✨ Gradient Elite', iconColor: '#2a5298', badge: 'NEW' },
+        { key: 'format9', title: '✨ Gradient Elite', iconColor: '#2a5298', badge: 'NEW' },
         { key: 'format10', title: '✨ Stark Modern', iconColor: '#7c3aed', badge: 'NEW' },
         { key: 'format11', title: '✨ Royal Maroon', iconColor: '#7b0000', badge: 'NEW' },
         { key: 'format12', title: '✨ Saffron India', iconColor: '#FF9933', badge: 'NEW' },
@@ -51,7 +57,39 @@ function selectTemplate(templateKey, element) {
     document.querySelectorAll('.template-item').forEach((el) => el.classList.remove('active'));
     element.classList.add('active');
     document.getElementById('selectedIdTemplate').value = templateKey;
+
+    // Show sample preview on template selection (without needing a student selected)
+    showTemplatePreview(templateKey);
     updateIdPreview();
+}
+
+function showTemplatePreview(templateKey) {
+    const container = document.getElementById('idCardPreviewContainer');
+    if (!container) return;
+
+    // Sample data for preview
+    const sampleData = {
+        name: 'Sample Student',
+        studentId: 'STU-001',
+        class: '12',
+        section: 'A',
+        session: '2025-26',
+        fatherName: 'Father Name',
+        dateOfBirth: '01-01-2010',
+        bloodGroup: 'O+',
+        address: 'Sample Address',
+        photo: '',
+        orientation: document.getElementById('idCardOrientation').value || 'vertical',
+        schoolName: window.SCHOOL_NAME || 'School ERP',
+        schoolLogo: window.SCHOOL_LOGO || '/images/logo.png',
+        schoolContact: window.SCHOOL_PHONE || '',
+        schoolWebsite: window.SCHOOL_WEBSITE || '',
+        trustName: window.TRUST_NAME || '',
+        address_summary: window.SCHOOL_ADDRESS || '',
+    };
+
+    const templateFn = window.ID_TEMPLATES[templateKey] || window.ID_TEMPLATES.format1;
+    container.innerHTML = templateFn(sampleData);
 }
 
 async function updateIdPreview() {
@@ -90,7 +128,8 @@ async function updateIdPreview() {
             class: selectedStudentData.class || selectedStudentData.student_class || 'N/A',
             section: selectedStudentData.section || '',
             session: selectedStudentData.session || selectedStudentData.academic_session || '2025-26',
-            bloodGroup: selectedStudentData.bloodGroup || selectedStudentData.blood_group || selectedStudentData.blood || 'N/A',
+            bloodGroup:
+                selectedStudentData.bloodGroup || selectedStudentData.blood_group || selectedStudentData.blood || 'N/A',
             photo: selectedStudentData.photo_url || selectedStudentData.photo || '', // Handled by template if empty
         };
 
@@ -153,10 +192,25 @@ async function generateSingleIdCard() {
 
 async function loadClassesForIdBatch() {
     const select = document.getElementById('idBatchClassSelect');
+    const sessionSelect = document.getElementById('idGen_session');
     if (!select) return;
 
-    // Use cached classes from admin-dashboard.js if available
-    const classes = [...new Set(window.allStudents?.map((s) => s.class))].filter(Boolean).sort();
+    // Get current session from dropdown
+    let sessionName = '';
+    if (sessionSelect && sessionSelect.value) {
+        const sessionOption = sessionSelect.options[sessionSelect.selectedIndex];
+        sessionName = sessionOption?.text || '';
+    }
+
+    // Filter classes based on session
+    let classes = [...new Set(window.allStudents?.map((s) => s.class))].filter(Boolean).sort();
+
+    // If we have a session selected, filter by that session
+    if (sessionName && window.allStudents) {
+        const sessionStudents = window.allStudents.filter((s) => s.session === sessionName);
+        classes = [...new Set(sessionStudents.map((s) => s.class))].filter(Boolean).sort();
+    }
+
     select.innerHTML = '<option value="">-- Select Class --</option>';
     classes.forEach((c) => {
         select.innerHTML += `<option value="${c}">Class ${c}</option>`;
@@ -164,6 +218,7 @@ async function loadClassesForIdBatch() {
 }
 
 async function generateBatchIdCards() {
+    const sessionSelect = document.getElementById('idGen_session');
     const className = document.getElementById('idBatchClassSelect').value;
     if (!className) {
         showToast('Please select a class', 'error');
@@ -174,7 +229,19 @@ async function generateBatchIdCards() {
         setLoading(true);
         console.log(`Starting batch generation for Class ${className}...`);
 
-        const students = window.allStudents.filter((s) => s.class === className);
+        // Get session name for filtering
+        const sessionId = sessionSelect?.value || '';
+        const sessionDoc = erpState.sessions.find((s) => s.id === sessionId);
+        const sessionName = sessionDoc ? sessionDoc.name : '';
+
+        // Filter students by class AND session
+        let students = window.allStudents.filter((s) => s.class === className);
+
+        // Also filter by session if selected
+        if (sessionName) {
+            students = students.filter((s) => s.session === sessionName);
+        }
+
         if (students.length === 0) {
             showToast('No students found in this class', 'error');
             return;
@@ -229,7 +296,6 @@ async function generateBatchIdCards() {
                 photo: s.photo_url || s.photo || '',
             };
 
-
             renderDiv.innerHTML = templateFn(data);
             const cardEl = renderDiv.querySelector('.id-card-wrapper');
 
@@ -275,3 +341,5 @@ window.initERPIdCards = initERPIdCards;
 window.updateIdPreview = updateIdPreview;
 window.generateSingleIdCard = generateSingleIdCard;
 window.generateBatchIdCards = generateBatchIdCards;
+window.selectTemplate = selectTemplate;
+window.showTemplatePreview = showTemplatePreview;

@@ -111,14 +111,14 @@ function renderSessions() {
  * EDIT SESSION
  */
 async function editSession(sessionId) {
-    const session = erpState.sessions.find(s => s.id === sessionId);
+    const session = erpState.sessions.find((s) => s.id === sessionId);
     if (!session) return;
 
-    const newName = prompt("Enter new Session Name:", session.name);
+    const newName = prompt('Enter new Session Name:', session.name);
     if (newName === null) return; // Cancelled
 
-    const newStart = prompt("Enter Start Date (YYYY-MM-DD):", session.startDate);
-    const newEnd = prompt("Enter End Date (YYYY-MM-DD):", session.endDate);
+    const newStart = prompt('Enter Start Date (YYYY-MM-DD):', session.startDate);
+    const newEnd = prompt('Enter End Date (YYYY-MM-DD):', session.endDate);
 
     try {
         showLoading(true);
@@ -126,7 +126,7 @@ async function editSession(sessionId) {
             name: newName || session.name,
             startDate: newStart || session.startDate,
             endDate: newEnd || session.endDate,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         showToast('Session updated successfully', 'success');
         await loadSessions();
@@ -142,16 +142,18 @@ async function editSession(sessionId) {
  * DELETE SESSION
  */
 async function deleteSession(sessionId) {
-    if (!confirm('Are you sure you want to PERMANENTLY delete this session? This will fail if classes are linked to it.')) return;
+    if (
+        !confirm(
+            'Are you sure you want to PERMANENTLY delete this session? This will fail if classes are linked to it.'
+        )
+    )
+        return;
 
     try {
         showLoading(true);
-        
+
         // Safety Check: Check for classes in this session
-        const classSnap = await schoolData('classes')
-            .where('sessionId', '==', sessionId)
-            .limit(1)
-            .get();
+        const classSnap = await schoolData('classes').where('sessionId', '==', sessionId).limit(1).get();
 
         if (!classSnap.empty) {
             showLoading(false);
@@ -287,10 +289,9 @@ function renderClasses() {
     }
 
     classesTableBody.innerHTML = erpState.classes
-        .map(
-            (cls) => {
-                const isDisabled = cls.disabled === true;
-                return `
+        .map((cls) => {
+            const isDisabled = cls.disabled === true;
+            return `
         <tr style="${isDisabled ? 'opacity: 0.6; background: #f9fafb;' : ''}">
             <td>${cls.sortOrder}</td>
             <td>
@@ -313,8 +314,7 @@ function renderClasses() {
             </td>
         </tr>
     `;
-            }
-        )
+        })
         .join('');
 }
 
@@ -322,13 +322,13 @@ function renderClasses() {
  * EDIT CLASS
  */
 async function editClass(classId) {
-    const cls = erpState.classes.find(c => c.id === classId);
+    const cls = erpState.classes.find((c) => c.id === classId);
     if (!cls) return;
 
-    const newName = prompt("Enter new Class Name:", cls.name);
+    const newName = prompt('Enter new Class Name:', cls.name);
     if (newName === null) return;
 
-    const newSort = prompt("Enter Sort Order (number):", cls.sortOrder);
+    const newSort = prompt('Enter Sort Order (number):', cls.sortOrder);
     if (newSort === null) return;
 
     try {
@@ -336,10 +336,10 @@ async function editClass(classId) {
         await schoolDoc('classes', classId).update({
             name: newName || cls.name,
             sortOrder: parseInt(newSort) || cls.sortOrder,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
         showToast('Class updated successfully', 'success');
-        
+
         // Refresh by reloading classes for the current session view
         const sessionSelect = document.getElementById('classSessionSelect');
         const selectedSessionId = sessionSelect ? sessionSelect.value : erpState.activeSessionId;
@@ -364,14 +364,13 @@ async function deleteClass(classId) {
         if (!cls) return;
 
         // Safety Check: Check for students in this class
-        const studentSnap = await schoolData('students')
-            .where('class', '==', cls.name)
-            .limit(1)
-            .get();
+        const studentSnap = await schoolData('students').where('class', '==', cls.name).limit(1).get();
 
         if (!studentSnap.empty) {
             showLoading(false);
-            alert(`Cannot delete "${cls.name}" because students are still assigned to it. Please move students to another class or just "Disable" this class instead.`);
+            alert(
+                `Cannot delete "${cls.name}" because students are still assigned to it. Please move students to another class or just "Disable" this class instead.`
+            );
             return;
         }
 
@@ -474,20 +473,20 @@ async function updateClassDropdowns() {
         'promoteFromClass',
         'tt_classSelect',
         'qpClassFilter',
-        'uploadQpClass'
+        'uploadQpClass',
     ];
-    
+
     dropdowns.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
-        
+
         let optionsHtml = '<option value="">Select Class</option>';
         erpState.classes
-            .filter(cls => !cls.disabled)
-            .forEach(cls => {
+            .filter((cls) => !cls.disabled)
+            .forEach((cls) => {
                 // IMPORTANT: detailsClassSelect needs the Firestore ID to manage sections.
                 // Others often need the Name for student filtering (class == "Nursery").
-                const value = (id === 'detailsClassSelect') ? cls.id : cls.name;
+                const value = id === 'detailsClassSelect' ? cls.id : cls.name;
                 optionsHtml += `<option value="${value}" data-id="${cls.id}">${cls.name}</option>`;
             });
         el.innerHTML = optionsHtml;
@@ -496,8 +495,11 @@ async function updateClassDropdowns() {
 
 async function updateSessionDropdowns() {
     // Standard options with ID as value
-    const idOptions = '<option value="">Select Session</option>' +
-        erpState.sessions.map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    const idOptions =
+        '<option value="">Select Session</option>' +
+        erpState.sessions
+            .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+            .join('');
 
     const sessOptions = [
         'classSessionSelect',
@@ -506,17 +508,20 @@ async function updateSessionDropdowns() {
         'notif_sessionSelect',
         'analytic_sessionSelect',
         'qpSessionFilter',
-        'uploadQpSession'
+        'uploadQpSession',
     ];
 
-    sessOptions.forEach(id => {
+    sessOptions.forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = idOptions;
     });
 
     // Student Registration options with Name as value (for storage consistency)
-    const nameOptions = '<option value="">Select Session</option>' +
-        erpState.sessions.map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+    const nameOptions =
+        '<option value="">Select Session</option>' +
+        erpState.sessions
+            .map((s) => `<option value="${s.name}" data-id="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+            .join('');
 
     const classSessionSelect = document.getElementById('classSessionSelect');
     if (classSessionSelect) {
@@ -535,7 +540,7 @@ async function updateSessionDropdowns() {
             bulkSessionSelect.setAttribute('data-listener', 'true');
         }
         // Auto-select active session
-        const active = erpState.sessions.find(s => s.active);
+        const active = erpState.sessions.find((s) => s.active);
         if (active && !bulkSessionSelect.value) {
             bulkSessionSelect.value = active.id;
         }
@@ -545,7 +550,7 @@ async function updateSessionDropdowns() {
     const idGenSession = document.getElementById('idGen_session');
     if (idGenSession) {
         idGenSession.innerHTML = idOptions;
-        const active = erpState.sessions.find(s => s.active);
+        const active = erpState.sessions.find((s) => s.active);
         if (active && !idGenSession.value) idGenSession.value = active.id;
     }
 
@@ -555,7 +560,7 @@ async function updateSessionDropdowns() {
 
         // Auto-load Classes for Registration (only if not already selected/editing)
         if (!regSession.value) {
-            const activeSession = erpState.sessions.find(s => s.active);
+            const activeSession = erpState.sessions.find((s) => s.active);
             if (activeSession) {
                 regSession.value = activeSession.name;
                 await loadClassesForRegistration(activeSession.id);
@@ -590,12 +595,10 @@ async function loadClassesForRegistration(providedSessionId) {
 
     try {
         console.log(`Loading classes for session: ${sessionId}`);
-        const snapshot = await schoolData('classes')
-            .where('sessionId', '==', sessionId)
-            .get();
+        const snapshot = await schoolData('classes').where('sessionId', '==', sessionId).get();
 
         let classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        
+
         // Client-side sort if needed
         classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
@@ -638,13 +641,18 @@ async function loadClassesForBulkUpdate() {
 
     try {
         const snapshot = await schoolData('classes').where('sessionId', '==', sessionId).get();
-        let classes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let classes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
-        classSelect.innerHTML = '<option value="">Select Class</option>' +
-            classes.filter(c => !c.disabled)
-                   .map(c => `<option value="${c.name}" data-id="${c.id}" data-sections='${JSON.stringify(c.sections||[])}'>${c.name}</option>`)
-                   .join('');
+        classSelect.innerHTML =
+            '<option value="">Select Class</option>' +
+            classes
+                .filter((c) => !c.disabled)
+                .map(
+                    (c) =>
+                        `<option value="${c.name}" data-id="${c.id}" data-sections='${JSON.stringify(c.sections || [])}'>${c.name}</option>`
+                )
+                .join('');
     } catch (e) {
         console.error('Error loading bulk classes:', e);
         classSelect.innerHTML = '<option value="">Error Loading</option>';
@@ -660,10 +668,12 @@ async function loadBulkSectionsForUpdate() {
 
     const selectedOpt = classSelect.options[classSelect.selectedIndex];
     let sections = [];
-    try { sections = JSON.parse(selectedOpt?.getAttribute('data-sections') || '[]'); } catch(e) {}
+    try {
+        sections = JSON.parse(selectedOpt?.getAttribute('data-sections') || '[]');
+    } catch (e) {}
 
-    sectionSelect.innerHTML = '<option value="">All Sections</option>' +
-        sections.map(s => `<option value="${s}">${s}</option>`).join('');
+    sectionSelect.innerHTML =
+        '<option value="">All Sections</option>' + sections.map((s) => `<option value="${s}">${s}</option>`).join('');
 }
 
 window.loadBulkSectionsForUpdate = loadBulkSectionsForUpdate;
@@ -672,52 +682,93 @@ async function loadBulkStudentList() {
     const sessionSelect = document.getElementById('bulk_student_session');
     const classSelect = document.getElementById('bulk_student_class');
     const sectionSelect = document.getElementById('bulk_student_section');
+    const fieldsSelect = document.getElementById('bulk_update_fields');
+    const thead = document.getElementById('bulkUpdateTableHead');
     const tbody = document.getElementById('bulkUpdateTableBody');
     if (!tbody) return;
 
     const sessionId = sessionSelect?.value;
     const className = classSelect?.value;
     if (!sessionId || !className) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3 text-slate-muted"><i class="fas fa-filter text-2xl opacity-03 mb-1 block"></i>Select Session and Class to start bulk editing</td></tr>';
+        tbody.innerHTML =
+            '<tr><td colspan="9" class="text-center p-3 text-slate-muted"><i class="fas fa-filter text-2xl opacity-03 mb-1 block"></i>Select Session and Class to start bulk editing</td></tr>';
         return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center p-2"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
+    // Update visible columns based on selection
+    const fieldSelection = fieldsSelect?.value || 'all';
+    const colConfig = {
+        col_roll: ['all', 'roll'],
+        col_father: ['all', 'father'],
+        col_mobile: ['all', 'contact'],
+        col_dob: ['all', 'personal'],
+        col_blood: ['all', 'personal'],
+        col_address: ['all', 'contact'],
+        col_sms: ['all', 'contact'],
+    };
+
+    // Show/hide headers based on selection
+    if (thead) {
+        Object.keys(colConfig).forEach((col) => {
+            const show = colConfig[col].includes(fieldSelection);
+            const th = thead.querySelector('.' + col);
+            if (th) {
+                th.classList.toggle('hidden', !show);
+            }
+        });
+    }
+
+    tbody.innerHTML =
+        '<tr><td colspan="9" class="text-center p-2"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
 
     try {
         // Get the session name for filtering
-        const sessionDoc = erpState.sessions.find(s => s.id === sessionId);
+        const sessionDoc = erpState.sessions.find((s) => s.id === sessionId);
         const sessionName = sessionDoc ? sessionDoc.name : '';
 
         let q = schoolData('students').where('class', '==', className);
         const snap = await q.get();
         const students = snap.docs
-            .map(doc => ({ docId: doc.id, ...doc.data() }))
-            .filter(s => !sessionName || !s.session || s.session === sessionName);
+            .map((doc) => ({ docId: doc.id, ...doc.data() }))
+            .filter((s) => !sessionName || !s.session || s.session === sessionName);
 
         const sectionFilter = sectionSelect?.value || '';
-        const filtered = sectionFilter ? students.filter(s => s.section === sectionFilter) : students;
+        const filtered = sectionFilter ? students.filter((s) => s.section === sectionFilter) : students;
 
         if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3">No students found for selected filters.</td></tr>';
+            tbody.innerHTML =
+                '<tr><td colspan="9" class="text-center p-3">No students found for selected filters.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = filtered.map(s => `
+        // Column visibility map for body cells
+        const getColClass = (col) => {
+            const show = colConfig[col].includes(fieldSelection);
+            return show ? col : col + ' hidden';
+        };
+
+        tbody.innerHTML = filtered
+            .map(
+                (s) => `
             <tr data-doc-id="${s.docId}">
                 <td>${s.student_id || s.docId}</td>
                 <td><input type="text" value="${s.name || ''}" class="form-control" style="min-width:120px" data-field="name" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_roll"><input type="text" value="${s.roll_no || ''}" class="form-control" data-field="roll_no" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_father"><input type="text" value="${s.father_name || s.fatherName || ''}" class="form-control" data-field="father_name" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_mobile"><input type="text" value="${s.mobile || s.phone || ''}" class="form-control" data-field="mobile" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_dob"><input type="date" value="${s.dob || ''}" class="form-control" data-field="dob" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_blood hidden"><input type="text" value="${s.blood_group || ''}" class="form-control" data-field="blood_group" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_address hidden"><input type="text" value="${s.address || ''}" class="form-control" data-field="address" onchange="markBulkDirty('${s.docId}',this)" /></td>
-                <td class="col_sms hidden"><input type="text" value="${s.sms_contact || ''}" class="form-control" data-field="sms_contact" onchange="markBulkDirty('${s.docId}',this)" /></td>
-            </tr>`).join('');
+                <td class="${getColClass('col_roll')}"><input type="text" value="${s.roll_no || ''}" class="form-control" data-field="roll_no" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_father')}"><input type="text" value="${s.father_name || s.fatherName || ''}" class="form-control" data-field="father_name" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_mobile')}"><input type="text" value="${s.mobile || s.phone || ''}" class="form-control" data-field="mobile" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_dob')}"><input type="date" value="${s.dob || ''}" class="form-control" data-field="dob" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_blood')}"><input type="text" value="${s.blood_group || ''}" class="form-control" data-field="blood_group" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_address')}"><input type="text" value="${s.address || ''}" class="form-control" data-field="address" onchange="markBulkDirty('${s.docId}',this)" /></td>
+                <td class="${getColClass('col_sms')}"><input type="text" value="${s.sms_contact || ''}" class="form-control" data-field="sms_contact" onchange="markBulkDirty('${s.docId}',this)" /></td>
+            </tr>`
+            )
+            .join('');
     } catch (e) {
         console.error('Error loading bulk students:', e);
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center p-3 text-danger">Error loading students: ' + e.message + '</td></tr>';
+        tbody.innerHTML =
+            '<tr><td colspan="9" class="text-center p-3 text-danger">Error loading students: ' +
+            e.message +
+            '</td></tr>';
     }
 }
 
@@ -725,28 +776,33 @@ window.loadBulkStudentList = loadBulkStudentList;
 
 // Track dirty rows in bulk update
 window._bulkDirtyRows = {};
-window.markBulkDirty = function(docId, input) {
+window.markBulkDirty = function (docId, input) {
     if (!window._bulkDirtyRows[docId]) window._bulkDirtyRows[docId] = {};
     window._bulkDirtyRows[docId][input.getAttribute('data-field')] = input.value;
     input.style.borderColor = '#f59e0b'; // Yellow highlight for changed
 };
 
-window.saveBulkStudentUpdate = async function() {
+window.saveBulkStudentUpdate = async function () {
     const dirty = window._bulkDirtyRows;
     const docIds = Object.keys(dirty);
-    if (docIds.length === 0) { showToast('No changes to save', 'info'); return; }
-    
+    if (docIds.length === 0) {
+        showToast('No changes to save', 'info');
+        return;
+    }
+
     if (!confirm(`Save changes for ${docIds.length} student record(s)?`)) return;
     showLoading(true);
     try {
         const batch = (window.db || firebase.firestore()).batch();
-        docIds.forEach(id => {
+        docIds.forEach((id) => {
             batch.update(schoolDoc('students', id), dirty[id]);
         });
         await batch.commit();
         window._bulkDirtyRows = {};
         // Reset highlight
-        document.querySelectorAll('[style*="border-color: rgb(245, 158, 11)"]').forEach(el => el.style.borderColor = '');
+        document
+            .querySelectorAll('[style*="border-color: rgb(245, 158, 11)"]')
+            .forEach((el) => (el.style.borderColor = ''));
         showToast(`Saved ${docIds.length} student(s) successfully!`);
     } catch (e) {
         showToast('Error saving: ' + e.message, 'error');
@@ -1086,8 +1142,9 @@ async function loadClassesForElectives() {
         classSelect.innerHTML =
             '<option value="">Select Class</option>' +
             classes
-                .filter(cls => !cls.disabled)
-                .map((cls) => `<option value="${cls.name}">${cls.name}</option>`).join('');
+                .filter((cls) => !cls.disabled)
+                .map((cls) => `<option value="${cls.name}">${cls.name}</option>`)
+                .join('');
 
         // Also load elective subjects for this session
         const subSnapshot = await schoolData('subjects')
@@ -1212,80 +1269,113 @@ window.toggleClassStatus = toggleClassStatus;
  */
 
 // Batch Mode: Load classes when session changes
-window.idGenLoadClasses = async function() {
+window.idGenLoadClasses = async function () {
     const sessionId = document.getElementById('idGen_session')?.value;
     const classSelect = document.getElementById('idBatchClassSelect');
     if (!classSelect) return;
     classSelect.innerHTML = '<option value="">Loading...</option>';
-    if (!sessionId) { classSelect.innerHTML = '<option value="">Select Session First</option>'; return; }
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
     try {
         const snap = await schoolData('classes').where('sessionId', '==', sessionId).get();
-        let classes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => !c.disabled);
+        let classes = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((c) => !c.disabled);
         classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        classSelect.innerHTML = '<option value="">Select Class</option>' + classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    } catch(e) { classSelect.innerHTML = '<option value="">Error loading</option>'; }
+        classSelect.innerHTML =
+            '<option value="">Select Class</option>' +
+            classes.map((c) => `<option value="${c.name}">${c.name}</option>`).join('');
+    } catch (e) {
+        classSelect.innerHTML = '<option value="">Error loading</option>';
+    }
 };
 
 // Individual Mode: Load classes when session changes
-window.idIndivLoadClasses = async function() {
+window.idIndivLoadClasses = async function () {
     const sessionId = document.getElementById('idIndiv_session')?.value;
     const classSelect = document.getElementById('idIndiv_class');
     const studentSelect = document.getElementById('idIndiv_student');
     if (!classSelect) return;
     classSelect.innerHTML = '<option value="">Loading...</option>';
     if (studentSelect) studentSelect.innerHTML = '<option value="">Select Class First</option>';
-    if (!sessionId) { classSelect.innerHTML = '<option value="">Select Session First</option>'; return; }
+    if (!sessionId) {
+        classSelect.innerHTML = '<option value="">Select Session First</option>';
+        return;
+    }
     try {
         const snap = await schoolData('classes').where('sessionId', '==', sessionId).get();
-        let classes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(c => !c.disabled);
+        let classes = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((c) => !c.disabled);
         classes.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        classSelect.innerHTML = '<option value="">Select Class</option>' + classes.map(c => `<option value="${c.name}" data-id="${c.id}">${c.name}</option>`).join('');
-    } catch(e) { classSelect.innerHTML = '<option value="">Error loading</option>'; }
+        classSelect.innerHTML =
+            '<option value="">Select Class</option>' +
+            classes.map((c) => `<option value="${c.name}" data-id="${c.id}">${c.name}</option>`).join('');
+    } catch (e) {
+        classSelect.innerHTML = '<option value="">Error loading</option>';
+    }
 };
 
 // Individual Mode: Load students when class changes
-window.idIndivLoadStudents = async function() {
+window.idIndivLoadStudents = async function () {
     const className = document.getElementById('idIndiv_class')?.value;
     const sessionId = document.getElementById('idIndiv_session')?.value;
     const studentSelect = document.getElementById('idIndiv_student');
     if (!studentSelect) return;
     studentSelect.innerHTML = '<option value="">Loading students...</option>';
-    if (!className) { studentSelect.innerHTML = '<option value="">Select Class First</option>'; return; }
+    if (!className) {
+        studentSelect.innerHTML = '<option value="">Select Class First</option>';
+        return;
+    }
     try {
-        const session = erpState.sessions.find(s => s.id === sessionId);
+        const session = erpState.sessions.find((s) => s.id === sessionId);
         const sessionName = session ? session.name : '';
         const snap = await schoolData('students').where('class', '==', className).get();
-        let students = snap.docs.map(d => ({ docId: d.id, ...d.data() }))
-            .filter(s => !sessionName || !s.session || s.session === sessionName);
+        let students = snap.docs
+            .map((d) => ({ docId: d.id, ...d.data() }))
+            .filter((s) => !sessionName || !s.session || s.session === sessionName);
         students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-        studentSelect.innerHTML = '<option value="">Select Student</option>' +
-            students.map(s => `<option value="${s.docId}">${s.name || s.docId} (${s.student_id || ''})</option>`).join('');
-    } catch(e) { studentSelect.innerHTML = '<option value="">Error loading</option>'; }
+        studentSelect.innerHTML =
+            '<option value="">Select Student</option>' +
+            students
+                .map((s) => `<option value="${s.docId}">${s.name || s.docId} (${s.student_id || ''})</option>`)
+                .join('');
+    } catch (e) {
+        studentSelect.innerHTML = '<option value="">Error loading</option>';
+    }
 };
 
 // Individual Mode: Load ID preview when student is selected
-window.idIndivPreview = async function() {
+window.idIndivPreview = async function () {
     const docId = document.getElementById('idIndiv_student')?.value;
     if (!docId) return;
     try {
         const doc = await schoolDoc('students', docId).get();
-        if (!doc.exists) { showToast('Student not found', 'error'); return; }
+        if (!doc.exists) {
+            showToast('Student not found', 'error');
+            return;
+        }
         const sidInput = document.getElementById('idPrintSid');
-        if (sidInput) { sidInput.value = docId; }
+        if (sidInput) {
+            sidInput.value = docId;
+        }
         if (typeof updateIdPreview === 'function') updateIdPreview(doc.data());
         else showToast('Student selected! Click Download to generate ID card.', 'info');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+    }
 };
 
 // Initialize ID Generator session dropdown (called on section open)
-window.initIdGenerator = function() {
-    const sessOpts = '<option value="">Select Session</option>' +
-        erpState.sessions.map(s => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`).join('');
+window.initIdGenerator = function () {
+    const sessOpts =
+        '<option value="">Select Session</option>' +
+        erpState.sessions
+            .map((s) => `<option value="${s.id}" ${s.active ? 'selected' : ''}>${s.name}</option>`)
+            .join('');
     const indivSess = document.getElementById('idIndiv_session');
     if (indivSess) indivSess.innerHTML = sessOpts;
     // idGen_session already handled by updateSessionDropdowns
     // Auto-trigger class load for active session in individual mode
-    const active = erpState.sessions.find(s => s.active);
+    const active = erpState.sessions.find((s) => s.active);
     if (active && indivSess) {
         indivSess.value = active.id;
         window.idIndivLoadClasses();

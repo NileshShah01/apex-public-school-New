@@ -17,11 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const sessionData = JSON.parse(session);
-    
+
     // SECURITY: Tenant Validation
     // Ensure the student belongs to the current school portal context
     if (sessionData.schoolId && window.CURRENT_SCHOOL_ID && sessionData.schoolId !== window.CURRENT_SCHOOL_ID) {
-        console.warn(`Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`);
+        console.warn(
+            `Tenant Mismatch: Student belongs to ${sessionData.schoolId}, but is on ${window.CURRENT_SCHOOL_ID} portal.`
+        );
         alert("Session mismatch. Please login to this school's portal.");
         localStorage.removeItem('student_session');
         const slug = getURLSlug();
@@ -89,7 +91,8 @@ async function applyStudentBranding() {
 
         // Footer & Loading
         if (document.getElementById('portalFooterText')) {
-            document.getElementById('portalFooterText').innerText = `© ${new Date().getFullYear()} ${name}. Powered by Nexorasoftagency.`;
+            document.getElementById('portalFooterText').innerText =
+                `© ${new Date().getFullYear()} ${name}. Powered by Nexorasoftagency.`;
         }
         if (document.getElementById('loadingPortalText')) {
             document.getElementById('loadingPortalText').innerText = `Syncing with ${name} Registry...`;
@@ -103,7 +106,6 @@ async function applyStudentBranding() {
             document.head.appendChild(favicon);
         }
         favicon.href = logo;
-
     } catch (e) {
         console.error('Branding failed:', e);
     }
@@ -113,6 +115,43 @@ async function applyStudentBranding() {
 function handleRouting() {
     const hash = window.location.hash.replace('#', '') || 'dashboard';
     showPortalSection(hash, false);
+}
+
+// Refresh student data from database
+async function refreshStudentData() {
+    showToast('Refreshing data...', 'info');
+    setLoading(true);
+    try {
+        const sessionData = JSON.parse(localStorage.getItem('student_session'));
+
+        let doc = null;
+        if (sessionData.student_phone) {
+            const snap = await schoolData('students').where('phone', '==', sessionData.student_phone).get();
+            if (!snap.empty) {
+                doc =
+                    snap.docs.find(
+                        (d) => d.data().name.trim().toLowerCase() === sessionData.name.trim().toLowerCase()
+                    ) || snap.docs[0];
+                currentStudentID = doc.id;
+            }
+        }
+
+        if (!doc && currentStudentID) {
+            const fallbackDoc = await schoolDoc('students', currentStudentID).get();
+            if (fallbackDoc.exists) doc = fallbackDoc;
+        }
+
+        if (doc) {
+            currentStudentData = doc.data();
+            displayStudentProfile(currentStudentData);
+            showToast('Data refreshed successfully', 'success');
+        }
+    } catch (e) {
+        console.error('Refresh error:', e);
+        showToast('Failed to refresh data', 'error');
+    } finally {
+        setLoading(false);
+    }
 }
 
 function showPortalSection(sectionId, updateHash = true) {
@@ -147,7 +186,16 @@ function showPortalSection(sectionId, updateHash = true) {
 
     // Visitor Access Logic
     if (isVisitor) {
-        const privateSections = ['homework', 'attendance', 'profile', 'fees', 'exams', 'results', 'library', 'transport'];
+        const privateSections = [
+            'homework',
+            'attendance',
+            'profile',
+            'fees',
+            'exams',
+            'results',
+            'library',
+            'transport',
+        ];
         if (privateSections.includes(sectionId)) {
             const sectionEl = document.getElementById(sectionId + 'Section');
             if (sectionEl) {
@@ -311,11 +359,27 @@ function displayStudentProfile(data) {
     // Personal Info Section
     document.getElementById('p_name').textContent = data.name;
     document.getElementById('p_dob').textContent = data.dob || data.dateOfBirth || 'N/A';
-    document.getElementById('p_father').textContent = data.fatherName || 'N/A';
-    document.getElementById('p_mother').textContent = data.motherName || 'N/A';
+    document.getElementById('p_father').textContent = data.fatherName || data.father_name || 'N/A';
+    document.getElementById('p_mother').textContent = data.motherName || data.mother_name || 'N/A';
     document.getElementById('p_adm').textContent = data.studentId || data.admNo || 'N/A';
-    document.getElementById('p_phone').textContent = data.phone || 'N/A';
-    document.getElementById('p_address').textContent = data.address || 'N/A';
+    document.getElementById('p_phone').textContent = data.phone || data.mobile || 'N/A';
+    document.getElementById('p_address').textContent = data.address || data.permanent_address || 'N/A';
+
+    // Additional fields - set textContent or update elements if they exist
+    const rfidEl = document.getElementById('p_rfid');
+    if (rfidEl) {
+        rfidEl.textContent = data.rfid_no || data.rfid || data.smart_card_no || 'N/A';
+    }
+
+    const transportEl = document.getElementById('p_transport');
+    if (transportEl) {
+        transportEl.textContent = data.transport === 'yes' ? 'Yes' : data.transport === 'true' ? 'Yes' : 'No';
+    }
+
+    const hostelEl = document.getElementById('p_hostel');
+    if (hostelEl) {
+        hostelEl.textContent = data.hostel === 'yes' ? 'Yes' : data.hostel === 'true' ? 'Yes' : 'No';
+    }
 
     // Photo handling
     const photoUrl = data.photo_url || `${GITHUB_BASE}/images/students/${data.studentId || data.admNo}.jpg`;
@@ -593,13 +657,13 @@ async function printStudentReceipt(paymentId) {
         const payDoc = await schoolData('feePayments').doc(paymentId).get();
         if (!payDoc.exists) return;
         const p = payDoc.data();
-        
+
         const schoolSnap = await schoolRef().get();
         const sc = schoolSnap.data() || {};
-        
+
         const modal = document.getElementById('portalModal');
         const body = document.getElementById('modalBody');
-        
+
         const receiptHtml = `
             <div class="premium-receipt">
                 <div class="receipt-header">
@@ -670,7 +734,7 @@ async function printStudentReceipt(paymentId) {
                 </div>
             </div>
         `;
-        
+
         body.innerHTML = receiptHtml;
         modal.classList.remove('hidden');
     } catch (e) {
@@ -687,19 +751,50 @@ function closePortalModal() {
 
 function numberToWords(amount) {
     // Simple enough for 5 digits for now
-    const words = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    
-    if (amount === 0) return "Zero";
-    
+    const words = [
+        '',
+        'One',
+        'Two',
+        'Three',
+        'Four',
+        'Five',
+        'Six',
+        'Seven',
+        'Eight',
+        'Nine',
+        'Ten',
+        'Eleven',
+        'Twelve',
+        'Thirteen',
+        'Fourteen',
+        'Fifteen',
+        'Sixteen',
+        'Seventeen',
+        'Eighteen',
+        'Nineteen',
+    ];
+    const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    if (amount === 0) return 'Zero';
+
     if (amount < 20) return words[amount];
-    
-    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? " " + words[amount % 10] : "");
-    
-    if (amount < 1000) return words[Math.floor(amount / 100)] + " Hundred" + (amount % 100 !== 0 ? " and " + numberToWords(amount % 100) : "");
-    
-    if (amount < 100000) return numberToWords(Math.floor(amount / 1000)) + " Thousand" + (amount % 1000 !== 0 ? " " + numberToWords(amount % 1000) : "");
-    
+
+    if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 !== 0 ? ' ' + words[amount % 10] : '');
+
+    if (amount < 1000)
+        return (
+            words[Math.floor(amount / 100)] +
+            ' Hundred' +
+            (amount % 100 !== 0 ? ' and ' + numberToWords(amount % 100) : '')
+        );
+
+    if (amount < 100000)
+        return (
+            numberToWords(Math.floor(amount / 1000)) +
+            ' Thousand' +
+            (amount % 1000 !== 0 ? ' ' + numberToWords(amount % 1000) : '')
+        );
+
     return amount.toString(); // Fallback
 }
 
@@ -819,7 +914,7 @@ async function updateResultLink() {
             }
         }
     } catch (e) {
-        console.error("Result check error:", e);
+        console.error('Result check error:', e);
         if (resultArea)
             resultArea.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted);">Not published</div>';
     }
@@ -861,7 +956,11 @@ async function fetchUnifiedReports() {
     try {
         // 1. Fetch Manual Uploads
         const manualSnap = await schoolData('reports')
-            .where('studentId', 'in', [currentStudentData.studentId || '', currentStudentData.admNo || '', currentStudentID])
+            .where('studentId', 'in', [
+                currentStudentData.studentId || '',
+                currentStudentData.admNo || '',
+                currentStudentID,
+            ])
             .where('published', '==', true)
             .get();
 
@@ -899,15 +998,15 @@ async function fetchUnifiedReports() {
                     session: year,
                     fileData: autoDoc.data().fileData,
                     uploadedAt: autoDoc.data().generatedAt || null,
-                    type: 'System Generated'
+                    type: 'System Generated',
                 });
             }
 
             // Add manuals
-            manualSnap.forEach(doc => {
+            manualSnap.forEach((doc) => {
                 reportsHtml += renderReportRow({
                     ...doc.data(),
-                    type: 'Official Upload'
+                    type: 'Official Upload',
                 });
             });
 
@@ -921,15 +1020,18 @@ async function fetchUnifiedReports() {
                 manualArea.innerHTML = reportsHtml;
             }
         }
-
     } catch (e) {
-        console.error("Unified Report Fetch Error:", e);
+        console.error('Unified Report Fetch Error:', e);
         if (manualArea) manualArea.innerHTML = '<p class="text-xs text-danger">Failed to load reports archive.</p>';
     }
 }
 
 function renderReportRow(r) {
-    const dateStr = r.uploadedAt ? (r.uploadedAt.toDate ? r.uploadedAt.toDate().toLocaleDateString() : new Date(r.uploadedAt).toLocaleDateString()) : 'Institutional Record';
+    const dateStr = r.uploadedAt
+        ? r.uploadedAt.toDate
+            ? r.uploadedAt.toDate().toLocaleDateString()
+            : new Date(r.uploadedAt).toLocaleDateString()
+        : 'Institutional Record';
     return `
         <div class="card flex-between p-1 border-left-primary bg-white shadow-sm hover-translate transition-all" style="margin-bottom: 0.75rem;">
             <div class="flex align-center gap-1">
@@ -951,7 +1053,7 @@ function renderReportRow(r) {
 async function loadExamMaterials() {
     const list = document.getElementById('paperDownloadList');
     const status = document.getElementById('examMaterialsStatusArea');
-    
+
     // Determine search class
     let searchClass = currentStudentClass;
     if (isVisitor) searchClass = 'Sample'; // Default for visitors
@@ -962,9 +1064,8 @@ async function loadExamMaterials() {
     try {
         const year = document.getElementById('academicYear').value;
         const sessionId = `${year - 1}_${year.toString().slice(-2)}`;
-        
-        let query = schoolData('questionPapers')
-            .where('published', '==', true);
+
+        let query = schoolData('questionPapers').where('published', '==', true);
 
         if (searchClass) {
             query = query.where('class', '==', searchClass);
@@ -980,14 +1081,14 @@ async function loadExamMaterials() {
 
         if (status)
             status.innerHTML = `<span class="badge" style="background:#dcfce7; color:#166534;">${snap.size} Materials Available</span>`;
-        
+
         list.innerHTML = '';
         snap.forEach((doc) => {
             const d = doc.data();
             const card = document.createElement('div');
             card.className = 'card p-1-25 flex-col gap-0-75';
             card.style.background = 'rgba(255,255,255,0.05)';
-            
+
             const url = d.fileUrl || '#';
             const isManual = d.paperType === 'manualUpload';
 
@@ -1015,32 +1116,33 @@ async function fetchNotices() {
     const container = document.getElementById('noticesContainer');
     if (!container) return;
     try {
-        const snap = await schoolData('notifications')
-            .orderBy('sentAt', 'desc')
-            .limit(10)
-            .get();
+        const snap = await schoolData('notifications').orderBy('sentAt', 'desc').limit(10).get();
 
         if (snap.empty) {
-            container.innerHTML = '<div class="text-center py-3 opacity-05"><i class="fas fa-bell-slash text-2xl mb-1 block"></i><p class="text-sm">No recent notifications.</p></div>';
+            container.innerHTML =
+                '<div class="text-center py-3 opacity-05"><i class="fas fa-bell-slash text-2xl mb-1 block"></i><p class="text-sm">No recent notifications.</p></div>';
             return;
         }
 
-        container.innerHTML = snap.docs.map(doc => {
-            const d = doc.data();
-            const date = d.sentAt ? new Date(d.sentAt.seconds * 1000).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            }) : 'Just now';
-            
-            // Filter target (optional but good for privacy/relevance)
-            // If class is specified and doesn't match current student, skip (unless target is 'All')
-            if (d.target && d.target.class !== 'All' && d.target.class !== currentStudentClass) {
-                return '';
-            }
+        container.innerHTML = snap.docs
+            .map((doc) => {
+                const d = doc.data();
+                const date = d.sentAt
+                    ? new Date(d.sentAt.seconds * 1000).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                    : 'Just now';
 
-            return `
+                // Filter target (optional but good for privacy/relevance)
+                // If class is specified and doesn't match current student, skip (unless target is 'All')
+                if (d.target && d.target.class !== 'All' && d.target.class !== currentStudentClass) {
+                    return '';
+                }
+
+                return `
                 <div class="notice-item p-1 border-bottom-soft">
                     <div class="flex justify-between align-start mb-0-25">
                         <h4 class="text-sm font-bold text-secondary">${d.type === 'WhatsApp' ? '<i class="fab fa-whatsapp text-success mr-0-5"></i>' : ''}${d.title || 'Notification'}</h4>
@@ -1049,7 +1151,8 @@ async function fetchNotices() {
                     <p class="text-xs line-height-1-5 opacity-90">${d.message}</p>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     } catch (error) {
         console.error('Notice fetch failed:', error);
     }

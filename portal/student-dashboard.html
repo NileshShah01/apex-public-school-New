@@ -92,7 +92,12 @@
                 <header class="top-bar no-mobile">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search services..." readonly onclick="showPortalSection('dashboard')">
+                        <input
+                            type="text"
+                            placeholder="Search services..."
+                            readonly
+                            onclick="showPortalSection('dashboard')"
+                        />
                     </div>
                     <div class="flex align-center gap-md">
                         <div class="year-pill">
@@ -112,13 +117,8 @@
                 <!-- Mobile Header -->
                 <div class="mobile-header">
                     <div class="d-flex align-items-center gap-sm">
-                        <i
-                            class="fas fa-bars-staggered cursor-pointer text-xl primary"
-                            onclick="toggleSidebar()"
-                        ></i>
-                        <h2 class="text-md secondary fw-800 m-0" id="mobileBrandName">
-                            Apex Portal
-                        </h2>
+                        <i class="fas fa-bars-staggered cursor-pointer text-xl primary" onclick="toggleSidebar()"></i>
+                        <h2 class="text-md secondary fw-800 m-0" id="mobileBrandName">Apex Portal</h2>
                     </div>
                     <div
                         id="mobileStudentPhoto"
@@ -157,9 +157,18 @@
                                 <p class="text-xs primary font-bold uppercase mb-0-25">Student Profile</p>
                                 <h1 id="disp_student_name" class="text-2xl mb-0-25 secondary">Loading Profile...</h1>
                                 <div class="flex gap-1-5 text-muted text-sm">
-                                    <span><i class="fas fa-id-badge primary"></i> ID: <b id="disp_student_id">...</b></span>
-                                    <span><i class="fas fa-graduation-cap primary"></i> Class: <b id="disp_class">...</b></span>
-                                    <span><i class="fas fa-door-open primary"></i> Section: <b id="disp_section">...</b></span>
+                                    <span
+                                        ><i class="fas fa-id-badge primary"></i> ID:
+                                        <b id="disp_student_id">...</b></span
+                                    >
+                                    <span
+                                        ><i class="fas fa-graduation-cap primary"></i> Class:
+                                        <b id="disp_class">...</b></span
+                                    >
+                                    <span
+                                        ><i class="fas fa-door-open primary"></i> Section:
+                                        <b id="disp_section">...</b></span
+                                    >
                                 </div>
                             </div>
                             <div class="no-mobile">
@@ -178,8 +187,14 @@
                             <div class="card gradient-primary p-2 border-none">
                                 <div class="flex-between mb-1-5 pt-0-5">
                                     <div>
-                                        <p class="text-xs opacity-80 uppercase letter-spacing-1 font-bold white-important">Outstanding Balance</p>
-                                        <h2 id="homeFeeBalance" class="text-3xl font-extrabold mt-1 white-important">₹--</h2>
+                                        <p
+                                            class="text-xs opacity-80 uppercase letter-spacing-1 font-bold white-important"
+                                        >
+                                            Outstanding Balance
+                                        </p>
+                                        <h2 id="homeFeeBalance" class="text-3xl font-extrabold mt-1 white-important">
+                                            ₹--
+                                        </h2>
                                     </div>
                                     <div class="bg-white p-1-25 rounded-xl shadow-lg border-none">
                                         <i class="fas fa-wallet text-2xl primary"></i>
@@ -187,7 +202,10 @@
                                 </div>
                                 <div class="glass-panel p-1 flex-between border-radius-0-75">
                                     <span class="text-sm">Next Due Date: <b id="homeNextDue">Checking...</b></span>
-                                    <button onclick="showPortalSection('fees')" class="btn-portal btn-white shadow-sm border-none p-0-5-1 text-xs font-bold">
+                                    <button
+                                        onclick="showPortalSection('fees')"
+                                        class="btn-portal btn-white shadow-sm border-none p-0-5-1 text-xs font-bold"
+                                    >
                                         Manage Fees
                                     </button>
                                 </div>
@@ -199,7 +217,10 @@
                                     <h3 class="text-lg secondary m-0">
                                         <i class="fas fa-pencil-alt primary mr-0-5"></i> Assignments Today
                                     </h3>
-                                    <button onclick="showPortalSection('homework')" class="btn-portal btn-white-primary text-xs font-bold">
+                                    <button
+                                        onclick="showPortalSection('homework')"
+                                        class="btn-portal btn-white-primary text-xs font-bold"
+                                    >
                                         Explore All
                                     </button>
                                 </div>
@@ -234,7 +255,12 @@
                                         </div>
                                         <span class="text-xs font-bold secondary">Directory</span>
                                     </a>
-                                    <a href="/portal/student-login.html" class="action-item" onclick="logoutStudent()" title="Logout from Portal">
+                                    <a
+                                        href="/portal/student-login.html"
+                                        class="action-item"
+                                        onclick="logoutStudent()"
+                                        title="Logout from Portal"
+                                    >
                                         <div class="icon-box bg-red-light text-danger w-12 h-12 shadow-sm">
                                             <i class="fas fa-sign-out-alt"></i>
                                         </div>
@@ -253,9 +279,7 @@
                                     <h3 class="text-md secondary fw-700 m-0 text-color-inherit">Official Updates</h3>
                                 </div>
                                 <div id="noticesContainer" class="p-1-5 min-h-350">
-                                    <div class="flex-center p-4 text-muted text-sm">
-                                        Synchronizing updates...
-                                    </div>
+                                    <div class="flex-center p-4 text-muted text-sm">Synchronizing updates...</div>
                                 </div>
                             </div>
 
@@ -276,7 +300,9 @@
                             <div id="importantLinksWidget" class="card hidden p-0 overflow-hidden">
                                 <div class="bg-secondary p-1-25 border-bottom flex align-center gap-0-75">
                                     <i class="fas fa-external-link-alt primary text-sm"></i>
-                                    <h4 class="m-0 text-sm secondary fw-700 uppercase letter-spacing-1">Useful Links</h4>
+                                    <h4 class="m-0 text-sm secondary fw-700 uppercase letter-spacing-1">
+                                        Useful Links
+                                    </h4>
                                 </div>
                                 <div id="linksList" class="p-1-25 flex-col gap-0-75">
                                     <!-- Links populated here -->
@@ -286,14 +312,34 @@
                             <!-- Attendance Mini Tracking -->
                             <div id="attendanceWidget" class="card hidden p-1-5">
                                 <div class="flex-between mb-1-25">
-                                    <h4 class="m-0 text-sm secondary"><i class="fas fa-check-circle success mr-0-5"></i> Academic Presence</h4>
+                                    <h4 class="m-0 text-sm secondary">
+                                        <i class="fas fa-check-circle success mr-0-5"></i> Academic Presence
+                                    </h4>
                                     <span id="attendancePercent" class="badge-success">0%</span>
                                 </div>
                                 <div class="flex align-center gap-1">
                                     <div class="relative w-14 h-14 flex-shrink-0">
                                         <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
-                                            <circle cx="18" cy="18" r="16" fill="none" stroke="var(--border)" stroke-width="3"></circle>
-                                            <circle id="attendanceCircle" cx="18" cy="18" r="16" fill="none" stroke="var(--success)" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" class="transition-all-500"></circle>
+                                            <circle
+                                                cx="18"
+                                                cy="18"
+                                                r="16"
+                                                fill="none"
+                                                stroke="var(--border)"
+                                                stroke-width="3"
+                                            ></circle>
+                                            <circle
+                                                id="attendanceCircle"
+                                                cx="18"
+                                                cy="18"
+                                                r="16"
+                                                fill="none"
+                                                stroke="var(--success)"
+                                                stroke-width="3"
+                                                stroke-dasharray="0, 100"
+                                                stroke-linecap="round"
+                                                class="transition-all-500"
+                                            ></circle>
                                         </svg>
                                     </div>
                                     <div id="attendanceStatusText" class="text-xs text-muted line-height-1-4">
@@ -332,9 +378,7 @@
                             <h1 class="text-2xl secondary m-0">Presence Records</h1>
                             <p class="text-sm text-muted m-0">Official academic regularity tracking</p>
                         </div>
-                        <div class="badge-glass success px-4 py-2 border-radius-2 font-bold no-mobile">
-                            ENROLLED
-                        </div>
+                        <div class="badge-glass success px-4 py-2 border-radius-2 font-bold no-mobile">ENROLLED</div>
                     </div>
 
                     <div class="stats-grid">
@@ -393,6 +437,9 @@
                             <h1 class="text-2xl secondary m-0">Student Dossier</h1>
                             <p class="text-sm text-muted m-0">Verified identity from institutional records</p>
                         </div>
+                        <button onclick="refreshStudentData()" class="btn-portal btn-secondary">
+                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        </button>
                     </div>
                     <div class="card p-2">
                         <div class="flex gap-3 align-start">
@@ -429,6 +476,18 @@
                                 <div class="form-group">
                                     <label>Phone Number</label>
                                     <p id="p_phone" class="text-lg font-bold"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label>RFID Number</label>
+                                    <p id="p_rfid" class="text-lg font-bold text-primary"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Transport</label>
+                                    <p id="p_transport" class="text-lg font-bold"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Hostel</label>
+                                    <p id="p_hostel" class="text-lg font-bold"></p>
                                 </div>
                                 <div class="col-span-full">
                                     <label>Address</label>
@@ -528,16 +587,19 @@
                             <p class="text-sm text-muted m-0">Official institutional scorecards and evaluations</p>
                         </div>
                     </div>
-                    
+
                     <div class="card p-2 text-center">
-                        <div class="icon-box-large flex-center bg-primary white mx-auto mb-1-5 shadow-lg border-none text-2xl">
+                        <div
+                            class="icon-box-large flex-center bg-primary white mx-auto mb-1-5 shadow-lg border-none text-2xl"
+                        >
                             <i class="fas fa-certificate"></i>
                         </div>
                         <h2 class="secondary mb-1">Formal Report Cards</h2>
                         <p class="text-sm text-muted mb-2 max-w-400 mx-auto">
-                            Access your signed and verified academic reports. Select the document below to view or download.
+                            Access your signed and verified academic reports. Select the document below to view or
+                            download.
                         </p>
-                        
+
                         <div id="manualResultsArea" class="flex-col gap-1 max-w-500 mx-auto">
                             <!-- Populated by JS -->
                             <div class="flex-center p-4 text-muted border-radius-1 bg-secondary dashed">
@@ -608,9 +670,7 @@
                         </div>
                     </div>
                     <div class="card p-2 text-center">
-                        <div
-                            class="icon-box-large flex-center bg-green-light text-success mx-auto mb-1-5 text-3xl"
-                        >
+                        <div class="icon-box-large flex-center bg-green-light text-success mx-auto mb-1-5 text-3xl">
                             <i class="fas fa-bus"></i>
                         </div>
                         <div id="transportInfoArea">
@@ -662,7 +722,9 @@
                 </div>
                 <div id="modalBody" class="modal-body-scroll"></div>
                 <div class="modal-footer no-print">
-                    <button class="btn-portal primary" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button class="btn-portal primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
                     <button class="btn-portal" onclick="closePortalModal()">Close</button>
                 </div>
             </div>
