@@ -1,0 +1,40 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "globals": {
+        "firebase": "readonly",
+        "db": "readonly",
+        "auth": "readonly",
+        "schoolData": "readonly",
+        "schoolDoc": "readonly",
+        "schoolRef": "readonly",
+        "withSchool": "readonly",
+        "CURRENT_SCHOOL_ID": "readonly",
+        "FeeService": "readonly",
+        "InvoiceService": "readonly",
+        "PaymentServiceEnhanced": "readonly",
+        "SecurityService": "readonly",
+        "ClassService": "readonly",
+        "StudentService": "readonly",
+        "ExamService": "readonly",
+        "AttendanceService": "readonly",
+        "LibraryService": "readonly",
+        "TransportService": "readonly",
+        "NotificationService": "readonly",
+        "ReportsService": "readonly"
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+        "no-undef": "off",
+        "no-useless-assignment": "off",
+        "no-case-declarations": "off",
+        "no-useless-escape": "off"
+    }
+}

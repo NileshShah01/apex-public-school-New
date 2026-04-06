@@ -16,11 +16,11 @@ async function initERPIdCards() {
 async function loadIdGenSessions() {
     const select = document.getElementById('idGen_session');
     if (!select) return;
-    
+
     try {
         const snap = await schoolData('sessions').orderBy('startDate', 'desc').get();
         select.innerHTML = '<option value="">Select Session</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const d = doc.data();
             select.innerHTML += `<option value="${d.name}">${d.name}</option>`;
         });
@@ -33,11 +33,11 @@ async function loadIdGenSessions() {
 async function loadIdIndivSessions() {
     const select = document.getElementById('idIndiv_session');
     if (!select) return;
-    
+
     try {
         const snap = await schoolData('sessions').orderBy('startDate', 'desc').get();
         select.innerHTML = '<option value="">Select Session</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const d = doc.data();
             select.innerHTML += `<option value="${d.name}">${d.name}</option>`;
         });
@@ -52,21 +52,18 @@ async function idIndivLoadClasses() {
     const cls = document.getElementById('idIndiv_class');
     const stu = document.getElementById('idIndiv_student');
     if (!cls || !stu) return;
-    
+
     if (!sel.value) {
         cls.innerHTML = '<option value="">Select Session First</option>';
         stu.innerHTML = '<option value="">Select Class First</option>';
         return;
     }
-    
+
     try {
-        const snap = await schoolData('classes')
-            .where('sessionId', '==', sel.value)
-            .orderBy('sortOrder', 'asc')
-            .get();
-        
+        const snap = await schoolData('classes').where('sessionId', '==', sel.value).orderBy('sortOrder', 'asc').get();
+
         cls.innerHTML = '<option value="">Select Class</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const d = doc.data();
             cls.innerHTML += `<option value="${d.name}">${d.name}</option>`;
         });
@@ -81,23 +78,23 @@ async function idIndivLoadStudents() {
     const cls = document.getElementById('idIndiv_class');
     const stu = document.getElementById('idIndiv_student');
     if (!stu) return;
-    
+
     if (!cls.value) {
         stu.innerHTML = '<option value="">Select Class First</option>';
         return;
     }
-    
+
     stu.innerHTML = '<option value="">Loading...</option>';
-    
+
     try {
         const snap = await schoolData('students')
             .where('session', '==', sel.value)
             .where('class', '==', cls.value)
             .orderBy('roll_no', 'asc')
             .get();
-        
+
         stu.innerHTML = '<option value="">Select Student</option>';
-        snap.docs.forEach(doc => {
+        snap.docs.forEach((doc) => {
             const d = doc.data();
             stu.innerHTML += `<option value="${doc.id}" data-name="${d.name}">${d.name} - ${d.roll_no || ''}</option>`;
         });
@@ -111,14 +108,14 @@ async function idIndivLoadStudents() {
 async function idIndivPreview() {
     const stu = document.getElementById('idIndiv_student');
     if (!stu || !stu.value) return;
-    
+
     const opt = stu.options[stu.selectedIndex];
     const studentName = opt.getAttribute('data-name') || opt.text;
-    
+
     try {
         const doc = await schoolData('students').doc(stu.value).get();
         if (!doc.exists) return;
-        
+
         const data = doc.data();
         updateIdPreviewWithData(data);
     } catch (e) {
@@ -130,10 +127,10 @@ async function idIndivPreview() {
 async function updateIdPreviewWithData(data) {
     const container = document.getElementById('idCardPreviewContainer');
     if (!container) return;
-    
+
     const selectedTemplate = document.getElementById('selectedIdTemplate')?.value || 'template1';
     const orientation = document.getElementById('idCardOrientation')?.value || 'vertical';
-    
+
     const studentData = {
         name: data.name || '',
         studentId: data.studentId || data.admNo || '',
@@ -149,7 +146,7 @@ async function updateIdPreviewWithData(data) {
         schoolName: window.SCHOOL_NAME || 'School ERP',
         schoolLogo: window.SCHOOL_LOGO || '',
     };
-    
+
     // Use template function
     if (window.ID_TEMPLATES && window.ID_TEMPLATES[selectedTemplate]) {
         container.innerHTML = window.ID_TEMPLATES[selectedTemplate](studentData);
@@ -159,13 +156,6 @@ async function updateIdPreviewWithData(data) {
             <div class="id-card-body">Class ${studentData.class} - ${studentData.section}</div>
         </div>`;
     }
-}
-
-    // Show initial template preview on load
-    setTimeout(() => {
-        const selectedTemplate = document.getElementById('selectedIdTemplate')?.value || 'format1';
-        showTemplatePreview(selectedTemplate);
-    }, 500);
 }
 
 function populateTemplateGallery() {

@@ -1,81 +1,108 @@
 {
-  "hosting": [
-    {
-      "target": "school",
-      "public": ".",
-      "rewrites": [
-        { "source": "/", "destination": "/school.html" },
-        { "source": "/index.html", "destination": "/school.html" },
-        { "source": "/Super-Admin-pro**", "destination": "/portal/super-admin-pro.html" },
-        { "source": "/Super-Admin**", "destination": "/portal/super-admin.html" },
-        { "source": "/*/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
-        { "source": "/*/Student-Dashboard**", "destination": "/portal/student-dashboard.html" },
-        { "source": "/*/Admin-Login**", "destination": "/portal/admin-login.html" },
-        { "source": "/*/Student-Login**", "destination": "/portal/student-login.html" },
-        { "source": "/*/Question-paper-Formator**", "destination": "/portal/tool-question-formatter.html" },
-        { "source": "/*/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
-        { "source": "/*/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
-        { "source": "/*/portal/admin-login.html", "destination": "/portal/admin-login.html" },
-        { "source": "/*/portal/student-login.html", "destination": "/portal/student-login.html" },
-        { "source": "/*/css/**", "destination": "/css/:splat" },
-        { "source": "/*/js/**", "destination": "/js/:splat" },
-        { "source": "/*/images/**", "destination": "/images/:splat" }
-      ],
-      "trailingSlash": true,
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**",
-        "scripts/**",
-        "implementation_plan*.md",
-        "task.md",
-        "walkthrough*.md"
-      ]
-    },
-    {
-      "target": "platform",
-      "public": ".",
-      "rewrites": [
-        { "source": "/", "destination": "/platform.html" },
-        { "source": "/index.html", "destination": "/platform.html" },
-        { "source": "/Super-Admin-pro**", "destination": "/portal/super-admin-pro.html" },
-        { "source": "/Super-Admin**", "destination": "/portal/super-admin.html" },
-        { "source": "/*/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
-        { "source": "/*/Student-Dashboard**", "destination": "/portal/student-dashboard.html" },
-        { "source": "/*/Admin-Login**", "destination": "/portal/admin-login.html" },
-        { "source": "/*/Student-Login**", "destination": "/portal/student-login.html" },
-        { "source": "/*/Question-paper-Formator**", "destination": "/portal/tool-question-formatter.html" },
-        { "source": "/*/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
-        { "source": "/*/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
-        { "source": "/*/portal/admin-login.html", "destination": "/portal/admin-login.html" },
-        { "source": "/*/portal/student-login.html", "destination": "/portal/student-login.html" },
-        { "source": "/*/about.html", "destination": "/about.html" },
-        { "source": "/*/academics.html", "destination": "/academics.html" },
-        { "source": "/*/admissions.html", "destination": "/admissions.html" },
-        { "source": "/*/contact.html", "destination": "/contact.html" },
-        { "source": "/*/facilities.html", "destination": "/facilities.html" },
-        { "source": "/*/gallery.html", "destination": "/gallery.html" },
-        { "source": "/*/inquiry.html", "destination": "/inquiry.html" },
-        { "source": "/*/css/**", "destination": "/css/:splat" },
-        { "source": "/*/js/**", "destination": "/js/:splat" },
-        { "source": "/*/images/**", "destination": "/images/:splat" },
-        { "source": "/*/", "destination": "/school.html" },
-        { "source": "/*", "destination": "/school.html" },
-        { "source": "/*/**", "destination": "/school.html" }
-      ],
-      "trailingSlash": true,
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**",
-        "scripts/**",
-        "implementation_plan*.md",
-        "task.md",
-        "walkthrough*.md"
-      ]
+    "hosting": [
+        {
+            "site": "snredu-erp",
+            "public": ".",
+            "rewrites": [
+                { "source": "/portal/student-login.html", "destination": "/portal/student-login.html" },
+                { "source": "/portal/admin-login.html", "destination": "/portal/admin-login.html" },
+                { "source": "/portal/admin-dashboard.html", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/portal/student-dashboard.html", "destination": "/portal/student-dashboard.html" },
+                { "source": "/portal/super-admin.html", "destination": "/portal/super-admin.html" },
+                { "source": "/portal/super-admin-pro.html", "destination": "/portal/super-admin-pro.html" },
+                { "source": "/apexps/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/apexps/**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/Admin-Dashboard**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/school.html", "destination": "/school.html" },
+                { "source": "/platform.html", "destination": "/platform.html" },
+                { "source": "/css/**", "destination": "/css/:splat" },
+                { "source": "/js/**", "destination": "/js/:splat" },
+                { "source": "/images/**", "destination": "/images/:splat" },
+                { "source": "/**", "destination": "/school.html" }
+            ],
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**",
+                "scripts/**",
+                "implementation_plan*.md",
+                "task.md",
+                "walkthrough*.md"
+            ]
+        },
+        {
+            "target": "school",
+            "public": ".",
+            "rewrites": [
+                { "source": "/", "destination": "/school.html" },
+                { "source": "/index.html", "destination": "/school.html" },
+                { "source": "/snredu-erp/**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/apexps.educationdesk.in/**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/portal/super-admin-pro.html**", "destination": "/portal/super-admin-pro.html" },
+                { "source": "/portal/super-admin.html**", "destination": "/portal/super-admin.html" },
+                { "source": "/portal/admin-dashboard.html**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/portal/student-dashboard.html**", "destination": "/portal/student-dashboard.html" },
+                { "source": "/portal/admin-login.html**", "destination": "/portal/admin-login.html" },
+                { "source": "/portal/student-login.html**", "destination": "/portal/student-login.html" },
+                {
+                    "source": "/portal/tool-question-formatter.html**",
+                    "destination": "/portal/tool-question-formatter.html"
+                },
+                { "source": "/css/**", "destination": "/css/:splat" },
+                { "source": "/js/**", "destination": "/js/:splat" },
+                { "source": "/images/**", "destination": "/images/:splat" }
+            ],
+            "trailingSlash": true,
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**",
+                "scripts/**",
+                "implementation_plan*.md",
+                "task.md",
+                "walkthrough*.md"
+            ]
+        },
+        {
+            "target": "platform",
+            "public": ".",
+            "rewrites": [
+                { "source": "/", "destination": "/platform.html" },
+                { "source": "/index.html", "destination": "/platform.html" },
+                { "source": "/portal/super-admin-pro.html**", "destination": "/portal/super-admin-pro.html" },
+                { "source": "/portal/super-admin.html**", "destination": "/portal/super-admin.html" },
+                { "source": "/portal/admin-dashboard.html**", "destination": "/portal/admin-dashboard.html" },
+                { "source": "/portal/student-dashboard.html**", "destination": "/portal/student-dashboard.html" },
+                { "source": "/portal/admin-login.html**", "destination": "/portal/admin-login.html" },
+                { "source": "/portal/student-login.html**", "destination": "/portal/student-login.html" },
+                {
+                    "source": "/portal/tool-question-formatter.html**",
+                    "destination": "/portal/tool-question-formatter.html"
+                },
+                { "source": "/about.html**", "destination": "/about.html" },
+                { "source": "/academics.html**", "destination": "/academics.html" },
+                { "source": "/admissions.html**", "destination": "/admissions.html" },
+                { "source": "/contact.html**", "destination": "/contact.html" },
+                { "source": "/facilities.html**", "destination": "/facilities.html" },
+                { "source": "/gallery.html**", "destination": "/gallery.html" },
+                { "source": "/inquiry.html**", "destination": "/inquiry.html" },
+                { "source": "/css/**", "destination": "/css/:splat" },
+                { "source": "/js/**", "destination": "/js/:splat" },
+                { "source": "/images/**", "destination": "/images/:splat" }
+            ],
+            "trailingSlash": true,
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**",
+                "scripts/**",
+                "implementation_plan*.md",
+                "task.md",
+                "walkthrough*.md"
+            ]
+        }
+    ],
+    "firestore": {
+        "rules": "firestore.rules"
     }
-  ],
-  "firestore": {
-    "rules": "firestore.rules"
-  }
 }

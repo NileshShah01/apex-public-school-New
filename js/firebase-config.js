@@ -15,34 +15,34 @@ if (!firebase.apps.length) {
 
 // Initialize Firebase Services with Dynamic Getters to prevent race conditions
 Object.defineProperty(window, 'db', {
-    get: function() {
+    get: function () {
         if (typeof firebase !== 'undefined' && firebase.firestore) {
             return firebase.firestore();
         }
         console.warn('Firebase Firestore not yet available');
         return null;
     },
-    configurable: true
+    configurable: true,
 });
 
 Object.defineProperty(window, 'storage', {
-    get: function() {
+    get: function () {
         if (typeof firebase !== 'undefined' && firebase.storage) {
             return firebase.storage();
         }
         return null;
     },
-    configurable: true
+    configurable: true,
 });
 
 Object.defineProperty(window, 'auth', {
-    get: function() {
+    get: function () {
         if (typeof firebase !== 'undefined' && firebase.auth) {
             return firebase.auth();
         }
         return null;
     },
-    configurable: true
+    configurable: true,
 });
 
 // ===================== SNR WORLD: MULTI-TENANT CONTEXT =====================
@@ -52,14 +52,30 @@ Object.defineProperty(window, 'auth', {
  */
 function getURLSlug() {
     const path = window.location.pathname;
-    const pathParts = path.split('/').filter(p => p !== '');
+    const pathParts = path.split('/').filter((p) => p !== '');
     if (pathParts.length > 0) {
         const potentialSlug = pathParts[0];
-        const reserved = ['portal', 'images', 'js', 'css', 'assets', 'pdf', 'scripts', '_backups',
-            'admin-login.html', 'student-login.html', 'platform.html', 'super-admin.html', 'super-admin-pro.html'];
+        const reserved = [
+            'portal',
+            'images',
+            'js',
+            'css',
+            'assets',
+            'pdf',
+            'scripts',
+            '_backups',
+            'admin-login.html',
+            'student-login.html',
+            'platform.html',
+            'super-admin.html',
+            'super-admin-pro.html',
+        ];
+        // Allow apexps as a valid tenant slug
         if (!reserved.includes(potentialSlug.toLowerCase()) && !potentialSlug.includes('.')) {
             return potentialSlug;
         }
+        // Special case for /apexps/ path
+        if (potentialSlug.toLowerCase() === 'apexps') return 'apexps';
     }
     return null;
 }
@@ -82,9 +98,15 @@ function getSchoolIdFromURL() {
 
     // 3. URL slug - hardcoded legacy mappings
     const slug = getURLSlug();
+    console.log('[SchoolID] URL slug detected:', slug);
     if (slug) {
         const lower = slug.toLowerCase();
         if (lower.match(/^sch\d+$/)) return lower.toUpperCase();
+        // Hardcoded slug mappings for specific schools
+        if (lower === 'apexps') {
+            console.log('[SchoolID] Mapping apexps to school ID 01');
+            return '01';
+        }
         // If slug exists but isn't resolved yet, return slug as-is
         // (resolveSchoolSlug will fix this asynchronously)
         return slug;
@@ -101,6 +123,7 @@ function getSchoolIdFromURL() {
 
     // 5. Default host fallback
     if (host.includes('apex-public-school')) return 'SCH001';
+    if (host.includes('snredu-erp')) return '01';
 
     return 'SCH001';
 }
@@ -121,22 +144,19 @@ async function resolveSchoolSlug() {
 
     const host = window.location.hostname;
     const slug = getURLSlug();
-    
+
     console.log(`[Tenant] Initializing resolution for Host: ${host}, Slug: ${slug}`);
 
     // DYNAMIC RESOLUTION: Root Path or Custom Domain check via Hostname
     try {
         const firestore = firebase.firestore();
-        
+
         // 1. Check if hostname matches any school's custom domain or recorded subdomain
         // We look for documents where 'domain' or 'subdomain' matches the current host/slug
         let schoolMatch = null;
 
         // Try hostname first (for production domains like nexorasoft.in)
-        const hostSnap = await firestore.collection('schools')
-            .where('domain', '==', host)
-            .limit(1)
-            .get();
+        const hostSnap = await firestore.collection('schools').where('domain', '==', host).limit(1).get();
 
         if (!hostSnap.empty) {
             schoolMatch = hostSnap.docs[0].data().schoolId;
@@ -144,11 +164,12 @@ async function resolveSchoolSlug() {
 
         // 2. Try subdomain/slug match (for paths like /apexps)
         if (!schoolMatch && slug) {
-            const slugSnap = await firestore.collection('schools')
+            const slugSnap = await firestore
+                .collection('schools')
                 .where('subdomain', '==', slug.toLowerCase())
                 .limit(1)
                 .get();
-            
+
             if (!slugSnap.empty) {
                 schoolMatch = slugSnap.docs[0].data().schoolId;
             }
@@ -184,15 +205,16 @@ window.schoolBootstrapReady = resolveSchoolSlug();
 
 // Define CURRENT_SCHOOL_ID as a dynamic property
 Object.defineProperty(window, 'CURRENT_SCHOOL_ID', {
-    get: function() {
+    get: function () {
         return getSchoolIdFromURL();
     },
-    configurable: true
+    configurable: true,
 });
 
 // Helper to wrap Firestore collections with schoolId filtering
 function schoolData(collectionName) {
-    const firestore = window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+    const firestore =
+        window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
     if (!firestore) {
         console.error('CRITICAL: Firestore NOT initialized for schoolData:', collectionName);
         return null;
@@ -203,7 +225,8 @@ function schoolData(collectionName) {
 
 // Helper for single document access within a school context
 function schoolDoc(collectionName, docId) {
-    const firestore = window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+    const firestore =
+        window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
     if (!firestore) {
         console.error('CRITICAL: Firestore NOT initialized for schoolDoc:', collectionName);
         return null;
@@ -214,7 +237,8 @@ function schoolDoc(collectionName, docId) {
 
 // Helper to get the root school document reference
 function schoolRef() {
-    const firestore = window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
+    const firestore =
+        window.db || (typeof firebase !== 'undefined' && firebase.firestore ? firebase.firestore() : null);
     if (!firestore) return null;
     return firestore.collection('schools').doc(CURRENT_SCHOOL_ID);
 }
@@ -234,7 +258,7 @@ async function applyGlobalTheme() {
     if (window.schoolBootstrapReady) {
         await window.schoolBootstrapReady;
     }
-    
+
     if (!db) return;
     try {
         console.log(`[Theme] Applying dynamic theme for school: ${CURRENT_SCHOOL_ID}`);

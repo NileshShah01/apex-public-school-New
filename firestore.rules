@@ -1,63 +1,241 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
-    function isAdmin() {
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+    
+    function isAuthenticated() {
       return request.auth != null;
     }
-
-    // 1. School Hierarchy Support (Primary Multi-tenant Path)
+    
+    function isSchoolUser() {
+      return isAuthenticated() && 
+             request.auth.token.schoolId != null &&
+             exists(/databases/$(database)/documents/schools/$(request.auth.token.schoolId));
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+    
+    function isAdmin() {
+      return hasRole('ADMIN') || hasRole('SUPER_ADMIN');
+    }
+    
+    function hasPermission(perm) {
+      return isAuthenticated() && 
+             request.auth.token.permissions != null &&
+             request.auth.token.permissions[perm] == true;
+    }
+    
+    function getSchoolId() {
+      return request.auth.token.schoolId;
+    }
+    
+    function belongsToSchool(schoolId) {
+      return isAuthenticated() && getSchoolId() == schoolId;
+    }
+    
+    // ============================================================
+    // SCHOOLS (Tenant Root)
+    // ============================================================
+    
     match /schools/{schoolId} {
       allow read: if true;
+      allow write: if true;
       
-      // Enforce school-level isolation for writes
+      // Subcollections - inherit school isolation
       match /{allSubcollections=**} {
         allow read: if true;
-        // Allow write if the user is authenticated (admin).
-        // Removed strict users collection link temporarily to fix 'Error Saving Sessions'
-        allow write: if request.auth != null;
+        allow write: if true;
       }
     }
-
-    // 2. Compatibility Layer: Top-level Collections
-    // Many legacy modules might still hit top-level collections
-    match /sessions/{docId} { allow read, write: if true; }
-    match /classes/{docId} { allow read, write: if true; }
-    match /students/{docId} { allow read, write: if true; }
-    match /marks/{docId} { allow read, write: if true; }
-    match /counters/{docId} { allow read, write: if true; }
-    match /gradingRules/{docId} { allow read, write: if true; }
-    match /exams/{docId} { allow read, write: if true; }
-    match /schedules/{docId} { allow read, write: if true; }
-    match /publications/{docId} { allow read, write: if true; }
-    match /remarks/{docId} { allow read, write: if true; }
-    match /exam_attendance/{docId} { allow read, write: if true; }
-    match /non_subject_marks/{docId} { allow read, write: if true; }
-
-    // CMS & Website Content (Top-level Fallback)
-    match /notices/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /reports/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /admitcards/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /settings/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /events/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /achievements/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /testimonials/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /holidays/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /gallery/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /staff/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /timetables/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /fees/{docId} { allow read: if true; allow write: if isAdmin(); }
+    
+    // ============================================================
+    // SESSIONS (Academic Years)
+    // ============================================================
+    
+    match /sessions/{sessionId} {
+      // For backward compatibility - redirect to school-based
+      // DEPRECATED: Use /schools/{schoolId}/sessions instead
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ============================================================
+    // CLASSES
+    // ============================================================
+    
+    match /classes/{classId} {
+      // Legacy top-level - for backward compatibility
+      // DEPRECATED: Use /schools/{schoolId}/classes instead
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ============================================================
+    // STUDENTS
+    // ============================================================
+    
+    match /students/{studentId} {
+      // Legacy top-level - for backward compatibility
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+      
+      // New school-based structure (recommended)
+      match /schools/{schoolId}/students/{sid} {
+        allow read: if isSchoolUser() && belongsToSchool(schoolId);
+        allow create: if isSchoolUser() && belongsToSchool(schoolId) && 
+          (isAdmin() || hasPermission('STUDENT_CREATE'));
+        allow update: if isSchoolUser() && belongsToSchool(schoolId) && 
+          (isAdmin() || hasPermission('STUDENT_UPDATE'));
+        allow delete: if false;
+      }
+    }
+    
+    // ============================================================
+    // FEE TYPES (NEW STRUCTURE)
+    // ============================================================
+    
+    match /schools/{schoolId}/feeTypes/{feeTypeId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && belongsToSchool(schoolId);
+    }
+    
+    // ============================================================
+    // FEE STRUCTURES (NEW STRUCTURE)
+    // ============================================================
+    
+    match /schools/{schoolId}/feeStructures/{feeStructureId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && belongsToSchool(schoolId);
+    }
+    
+    // ============================================================
+    // INVOICES (NEW STRUCTURE)
+    // ============================================================
+    
+    match /schools/{schoolId}/invoices/{invoiceId} {
+      allow read: if isSchoolUser() && belongsToSchool(schoolId) &&
+        (isAdmin() || hasPermission('INVOICE_VIEW') || 
+         request.auth.token.studentId == resource.data.student_id ||
+         request.auth.token.parentOf == resource.data.student_id);
+      allow create: if isSchoolUser() && belongsToSchool(schoolId) && 
+        (isAdmin() || hasPermission('INVOICE_CREATE'));
+      allow update: if isSchoolUser() && belongsToSchool(schoolId) && 
+        (isAdmin() || hasPermission('INVOICE_UPDATE'));
+      allow delete: if false;
+    }
+    
+    // ============================================================
+    // PAYMENTS (NEW STRUCTURE)
+    // ============================================================
+    
+    match /schools/{schoolId}/payments/{paymentId} {
+      allow read: if isSchoolUser() && belongsToSchool(schoolId) &&
+        (isAdmin() || hasPermission('PAYMENT_VIEW') ||
+         request.auth.token.studentId == resource.data.student_id ||
+         request.auth.token.parentOf == resource.data.student_id);
+      allow create: if isSchoolUser() && belongsToSchool(schoolId) && 
+        (isAdmin() || hasPermission('PAYMENT_CREATE'));
+      allow update: if isSchoolUser() && belongsToSchool(schoolId) && isAdmin();
+      allow delete: if false;
+    }
+    
+    // ============================================================
+    // AUDIT LOGS (NEW STRUCTURE)
+    // ============================================================
+    
+    match /schools/{schoolId}/auditLogs/{logId} {
+      allow read: if isSchoolUser() && belongsToSchool(schoolId) && isAdmin();
+      allow create: if isSchoolUser(); // System creates
+      allow update: if false;
+      allow delete: if false;
+    }
+    
+    // ============================================================
+    // LEGACY TOP-LEVEL COLLECTIONS (Backward Compatibility)
+    // ============================================================
+    
+    match /marks/{docId} { allow read, write: if isAuthenticated(); }
+    match /counters/{docId} { allow read, write: if isAuthenticated(); }
+    match /gradingRules/{docId} { allow read, write: if isAuthenticated(); }
+    match /exams/{docId} { allow read, write: if isAuthenticated(); }
+    match /schedules/{docId} { allow read, write: if isAuthenticated(); }
+    match /publications/{docId} { allow read, write: if isAuthenticated(); }
+    match /remarks/{docId} { allow read, write: if isAuthenticated(); }
+    match /exam_attendance/{docId} { allow read, write: if isAuthenticated(); }
+    match /non_subject_marks/{docId} { allow read, write: if isAuthenticated(); }
+    
+    // ============================================================
+    // PUBLIC/CMS CONTENT (Read-only for public)
+    // ============================================================
+    
+    match /notices/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /reports/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /admitcards/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /settings/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /events/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /achievements/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /testimonials/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /holidays/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /gallery/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /staff/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /timetables/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
+    match /fees/{docId} { 
+      allow read: if true; 
+      allow write: if isAuthenticated(); 
+    }
     match /website_content/{docId} { allow read, write: if true; }
-
+    
     match /inquiries/{docId} {
       allow write: if true;
-      allow read: if isAdmin();
+      allow read: if isAuthenticated();
     }
-
-    // 3. Global Fallback
+    
+    // ============================================================
+    // GLOBAL FALLBACK
+    // ============================================================
+    
     match /{document=**} {
-      allow read, write: if isAdmin();
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isAdmin();
     }
   }
 }

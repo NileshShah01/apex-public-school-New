@@ -101,6 +101,9 @@ window.showSection = function (sectionId, updateHash = true) {
         admitCardTool: { title: 'Admit Card PDF Tool', sub: 'Generate and print examination admit cards' },
         bulkResultGenerator: { title: 'Report Card PDF Tool', sub: 'Bulk generate student report cards' },
         feeMasterSection: { title: 'Fee Master Configuration', sub: 'Define fee structures and amounts' },
+        classFeeTypeSection: { title: 'Class Fee Type', sub: 'Manage class-wise fee types' },
+        transportFeeTypeSection: { title: 'Transport Fee Type', sub: 'Manage transport fee types' },
+        transportFeePaymentSection: { title: 'Transport Fee Payment', sub: 'Collect transport fees' },
         createMonthlyFeeSection: {
             title: 'Monthly Fee Generation',
             sub: 'Generate fees for a class for a specific month',

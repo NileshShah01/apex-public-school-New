@@ -1,0 +1,55 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "feeStructures",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "is_active",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "feeStructures",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "class",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "is_active",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "feeStructures",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "session",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "is_active",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

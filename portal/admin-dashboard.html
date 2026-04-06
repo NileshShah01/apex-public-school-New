@@ -178,6 +178,31 @@
                         </div>
                     </div>
 
+                    <!-- FEES STRUCTURE -->
+                    <div class="nav-category" id="navFeesStructure" onclick="toggleCategory('catFeesStructure')">
+                        <div class="cat-header">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Fees Structure</span>
+                        </div>
+                        <div class="cat-submenu" id="catFeesStructure">
+                            <a href="#" class="nav-link sub-link" onclick="showSection('classFeeTypeSection')"
+                                >Class Fee Type</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('transportFeeTypeSection')"
+                                >Transport Fee Type</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMasterSection')"
+                                >Manage Class Fee</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMasterSection')"
+                                >Class Fee Structure</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('transportFeePaymentSection')"
+                                >Transport Fee Payment</a
+                            >
+                        </div>
+                    </div>
+
                     <!-- FEES MANAGEMENT -->
                     <div class="nav-category" id="navFees" onclick="toggleCategory('catFees')">
                         <div class="cat-header">
@@ -186,16 +211,25 @@
                         </div>
                         <div class="cat-submenu" id="catFees">
                             <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFeeSection')"
-                                >Collect Fee</a
+                                >Student Fee Payment</a
                             >
                             <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFeeSection')"
-                                >Generate Monthly</a
+                                >Monthly Fee Payment</a
                             >
                             <a href="#" class="nav-link sub-link" onclick="showSection('classFeePaymentSection')"
-                                >Collection Dashboard</a
+                                >Add Fee Payment</a
                             >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMasterSection')"
-                                >Fee Master</a
+                            <a href="#" class="nav-link sub-link" onclick="showSection('demandReceiptSection')"
+                                >Demand Receipt</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscountSection')"
+                                >Bulk Discount</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkExtraFeeSection')"
+                                >Bulk Add Extra Fee</a
+                            >
+                            <a href="#" class="nav-link sub-link" onclick="showSection('lateFeeRulesSection')"
+                                >Late Fee Fine Rule</a
                             >
                             <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDuesSection')"
                                 >Search Dues</a
@@ -263,48 +297,24 @@
                         </div>
                     </div>
 
-                    <!-- FEES MANAGEMENT -->
-                    <div class="nav-category" id="navFees" onclick="toggleCategory('catFees')">
+                    <!-- NOTIFICATION SYSTEM -->
+                    <div class="nav-category" id="navNotification" onclick="toggleCategory('catNotification')">
                         <div class="cat-header">
-                            <i class="fas fa-indian-rupee-sign"></i>
-                            <span>Fees Management</span>
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Notification System</span>
                             <i class="fas fa-chevron-down arrow"></i>
                         </div>
-                        <div class="cat-submenu" id="catFees">
-                            <a href="#" class="nav-link sub-link" onclick="showSection('searchStudentFeeSection')"
-                                >Student Fee Payment</a
+                        <div class="cat-submenu" id="catNotification">
+                            <a href="#" class="nav-link sub-link" onclick="showSection('sendNotification')"
+                                >Send Bulk Message</a
                             >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('createMonthlyFeeSection')"
-                                >Monthly Fee Generation</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('classFeePaymentSection')"
-                                >Add Fee Payment</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('demandReceiptSection')"
-                                >Demand Receipt</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkFeeDiscountSection')"
-                                >Bulk Discount</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('bulkExtraFeeSection')"
-                                >Bulk Add Extra Fee</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('lateFeeRulesSection')"
-                                >Late Fee Fine Rule</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('feeMasterSection')"
-                                >Fee Setup (Master)</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('searchFeeDuesSection')"
-                                >Search Fee Dues</a
-                            >
-                            <a href="#" class="nav-link sub-link" onclick="showSection('sendFeeMessageSection')"
-                                >Send Fee Message</a
+                            <a href="#" class="nav-link sub-link" onclick="showSection('notificationHistory')"
+                                >Delivery History</a
                             >
                         </div>
                     </div>
 
-                    <!-- NOTIFICATION SYSTEM -->
+                    <!-- LIBRARY MANAGEMENT -->
                     <div class="nav-category" id="navNotification" onclick="toggleCategory('catNotification')">
                         <div class="cat-header">
                             <i class="fas fa-bullhorn"></i>
@@ -6579,6 +6589,182 @@
                     <p>Module under development...</p>
                 </section>
 
+                <!-- CLASS FEE TYPE SECTION -->
+                <section id="classFeeTypeSection" class="dashboard-section card hidden">
+                    <div class="header">
+                        <div>
+                            <h1><i class="fas fa-tags text-primary"></i> Class Fee Type</h1>
+                            <p>Manage fee categories for classes (Tuition, Lab, Library, etc.)</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Fee Type Form - Inline Below Header -->
+                    <div class="card mb-2 p-1-5" style="background: #f8fafc; border: 1px solid #e2e8f0">
+                        <h3 class="mb-1 text-base"><i class="fas fa-plus-circle text-primary"></i> Add New Fee Type</h3>
+                        <form
+                            id="addClassFeeTypeForm"
+                            onsubmit="handleInlineFeeTypeSubmit(event)"
+                            class="grid-4 gap-1 align-flex-end"
+                        >
+                            <div class="form-group mb-0">
+                                <label>Fee Type Name *</label>
+                                <input
+                                    type="text"
+                                    id="inlineCftName"
+                                    class="form-control"
+                                    placeholder="e.g. Tuition Fee"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Category</label>
+                                <select id="inlineCftCategory" class="form-control">
+                                    <option value="ACADEMIC">Academic</option>
+                                    <option value="TRANSPORT">Transport</option>
+                                    <option value="HOSTEL">Hostel</option>
+                                    <option value="EXTRA">Extra</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    id="inlineCftDescription"
+                                    class="form-control"
+                                    placeholder="Optional"
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn-portal btn-primary w-full">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Fee Types Data Table -->
+                    <div class="card p-0 overflow-hidden">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Fee Type Name</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Taxable</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classFeeTypeTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center p-4 text-muted">Loading fee types...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TRANSPORT FEE TYPE SECTION -->
+                <section id="transportFeeTypeSection" class="dashboard-section card hidden">
+                    <div class="header">
+                        <div>
+                            <h1><i class="fas fa-bus text-primary"></i> Transport Fee Type</h1>
+                            <p>Manage transport fee categories based on routes</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Transport Fee Type Form - Inline Below Header -->
+                    <div class="card mb-2 p-1-5" style="background: #f8fafc; border: 1px solid #e2e8f0">
+                        <h3 class="mb-1 text-base">
+                            <i class="fas fa-plus-circle text-primary"></i> Add New Transport Fee Type
+                        </h3>
+                        <form
+                            id="addTransportFeeTypeForm"
+                            onsubmit="handleInlineTransportFeeTypeSubmit(event)"
+                            class="grid-3 gap-1 align-flex-end"
+                        >
+                            <div class="form-group mb-0">
+                                <label>Fee Type Name *</label>
+                                <input
+                                    type="text"
+                                    id="inlineTftName"
+                                    class="form-control"
+                                    placeholder="e.g. Route A"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    id="inlineTftDescription"
+                                    class="form-control"
+                                    placeholder="Route details"
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn-portal btn-primary w-full">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card p-0 overflow-hidden">
+                        <table class="portal-table">
+                            <thead>
+                                <tr>
+                                    <th>Fee Type Name</th>
+                                    <th>Description</th>
+                                    <th>Applicable Routes</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transportFeeTypeTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center p-4 text-muted">
+                                        Loading transport fee types...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TRANSPORT FEE PAYMENT SECTION -->
+                <section id="transportFeePaymentSection" class="dashboard-section hidden">
+                    <div class="header">
+                        <div>
+                            <h1><i class="fas fa-money-bill-wave text-primary"></i> Transport Fee Payment</h1>
+                            <p>Collect transport fees from students</p>
+                        </div>
+                    </div>
+                    <div class="card p-1-5">
+                        <div class="grid-cols-2-1 gap-2">
+                            <div class="form-group">
+                                <label>Select Student</label>
+                                <div id="transportFeeStudentContainer"></div>
+                                <input type="hidden" id="transportFeeStudentId" />
+                            </div>
+                            <div class="form-group">
+                                <label>Route</label>
+                                <select id="transportFeeRoute" class="form-control" disabled>
+                                    <option value="">Select Student First</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="transportFeeStudentInfo" class="hidden mt-2">
+                            <div class="card bg-sky-light p-1">
+                                <div class="flex flex-between">
+                                    <span>Monthly Transport Fee:</span>
+                                    <b id="transportFeeAmount">₹0</b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- FEES SECTIONS -->
                 <!-- FEE MASTER SECTION -->
                 <section id="feeMasterSection" class="dashboard-section card hidden">
@@ -6587,13 +6773,66 @@
                             <h1><i class="fas fa-coins text-primary"></i> Fee Master Configuration</h1>
                             <p>Define fee structures, types, and amounts for each class and session</p>
                         </div>
-                        <button
-                            class="btn-portal btn-primary"
-                            onclick="openAddFeeStructureModal()"
-                            title="Add New Fee Type"
+                    </div>
+
+                    <!-- Add Fee Structure Form - Inline Below Header -->
+                    <div class="card mb-2 p-1-5" style="background: #f8fafc; border: 1px solid #e2e8f0">
+                        <h3 class="mb-1 text-base">
+                            <i class="fas fa-plus-circle text-primary"></i> Add New Fee Structure
+                        </h3>
+                        <form
+                            id="addFeeStructureForm"
+                            onsubmit="handleInlineFeeStructureSubmit(event)"
+                            class="grid-6 gap-1 align-flex-end"
                         >
-                            <i class="fas fa-plus"></i> Add New Fee Type
-                        </button>
+                            <div class="form-group mb-0">
+                                <label>Fee Type *</label>
+                                <select id="inlineFsFeeType" class="form-control" required>
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Class *</label>
+                                <select id="inlineFsClass" class="form-control" required>
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Amount (₹) *</label>
+                                <input
+                                    type="number"
+                                    id="inlineFsAmount"
+                                    class="form-control"
+                                    placeholder="0"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Frequency</label>
+                                <select id="inlineFsFrequency" class="form-control">
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Yearly">Yearly</option>
+                                    <option value="One-Time">One-Time</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label>Due Day</label>
+                                <input
+                                    type="number"
+                                    id="inlineFsDueDay"
+                                    class="form-control"
+                                    value="10"
+                                    min="1"
+                                    max="31"
+                                />
+                            </div>
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn-portal btn-primary w-full">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
                     <div class="card mb-2 bg-slate-light p-1-5">
@@ -7287,6 +7526,31 @@
         <script src="/js/erp-exams.js?v=1.5"></script>
         <script src="/js/erp-question-papers.js?v=1.5"></script>
         <script src="/js/erp-fees.js?v=1.5"></script>
+
+        <!-- NEW ERP SERVICES (v2.0) -->
+        <script src="/js/services/fee-service.js"></script>
+        <script src="/js/services/invoice-service.js"></script>
+        <script src="/js/services/payment-service-enhanced.js"></script>
+        <script src="/js/services/security-service.js"></script>
+        <script src="/js/services/class-service.js"></script>
+        <script src="/js/services/student-service.js"></script>
+        <script src="/js/services/exam-service.js"></script>
+        <script src="/js/services/attendance-service.js"></script>
+        <script src="/js/services/library-service.js"></script>
+        <script src="/js/services/transport-service.js"></script>
+        <script src="/js/services/notification-service.js"></script>
+        <script src="/js/services/reports-service.js"></script>
+
+        <!-- NEW ERP UI MODULES (v2.0) -->
+        <script src="/js/modules/fee-enhancements.js"></script>
+        <script src="/js/modules/erp-integration.js"></script>
+        <script src="/js/modules/class-ui.js"></script>
+        <script src="/js/modules/student-ui.js"></script>
+        <script src="/js/modules/exam-ui.js"></script>
+        <script src="/js/modules/attendance-ui.js"></script>
+        <script src="/js/modules/library-transport-ui.js"></script>
+        <script src="/js/modules/notification-reports-ui.js"></script>
+
         <script src="/js/demand-receipt.js"></script>
         <script src="/js/erp-id-cards.js?v=1.5"></script>
         <script src="/js/erp-admission.js?v=1.5"></script>
