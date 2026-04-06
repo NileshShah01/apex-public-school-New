@@ -174,6 +174,10 @@ window.showSection = function (sectionId, updateHash = true) {
     ) {
         updateSessionDropdowns();
     }
+    // Load student data when entering student list
+    if (sectionId === 'studentList') {
+        loadInitialData();
+    }
     // Bulk Student Update: auto-populate session dropdown
     if (sectionId === 'studentBulkUpdateSection' && typeof updateSessionDropdowns === 'function') {
         updateSessionDropdowns();
@@ -304,6 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('noticeForm')?.addEventListener('submit', handleNoticeSubmit);
     document.getElementById('searchInput')?.addEventListener('input', () => {
+        currentPage = 1;
+        filterAndDisplayStudents();
+    });
+    document.getElementById('idSearchInput')?.addEventListener('input', () => {
         currentPage = 1;
         filterAndDisplayStudents();
     });
@@ -726,7 +734,10 @@ async function updateStudentAttendance() {
 }
 
 async function filterAndDisplayStudents() {
-    const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    const searchTerm =
+        document.getElementById('idSearchInput')?.value.toLowerCase() ||
+        document.getElementById('searchInput')?.value.toLowerCase() ||
+        '';
     const classVal = document.getElementById('classFilter')?.value || '';
     const tbody = document.getElementById('studentTableBody');
     if (!tbody) return;
